@@ -3,7 +3,7 @@
   "id": "67903189-fe58-43db-8759-4fd244c6b548",
   "alias": "ReadifyEmMainWebPart",
   "componentType": "WebPart",
-
+  "supportsFullBleed": true,
   // The "*" signifies that the version should be taken from the package.json
   "version": "*",
   "manifestVersion": 2,
@@ -12,17 +12,24 @@
   // Components that allow authors to embed arbitrary script code should set this to true.
   // https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
   "requiresCustomScript": false,
-  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "supportedHosts": [
+    "SharePointWebPart",
+    "TeamsPersonalApp",
+    "TeamsTab",
+    "SharePointFullPage"
+  ],
   "supportsThemeVariants": true,
 
-  "preconfiguredEntries": [{
-    "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Advanced
-    "group": { "default": "Advanced" },
-    "title": { "default": "ReadifyEM-Main" },
-    "description": { "default": "ReadifyEM-Main description" },
-    "officeFabricIconFontName": "Page",
-    "properties": {
-      "description": "ReadifyEM-Main"
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Advanced
+      "group": { "default": "Advanced" },
+      "title": { "default": "ReadifyEM-Main" },
+      "description": { "default": "ReadifyEM-Main description" },
+      "officeFabricIconFontName": "Page",
+      "properties": {
+        "description": "ReadifyEM-Main"
+      }
     }
-  }]
+  ]
 }

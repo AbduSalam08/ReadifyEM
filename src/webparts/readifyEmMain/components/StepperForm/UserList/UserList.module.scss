@@ -1,0 +1,60 @@
+.usersContainer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  width: 380px;
+  max-height: 195px;
+  overflow: auto;
+  flex-direction: column;
+  padding: 10px;
+  gap: 10px;
+}
+.usersCard {
+  position: relative;
+  width: 100%;
+  border-radius: 6px;
+  padding: 10px;
+  padding-right: 30px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  background-color: #adadad15;
+  .userCount {
+    font-size: 13px;
+    color: var(--bg-ash);
+    margin-bottom: 6px;
+    font-family: "interMedium", sans-serif;
+  }
+  .deleteUser {
+    position: absolute;
+    top: 3px;
+    right: 6px;
+    color: var(--bg-ash);
+    width: 18px;
+    cursor: pointer;
+  }
+}
+.errorMsg {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  color: red;
+  font-family: "interMedium", sans-serif;
+  font-size: 14px;
+  text-align: right;
+  text-transform: lowercase;
+  animation: slideAndFade 0.17s both ease;
+}
+.errorInput {
+  border: 1px solid #ff8585 !important;
+}
+@keyframes slideAndFade {
+  0% {
+    opacity: 0;
+    margin-top: -10px; /* Start off-screen */
+  }
+  100% {
+    opacity: 1;
+    margin-top: 5px; /* Slide down */
+  }
+}
