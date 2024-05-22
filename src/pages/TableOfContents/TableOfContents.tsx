@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import CustomInput from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomInput";
 import PageTitle from "../../webparts/readifyEmMain/components/common/PageTitle/PageTitle";
 import styles from "./TableOfContents.module.scss";
@@ -12,6 +14,12 @@ import NewDocument from "../NewDocument/NewDocument";
 import Popup from "../../webparts/readifyEmMain/components/common/Popups/Popup";
 import { emptyCheck } from "../../utils/validations";
 import CustomTreeDropDown from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomTreeDropDown";
+import { sp } from "@pnp/sp/presets/all";
+import "@pnp/sp/webs";
+import "@pnp/sp/folders";
+import "@pnp/sp/files";
+import "@pnp/sp/lists";
+import "@pnp/sp/items";
 
 const TableOfContents = (): JSX.Element => {
   const [screens, setScreens] = useState({
@@ -243,7 +251,8 @@ const TableOfContents = (): JSX.Element => {
     }));
   };
 
-  const [tableData] = useState({
+  // Define the initial state of the table
+  const [tableData, setTableData] = useState({
     headers: [
       "Document Name",
       "Created At",
@@ -252,69 +261,85 @@ const TableOfContents = (): JSX.Element => {
       "Visibility",
       "Action",
     ],
-    data: [
-      {
-        DOCName: "Emergency Management Program",
-        Children: [
-          {
-            DocumentName: "Risk Management Program",
-            CreatedAt: "25-02-2024",
-            NextReview: "25-02-2025",
-            Status: "Not started",
-            Visibility: "-",
-            Action: "-",
-          },
-          {
-            DocumentName: "Po2",
-            CreatedAt: "25-02-2024",
-            NextReview: "25-02-2025",
-            Status: "Not started",
-            Visibility: "-",
-            Action: "-",
-          },
-        ],
-        ChildAcc: [
-          {
-            ChildDOC: "Policies and Procedure",
-            ChildArr: [
-              {
-                ChildArr: [
-                  {
-                    DocumentName: "Policies and Procedure 1",
-                    CreatedAt: "25-02-2024",
-                    NextReview: "25-02-2025",
-                    Status: "Not started",
-                    Visibility: "-",
-                    Action: "-",
-                  },
-                ],
-                DocumentName: "Policies and Procedure 1",
-                CreatedAt: "25-02-2024",
-                NextReview: "25-02-2025",
-                Status: "Not started",
-                Visibility: "-",
-                Action: "-",
-              },
-            ],
-          },
-          {
-            ChildDOC: "Policies and Procedure",
-            ChildArr: [
-              {
-                DocumentName: "Policies and Procedure 1",
-                CreatedAt: "25-02-2024",
-                NextReview: "25-02-2025",
-                Status: "Not started",
-                Visibility: "-",
-                Action: "-",
-              },
-            ],
-          },
-        ],
-      },
-    ],
+    loading: false,
+    data: [],
   });
 
+  console.log("tableData: ", tableData);
+
+  // Define the LibraryItem interface
+  interface LibraryItem {
+    name: string;
+    url: string;
+    fields: any;
+    items?: LibraryItem[];
+  }
+
+  // useEffect to fetch library items and update table data
+  useEffect(() => {
+    const getLibraryItems = async () => {
+      setTableData((prevData) => ({ ...prevData, loading: true })); // Set loading to true
+      const items = await fetchFoldersAndFiles(
+        "/sites/ReadifyEM/AllDocuments/Main"
+      );
+      setTableData((prevData: any) => ({
+        ...prevData,
+        data: items,
+        loading: false,
+      }));
+    };
+
+    getLibraryItems();
+  }, []);
+
+  // Function to fetch folders and files
+  const fetchFoldersAndFiles = async (
+    folderUrl: string
+  ): Promise<LibraryItem[]> => {
+    const folder = sp.web.getFolderByServerRelativePath(folderUrl);
+
+    const [folders, files] = await Promise.all([
+      folder.folders(),
+      folder.files(),
+    ]);
+
+    const folderItems: LibraryItem[] = [];
+
+    for (const subFolder of folders) {
+      const subFolderFields = await sp.web
+        .getFolderByServerRelativePath(subFolder.ServerRelativeUrl)
+        .listItemAllFields.get();
+      const subFolderItems = await fetchFoldersAndFiles(
+        subFolder.ServerRelativeUrl
+      );
+      folderItems.push({
+        name: subFolder.Name,
+        url: subFolder.ServerRelativeUrl,
+        fields: {
+          name: subFolder.Name,
+          status: subFolderFields.status,
+          nextReview: subFolderFields.nextReview,
+          createdDate: subFolderFields.createdDate,
+          isVisible: subFolderFields.isVisible,
+          Action: "-",
+        },
+        items: subFolderItems,
+      });
+    }
+
+    for (const file of files) {
+      const fileFields = await sp.web
+        .getFileByServerRelativePath(file.ServerRelativeUrl)
+        .listItemAllFields.get();
+      folderItems.push({
+        name: file.Name,
+        url: file.ServerRelativeUrl,
+        fields: fileFields,
+      });
+    }
+
+    return folderItems;
+  };
   return (
     <div className={styles.tocWrapper}>
       <PageTitle
@@ -365,7 +390,7 @@ const TableOfContents = (): JSX.Element => {
           {/* table section */}
           <Table
             headers={tableData.headers}
-            loading={false}
+            loading={tableData.loading}
             searchTerm={filterOptions.search}
             data={tableData.data}
           />

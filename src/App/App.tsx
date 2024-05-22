@@ -79,8 +79,10 @@ const App = (props: any): JSX.Element => {
             {/* ADMIN ROUTES */}
             <Route path="*" Component={ErrorElement} />
             <Route path="/admin" Component={RoleAuthorizationHOC}>
-              <Route index Component={TableOfContents} />
-              <Route path="em_manual" Component={TableOfContents} />
+              {/* <Route index Component={TableOfContents} /> */}
+              {/* <Route index Component={TableOfContents} /> */}
+              <Route index element={<h1>Table of Contents</h1>} />
+              <Route path="em_manual" element={<h1>Table of Contents</h1>} />
               <Route path="my_tasks" element={<h1>My Tasks</h1>} />
               <Route path="definitions" element={<h1>definitions</h1>} />
               <Route
