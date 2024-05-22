@@ -1,0 +1,98 @@
+// DefaultButton
+.DefaultButtonWrapper {
+  padding: 6px 20px !important;
+  border-radius: 4px !important;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 30px !important;
+  font-size: 14px !important;
+  font-family: "interMedium", sans-serif !important;
+}
+.primary {
+  @extend .DefaultButtonWrapper;
+  background-color: var(--primary-violet) !important;
+  border-radius: 4px !important;
+  color: var(--white) !important;
+  border: 0 !important;
+  height: 30px !important;
+  text-transform: none !important;
+}
+.secondary {
+  @extend .DefaultButtonWrapper;
+  background-color: var(--btn-secondary-violet-bg) !important;
+  border-radius: 4px !important;
+  color: var(--btn-blue-text) !important;
+  border: 0 !important;
+  height: 30px !important;
+  text-transform: none !important;
+}
+.lightGreyVariant {
+  @extend .DefaultButtonWrapper;
+  background-color: var(--a4-grey30) !important;
+  border-radius: 4px !important;
+  color: var(--bg-ash) !important;
+  border: 0 !important;
+  height: 30px !important;
+  text-transform: none !important;
+  border: 1px solid #a4a4a430 !important;
+}
+.darkGreyVariant {
+  @extend .DefaultButtonWrapper;
+  background-color: var(--a4-grey) !important;
+  border-radius: 4px !important;
+  color: var(--white) !important;
+  border: 0 !important;
+  height: 30px !important;
+  text-transform: none !important;
+}
+.greyOutlined {
+  @extend .DefaultButtonWrapper;
+  background-color: var(--primary-violet) !important;
+  border-radius: 4px !important;
+  color: var(--white) !important;
+  border: 0 !important;
+  height: 30px !important;
+  text-transform: none !important;
+}
+.primaryGreen {
+  @extend .DefaultButtonWrapper;
+  background-color: var(--primary-green) !important;
+  border-radius: 4px !important;
+  color: var(--white) !important;
+  border: 0 !important;
+  height: 30px !important;
+  text-transform: none !important;
+}
+.secondaryRed {
+  @extend .DefaultButtonWrapper;
+  background-color: var(--primary-violet) !important;
+  border-radius: 4px !important;
+  color: var(--white) !important;
+  border: 0 !important;
+  height: 30px !important;
+  text-transform: none !important;
+}
+.primaryBlue {
+  @extend .DefaultButtonWrapper;
+  background-color: var(--primary-violet) !important;
+  border-radius: 4px !important;
+  color: var(--white) !important;
+  border: 0 !important;
+  height: 30px !important;
+  text-transform: none !important;
+}
+.secondaryBlue {
+  @extend .DefaultButtonWrapper;
+  background-color: var(--primary-violet) !important;
+  border-radius: 4px !important;
+  color: var(--white) !important;
+  border: 0 !important;
+  height: 30px !important;
+  text-transform: none !important;
+}
+.disabled {
+  @extend .DefaultButtonWrapper;
+  opacity: 0.5 !important;
+}

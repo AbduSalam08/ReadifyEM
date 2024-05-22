@@ -1,0 +1,22 @@
+.flexcenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tocWrapper {
+  width: 100%;
+}
+.filters {
+  @extend .flexcenter;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+.rhs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+.subGroupInput {
+  margin-bottom: 10px;
+}

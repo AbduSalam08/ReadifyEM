@@ -1,0 +1,135 @@
+.BasicNavBar {
+  background-color: #f9fafc;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  padding: 15px;
+  gap: 10px;
+  height: 100vh;
+  transition: all 0.3s;
+}
+.MenuBtn {
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s !important;
+  // justify-content: flex-start;
+  &.expand {
+    justify-content: flex-end !important;
+  }
+  &.MenuMin {
+    justify-content: center;
+  }
+}
+.NavBarWrapperMin {
+  @extend .BasicNavBar;
+  overflow: hidden;
+  width: 65px;
+  padding: 15px 6px;
+  transition: all 0.3s !important;
+}
+.NavBarWrapperMax {
+  @extend .BasicNavBar;
+  width: 315px;
+  // width: 308px;
+  overflow: hidden;
+  transition: all 0.3s !important;
+}
+.NavContent {
+  width: 100%;
+  transition: all 0.3s !important;
+}
+.NavTab {
+  padding: 14px 20px;
+  border-radius: 30px;
+  transition: all 0.3s !important;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #adadad15;
+    transition: none !important;
+  }
+  .flex {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .navLink {
+    gap: 5px;
+    background-color: transparent;
+    @extend .flex;
+    font-weight: 500;
+    text-decoration: none;
+    color: #0a1b39;
+    text-wrap: nowrap;
+
+    .imgWrapper {
+      position: relative;
+      height: 20px;
+      img {
+        width: 32px;
+        height: 20px;
+      }
+      &::before {
+        content: "";
+        position: absolute;
+        right: -17px;
+        top: 50%;
+        transform: translateY(-55%) scale(0);
+        height: 28px;
+        width: 4px;
+        background-color: #6536f9;
+        transition: all 0.3s !important;
+      }
+    }
+  }
+  &.navLinkMin {
+    padding: 14px 10px;
+    span {
+      color: #3d187c;
+      font-weight: 600;
+      opacity: 0;
+    }
+  }
+  &.selectedMax {
+    // background-color: #e7e0ff;
+    background-color: #ebe5ff;
+    &:hover {
+      background-color: #ebe5ff;
+    }
+    span {
+      color: #3d187c;
+      font-weight: 600;
+    }
+    .imgWrapper {
+      &::before {
+        display: none;
+      }
+    }
+  }
+  &.selectedMin {
+    padding: 14px 10px;
+    background-color: transparent;
+    span {
+      opacity: 0;
+    }
+    .imgWrapper {
+      position: relative;
+      img {
+        // padding-right: 5px;
+        // border-right: 4px solid #6536f9;
+        position: relative;
+        border-radius: 0;
+      }
+      &::before {
+        transform: translateY(-55%) scale(1);
+        height: 28px;
+        transition: all 0.3s !important;
+      }
+    }
+  }
+}

@@ -1,0 +1,623 @@
+/* webpart styles reset  */
+.ms-CommandBarItem-link {
+  position: absolute;
+  top: 500px;
+  left: 6px;
+  transform: translate(-53px, 100px);
+  z-index: 9999;
+}
+.CanvasComponent.LCS .CanvasZone:not(.CanvasZone--fullWidth) .ControlZone {
+  padding: 0 !important;
+}
+.ControlZone {
+  padding: 0 !important;
+}
+.CanvasSection {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.CanvasComponent.LCS .CanvasSection-col {
+  padding: 0 !important;
+}
+.spAppAndPropertyPanelContainer .sp-appBar {
+  display: none;
+}
+.CanvasComponent.LCS
+  .CanvasSection--read:not(.CanvasSection--fullWidth)
+  .ControlZone {
+  margin-top: 0 !important;
+}
+div[data-automation-id="CanvasZone-SectionContainer"] {
+  margin: 0 !important;
+  margin-top: 33px !important;
+}
+#sp-appBar {
+  display: none !important;
+}
+
+/* reset width in deloyment */
+.CanvasComponent .CanvasZone {
+  max-width: 100% !important;
+  padding: 0px !important;
+}
+
+#spCommandBar {
+  display: none !important;
+}
+
+#spLeftNav {
+  display: none !important;
+}
+
+#spSiteHeader {
+  display: none !important;
+}
+
+#workbenchPageContent {
+  width: 100% !important;
+  max-width: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+}
+
+#workbenchPageContent > div > div > div {
+  padding: 0px !important;
+}
+
+.ControlZone {
+  margin: 0px !important;
+  padding: 0px !important;
+}
+
+.CanvasComponent > div > div,
+.CanvasComponent > div > div > div,
+.CanvasComponent > div > div > div > div,
+.CanvasComponent > div > div > div > div > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+  padding-left: 0 !important;
+  display: block;
+}
+
+.CanvasComponent > div > div > div > div {
+  max-width: 100% !important;
+}
+
+.mainContent > article > div > div {
+  display: block !important;
+}
+
+.webPartContainer {
+  display: none !important;
+}
+
+.ControlZone--clean {
+  padding: 0px !important;
+  margin: 0px !important;
+}
+
+.CanvasSection {
+  padding-left: 0px !important;
+}
+
+.spAppAndPropertyPanelContainer .sp-appBar {
+  display: none !important;
+}
+
+#CommentsWrapper {
+  display: none !important;
+}
+.mainContent {
+  background-color: var(--body-bgcolor) !important;
+}
+/* RESETTING CSS DEFAULT STYLES */
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  /* font-size: 100%; */
+  font: inherit;
+  /* vertical-align: baseline; */
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+button {
+  cursor: pointer;
+}
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* font-size: 10px; */
+  /* 10px / 16px = 0.625 = 62.5% */
+  /* Percentage of user's browser font-size setting */
+  /* font-size: 62.5%; */
+  scroll-behavior: smooth;
+}
+
+/* root variables */
+:root {
+  --body-bgcolor: #f2f4f7;
+  --whitesmoke: #f9fafc;
+  --white: #ffffff;
+  --ad-grey15: #adadad15;
+  --ad-grey: #adadad;
+  --ad-grey-50: #adadad50;
+  --a4-grey: #a4a4a4;
+  --a4-grey30: #a4a4a430;
+  --placeholder: #8e8e8e;
+  --d9-grey: #d9d9d9;
+  --d9-grey-30: #d9d9d930;
+  --hover-violet: #ebe5ff;
+  --primary-violet: #593abb;
+  --primary-green: #19d3b2;
+  --checkbox-highlight: #6536f9;
+  --primary-violet-light: #ccbaff;
+  --bg-ash: #555555;
+  --text-grey: #a1aebe;
+  --btn-danger-text: #640303;
+  --btn-danger-bg: #bb3a3a16;
+  --btn-blue-text: #160364;
+  --header-text-color: #013747;
+  --btn-secondary-violet-bg: #593abb16;
+  --primary-white: #fff;
+  --tab-bgcolor: #f3efff;
+  --tab-color: #593abb;
+}
+
+/* font faces */
+
+@font-face {
+  font-family: "interThin";
+  src: url("../fonts/InterGF/Inter-Thin.ttf");
+}
+@font-face {
+  font-family: "interRegular";
+  src: url("../fonts/InterGF/Inter-Regular.ttf");
+}
+@font-face {
+  font-family: "interBold";
+  src: url("../fonts/InterGF/Inter-Bold.ttf");
+}
+@font-face {
+  font-family: "interSemibold";
+  src: url("../fonts/InterGF/Inter-SemiBold.ttf");
+}
+@font-face {
+  font-family: "interLight";
+  src: url("../fonts/InterGF/Inter-Light.ttf");
+}
+@font-face {
+  font-family: "interExtralight";
+  src: url("../fonts/InterGF/Inter-ExtraLight.ttf");
+}
+@font-face {
+  font-family: "interExtraBold";
+  src: url("../fonts/InterGF/Inter-ExtraBold.ttf");
+}
+@font-face {
+  font-family: "interBlack";
+  src: url("../fonts/InterGF/Inter-Black.ttf");
+}
+@font-face {
+  font-family: "interMedium";
+  src: url("../fonts/InterGF/Inter-Medium.ttf");
+}
+
+*::placeholder {
+  color: var(--placeholder) !important;
+}
+
+/* body  */
+* {
+  font-family: "interRegular", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%; */
+  /* line-height: 1.5; a nice line-height */
+  /* scrollbar-width: thin;
+  scrollbar-color: #888 #f5f5f5; */
+}
+/* width */
+*::-webkit-scrollbar {
+  width: 6px !important;
+  height: 4px !important;
+}
+
+/* Track */
+*::-webkit-scrollbar-track {
+  background: var(--white) !important;
+}
+
+/* Handle */
+*::-webkit-scrollbar-thumb {
+  background: var(--a4-grey) !important;
+  border-radius: 30px !important;
+}
+
+/* Handle on hover */
+*::-webkit-scrollbar-thumb:hover {
+  background: #555555ac !important;
+  border-radius: 30px !important;
+}
+/* main mt should be 57px when this code is going to be in build for live deploy */
+.main {
+  position: relative;
+  height: calc(100vh - 110px);
+  overflow: auto;
+  margin-top: 57px;
+  background-color: var(--body-bgcolor);
+}
+
+/* default component styles */
+.primaryBtn {
+  height: 30px !important;
+  min-width: 140px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 14px !important;
+  text-decoration: none !important;
+  text-transform: none !important;
+  color: var(--white) !important;
+  background-color: var(--primary-violet) !important;
+  font-family: "interMedium" !important;
+}
+
+/* customiising prime react styles */
+.p-treeselect-panel
+  .p-treeselect-header
+  .p-treeselect-filter-container
+  .p-treeselect-filter {
+  padding: 5px;
+}
+.p-checkbox {
+  width: 18px;
+  height: 18px;
+}
+.p-checkbox .p-checkbox-box {
+  width: 18px;
+  height: 18px;
+}
+
+.p-checkbox .p-checkbox-box .p-checkbox-icon.p-icon {
+  width: 10px;
+  height: 10px;
+}
+.p-inputtext:enabled:focus {
+  border: 0;
+  box-shadow: none !important;
+}
+.p-treeselect:not(.p-disabled).p-focus {
+  box-shadow: none !important;
+  /* border: 1px solid var(--ad-grey-50); */
+}
+.p-treeselect-trigger-icon {
+  width: 20px;
+  height: 12px;
+  color: var(--placeholder) !important ;
+}
+.p-treeselect-panel
+  .p-treeselect-header
+  .p-treeselect-filter-container
+  .p-treeselect-filter {
+  padding: 5px 10px;
+  border: 1px solid var(--ad-grey-50);
+}
+.p-treeselect .p-treeselect-label.p-placeholder {
+  color: var(--placeholder);
+  font-size: 14px;
+  font-family: "interMedium", sans-serif !important;
+}
+.p-treeselect-panel {
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+.p-treeselect-panel .p-treeselect-header {
+  background: #efefef30;
+  padding: 10px;
+}
+.p-treeselect.p-treeselect-chip .p-treeselect-token {
+  margin-right: 5px;
+  background: #dee2e680;
+  color: #171717;
+  font-size: 14px;
+}
+.p-treenode-label {
+  font-size: 14px;
+  font-family: "interRegular", sans-serif !important;
+}
+.p-tree {
+  padding: 5px;
+}
+.p-tree-toggler-icon {
+  width: 20px;
+  height: 13px;
+  color: var(--placeholder);
+}
+.p-checkbox.p-highlight .p-checkbox-box {
+  background: var(--checkbox-highlight);
+}
+.p-tree .p-tree-container .p-treenode .p-treenode-content {
+  padding: 3px 0 !important;
+  box-shadow: none !important;
+}
+.p-tree
+  .p-tree-container
+  .p-treenode
+  .p-treenode-content.p-highlight
+  .p-tree-toggler-icon {
+  color: var(--primary-violet);
+}
+.p-tree .p-tree-container .p-treenode .p-treenode-content.p-highlight {
+  background: #6536f920;
+  color: var(--primary-violet);
+  box-shadow: none !important;
+  font-weight: 500;
+}
+.p-treeselect-label {
+  display: block;
+  white-space: nowrap;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.css-vqmohf-MuiButtonBase-root-MuiRadio-root.Mui-checked {
+  color: var(--btn-blue-text) !important;
+}
+
+.customTreeSelect .p-treeselect-label:not(.p-placeholder) {
+  font-size: 13px;
+  background: #eee;
+  color: #373737;
+  padding: 5px 15px;
+  text-align: center;
+  border-radius: 20px;
+  font-family: "interRegular", sans-serif !important;
+  /* margin: 0 5px; */
+}
+.p-treeselect-label-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  padding-right: 0;
+}
+.p-tree
+  .p-tree-container
+  .p-treenode
+  .p-treenode-content.p-treenode-selectable:not(.p-highlight):hover {
+  background: #e9ecef70;
+}
+.p-orderlist-controls {
+  display: none !important;
+}
+.p-orderlist-list {
+  min-height: auto !important;
+}
+.p-orderlist .p-orderlist-list .p-orderlist-item:hover {
+  transition: all 0.1s !important;
+}
+/* .p-orderlist .p-orderlist-list .p-orderlist-item {
+  transition: all 0.1s !important;
+} */
+.p-orderlist .p-orderlist-list .p-orderlist-item.p-highlight:hover {
+  background: #adadad15 !important;
+  transition: all 0.1s !important;
+}
+.p-orderlist .p-orderlist-list .p-orderlist-item.p-highlight {
+  background: transparent !important;
+  color: #000 !important;
+}
+.p-orderlist-droppoint-highlight {
+  background-color: var(--checkbox-highlight) !important;
+}
+
+.p-orderlist .p-orderlist-droppoint {
+  height: 5px;
+  transition: all 0.1s !important;
+}
+.p-orderlist .p-orderlist-list .p-orderlist-item:not(.p-highlight):hover {
+  background: #adadad15 !important;
+}
+.customTreeSelect .p-treeselect-label .p-placeholder {
+  padding: 0 5px !important;
+}
+
+.p-treeselect-panel .p-treeselect-header .p-treeselect-filter-container svg {
+  top: 24% !important;
+  width: 12px !important;
+}
+.p-treeselect-panel
+  .p-treeselect-header
+  .p-treeselect-filter-container
+  .p-treeselect-filter {
+  font-size: 14px !important;
+}
+.p-treenode.p-tree-empty-message {
+  text-align: center !important;
+  width: 100% !important;
+  font-family: "interRegular", sans-serif !important;
+  font-size: 14px !important;
+  color: #adadad !important;
+  padding: 10px !important;
+}
+.p-treenode-children {
+  margin-left: 15px !important;
+}
+.popupWrapper .p-dialog-header-icon.p-dialog-header-close {
+  margin: 20px !important;
+  border: 1px solid #55555550;
+}
+
+/* MUI Customisation */
+.MuiTabs-root,
+.MuiTabs-scroller {
+  min-height: 32px !important;
+}
+.MuiTab-root {
+  border-radius: 4px !important;
+  font-size: 14px !important;
+  min-height: 32px !important;
+  padding: 0 21px !important;
+  text-transform: none !important;
+  font-family: "interRegular", sans-serif !important;
+}
+.Mui-selected {
+  background-color: var(--tab-bgcolor) !important;
+  color: var(--tab-color) !important;
+  border-radius: 4px !important;
+  font-size: 14px !important;
+  min-height: 32px !important;
+  padding: 0 20px !important;
+  text-transform: none !important;
+  font-family: "interSemiBold", sans-serif !important;
+}
+.MuiTabs-indicator {
+  background-color: var(--tab-color) !important;
+  border-radius: 4px !important;
+  height: 1.5px !important;
+}
+.MuiSelect-icon {
+  color: var(--placeholder) !important;
+}
+.MuiMenuItem-root {
+  font-size: 14px !important;
+  font-family: "interRegular", sans-serif !important;
+}
+.MuiMenuItem-root.MuiMenuItem-gutters.Mui-selected {
+  padding: 0 15px !important;
+  font-size: 14px !important;
+  font-family: "interRegular", sans-serif !important;
+}
+.MuiPaper-root {
+  margin-top: 5px !important;
+}
+.MuiRadio-root {
+  padding: 5px 9px !important;
+}
+.radioText .MuiFormControlLabel-label {
+  font-size: 14px !important;
+  color: #404040 !important;
+  font-family: "interMedium", sans-serif !important;
+}

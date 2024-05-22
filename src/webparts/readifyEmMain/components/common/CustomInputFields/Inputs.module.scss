@@ -1,0 +1,124 @@
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inputWrapperWithLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  .inputLabel {
+    font-size: 16px;
+    width: 100%;
+    font-family: "interMedium", sans-serif;
+    color: #414141;
+  }
+}
+
+.input {
+  border: 1px solid #adadad50 !important;
+  border-radius: 4px !important;
+  padding: 0 10px !important;
+  outline: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: #fff;
+  min-width: 265px;
+  width: 100%;
+  input {
+    font-size: 14px !important;
+    font-family: "interMedium", sans-serif !important;
+    border: 0;
+    outline: 0;
+    height: 100%;
+    width: 100%;
+    padding-left: 10px;
+    color: #414141 !important;
+  }
+  span {
+    // position: relative !important;
+    top: 10px !important;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    color: #8e8e8e !important;
+  }
+}
+.customInputXL {
+  @extend .input;
+  height: 43px;
+  width: 100%;
+}
+.customInputMD {
+  @extend .input;
+  height: 34px;
+  width: 100%;
+  font-size: 14px !important;
+}
+.customInputSM {
+  @extend .input;
+  height: 30px;
+  width: 100%;
+  font-size: 14px !important;
+}
+// dropdown input
+.dropdowninput {
+  border: 1px solid #adadad50 !important;
+  border-radius: 4px !important;
+  color: #414141 !important;
+  // padding: 0 10px !important;
+  font-size: 16px !important;
+  outline: 0 !important;
+  background-color: #fff;
+}
+.treeSelect {
+  min-width: 265px;
+  width: 100%;
+  // max-width: 276px;
+  border: 1px solid var(--ad-grey-50);
+}
+.customDropDownInputXL {
+  @extend .dropdowninput;
+  height: 43px !important;
+}
+.customDropDownInputMD {
+  @extend .dropdowninput;
+  height: 34px !important;
+  font-size: 14px !important;
+}
+.customDropDownInputSM {
+  @extend .dropdowninput;
+  height: 30px !important;
+  font-size: 14px !important;
+}
+.placeHolder {
+  color: #8e8e8e !important;
+  font-family: "interMedium", sans-serif !important;
+}
+.errorMsg {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  color: red;
+  font-family: "interMedium", sans-serif;
+  font-size: 14px;
+  text-align: left;
+  text-transform: lowercase;
+  animation: slideAndFade 0.17s both ease !important;
+}
+.errorInput {
+  border: 1px solid #ff8585 !important;
+}
+@keyframes slideAndFade {
+  0% {
+    opacity: 0;
+    margin-top: -10px; /* Start off-screen */
+  }
+  100% {
+    opacity: 1;
+    margin-top: 5px; /* Slide down */
+  }
+}

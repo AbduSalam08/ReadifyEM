@@ -1,43 +1,21 @@
-import * as React from 'react';
-import styles from './ReadifyEmMain.module.scss';
-import type { IReadifyEmMainProps } from './IReadifyEmMainProps';
-import { escape } from '@microsoft/sp-lodash-subset';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import "./ReadifyEmMain.module.scss";
+import { Provider } from "react-redux";
+import { store } from "../../../redux/store/store";
+import App from "../../../App/App";
 
-export default class ReadifyEmMain extends React.Component<IReadifyEmMainProps, {}> {
-  public render(): React.ReactElement<IReadifyEmMainProps> {
-    const {
-      description,
-      isDarkTheme,
-      environmentMessage,
-      hasTeamsContext,
-      userDisplayName
-    } = this.props;
+// This is the entry point of this ReadifyEM application, it will render the App component in the main  div. NOTE: Every main props and redux data(store) should be injected in this main(index) component.
 
-    return (
-      <section className={`${styles.readifyEmMain} ${hasTeamsContext ? styles.teams : ''}`}>
-        <div className={styles.welcome}>
-          <img alt="" src={isDarkTheme ? require('../assets/welcome-dark.png') : require('../assets/welcome-light.png')} className={styles.welcomeImage} />
-          <h2>Well done, {escape(userDisplayName)}!</h2>
-          <div>{environmentMessage}</div>
-          <div>Web part property value: <strong>{escape(description)}</strong></div>
-        </div>
-        <div>
-          <h3>Welcome to SharePoint Framework!</h3>
-          <p>
-            The SharePoint Framework (SPFx) is a extensibility model for Microsoft Viva, Microsoft Teams and SharePoint. It&#39;s the easiest way to extend Microsoft 365 with automatic Single Sign On, automatic hosting and industry standard tooling.
-          </p>
-          <h4>Learn more about SPFx development:</h4>
-          <ul className={styles.links}>
-            <li><a href="https://aka.ms/spfx" target="_blank" rel="noreferrer">SharePoint Framework Overview</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-graph" target="_blank" rel="noreferrer">Use Microsoft Graph in your solution</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-teams" target="_blank" rel="noreferrer">Build for Microsoft Teams using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-viva" target="_blank" rel="noreferrer">Build for Microsoft Viva Connections using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-store" target="_blank" rel="noreferrer">Publish SharePoint Framework applications to the marketplace</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-api" target="_blank" rel="noreferrer">SharePoint Framework API reference</a></li>
-            <li><a href="https://aka.ms/m365pnp" target="_blank" rel="noreferrer">Microsoft 365 Developer Community</a></li>
-          </ul>
-        </div>
-      </section>
-    );
-  }
-}
+const ReadiFyEmMain = (props: any): JSX.Element => {
+  // console.log("context", props.context);
+
+  return (
+    <div className="main">
+      <Provider store={store}>
+        <App context={props.context} />
+      </Provider>
+    </div>
+  );
+};
+
+export default ReadiFyEmMain;

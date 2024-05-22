@@ -1,0 +1,64 @@
+.newDocumentWrapper {
+  width: 100%;
+  //   background-color: var(--white);
+}
+.stepperFormWrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 50px;
+  background-color: var(--white);
+  border-radius: 15px;
+  box-shadow: 0px 4px 13px -12px rgba(0, 0, 0, 5%);
+  padding: 35px 10px;
+}
+.stepperFormHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stepperFormBody {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  .question {
+    font-size: 20px;
+    text-align: center;
+    color: #222;
+    font-family: "interMedium", sans-serif;
+  }
+}
+
+.stepperFormFooter {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.questionWrapper {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  display: none;
+}
+.questionWrapperActive {
+  display: flex;
+}
+.questionInputsWrapper {
+  width: 370px;
+}
+.rhsBtns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}

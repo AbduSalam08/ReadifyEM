@@ -1,0 +1,31 @@
+.radioGroupWrapper {
+  background-color: #a4a4a415 !important;
+  border-radius: 6px;
+  padding: 10px 23px;
+}
+.radioText {
+  font-size: 14px !important;
+  color: #404040 !important;
+  font-family: "interMedium", sans-serif !important;
+}
+.errorMsg {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  color: red;
+  font-family: "interMedium", sans-serif;
+  font-size: 14px;
+  text-align: left;
+  text-transform: lowercase;
+  animation: slideAndFade 0.17s both ease;
+}
+
+@keyframes slideAndFade {
+  0% {
+    opacity: 0;
+    margin-top: -10px; /* Start off-screen */
+  }
+  100% {
+    opacity: 1;
+    margin-top: 5px; /* Slide down */
+  }
+}

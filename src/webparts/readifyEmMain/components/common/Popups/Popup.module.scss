@@ -1,0 +1,39 @@
+.flexCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.contentWrapper {
+  padding: 0px 45px;
+}
+.popupWrapper {
+  border-radius: 10px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 45px rgba(0, 0, 0, 15%) !important;
+}
+.popupHeader,
+.popupHeaderWithoutCloseIcon {
+  @extend .flexCenter;
+  width: 100%;
+  margin: 28px 36px;
+  margin-bottom: 25px;
+  font-family: "interSemiBold", sans-serif;
+  font-size: 20px;
+}
+.popupHeaderWithoutCloseIcon {
+  margin: 28px 0px;
+}
+.popupFooter {
+  @extend .flexCenter;
+  width: 100%;
+  margin: 25px 0;
+  // margin-top: 15px;
+  gap: 20px;
+}
+.contentContainer {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  flex-direction: column;
+  // gap: 5px;
+}

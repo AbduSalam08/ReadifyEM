@@ -13,6 +13,7 @@
   },
   "externals": {},
   "localizedResources": {
-    "ReadifyEmMainWebPartStrings": "lib/webparts/readifyEmMain/loc/{locale}.js"
+    "ReadifyEmMainWebPartStrings": "lib/webparts/readifyEmMain/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
   }
 }
