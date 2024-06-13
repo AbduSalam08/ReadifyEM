@@ -106,7 +106,7 @@
   font-family: "interMedium", sans-serif;
   font-size: 14px;
   text-align: left;
-  text-transform: lowercase;
+  // text-transform: lowercase;
   animation: slideAndFade 0.17s both ease !important;
 }
 .errorInput {
@@ -121,4 +121,7 @@
     opacity: 1;
     margin-top: 5px; /* Slide down */
   }
+}
+.disabledInput {
+  opacity: 0.6 !important;
 }

@@ -4,15 +4,17 @@ import styles from "./RadioGroup.module.scss";
 
 interface Props {
   radioOptions: any[];
-  selectedValue: any;
+  onChange: any;
   isValid?: any;
   errorMsg?: string;
+  selectedValue?: any;
 }
 
 const CustomRadioGroup = ({
   radioOptions,
-  selectedValue,
+  onChange,
   isValid,
+  selectedValue,
   errorMsg,
 }: Props): JSX.Element => {
   return (
@@ -21,8 +23,9 @@ const CustomRadioGroup = ({
         <RadioGroup
           name="radio-buttons-group"
           onChange={(e: any) => {
-            selectedValue(e?.target?.value);
+            onChange(e?.target?.value);
           }}
+          value={selectedValue}
         >
           {radioOptions?.map((e: any, idx: number) => {
             return (

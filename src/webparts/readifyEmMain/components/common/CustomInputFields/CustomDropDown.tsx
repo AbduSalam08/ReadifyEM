@@ -10,6 +10,7 @@ interface Props {
   options: any[];
   onChange: (value: string | any) => void;
   placeholder?: string;
+  disabled?: boolean;
   size?: "SM" | "MD" | "XL";
 }
 
@@ -19,6 +20,7 @@ const CustomDropDown: React.FC<Props> = ({
   onChange,
   placeholder = "",
   size = "MD",
+  disabled,
 }) => {
   const handleChange = useCallback(
     (e) => {
@@ -31,26 +33,10 @@ const CustomDropDown: React.FC<Props> = ({
   const sizeClassName = styles[`customDropDownInput${size}`];
   // const sizeHeights = size==="SM" ?"35.5px":size==="MD"?""
   return (
-    // <Select
-    //   value={value}
-    //   className={sizeClassName}
-    //   onChange={handleChange}
-    //   displayEmpty
-    //   inputProps={{ "aria-label": "Without label" }}
-    // >
-    //   <MenuItem value={placeholder}>
-    //     <em>{placeholder}</em>
-    //   </MenuItem>
-    //   {options?.map((e, i) => (
-    //     <MenuItem key={i} value={e?.value}>
-    //       {e.label}
-    //     </MenuItem>
-    //   ))}
-    // </Select>
-
     <Select
+      disabled={disabled}
       value={value || ""}
-      className={sizeClassName}
+      className={`${sizeClassName} ${disabled ? styles.disabledInput : ""}`}
       onChange={handleChange}
       displayEmpty
       placeholder={placeholder}

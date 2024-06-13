@@ -1,0 +1,82 @@
+.statusPill {
+  padding: 4px 12px;
+  min-width: 112px;
+  border-radius: 4px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "interMedium", sans-serif !important;
+  text-transform: capitalize;
+  border-radius: 40px;
+  height: 27px;
+}
+
+.ontrackDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+  background-color: #4caf50; /* Green color, change as needed */
+}
+
+.overdue {
+  background-color: #f44336; /* Red color, change as needed */
+  color: white;
+}
+
+.notStarted {
+  background-color: #eaeaea; /* Orange color, change as needed */
+  color: #414141;
+}
+
+.inDevelopment {
+  background-color: #2196f3; /* Blue color, change as needed */
+  color: white;
+}
+
+.inReview {
+  background-color: #9c27b0; /* Purple color, change as needed */
+  color: white;
+}
+
+.inRework {
+  background-color: #ff5722; /* Deep orange color, change as needed */
+  color: white;
+}
+
+.inApproval {
+  background-color: #673ab7; /* Deep purple color, change as needed */
+  color: white;
+}
+
+.approved {
+  background-color: #4caf50; /* Green color, change as needed */
+  color: white;
+}
+
+.current {
+  background-color: #ffc107; /* Amber color, change as needed */
+  color: black; /* Dark text for contrast */
+}
+
+.hidden {
+  background-color: #607d8b; /* Blue-grey color, change as needed */
+  color: white;
+}
+
+.SM {
+  font-size: 12px;
+  padding: 2px 4px;
+}
+
+.MD {
+  font-size: 14px;
+  padding: 4px 8px;
+}
+
+.XL {
+  font-size: 18px;
+  padding: 8px 16px;
+}

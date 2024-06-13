@@ -7,8 +7,6 @@ import App from "../../../App/App";
 // This is the entry point of this ReadifyEM application, it will render the App component in the main  div. NOTE: Every main props and redux data(store) should be injected in this main(index) component.
 
 const ReadiFyEmMain = (props: any): JSX.Element => {
-  // console.log("context", props.context);
-
   return (
     <div className="main">
       <Provider store={store}>

@@ -3,7 +3,7 @@ import { Button, ButtonProps } from "@mui/material";
 import styles from "./Buttons.module.scss";
 
 interface Props extends ButtonProps {
-  text: string;
+  text: any;
   endIcon?: any;
   startIcon?: any;
   disabled?: boolean;
@@ -14,9 +14,12 @@ interface Props extends ButtonProps {
     | "darkGreyVariant"
     | "greyOutlined"
     | "primaryGreen"
+    | "primaryDarkGreen"
     | "secondaryRed"
     | "primaryBlue"
-    | "secondaryBlue";
+    | "secondaryBlue"
+    | "primaryRed"
+    | "actionBtn";
 }
 
 const DefaultButton = ({
@@ -38,6 +41,9 @@ const DefaultButton = ({
     secondaryRed: styles.secondaryRed,
     primaryBlue: styles.primaryBlue,
     secondaryBlue: styles.secondaryBlue,
+    primaryDarkGreen: styles.primaryDarkGreen,
+    primaryRed: styles.primaryRed,
+    actionBtn: styles.actionBtn,
   };
 
   // Dynamically select the CSS class based on btnType
@@ -45,7 +51,7 @@ const DefaultButton = ({
 
   return (
     <Button
-      className={`${disabled && styles.disabled} ${buttonClass}`}
+      className={`${disabled && styles.disabledBtn} ${buttonClass}`}
       variant="outlined"
       {...rest}
       endIcon={endIcon}

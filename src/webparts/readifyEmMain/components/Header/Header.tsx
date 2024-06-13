@@ -5,16 +5,14 @@
 
 import { Tab, Tabs } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import styles from "./Header.module.scss";
 const logo = require("../../../../assets/images/png/logo/Readify-EM.png");
 
 const Header = (): JSX.Element => {
-  const mainContext: any = useSelector(
-    (state: any) => state.MainSPContext.value
-  );
-  console.log("mainContext: ", mainContext);
+  // const mainContext: any = useSelector(
+  //   (state: any) => state.MainSPContext.value
+  // );
 
   const rootPath = true ? "/admin" : "/user";
 
@@ -50,10 +48,6 @@ const Header = (): JSX.Element => {
   };
 
   useEffect(() => {
-    console.log(
-      "mainContext?._pageContext?._user?.email: ",
-      mainContext?._pageContext?._user?.email
-    );
     if (true) {
       navigate("/admin");
     } else {
