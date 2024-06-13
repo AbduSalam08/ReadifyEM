@@ -9,9 +9,9 @@
  * @param isLength If true, checks if the length is within 255 characters.
  * @returns true if the value is not empty or within the specified length, false otherwise.
  */
-const emptyCheck = (value: string | undefined, isLength?: boolean): boolean => {
+const emptyCheck = (value: string | any, isLength?: boolean): boolean => {
   if (!isLength) {
-    return !!value?.trim();
+    return value?.trim() !== "" && value?.length <= 255;
   } else {
     return value?.trim() !== "";
   }
@@ -154,7 +154,14 @@ const convertToBASE64 = (
   reader.readAsDataURL(file);
 };
 
+const trimStartEnd = (value: string): string => {
+  const trimmedValueStart = value?.trimStart();
+  const trimmedValueEnd = trimmedValueStart?.trimEnd();
+  return trimmedValueEnd;
+};
+
 export {
+  trimStartEnd,
   validateEmail,
   emptyCheck,
   validatePassword,

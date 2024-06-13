@@ -248,6 +248,10 @@ html {
   /* font-size: 62.5%; */
   scroll-behavior: smooth;
 }
+/* common utility style classes */
+.textCenter {
+  text-align: center !important;
+}
 
 /* root variables */
 :root {
@@ -265,6 +269,7 @@ html {
   --hover-violet: #ebe5ff;
   --primary-violet: #593abb;
   --primary-green: #19d3b2;
+  --primaryDark-green: #32ba7c;
   --checkbox-highlight: #6536f9;
   --primary-violet-light: #ccbaff;
   --bg-ash: #555555;
@@ -485,7 +490,19 @@ body {
 .css-vqmohf-MuiButtonBase-root-MuiRadio-root.Mui-checked {
   color: var(--btn-blue-text) !important;
 }
+.Mui-checked {
+  color: var(--btn-blue-text) !important;
+}
 
+.customTreeSelect .p-tree {
+  max-height: 200px !important;
+}
+.p-treeselect-panel {
+  min-width: 350px !important;
+}
+.p-treeselect-items-wrapper {
+  max-height: 200px !important;
+}
 .customTreeSelect .p-treeselect-label:not(.p-placeholder) {
   font-size: 13px;
   background: #eee;
@@ -577,7 +594,7 @@ body {
 }
 .MuiTab-root {
   border-radius: 4px !important;
-  font-size: 14px !important;
+  font-size: 15px !important;
   min-height: 32px !important;
   padding: 0 21px !important;
   text-transform: none !important;
@@ -587,7 +604,7 @@ body {
   background-color: var(--tab-bgcolor) !important;
   color: var(--tab-color) !important;
   border-radius: 4px !important;
-  font-size: 14px !important;
+  font-size: 15px !important;
   min-height: 32px !important;
   padding: 0 20px !important;
   text-transform: none !important;

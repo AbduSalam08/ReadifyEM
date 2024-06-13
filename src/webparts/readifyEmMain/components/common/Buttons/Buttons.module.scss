@@ -65,9 +65,27 @@
   height: 30px !important;
   text-transform: none !important;
 }
+.primaryDarkGreen {
+  @extend .DefaultButtonWrapper;
+  background-color: var(--primaryDark-green) !important;
+  border-radius: 4px !important;
+  color: var(--white) !important;
+  border: 0 !important;
+  height: 30px !important;
+  text-transform: none !important;
+}
 .secondaryRed {
   @extend .DefaultButtonWrapper;
-  background-color: var(--primary-violet) !important;
+  background-color: #bb3a3a35 !important;
+  border-radius: 4px !important;
+  color: #640303 !important;
+  border: 0 !important;
+  height: 30px !important;
+  text-transform: none !important;
+}
+.primaryRed {
+  @extend .DefaultButtonWrapper;
+  background-color: red !important;
   border-radius: 4px !important;
   color: var(--white) !important;
   border: 0 !important;
@@ -92,7 +110,22 @@
   height: 30px !important;
   text-transform: none !important;
 }
-.disabled {
-  @extend .DefaultButtonWrapper;
-  opacity: 0.5 !important;
+.actionBtn {
+  background-color: transparent !important;
+  border-radius: 4px;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain !important;
+    padding: 0 !important;
+    margin: 0 !important
+   ;
+  }
+}
+.disabledBtn {
+  // @extend .DefaultButtonWrapper;
+  opacity: 0.6 !important;
 }

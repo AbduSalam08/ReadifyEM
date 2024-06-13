@@ -5,7 +5,7 @@ import DefaultButton from "../Buttons/DefaultButton";
 import styles from "./Popup.module.scss";
 
 interface Props {
-  popupTitle: string;
+  popupTitle?: string;
   PopupType: "custom" | "confirmation";
   popupActions: PopupActionBtn[]; // Ensure type safety for popup actions
   defaultCloseBtn?: boolean;
@@ -50,9 +50,18 @@ const Popup = ({
   );
 
   const footerContent = (): JSX.Element => (
-    <div className={styles.popupFooter}>
+    <div
+      className={
+        PopupType === "confirmation"
+          ? styles.popupFooterConfirmation
+          : styles.popupFooter
+      }
+    >
       {popupActions?.map((btn, id) => (
         <DefaultButton
+          style={{
+            minWidth: PopupType === "confirmation" ? "85px" : "auto",
+          }}
           key={id}
           btnType={btn.btnType}
           text={btn.text}
@@ -69,7 +78,9 @@ const Popup = ({
   const popupContent =
     PopupType === "confirmation" ? (
       <div className={styles.contentWrapper}>
-        <div className={styles.contentContainer}>{confirmationTitle}</div>
+        <div className={styles.contentContainer}>
+          <span className={styles.confirmTitleText}>{confirmationTitle}</span>
+        </div>
         {footerContent()}
       </div>
     ) : PopupType === "custom" ? (
@@ -89,7 +100,7 @@ const Popup = ({
       className={`popupWrapper ${styles.popupWrapper}`}
       visible={visibility}
       modal
-      header={headerElement}
+      header={PopupType !== "confirmation" && headerElement}
       style={{ width: popupWidth }}
       onHide={onHide}
     >

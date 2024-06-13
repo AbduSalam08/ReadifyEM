@@ -3,8 +3,8 @@ import { useCallback } from "react";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
-
 import styles from "./Inputs.module.scss";
+
 interface Props {
   value: string | number | any;
   onChange: (value: string | any) => void;
@@ -16,6 +16,9 @@ interface Props {
   errorMsg?: string;
   withLabel?: boolean;
   labelText?: string;
+  disabled?: boolean;
+  inputClassName?: any;
+  inputWrapperClassName?: any;
 }
 
 const CustomInput: React.FC<Props> = ({
@@ -29,6 +32,9 @@ const CustomInput: React.FC<Props> = ({
   errorMsg,
   labelText,
   withLabel,
+  disabled,
+  inputClassName,
+  inputWrapperClassName,
 }) => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,14 +51,15 @@ const CustomInput: React.FC<Props> = ({
       <div
         className={`${
           withLabel ? styles.inputWrapperWithLabel : styles.inputWrapper
-        }`}
+        } ${disabled ? styles.disabledInput : ""}`}
       >
         {withLabel && <p className={styles.inputLabel}>{labelText}</p>}
         <IconField
+          disabled={disabled}
           iconPosition="left"
-          className={`${styles[`customInput${size}`]} ${
-            isValid ? styles.errorInput : ""
-          }`}
+          className={`${inputWrapperClassName} ${
+            styles[`customInput${size}`]
+          } ${isValid ? styles.errorInput : ""}`}
         >
           {icon && (
             <InputIcon
@@ -64,10 +71,12 @@ const CustomInput: React.FC<Props> = ({
           )}
           <InputText
             v-model="value1"
+            disabled={disabled}
             value={value || ""}
             type={type}
             placeholder={placeholder}
             onChange={handleChange}
+            className={inputClassName}
             style={{
               paddingLeft: icon ? "30px" : "0px",
             }}

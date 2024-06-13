@@ -5,11 +5,13 @@ import Button from "@mui/material/Button";
 import Menu, { MenuProps } from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import styles from "./Buttons.module.scss";
 
 interface MenuButtonProps {
   buttonText: string;
   externalController?: any;
   menuVisibility?: any;
+  disabled?: boolean;
   menuItems: { icon?: JSX.Element; text: string; onClick: () => void }[];
 }
 
@@ -60,6 +62,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   menuItems,
   menuVisibility,
   externalController,
+  disabled,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement | any>(null);
   const open = Boolean(menuVisibility === null ? menuVisibility : anchorEl);
@@ -79,7 +82,8 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   return (
     <>
       <Button
-        className="primaryBtn"
+        disabled={disabled}
+        className={`primaryBtn ${disabled ? styles.disabledBtn : ""}`}
         aria-controls={open ? "customized-menu" : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
@@ -90,19 +94,29 @@ const MenuButton: React.FC<MenuButtonProps> = ({
       >
         {buttonText}
       </Button>
-      <StyledMenu
-        id="customized-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-      >
-        {menuItems?.map((item, index) => (
-          <MenuItem key={index} onClick={item.onClick} disableRipple>
-            {item.icon}
-            {item.text}
-          </MenuItem>
-        ))}
-      </StyledMenu>
+      {!disabled && (
+        <StyledMenu
+          id="customized-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+        >
+          {menuItems?.map((item, index) => (
+            <MenuItem
+              key={index}
+              onClick={item.onClick}
+              sx={{
+                color: "#000",
+                fontFamily: "interRegular, sans-serif !important",
+              }}
+              disableRipple
+            >
+              {item.icon}
+              {item.text}
+            </MenuItem>
+          ))}
+        </StyledMenu>
+      )}
     </>
   );
 };

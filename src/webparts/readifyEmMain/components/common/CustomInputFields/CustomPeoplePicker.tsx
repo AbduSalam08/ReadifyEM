@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback } from "react";
+import { memo } from "react";
 import {
   PeoplePicker,
   PrincipalType,
@@ -71,31 +71,13 @@ const CustomPeoplePicker: React.FC<Props> = ({
     },
   };
 
-  console.log("selectedItem: ", selectedItem);
-
   const mainContext: any = useSelector(
     (state: any) => state.MainSPContext.value
   );
 
-  console.log("mainContext: ", mainContext);
-
-  const peoplePickerData = {
-    id: selectedItem?.id,
-    email: selectedItem?.secondaryText,
-    name: selectedItem?.text,
-    imageURL: `${CONFIG.webURL}${
-      selectedItem?.imageUrl?.split("undefined")[1]
-    }`,
+  const handleChange = (e: any): void => {
+    onChange(e);
   };
-
-  console.log("peoplePickerData: ", peoplePickerData);
-
-  const handleChange = useCallback(
-    (e: any) => {
-      onChange(e);
-    },
-    [onChange]
-  );
 
   return (
     <>
@@ -105,7 +87,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
         //   titleText="Select People"
         personSelectionLimit={personSelectionLimit}
         showtooltip={false}
-        //   ensureUser={true}
+        ensureUser={true}
         placeholder={placeholder}
         // peoplePickerCntrlclassName={styles.}
         onChange={(e: any) => {
@@ -114,7 +96,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
         styles={multiPeoplePickerStyle}
         //   showHiddenInUI={true}
         principalTypes={[PrincipalType.User]}
-        // defaultSelectedUsers={peoplePickerData.email}
+        defaultSelectedUsers={[selectedItem] || null}
         resolveDelay={1000}
       />
       <p className={isValid ? styles.errorMsg : ""}>{isValid && errorMsg}</p>
@@ -122,4 +104,4 @@ const CustomPeoplePicker: React.FC<Props> = ({
   );
 };
 
-export default CustomPeoplePicker;
+export default memo(CustomPeoplePicker);
