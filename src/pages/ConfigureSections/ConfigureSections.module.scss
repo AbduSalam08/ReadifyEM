@@ -1,0 +1,78 @@
+.flexCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.configureSectionsWrapper {
+  width: 100%;
+}
+.headerTitle {
+  width: 100%;
+  @extend .flexCenter;
+  justify-content: flex-start;
+  gap: 10px;
+}
+.backBtn {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 50%;
+  background-color: #fff;
+  img {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+// doc sections wrapper
+.dndSectionsWrapper {
+  width: 100%;
+  padding: 15px 20px;
+  border-radius: 15px;
+  box-shadow: 0px 4px 13px -12px rgba(0, 0, 0, 5%);
+  background-color: rgba(255, 255, 255, 60%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  .header {
+    width: 100%;
+    @extend .flexCenter;
+    justify-content: space-between;
+    .docTitle {
+      font-size: 17px;
+      padding: 8px 25px;
+      height: 38px;
+      color: #414141;
+      background-color: #d9d9d930;
+      border-radius: 4px;
+      text-align: center;
+      font-family: "interRegular", sans-serif;
+    }
+    .docDetails {
+      @extend .flexCenter;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 10px;
+      span {
+        font-family: "interMedium", sans-serif;
+        color: #adadad;
+        font-size: 12px;
+      }
+    }
+  }
+  .filters {
+    @extend .flexCenter;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .footer {
+    width: 100%;
+    @extend .flexCenter;
+    justify-content: space-between;
+  }
+}

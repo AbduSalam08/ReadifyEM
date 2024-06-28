@@ -539,7 +539,7 @@ body {
   transition: all 0.1s !important;
 } */
 .p-orderlist .p-orderlist-list .p-orderlist-item.p-highlight:hover {
-  background: #adadad15 !important;
+  /* background: #adadad15 !important; */
   transition: all 0.1s !important;
 }
 .p-orderlist .p-orderlist-list .p-orderlist-item.p-highlight {
@@ -555,7 +555,8 @@ body {
   transition: all 0.1s !important;
 }
 .p-orderlist .p-orderlist-list .p-orderlist-item:not(.p-highlight):hover {
-  background: #adadad15 !important;
+  /* background: #adadad15 !important; */
+  background: transparent !important;
 }
 .customTreeSelect .p-treeselect-label .p-placeholder {
   padding: 0 5px !important;
@@ -637,4 +638,91 @@ body {
   font-size: 14px !important;
   color: #404040 !important;
   font-family: "interMedium", sans-serif !important;
+}
+.SDDcheckBox .MuiSvgIcon-root {
+  width: 20px !important;
+}
+.SDDcheckBox .MuiFormControlLabel-label {
+  font-size: 14px !important;
+  font-family: "interRegular", sans-serif !important;
+}
+/* sliceButton styles*/
+.sliderButton .MuiTabs-root,
+.sliderButton .MuiTabs-scroller {
+  min-height: 28px !important;
+}
+.sliderButton .MuiTab-root {
+  width: 50% !important;
+  border-radius: 4px !important;
+  font-size: 14px !important;
+  min-height: 28px !important;
+  padding: 0 21px !important;
+  text-transform: none !important;
+  font-family: "interRegular", sans-serif !important;
+}
+.sliderButton .Mui-selected {
+  background-color: transparent !important;
+  color: var(--white) !important;
+  border-radius: 4px !important;
+  z-index: 99 !important;
+  font-size: 15px !important;
+  min-height: 28px !important;
+  padding: 0 20px !important;
+  text-transform: none !important;
+  font-family: "interSemiBold", sans-serif !important;
+  /* box-shadow: 0px 0px 18px #d2c4ff !important; */
+}
+.sliderButton .MuiTabs-root,
+.sliderButton .MuiTabs-scroller {
+  overflow: visible !important;
+}
+.sliderButton .MuiTabs-indicator {
+  background-color: var(--tab-color) !important;
+  border-radius: 4px !important;
+  height: 28px !important;
+  color: var(--white) !important;
+  box-shadow: 0px 0px 18px #d2c4ff !important;
+}
+
+.sectionToggler {
+  height: 22px !important;
+}
+.sectionToggler.p-inputswitch .p-inputswitch-slider {
+  border-radius: 25px !important;
+  height: 21px !important;
+}
+
+.sectionToggler.p-inputswitch.p-highlight .p-inputswitch-slider {
+  background-color: #160364 !important;
+}
+.sectionToggler.p-inputswitch.p-highlight .p-inputswitch-slider:before {
+  transform: translateX(1.7rem) !important;
+}
+.sectionToggler.p-inputswitch .p-inputswitch-slider:before {
+  border-radius: 25px !important;
+  width: 13px !important;
+  height: 13px !important;
+  margin-top: -6.4px !important;
+  box-shadow: 0 0 13px -1px rgba(0, 0, 0, 37%) !important;
+}
+
+.sectionRowDropList.p-orderlist .p-orderlist-list {
+  background-color: transparent !important;
+  border-radius: 10px !important;
+  overflow: visible !important;
+}
+.sectionRowDropList.p-orderlist .p-orderlist-list .p-orderlist-item {
+  overflow: visible !important;
+  border-radius: 10px !important;
+}
+.sectionRowDropList.p-orderlist .p-orderlist-list {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 3px;
+}
+
+.p-treeselect-panel .p-treeselect-items-wrapper .p-treeselect-empty-message {
+  display: none !important;
 }

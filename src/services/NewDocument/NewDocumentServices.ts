@@ -7,9 +7,7 @@ import { PDFDocument } from "pdf-lib";
 import { LIBNAMES, LISTNAMES } from "../../config/config";
 import SpServices from "../SPServices/SpServices";
 import { sp } from "@pnp/sp";
-import * as dayjs from "dayjs";
 import { trimStartEnd } from "../../utils/validations";
-import { LibraryItem } from "../EMManual/EMMServices";
 
 // Interface for the properties
 interface IProps {
@@ -395,8 +393,6 @@ const UpdateDocument = async (
     RequestJSON: formData,
   })
     .then(async (res: any) => {
-      console.log("Document updated!");
-
       await UpdateDocumentInLib({
         DocumentID,
         fileID,
@@ -420,25 +416,6 @@ const UpdateDocument = async (
           "An unexpected error occurred while updating document details, please try again later.",
       });
     });
-};
-
-// function to find out data for the mentioned term
-const validateAndFindDate = (term: string): string | null => {
-  // Regular expression to match the term pattern
-  const match: number = term.toLowerCase().includes("two")
-    ? 2
-    : term.toLowerCase().includes("three")
-    ? 3
-    : 1;
-
-  if (match) {
-    const futureDate = dayjs().add(match, "year");
-
-    // Format the future date to DD/MM/YYYY
-    return futureDate.format("DD/MM/YYYY");
-  }
-
-  return null;
 };
 
 // function to get all document details
@@ -520,38 +497,10 @@ const GetDocumentDetails = async (
   }
 };
 
-// function to find and get the data based on the given URL
-const filterDataByURL = (url: string, data: any[]): LibraryItem[] => {
-  const lowercasedURLTerm = url?.toLowerCase();
-
-  const filterRecursive = (items: LibraryItem[]): LibraryItem[] => {
-    let result: LibraryItem[] = [];
-
-    items.forEach((item) => {
-      const matchesURL = item.url.toLowerCase() === lowercasedURLTerm;
-
-      if (matchesURL) {
-        result.push({ ...item }); // Exclude nested items
-      }
-
-      if (item.items) {
-        const filteredChildren = filterRecursive(item.items);
-        result = result.concat(filteredChildren); // Collect nested matches
-      }
-    });
-
-    return result;
-  };
-
-  return filterRecursive(data);
-};
-
 export {
   AddNewDocument,
   AddNewDocumentToLib,
-  validateAndFindDate,
   GetDocumentDetails,
   UpdateDocument,
   UpdateDocumentInLib,
-  filterDataByURL,
 };

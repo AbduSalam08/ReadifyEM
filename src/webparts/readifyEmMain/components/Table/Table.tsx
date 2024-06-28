@@ -1,3 +1,5 @@
+/* eslint-disable no-debugger */
+/* eslint-disable react/jsx-key */
 /* eslint-disable @rushstack/no-new-null */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react/no-unescaped-entities */
@@ -10,6 +12,8 @@ import { UpdateDocument } from "../../../../services/NewDocument/NewDocumentServ
 import AlertPopup from "../common/Popups/AlertPopup/AlertPopup";
 import { IPopupLoaders } from "../../../../interface/MainInterface";
 import { initialPopupLoaders } from "../../../../config/config";
+import { OrderList } from "primereact/orderlist";
+import { updateFolderSequenceNumber } from "../../../../services/EMManual/EMMServices";
 
 interface ITableProps {
   headers: string[];
@@ -21,6 +25,7 @@ interface ITableProps {
   };
   actions?: boolean;
   renderActions?: any;
+  renderActionsForFolders?: any;
   defaultTable?: any;
   loadData?: any;
 }
@@ -42,30 +47,31 @@ const Table: React.FC<ITableProps> = ({
   filters,
   actions,
   renderActions,
+  renderActionsForFolders,
   defaultTable,
   loadData,
 }: ITableProps): JSX.Element => {
-  const loaderTemplateData: any = [
-    {
-      name: "",
-      url: "",
-      fields: {
-        name: "",
-        status: "",
-        nextReview: "",
-        createdDate: "",
-        isVisible: "",
-        Action: "",
-      },
-      items: [
+  const loaderTemplateData: any = defaultTable
+    ? headers
+    : [
         {
           name: "",
           url: "",
-          fields: "",
+          fields: {
+            name: "",
+            status: "",
+            nextReview: "",
+            createdDate: "",
+            isVisible: "",
+            Action: "",
+          },
+          items: [
+            {
+              name: "",
+            },
+          ],
         },
-      ],
-    },
-  ];
+      ];
 
   const [DNDData, setDNDData] = useState<LibraryItem[]>([]);
   const [popupLoaders, setPopupLoaders] =
@@ -80,15 +86,19 @@ const Table: React.FC<ITableProps> = ({
     });
 
     reorderedItems?.forEach(async (el: any) => {
-      await UpdateDocument(
-        el,
-        el?.fileID,
-        setPopupLoaders,
-        el?.ID,
-        el?.isDraft,
-        false,
-        true
-      );
+      if (el?.type === "folder") {
+        await updateFolderSequenceNumber(el?.fileID, el?.sequenceNo);
+      } else {
+        await UpdateDocument(
+          el,
+          el?.fileID,
+          setPopupLoaders,
+          el?.ID,
+          el?.isDraft,
+          false,
+          true
+        );
+      }
     });
 
     loadData();
@@ -195,6 +205,22 @@ const Table: React.FC<ITableProps> = ({
     }
   };
 
+  const renderTableItem = (data: any): any => {
+    return (
+      <TableItem
+        tableData={data}
+        itemTemplateLoading={TableItemLoading}
+        handleData={handleData}
+        loading={loading}
+        togglePanel={togglePanel}
+        actions={actions}
+        defaultTable={defaultTable}
+        renderActionsForFiles={renderActions}
+        renderActionsForFolders={renderActionsForFolders}
+      />
+    );
+  };
+
   useEffect(() => {
     setDNDData(
       loading
@@ -223,7 +249,12 @@ const Table: React.FC<ITableProps> = ({
     <div className={styles.tableWrapper}>
       <div className={styles.tableHeadersWrapper}>
         {headers?.map((el, i) => (
-          <div key={i} className={styles.tableHeader}>
+          <div
+            key={i}
+            className={`${styles.tableHeader} ${
+              defaultTable ? styles.defaultTableHeader : ""
+            }`}
+          >
             <span>{el}</span>
           </div>
         ))}
@@ -234,7 +265,7 @@ const Table: React.FC<ITableProps> = ({
         )}
       </div>
 
-      {loading ? (
+      {loading && !defaultTable ? (
         loaderTemplateData.map((data: any, i: number) => (
           <TableRowLoading
             key={i}
@@ -242,12 +273,39 @@ const Table: React.FC<ITableProps> = ({
             togglePanel={() => {
               console.log("toggled");
             }}
+            defaultTableLoader={false}
             activeIndex={0}
             data={data}
             itemLoadingTemplate={TableItemLoading}
           />
         ))
-      ) : DNDData.length ? (
+      ) : loading && defaultTable ? (
+        <TableRowLoading
+          key={1}
+          item={1}
+          togglePanel={() => {
+            console.log("toggled");
+          }}
+          defaultTableLoader={true}
+          activeIndex={0}
+          data={headers}
+          itemLoadingTemplate={TableItemLoading}
+        />
+      ) : DNDData.length && !defaultTable ? (
+        // DNDData.map((data: any, i: number) => (
+        <OrderList
+          dataKey="id"
+          value={DNDData}
+          itemTemplate={(item: any) => renderTableItem(item)}
+          onChange={(e) => {
+            // console.log("e: ", e.value);
+            handleData(e.value);
+          }}
+          dragdrop
+          focusOnHover={false}
+        />
+      ) : // ))
+      DNDData.length && defaultTable ? (
         DNDData.map((data: any, i: number) => (
           <TableItem
             tableData={data}
@@ -258,7 +316,8 @@ const Table: React.FC<ITableProps> = ({
             key={i}
             actions={actions}
             defaultTable={defaultTable}
-            renderActions={renderActions}
+            renderActionsForFiles={renderActions}
+            renderActionsForFolders={renderActionsForFolders}
           />
         ))
       ) : (
@@ -289,7 +348,7 @@ const Table: React.FC<ITableProps> = ({
 
       <AlertPopup
         secondaryText={popupLoaders.secondaryText}
-        isLoading={popupLoaders.isLoading}
+        isLoading={popupLoaders?.isLoading}
         onClick={() => {
           setPopupLoaders(initialPopupLoaders);
         }}

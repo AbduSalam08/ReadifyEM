@@ -16,6 +16,7 @@ interface Props {
   size?: "SM" | "MD" | "XL";
   isValid: boolean;
   errorMsg: string;
+  minWidth?: any;
 }
 
 const CustomPeoplePicker: React.FC<Props> = ({
@@ -26,10 +27,11 @@ const CustomPeoplePicker: React.FC<Props> = ({
   size,
   isValid,
   errorMsg,
+  minWidth,
 }) => {
   const multiPeoplePickerStyle = {
     root: {
-      minWidth: 200,
+      minWidth: minWidth ? minWidth : 200,
       background: "rgba(218, 218, 218, 0.29)",
       ".ms-BasePicker-text": {
         // minHeigth: "43px",
@@ -38,7 +40,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
         maxHeight: "50px",
         overflowX: "hidden",
         padding: "0px 10px",
-        minWidth: "290px",
+        minWidth: minWidth ? minWidth : "290px",
         background: "#fff",
         border: isValid ? "1px solid #ff8585" : "1px solid #adadad50",
         outline: "none",

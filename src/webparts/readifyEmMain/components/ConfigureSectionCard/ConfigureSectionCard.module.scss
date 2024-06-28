@@ -1,0 +1,103 @@
+.flexCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sectionsWrapper {
+  @extend .flexCenter;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  .sectionHeader {
+    width: 70%;
+    @extend .flexCenter;
+    justify-content: space-between;
+    .sectionTitle {
+      font-size: 16px;
+      color: #000;
+      font-family: "interMedium", sans-serif;
+    }
+  }
+  .sections {
+    @extend .flexCenter;
+    width: 100%;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 250px;
+    overflow: auto;
+    padding: 10px;
+    .sectionRow,
+    .sectionRowActive {
+      @extend .flexCenter;
+      justify-content: flex-start;
+      gap: 20px;
+      width: 100%;
+      max-width: 912px;
+      min-width: 912px;
+      border: 0;
+      height: 46px;
+      border-radius: 8px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 12%);
+      width: 100%;
+      background-color: #fff;
+      padding-right: 10px;
+      border-right: 1px solid rgba(0, 0, 0, 12%);
+    }
+    .sectionRowActive {
+      border: 1px solid #2068a830;
+      .sectionName {
+        color: #013747;
+      }
+      .dragHandle {
+        border-right: 1px solid #2068a830;
+        background: #d9e9ff;
+        span {
+          background-color: #013747;
+        }
+      }
+    }
+    .dragHandle {
+      @extend .flexCenter;
+      width: 41px;
+      height: 100%;
+      gap: 5px;
+      border-radius: 8px;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      background-color: #d9d9d9;
+      span {
+        width: 1.8px;
+        height: 13px;
+        background-color: #555;
+      }
+    }
+    .sectionName {
+      font-family: "interRegular", sans-serif;
+      min-width: 28%;
+      font-size: 16px;
+    }
+    .consultant {
+      width: 27%;
+    }
+    .sectionAuthor {
+      width: 27%;
+    }
+    .enableSectionSwitch {
+      width: 5%;
+      height: 20px;
+    }
+  }
+}
+.sectionInputWrapper {
+  border: 0 !important;
+  margin-left: 3px !important;
+  background-color: transparent !important;
+}
+.sectionInput {
+  border: 0 !important;
+  background-color: transparent !important;
+  font-size: 16px !important ;
+  margin-left: 3px !important;
+}

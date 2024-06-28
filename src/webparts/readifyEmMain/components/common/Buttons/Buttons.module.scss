@@ -94,7 +94,7 @@
 }
 .primaryBlue {
   @extend .DefaultButtonWrapper;
-  background-color: var(--primary-violet) !important;
+  background-color: #1068a8 !important;
   border-radius: 4px !important;
   color: var(--white) !important;
   border: 0 !important;
@@ -103,9 +103,9 @@
 }
 .secondaryBlue {
   @extend .DefaultButtonWrapper;
-  background-color: var(--primary-violet) !important;
+  background-color: #e2eeff !important;
   border-radius: 4px !important;
-  color: var(--white) !important;
+  color: #1068a8 !important;
   border: 0 !important;
   height: 30px !important;
   text-transform: none !important;

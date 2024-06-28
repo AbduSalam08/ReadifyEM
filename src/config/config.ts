@@ -4,6 +4,8 @@ const CONFIG = {
 
 const LISTNAMES = {
   DocumentDetails: "DocumentDetails",
+  SDDTemplates: "SDDTemplates",
+  SDDTemplatesMain: "SDDTemplatesMain",
 };
 const LIBNAMES = {
   AllDocuments: "AllDocuments",

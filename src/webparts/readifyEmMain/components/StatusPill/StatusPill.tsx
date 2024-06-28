@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from "./StatusPill.module.scss";
 
 interface Props {
@@ -19,13 +18,14 @@ interface Props {
     | "Current"
     | "Hidden";
   size: "SM" | "MD" | "XL";
-  customWrapperClass?: string; // Corrected to string type
+  customWrapperClass?: string;
   ontrackDot?: boolean;
   bordered?: boolean;
 }
 
 const StatusPill = ({
   status,
+  roles,
   customWrapperClass,
   ontrackDot,
   size = "MD",
@@ -80,14 +80,51 @@ const StatusPill = ({
     }
   };
 
+  const getRoleClassName = (role?: Props["roles"]): string => {
+    switch (role) {
+      case "Primary Author":
+        return styles.primaryAuthor;
+      case "Section Author":
+        return styles.sectionAuthor;
+      case "Consultant":
+        return styles.consultant;
+      case "Reviewer":
+        return styles.reviewer;
+      case "Approver":
+        return styles.approver;
+      default:
+        return "";
+    }
+  };
+
+  const getRoleText = (role?: Props["roles"]): string => {
+    switch (role) {
+      case "Primary Author":
+        return "Primary Author";
+      case "Section Author":
+        return "Section Author";
+      case "Consultant":
+        return "Consultant";
+      case "Reviewer":
+        return "Reviewer";
+      case "Approver":
+        return "Approver";
+      default:
+        return "Unknown";
+    }
+  };
+
   return (
     <div
-      className={`${styles.statusPill} ${getStatusClassName(status)} ${
+      className={`${
+        roles ? styles.rolesPill : styles.statusPill
+      } ${getStatusClassName(status)} ${getRoleClassName(roles)} ${
         styles[size]
       } ${customWrapperClass || ""}`}
     >
       {ontrackDot && <span className={styles.ontrackDot} />}
-      {getStatusText(status)}
+      {status && getStatusText(status)}
+      {roles && getRoleText(roles)}
     </div>
   );
 };

@@ -1,0 +1,30 @@
+.flexcenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.myTasksWrapper {
+  width: 100%;
+}
+.filtersSection {
+  @extend .flexcenter;
+  width: 100%;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 15px;
+  .f1Section {
+    @extend .flexcenter;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .f2Section {
+    @extend .flexcenter;
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+.cardsSection {
+  @extend .flexcenter;
+  justify-content: flex-start;
+}

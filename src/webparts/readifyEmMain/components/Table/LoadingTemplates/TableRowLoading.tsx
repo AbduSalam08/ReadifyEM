@@ -1,122 +1,8 @@
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// import { Skeleton } from "primereact/skeleton";
-// import arrowRightIcon from "../../../../../assets/images/svg/arrowRight.svg";
-// import styles from "../Table.module.scss";
-// import { OrderList } from "primereact/orderlist";
-
-// interface LoadingTemplateProps {
-//   togglePanel: (index: number) => void;
-//   item: number;
-//   activeIndex: number;
-//   data: any;
-//   itemLoadingTemplate: any;
-// }
-
-// const TableRowLoading = ({
-//   togglePanel,
-//   item,
-//   activeIndex,
-//   itemLoadingTemplate,
-//   data,
-// }: LoadingTemplateProps): JSX.Element => {
-//   const isActive = activeIndex === item;
-
-//   return (
-//     <div className={styles.accordionItem}>
-//       <div
-//         className={`${styles.panelContainer} ${
-//           isActive ? styles.panelActive : styles.panelInactive
-//         }`}
-//         onClick={() => togglePanel(item)}
-//       >
-//         <div
-//           className={`${styles.panelIcon} ${
-//             isActive ? styles.panelIconActive : styles.panelIcon
-//           }`}
-//         >
-//           <img src={arrowRightIcon} alt="arrowRightIcon" />
-//         </div>
-//         <div className={styles.panelText}>
-//           <Skeleton width="15rem" animation="wave" />
-//         </div>
-//       </div>
-
-//       <div className={`${styles.panelChild} ${isActive && styles.active}`}>
-//         <OrderList
-//           dataKey="Parent"
-//           value={data.Children}
-//           itemTemplate={itemLoadingTemplate}
-//           dragdrop
-//         />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export { TableRowLoading };
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// import { Skeleton } from "primereact/skeleton";
-// import arrowRightIcon from "../../../../../assets/images/svg/arrowRight.svg";
-// import styles from "../Table.module.scss";
-// import { OrderList } from "primereact/orderlist";
-
-// interface LoadingTemplateProps {
-//   togglePanel: (index: number) => void;
-//   item: number;
-//   activeIndex: number;
-//   data: any;
-//   itemLoadingTemplate: any;
-// }
-
-// const TableRowLoading = ({
-//   togglePanel,
-//   item,
-//   activeIndex,
-//   itemLoadingTemplate,
-//   data,
-// }: LoadingTemplateProps): JSX.Element => {
-//   const isActive = activeIndex === item;
-
-//   return (
-//     <div className={styles.accordionItem}>
-//       <div
-//         className={`${styles.panelContainer} ${
-//           isActive ? styles.panelActive : styles.panelInactive
-//         }`}
-//         onClick={() => togglePanel(item)}
-//       >
-//         <div
-//           className={`${styles.panelIcon} ${
-//             isActive ? styles.panelIconActive : styles.panelIcon
-//           }`}
-//         >
-//           <img src={arrowRightIcon} alt="arrowRightIcon" />
-//         </div>
-//         <div className={styles.panelText}>
-//           <Skeleton width="15rem" animation="wave" />
-//         </div>
-//       </div>
-
-//       <div className={`${styles.panelChild} ${isActive && styles.active}`}>
-//         <OrderList
-//           dataKey="name" // Update this key if necessary
-//           value={data.items} // Accessing the items array in data
-//           itemTemplate={itemLoadingTemplate}
-//           dragdrop
-//         />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export { TableRowLoading };
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Skeleton } from "primereact/skeleton";
-import arrowRightIcon from "../../../../../assets/images/svg/arrowRight.svg";
 import styles from "../Table.module.scss";
 import { OrderList } from "primereact/orderlist";
+import arrowRightIcon from "../../../../../assets/images/svg/arrowRight.svg";
 
 interface LoadingTemplateProps {
   togglePanel: (index: number) => void;
@@ -124,6 +10,7 @@ interface LoadingTemplateProps {
   activeIndex: number;
   data: any;
   itemLoadingTemplate: any;
+  defaultTableLoader?: boolean;
 }
 
 const TableRowLoading = ({
@@ -132,39 +19,57 @@ const TableRowLoading = ({
   activeIndex,
   itemLoadingTemplate,
   data,
+  defaultTableLoader,
 }: LoadingTemplateProps): JSX.Element => {
   const isActive = activeIndex === item;
 
-  return (
-    <div className={styles.accordionItem}>
-      <div
-        className={`${styles.panelContainer} ${
-          isActive ? styles.panelActive : styles.panelInactive
-        }`}
-        onClick={() => togglePanel(item)}
-      >
+  if (defaultTableLoader) {
+    // Default table loader: Render skeleton loaders in a row
+    return (
+      <div className={styles.defaultLoader}>
+        {data?.map((key: any, index: number) => (
+          <div key={index} className={styles.accordionItem}>
+            <Skeleton width="100%" animation="wave" />
+          </div>
+        ))}
+        {
+          <div key={"lastitem"} className={styles.accordionItem}>
+            <Skeleton width="100%" animation="wave" />
+          </div>
+        }
+      </div>
+    );
+  } else {
+    return (
+      <div className={styles.accordionItem}>
         <div
-          className={`${styles.panelIcon} ${
-            isActive ? styles.panelIconActive : styles.panelIcon
+          className={`${styles.panelContainer} ${
+            isActive ? styles.panelActive : styles.panelInactive
           }`}
+          onClick={() => togglePanel(item)}
         >
-          <img src={arrowRightIcon} alt="arrowRightIcon" />
+          <div
+            className={`${styles.panelIcon} ${
+              isActive ? styles.panelIconActive : styles.panelIcon
+            }`}
+          >
+            <img src={arrowRightIcon} alt="arrowRightIcon" />
+          </div>
+          <div className={styles.panelText}>
+            <Skeleton width="15rem" animation="wave" />
+          </div>
         </div>
-        <div className={styles.panelText}>
-          <Skeleton width="15rem" animation="wave" />
-        </div>
-      </div>
 
-      <div className={`${styles.panelChild} ${isActive && styles.active}`}>
-        <OrderList
-          dataKey="name" // Update this key if necessary
-          value={data.items} // Accessing the items array in data
-          itemTemplate={itemLoadingTemplate}
-          dragdrop
-        />
+        <div className={`${styles.panelChild} ${isActive && styles.active}`}>
+          <OrderList
+            dataKey="name"
+            value={data.items}
+            itemTemplate={itemLoadingTemplate}
+            dragdrop
+          />
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 };
-
 export { TableRowLoading };

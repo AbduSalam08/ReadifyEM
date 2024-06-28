@@ -19,6 +19,7 @@ interface Props {
   disabled?: boolean;
   inputClassName?: any;
   inputWrapperClassName?: any;
+  readOnly?: any;
 }
 
 const CustomInput: React.FC<Props> = ({
@@ -35,6 +36,7 @@ const CustomInput: React.FC<Props> = ({
   disabled,
   inputClassName,
   inputWrapperClassName,
+  readOnly,
 }) => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,6 +73,7 @@ const CustomInput: React.FC<Props> = ({
           )}
           <InputText
             v-model="value1"
+            readOnly={readOnly}
             disabled={disabled}
             value={value || ""}
             type={type}
