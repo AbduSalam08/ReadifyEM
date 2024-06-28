@@ -10,6 +10,7 @@ const RoleAuthorizationHOC = (): JSX.Element => {
   // );
   const [currentUser, setCurrentUser] = useState({
     admin: false,
+    email: "abdulsalam@gmail.com",
   });
 
   useEffect(() => {
@@ -26,7 +27,6 @@ const RoleAuthorizationHOC = (): JSX.Element => {
     }
   }, []);
   return currentUser.admin ? <AdminLayout /> : <UserLayout />;
-  // return currentUser.admin ? <h1>dei admin</h1> : <h1>dei user</h1>;
 };
 
 export default RoleAuthorizationHOC;

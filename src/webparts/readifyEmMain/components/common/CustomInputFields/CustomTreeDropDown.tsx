@@ -2,6 +2,10 @@
 /* eslint-disable react/self-closing-comp */
 import { TreeSelect } from "primereact/treeselect";
 import styles from "./Inputs.module.scss";
+import { useCallback, useState } from "react";
+import { emptyCheck } from "../../../../../utils/validations";
+import CustomInput from "./CustomInput";
+import { filterLibraryItemsByLabel } from "../../../../../utils/EMManualUtils";
 
 interface Props {
   value: string | number | any;
@@ -27,6 +31,24 @@ const CustomTreeDropDown: React.FC<Props> = ({
   customWrapperClass,
   size = "MD",
 }): JSX.Element => {
+  const [filterValue, setFilterValue] = useState("");
+  const [optionsValue, setOptionsValue] = useState(options);
+
+  const handleFilterValueChange = useCallback(
+    (value: any) => {
+      // here we trim filter proxy value, to filter by trimmed string in TreeSelect list
+      setFilterValue(value);
+      const filteredValue = filterLibraryItemsByLabel(options, value);
+
+      if (emptyCheck(value)) {
+        setOptionsValue(filteredValue);
+      } else {
+        setOptionsValue(options);
+      }
+    },
+    [filterValue]
+  );
+
   return (
     <>
       <div
@@ -43,8 +65,16 @@ const CustomTreeDropDown: React.FC<Props> = ({
           onChange={(e: any) => {
             onChange(e.value);
           }}
-          options={options}
-          metaKeySelection={false}
+          options={optionsValue}
+          panelHeaderTemplate={
+            <CustomInput
+              onChange={handleFilterValueChange}
+              value={filterValue}
+              inputWrapperClassName={styles.pathSearchFilter}
+              size="SM"
+              placeholder="Search path"
+            />
+          }
           className={`${styles.treeSelect} customTreeSelect w-full ${
             styles[`customInput${size}`]
           } ${isValid ? styles.errorInput : ""}`}
@@ -52,10 +82,11 @@ const CustomTreeDropDown: React.FC<Props> = ({
           // selectionMode="single"
           placeholder={placeholder}
           filter
+          filterValue={filterValue}
           filterPlaceholder="search path"
           // display="chip"
           // showClear={true}
-          filterBy="label,value"
+          // filterBy="label,value"
         />
       </div>
       {isValid && (

@@ -11,6 +11,19 @@
   border-radius: 40px;
   height: 27px;
 }
+.rolesPill {
+  padding: 4px 12px;
+  min-width: 112px;
+  border-radius: 4px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "interMedium", sans-serif !important;
+  text-transform: capitalize;
+  border-radius: 40px;
+  min-height: 23px;
+}
 
 .ontrackDot {
   display: inline-block;
@@ -27,7 +40,7 @@
 }
 
 .notStarted {
-  background-color: #eaeaea; /* Orange color, change as needed */
+  background-color: #eaeaea; /* Grey color, change as needed */
   color: #414141;
 }
 
@@ -66,8 +79,40 @@
   color: white;
 }
 
+/* Role-specific styles */
+.primaryAuthor {
+  @extend .rolesPill;
+  background-color: #e2eeff; /* Yellow color, change as needed */
+  color: #1068a8;
+}
+
+.sectionAuthor {
+  @extend .rolesPill;
+  background-color: #00bcd4; /* Cyan color, change as needed */
+  color: white;
+}
+
+.consultant {
+  @extend .rolesPill;
+  background-color: #ff9800; /* Orange color, change as needed */
+  color: black;
+}
+
+.reviewer {
+  @extend .rolesPill;
+  background-color: #795548; /* Brown color, change as needed */
+  color: white;
+}
+
+.approver {
+  @extend .rolesPill;
+  background-color: #8bc34a; /* Light green color, change as needed */
+  color: black;
+}
+
 .SM {
   font-size: 12px;
+  font-family: "interMedium", sans-serif !important;
   padding: 2px 4px;
 }
 

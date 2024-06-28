@@ -28,8 +28,6 @@ import {
   AddNewDocument,
   GetDocumentDetails,
   UpdateDocument,
-  filterDataByURL,
-  validateAndFindDate,
 } from "../../services/NewDocument/NewDocumentServices";
 import { getAllFilesList } from "../../services/EMManual/EMMServices";
 // utils
@@ -37,6 +35,10 @@ import { initialPopupLoaders } from "../../config/config";
 import { emptyCheck, trimStartEnd } from "../../utils/validations";
 // styles
 import styles from "./NewDocument.module.scss";
+import {
+  filterDataByURL,
+  validateAndFindDate,
+} from "../../utils/NewDocumentUtils";
 // interfaces
 
 interface Props {
@@ -194,6 +196,7 @@ const NewDocument = ({
     formData[1].value,
     masterList.All
   );
+
   // A condition for validating if the current page is edit document or Add document.
   const isEditDocument = screens.pageTitle
     .toLowerCase()

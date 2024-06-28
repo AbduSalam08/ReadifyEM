@@ -4,14 +4,14 @@
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setMainSPContext } from "../redux/features/MainSPContext";
+import { setMainSPContext } from "../redux/features/MainSPContextSlice";
 import Header from "../webparts/readifyEmMain/components/Header/Header";
 
 // lazy loaded components
 const TableOfContents = lazy(
   () => import("../pages/TableOfContents/TableOfContents")
 );
-const RoleAuthorizationHOC = lazy(() => import("../HOC/RoleAuthorizationHOC"));
+const RoleAuthorizationHOC = lazy(() => import("../HOC/RoleAuthHOC"));
 
 // loader component
 import AppLoader from "../webparts/readifyEmMain/components/common/AppLoader/AppLoader";
@@ -21,6 +21,8 @@ import ErrorElement from "../webparts/readifyEmMain/components/common/ErrorEleme
 // global style sheet
 import styles from "./App.module.scss";
 import SDDTemplates from "../pages/SDDTemplates/SDDTemplates";
+import MyTasks from "../pages/MyTasks/MyTasks";
+import ConfigureSections from "../pages/ConfigureSections/ConfigureSections";
 
 const App = (props: any): JSX.Element => {
   const dispatch = useDispatch();
@@ -38,12 +40,14 @@ const App = (props: any): JSX.Element => {
         {/* suspence loader componen */}
         <Suspense fallback={<AppLoader />}>
           <Routes>
+            {/* Invalid route page */}
+            <Route path="*" element={ErrorElement} />
             {/* ADMIN ROUTES */}
-            <Route path="*" Component={ErrorElement} />
             <Route path="/admin" Component={RoleAuthorizationHOC}>
               <Route index Component={TableOfContents} />
               <Route path="em_manual" Component={TableOfContents} />
-              <Route path="my_tasks" element={<h1>My Tasks</h1>} />
+              <Route path="my_tasks" Component={MyTasks} />
+              <Route path="configure" Component={ConfigureSections} />
               <Route path="definitions" element={<h1>definitions</h1>} />
               <Route path="sdd_templates" Component={SDDTemplates} />
             </Route>
@@ -52,7 +56,7 @@ const App = (props: any): JSX.Element => {
             <Route path="/user" Component={RoleAuthorizationHOC}>
               <Route index Component={TableOfContents} />
               <Route path="em_manual" index Component={TableOfContents} />
-              <Route path="my_tasks" element={<h1>My Tasks </h1>} />
+              <Route path="my_tasks" Component={MyTasks} />
             </Route>
           </Routes>
         </Suspense>

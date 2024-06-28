@@ -3,6 +3,7 @@ import { Dialog } from "primereact/dialog";
 import DefaultButton from "../Buttons/DefaultButton";
 // styles
 import styles from "./Popup.module.scss";
+import { CircularProgress } from "@mui/material";
 
 interface Props {
   popupTitle?: string;
@@ -14,6 +15,7 @@ interface Props {
   onHide: () => void;
   visibility: boolean;
   confirmationTitle?: string;
+  isLoading?: boolean;
 }
 
 interface PopupActionBtn {
@@ -35,6 +37,7 @@ const Popup = ({
   content,
   popupWidth,
   confirmationTitle,
+  isLoading,
   ...btnRest
 }: Props): JSX.Element => {
   const headerElement = (
@@ -104,7 +107,24 @@ const Popup = ({
       style={{ width: popupWidth }}
       onHide={onHide}
     >
-      {popupContent}
+      {isLoading ? (
+        <div className={styles?.loaderElement}>
+          <CircularProgress
+            sx={{
+              width: "40px",
+              height: "40px",
+              animationDuration: "450ms",
+              color: "#555555ac",
+            }}
+            size={"30px"}
+            disableShrink
+            variant="indeterminate"
+            color="inherit"
+          />
+        </div>
+      ) : (
+        popupContent
+      )}
     </Dialog>
   );
 };

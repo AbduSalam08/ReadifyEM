@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -6,9 +7,9 @@ import { Dispatch } from "redux";
 import {
   setEMMTOCAdminData,
   setFoldersData,
-} from "../../redux/features/EMMTableOfContents";
+} from "../../redux/features/EMMTableOfContentSlice";
 import SpServices from "../SPServices/SpServices";
-import { LISTNAMES } from "../../config/config";
+import { LIBNAMES, LISTNAMES } from "../../config/config";
 
 export interface LibraryItem {
   ID?: number;
@@ -32,7 +33,7 @@ export const getLibraryItems = async (): Promise<{
   const fetchFoldersAndFiles = async (
     folderUrl: string
   ): Promise<LibraryItem[]> => {
-    const folder: any = sp.web.getFolderByServerRelativePath(folderUrl);
+    const folder: any = sp?.web?.getFolderByServerRelativePath(folderUrl);
 
     const [folders, files] = await Promise.all([
       folder.folders(),
@@ -167,12 +168,16 @@ const sortItemsBySequenceNo = (items: LibraryItem[]): LibraryItem[] => {
   const files = items?.filter((item) => item?.type === "file");
   const folders = items?.filter((item) => item?.type === "folder");
 
+  // Helper function to parse sequenceNo
+  const parseSequenceNo = (item: LibraryItem) => {
+    return item?.sequenceNo ? parseInt(item.sequenceNo, 10) : Infinity;
+  };
+
   // Sort files by sequenceNo
-  files?.sort((a, b) => {
-    const seqA = a?.sequenceNo ? parseInt(a.sequenceNo, 10) : Infinity;
-    const seqB = b?.sequenceNo ? parseInt(b.sequenceNo, 10) : Infinity;
-    return seqA - seqB;
-  });
+  files?.sort((a, b) => parseSequenceNo(a) - parseSequenceNo(b));
+
+  // Sort folders by sequenceNo
+  folders?.sort((a, b) => parseSequenceNo(a) - parseSequenceNo(b));
 
   // Recursively sort items within each folder
   const sortedFolders = folders?.map((folder) => {
@@ -186,7 +191,7 @@ const sortItemsBySequenceNo = (items: LibraryItem[]): LibraryItem[] => {
   });
 
   // Combine sorted files and folders
-  return [...sortedFolders, ...files];
+  return [...files, ...sortedFolders];
 };
 
 // A function that loads all the table data and render it in the given table state
@@ -210,9 +215,115 @@ export const LoadTableData = async (
   }
 };
 
-// group creation & sub group creation
-export const createFolder = async (folderPath: string): Promise<any> => {
-  return await sp.web
+// fn used to create a group / sub group / folder
+export const createFolder = async (
+  folderPath: string,
+  sequenceNo?: any
+): Promise<any> => {
+  // Create the folder
+  const folderCreation = await sp.web
     .getFolderByServerRelativePath("/sites/ReadifyEM/AllDocuments")
     .folders.addUsingPath(folderPath);
+
+  // Update the folder's properties
+  const folderItem: any = await sp.web
+    .getFolderByServerRelativePath(folderCreation.data.ServerRelativeUrl)
+    .select("ListItemAllFields/ID, ListItemAllFields/FileLeafRef")
+    .expand("ListItemAllFields")
+    .get();
+
+  // Update sequenceNo if provided
+  if (sequenceNo !== null || sequenceNo !== undefined) {
+    await sp.web.lists
+      .getByTitle("AllDocuments")
+      .items.getById(folderItem.ListItemAllFields.ID)
+      .update({
+        sequenceNo: String(sequenceNo),
+      });
+  }
+
+  return folderCreation;
+};
+
+// fn used in changing a folder or group/subgroup and updating the value of its own
+export const EditFolderAndChangeItemPath = async (
+  oldFolderPath: string,
+  newFolderPath: string
+): Promise<any> => {
+  try {
+    // Move the folder
+    const oldFolder = sp.web.getFolderByServerRelativePath(oldFolderPath);
+    await oldFolder.moveTo(newFolderPath);
+
+    // Retrieve files inside the updated folder
+    const newFolderFiles = await sp.web
+      .getFolderByServerRelativePath(newFolderPath)
+      .files.select("*, ListItemAllFields/ID")
+      .expand("ListItemAllFields")
+      .get();
+
+    // Prepare batch for list item updates
+    const batch = sp.web.createBatch();
+
+    newFolderFiles.forEach((file: any) => {
+      const itemId = file.ListItemAllFields.ID;
+      const itemURL = file.ServerRelativeUrl?.split("/")
+        ?.slice(0, -1)
+        ?.join("/");
+
+      SpServices.SPReadItems({
+        Listname: LISTNAMES.DocumentDetails,
+        Filter: [
+          {
+            FilterKey: "fileDetailsId",
+            Operator: "eq",
+            FilterValue: itemId,
+          },
+        ],
+      })
+        .then(async (res: any) => {
+          if (res.length > 0) {
+            await sp.web.lists
+              .getByTitle(LISTNAMES.DocumentDetails)
+              .items.getById(res[0].ID)
+              .inBatch(batch)
+              .update({
+                documentPath: itemURL,
+              });
+          }
+        })
+        .catch((err: any) => {
+          console.log("Error fetching items: ", err);
+        });
+    });
+
+    await batch.execute();
+
+    return true;
+  } catch (error: any) {
+    console.error("Error in editFolderAndChangeItemPath: ", error.message);
+    return false;
+  }
+};
+
+// fn for updating the folder's sequence number in reordering scenerio AKA drag & drop
+export const updateFolderSequenceNumber = async (
+  folderID: any,
+  sequenceNo: any
+): Promise<boolean> => {
+  try {
+    // Get the folder by its server relative path
+
+    await sp.web.lists
+      .getByTitle(LIBNAMES.AllDocuments)
+      .items.getById(folderID)
+      .update({
+        sequenceNo: sequenceNo?.toString(),
+      });
+
+    return true;
+  } catch (error) {
+    console.error("Error in updateFolderSequenceNumber: ", error);
+    return false;
+  }
 };

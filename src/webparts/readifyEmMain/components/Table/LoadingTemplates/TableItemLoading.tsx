@@ -9,9 +9,10 @@ const TableItemLoading = (item: any) => {
     "Created At",
     "Next Review",
     "Status",
-    "Visibility",
+    // "Visibility",
     "Action",
   ];
+
   return (
     <div className={styles.itemContainer}>
       <div className={styles.item} title={item?.DocumentName || "-"}>
@@ -22,7 +23,7 @@ const TableItemLoading = (item: any) => {
         (e: any, i: number) =>
           i >= 1 && (
             <div className={styles.item} title={e || "-"} key={i}>
-              <Skeleton width="8rem" />
+              <Skeleton width="10rem" />
             </div>
           )
       )}
