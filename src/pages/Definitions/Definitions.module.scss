@@ -1,0 +1,61 @@
+.flexcenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.SDDTWrapper {
+    width: 100%;
+}
+
+.pageTitleHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.contentWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filters {
+    @extend .flexcenter;
+    justify-content: space-between;
+    margin: 20px 0;
+    gap: 20px;
+}
+
+.rhs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.subGroupInput {
+    margin-bottom: 10px;
+}
+
+.clearFilterBtn {
+    font-size: 13px;
+    font-family: "interMedium", sans-serif !important;
+    color: var(--primary-violet);
+    background-color: #593abb15;
+    border-radius: 50px;
+    width: 150px;
+    padding: 5px 0;
+    cursor: pointer;
+    border: 0;
+    outline: 0;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.definitionInputBox{
+    margin-bottom: 20px;
+}

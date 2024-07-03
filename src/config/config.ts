@@ -6,6 +6,7 @@ const LISTNAMES = {
   DocumentDetails: "DocumentDetails",
   SDDTemplates: "SDDTemplates",
   SDDTemplatesMain: "SDDTemplatesMain",
+  Definition: "Definition",
 };
 const LIBNAMES = {
   AllDocuments: "AllDocuments",
