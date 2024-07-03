@@ -174,6 +174,7 @@ const TableOfContents = (): JSX.Element => {
       },
     ],
   });
+  console.log(tableData);
 
   // input changing handlers for filter & popup data's
   const handleInputChange = (value: any, inputName: string): void => {

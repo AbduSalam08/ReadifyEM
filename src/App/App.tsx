@@ -23,6 +23,7 @@ import styles from "./App.module.scss";
 import SDDTemplates from "../pages/SDDTemplates/SDDTemplates";
 import MyTasks from "../pages/MyTasks/MyTasks";
 import ConfigureSections from "../pages/ConfigureSections/ConfigureSections";
+import Definitions from "../pages/Definitions/Definitions";
 
 const App = (props: any): JSX.Element => {
   const dispatch = useDispatch();
@@ -48,7 +49,7 @@ const App = (props: any): JSX.Element => {
               <Route path="em_manual" Component={TableOfContents} />
               <Route path="my_tasks" Component={MyTasks} />
               <Route path="configure" Component={ConfigureSections} />
-              <Route path="definitions" element={<h1>definitions</h1>} />
+              <Route path="definitions" Component={Definitions} />
               <Route path="sdd_templates" Component={SDDTemplates} />
             </Route>
 
