@@ -3,6 +3,7 @@ import { Skeleton } from "primereact/skeleton";
 import styles from "../Table.module.scss";
 import { OrderList } from "primereact/orderlist";
 import arrowRightIcon from "../../../../../assets/images/svg/arrowRight.svg";
+import { CurrentUserIsAdmin } from "../../../../../constants/DefineUser";
 
 interface LoadingTemplateProps {
   togglePanel: (index: number) => void;
@@ -22,7 +23,7 @@ const TableRowLoading = ({
   defaultTableLoader,
 }: LoadingTemplateProps): JSX.Element => {
   const isActive = activeIndex === item;
-
+  const isAdmin: boolean = CurrentUserIsAdmin();
   if (defaultTableLoader) {
     // Default table loader: Render skeleton loaders in a row
     return (
@@ -65,7 +66,7 @@ const TableRowLoading = ({
             dataKey="name"
             value={data.items}
             itemTemplate={itemLoadingTemplate}
-            dragdrop
+            dragdrop={isAdmin}
           />
         </div>
       </div>

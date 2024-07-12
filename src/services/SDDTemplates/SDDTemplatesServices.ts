@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -109,7 +110,7 @@ const AddSDDTemplate = async (
           visibility: true,
           text: "Unable to create the template.",
           secondaryText:
-            "An unexpected error occurred while craeting the template, please try again later.",
+            "An unexpected error occurred while creating the template, please try again later.",
         });
       }
     } else {
@@ -135,7 +136,7 @@ const AddSDDTemplate = async (
       visibility: true,
       text: "Unable to create the template.",
       secondaryText:
-        "An unexpected error occurred while craeting the template, please try again later.",
+        "An unexpected error occurred while creating the template, please try again later.",
     });
   }
 };
@@ -146,7 +147,6 @@ const UpdateSDDTemplate = async (
   formData: any,
   setLoaderState: any
 ): Promise<any> => {
-  debugger;
   const templateTitle = formData?.templateName;
   const getSectionType = (value: string): string => {
     return value === "defaultSection"
@@ -390,25 +390,27 @@ const fetchTemplates = async (): Promise<{
 
 // A function to get and set the formatted tabledata into that state
 const LoadTableData = async (
-  setTableData: (data: any) => void,
-  dispatch: any
+  dispatch: any,
+  setTableData?: any
 ): Promise<void> => {
-  setTableData((prevData: any) => ({
-    ...prevData,
-    loading: true,
-    data: [],
-  }));
+  setTableData &&
+    setTableData((prevData: any) => ({
+      ...prevData,
+      loading: true,
+      data: [],
+    }));
 
   const data = await fetchTemplates();
   const { allMainTemplateData } = data;
 
   dispatch(setAllSDDTemplates(allMainTemplateData));
 
-  setTableData((prevData: any) => ({
-    ...prevData,
-    loading: false,
-    data: allMainTemplateData,
-  }));
+  setTableData &&
+    setTableData((prevData: any) => ({
+      ...prevData,
+      loading: false,
+      data: allMainTemplateData,
+    }));
 };
 
 // Main function to load all sections data
@@ -420,7 +422,6 @@ const LoadSectionsTemplateData = async (
   update?: boolean,
   dispatch?: any
 ): Promise<any> => {
-  debugger;
   // Set loading state
   setSectionsData((prev: any) => ({
     ...prev,
@@ -456,6 +457,7 @@ const LoadSectionsTemplateData = async (
           type: "defaultSection",
           value: template,
           sectionSelected: false,
+          removed: false,
         }))
       : [];
     const normalSection: any[] = [];

@@ -14,6 +14,7 @@ import { IPopupLoaders } from "../../../../interface/MainInterface";
 import { initialPopupLoaders } from "../../../../config/config";
 import { OrderList } from "primereact/orderlist";
 import { updateFolderSequenceNumber } from "../../../../services/EMManual/EMMServices";
+import { CurrentUserIsAdmin } from "../../../../constants/DefineUser";
 
 interface ITableProps {
   headers: string[];
@@ -51,6 +52,8 @@ const Table: React.FC<ITableProps> = ({
   defaultTable,
   loadData,
 }: ITableProps): JSX.Element => {
+  const isAdmin: boolean = CurrentUserIsAdmin();
+
   const loaderTemplateData: any = defaultTable
     ? headers
     : [
@@ -301,7 +304,7 @@ const Table: React.FC<ITableProps> = ({
             // console.log("e: ", e.value);
             handleData(e.value);
           }}
-          dragdrop
+          dragdrop={isAdmin}
           focusOnHover={false}
         />
       ) : // ))

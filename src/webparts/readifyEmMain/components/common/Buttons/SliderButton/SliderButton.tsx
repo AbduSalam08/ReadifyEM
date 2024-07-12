@@ -1,5 +1,6 @@
 import { Tabs, Tab } from "@mui/material";
 import styles from "./SliderButton.module.scss";
+import { memo } from "react";
 
 // Props interface
 interface IProps {
@@ -31,4 +32,4 @@ const SliderButton = ({ options, onChange, value }: IProps): JSX.Element => {
   );
 };
 
-export default SliderButton;
+export default memo(SliderButton);

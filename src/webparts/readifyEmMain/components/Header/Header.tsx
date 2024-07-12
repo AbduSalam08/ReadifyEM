@@ -4,39 +4,51 @@
 /* eslint-disable react/self-closing-comp */
 
 import { Tab, Tabs } from "@mui/material";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Header.module.scss";
+import { useSelector } from "react-redux";
 const logo = require("../../../../assets/images/png/logo/Readify-EM.png");
 
 const Header = (): JSX.Element => {
-  // const mainContext: any = useSelector(
-  //   (state: any) => state.MainSPContext.value
-  // );
-
-  const rootPath = true ? "/admin" : "/user";
+  const currentUserDetails: any = useSelector(
+    (state: any) => state.MainSPContext.currentUserDetails
+  );
+  const isAdmin: boolean = currentUserDetails?.role === "Admin";
+  const rootPath = isAdmin ? "/admin" : "/user";
 
   const navigate = useNavigate();
-  const data = [
-    {
-      label: "Table of Contents",
-      path: `${rootPath}/em_manual`,
-    },
-    {
-      label: "My Tasks",
-      path: `${rootPath}/my_tasks`,
-    },
+  const data = isAdmin
+    ? [
+        {
+          label: "Table of contents",
+          path: `${rootPath}/em_manual`,
+        },
+        {
+          label: "My Tasks",
+          path: `${rootPath}/my_tasks`,
+        },
 
-    {
-      label: "Definitions",
-      path: `${rootPath}/definitions`,
-    },
+        {
+          label: "Definitions",
+          path: `${rootPath}/definitions`,
+        },
 
-    {
-      label: "SDD Templates",
-      path: `${rootPath}/sdd_templates`,
-    },
-  ];
+        {
+          label: "SDD Templates",
+          path: `${rootPath}/sdd_templates`,
+        },
+      ]
+    : [
+        {
+          label: "Table of contents",
+          path: `${rootPath}/em_manual`,
+        },
+        {
+          label: "My Tasks",
+          path: `${rootPath}/my_tasks`,
+        },
+      ];
 
   const [value, setValue] = useState(0);
 
@@ -48,12 +60,12 @@ const Header = (): JSX.Element => {
   };
 
   useEffect(() => {
-    if (true) {
+    if (isAdmin) {
       navigate("/admin");
     } else {
       navigate("/user");
     }
-  }, []);
+  }, [isAdmin]);
 
   return (
     <div className={styles.headerWrapper}>
@@ -68,7 +80,7 @@ const Header = (): JSX.Element => {
           onChange={handleChange}
           aria-label="icon label tabs example"
         >
-          {data.map(({ label, path }) => (
+          {data?.map(({ label, path }) => (
             <Tab
               disableRipple
               key={label}
@@ -84,4 +96,4 @@ const Header = (): JSX.Element => {
   );
 };
 
-export default Header;
+export default memo(Header);

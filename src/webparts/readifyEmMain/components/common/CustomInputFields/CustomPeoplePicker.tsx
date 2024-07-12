@@ -10,13 +10,14 @@ import { CONFIG } from "../../../../../config/config";
 
 interface Props {
   selectedItem?: any;
-  onChange: (value: string) => void;
+  onChange: (value: any[]) => void;
   placeholder?: string;
-  personSelectionLimit?: number;
+  personSelectionLimit?: number | any;
   size?: "SM" | "MD" | "XL";
   isValid: boolean;
-  errorMsg: string;
+  errorMsg?: string;
   minWidth?: any;
+  noErrorMsg?: boolean; // if true, no error message will be shown
 }
 
 const CustomPeoplePicker: React.FC<Props> = ({
@@ -28,13 +29,13 @@ const CustomPeoplePicker: React.FC<Props> = ({
   isValid,
   errorMsg,
   minWidth,
+  noErrorMsg = false,
 }) => {
   const multiPeoplePickerStyle = {
     root: {
       minWidth: minWidth ? minWidth : 200,
       background: "rgba(218, 218, 218, 0.29)",
       ".ms-BasePicker-text": {
-        // minHeigth: "43px",
         height: size === "SM" ? "34px" : size === "MD" ? "32px" : "43px",
         borderRadius: "4px",
         maxHeight: "50px",
@@ -77,31 +78,33 @@ const CustomPeoplePicker: React.FC<Props> = ({
     (state: any) => state.MainSPContext.value
   );
 
-  const handleChange = (e: any): void => {
-    onChange(e);
+  const handleChange = (items: any[]): void => {
+    onChange(items);
   };
+
+  const selectedUserItem =
+    personSelectionLimit > 1
+      ? selectedItem?.map((item: any) => item.secondaryText || item.Email)
+      : [selectedItem];
 
   return (
     <>
       <PeoplePicker
         context={mainContext}
         webAbsoluteUrl={CONFIG.webURL}
-        //   titleText="Select People"
-        personSelectionLimit={personSelectionLimit}
+        personSelectionLimit={personSelectionLimit || 1}
         showtooltip={false}
         ensureUser={true}
         placeholder={placeholder}
-        // peoplePickerCntrlclassName={styles.}
-        onChange={(e: any) => {
-          handleChange(e);
-        }}
+        onChange={handleChange}
         styles={multiPeoplePickerStyle}
-        //   showHiddenInUI={true}
         principalTypes={[PrincipalType.User]}
-        defaultSelectedUsers={[selectedItem] || null}
+        defaultSelectedUsers={selectedUserItem}
         resolveDelay={1000}
       />
-      <p className={isValid ? styles.errorMsg : ""}>{isValid && errorMsg}</p>
+      {!noErrorMsg && (
+        <p className={isValid ? styles.errorMsg : ""}>{isValid && errorMsg}</p>
+      )}
     </>
   );
 };

@@ -12,7 +12,11 @@ import MenuButton from "../../webparts/readifyEmMain/components/common/Buttons/M
 import Table from "../../webparts/readifyEmMain/components/Table/Table";
 import NewDocument from "../NewDocument/NewDocument";
 import Popup from "../../webparts/readifyEmMain/components/common/Popups/Popup";
-import { emptyCheck, trimStartEnd } from "../../utils/validations";
+import {
+  // calculateDueDateByRole,
+  emptyCheck,
+  trimStartEnd,
+} from "../../utils/validations";
 import CustomTreeDropDown from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomTreeDropDown";
 import { useDispatch, useSelector } from "react-redux";
 import AlertPopup from "../../webparts/readifyEmMain/components/common/Popups/AlertPopup/AlertPopup";
@@ -32,6 +36,8 @@ import {
 import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
 import { togglePopupVisibility } from "../../utils/togglePopup";
 import { filterDataByURL } from "../../utils/NewDocumentUtils";
+import { CurrentUserIsAdmin } from "../../constants/DefineUser";
+// import * as dayjs from "dayjs";
 // utils
 // images
 const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
@@ -83,7 +89,8 @@ const popupInitialData = {
 const TableOfContents = (): JSX.Element => {
   //Dispatcher
   const dispatch = useDispatch();
-
+  // checking is that the current user is an admin or not.
+  const isAdmin: boolean = CurrentUserIsAdmin();
   // reducer selectors
   const DocumentPathOptions: any = useSelector(
     (state: any) => state.EMMTableOfContents.foldersData
@@ -91,13 +98,15 @@ const TableOfContents = (): JSX.Element => {
 
   // main table data state
   const [tableData, setTableData] = useState({
-    headers: [
-      "Document Name",
-      "Created At",
-      "Next Review",
-      "Status",
-      // "Visibility",
-    ],
+    headers: isAdmin
+      ? [
+          "Document Name",
+          "Created At",
+          "Next Review",
+          "Status",
+          // "Visibility",
+        ]
+      : ["Document Name", "Created At", "Next Review"],
     loading: false,
     data: [] as LibraryItem[],
   });
@@ -110,7 +119,7 @@ const TableOfContents = (): JSX.Element => {
   const [screens, setScreens] = useState({
     toc: true,
     NewDocument: false,
-    pageTitle: "EM Manual - Table Of Contents",
+    pageTitle: "EM Manual - Table of contents",
     editDocumentData: [],
   });
 
@@ -332,6 +341,49 @@ const TableOfContents = (): JSX.Element => {
         return;
       }
 
+      const popupLoadersErrorActions = (error: any): any => {
+        let errorMessage = `Unable to ${
+          isEditPopup ? "edit" : "create"
+        } ${key}.`;
+        let secondaryText = `An unexpected error occurred while ${
+          isEditPopup ? "editing the" : "creating a new"
+        } ${key}, please try again later.`;
+
+        const groupType: string = key === "group" ? "Group" : "Sub group";
+        const groupName =
+          key === "group"
+            ? popupData.addNewGroupName.value
+            : popupData.addNewSubGroupName.value;
+
+        if (error.message.includes("already exists")) {
+          errorMessage = `${groupType} name already exists.`;
+          secondaryText = `The ${groupType} "${trimStartEnd(
+            groupName
+          )}" already exists, please use a different name.`;
+        } else if (
+          error.message.includes("contains invalid characters") ||
+          error.message.includes("potentially dangerous Request")
+        ) {
+          errorMessage = `Invalid ${groupType} name`;
+          secondaryText = `The ${groupType} "${trimStartEnd(
+            groupName
+          )}" contains invalid characters, please use a different name.`;
+        }
+
+        setPopupLoaders((prev: IPopupLoaders) => ({
+          ...prev,
+          visibility: true,
+          isLoading: {
+            error: true,
+            inprogres: false,
+            success: false,
+          },
+          text: errorMessage,
+          secondaryText: secondaryText,
+        }));
+        setPopupController(initialPopupController);
+      };
+
       try {
         const actionType = isEditPopup ? "updated" : "created";
 
@@ -348,7 +400,6 @@ const TableOfContents = (): JSX.Element => {
                 : popupData.addNewSubGroupName.value
             }" has been ${actionType} successfully!`,
             isLoading: {
-              ...prev.isLoading,
               success: true,
               error: false,
               inprogres: false,
@@ -361,18 +412,63 @@ const TableOfContents = (): JSX.Element => {
           folderPath?.split("/")?.slice(0, -1)?.join("/"),
           tableData.data
         );
+
         const hasDupicateInDestinationPath: any =
           checkNewPathFolder[0]?.items?.filter((item: any) => {
             return (
               item?.type === "folder" &&
-              item?.name === folderPath?.split("/")?.slice(-1)[0]
+              item?.name === folderPath?.split("/")[0]
             );
           });
 
         if (isEditPopup) {
-          if (hasDupicateInDestinationPath?.length === 0) {
-            await EditFolderAndChangeItemPath(oldPath, folderPath);
-            popupLoadersAction();
+          if (
+            key === "sub group" &&
+            hasDupicateInDestinationPath?.length === 0
+          ) {
+            setPopupController(initialPopupController);
+
+            setPopupLoaders((prev: IPopupLoaders) => ({
+              ...prev,
+              visibility: true,
+              isLoading: {
+                ...prev.isLoading,
+                inprogress: true,
+              },
+              text: "Updating sub folder, please wait...",
+              //  secondaryText: secondaryText,
+            }));
+            const updateSubGroup = await EditFolderAndChangeItemPath(
+              oldPath,
+              folderPath
+            );
+            if (updateSubGroup === "true") {
+              popupLoadersAction();
+            } else {
+              popupLoadersErrorActions(updateSubGroup);
+            }
+          } else if (key === "group") {
+            setPopupController(initialPopupController);
+
+            setPopupLoaders((prev: IPopupLoaders) => ({
+              ...prev,
+              visibility: true,
+              isLoading: {
+                ...prev.isLoading,
+                inprogress: true,
+              },
+              text: "Updating folder, please wait...",
+              //  secondaryText: secondaryText,
+            }));
+            const updateGroup = await EditFolderAndChangeItemPath(
+              oldPath,
+              folderPath
+            );
+            if (updateGroup === "true") {
+              popupLoadersAction();
+            } else {
+              popupLoadersErrorActions(updateGroup);
+            }
           } else {
             setPopupLoaders((prev: IPopupLoaders) => ({
               ...prev,
@@ -412,53 +508,10 @@ const TableOfContents = (): JSX.Element => {
           popupLoadersAction();
         }
       } catch (error: any) {
-        console.log("error: ", error.message);
-
-        let errorMessage = `Unable to ${
-          isEditPopup ? "edit" : "create"
-        } ${key}.`;
-        let secondaryText = `An unexpected error occurred while ${
-          isEditPopup ? "editing the" : "creating a new"
-        } ${key}, please try again later.`;
-
-        const groupType: string = key === "group" ? "Group" : "Sub group";
-        const groupName =
-          key === "group"
-            ? popupData.addNewGroupName.value
-            : popupData.addNewSubGroupName.value;
-
-        if (error.message.includes("already exists")) {
-          errorMessage = `${groupType} name already exists.`;
-          secondaryText = `The ${groupType} "${trimStartEnd(
-            groupName
-          )}" already exists, please use a different name.`;
-        } else if (
-          error.message.includes("contains invalid characters") ||
-          error.message.includes("potentially dangerous Request")
-        ) {
-          errorMessage = `Invalid ${groupType} name`;
-          secondaryText = `The ${groupType} "${trimStartEnd(
-            groupName
-          )}" contains invalid characters, please use a different name.`;
-        }
-
-        setPopupLoaders((prev: IPopupLoaders) => ({
-          ...prev,
-          visibility: true,
-          isLoading: {
-            ...prev.isLoading,
-            error: true,
-            inprogres: false,
-            success: false,
-          },
-          text: errorMessage,
-          secondaryText: secondaryText,
-        }));
-        setPopupController(initialPopupController);
+        popupLoadersErrorActions(error);
       }
     }
   };
-
   // handler that handles all popup inputs values
   const setPopupInputValues = (item: any, folderType?: any): void => {
     const groupTypeKey =
@@ -543,7 +596,7 @@ const TableOfContents = (): JSX.Element => {
 
   // fn to load all main data
   const setMainData = async (): Promise<any> => {
-    await LoadTableData(dispatch, setTableData);
+    await LoadTableData(dispatch, setTableData, isAdmin);
   };
 
   // lifecycle hooks
@@ -575,68 +628,92 @@ const TableOfContents = (): JSX.Element => {
 
   return (
     <div className={styles.tocWrapper}>
-      <PageTitle text={screens.pageTitle} />
+      <div
+        style={{
+          justifyContent: isAdmin ? "flex-start" : "space-between",
+        }}
+        className={styles.topTOCHeader}
+      >
+        <PageTitle text={screens.pageTitle} />
+
+        {!isAdmin && (
+          <CustomInput
+            value={filterOptions.searchTerm}
+            onChange={(value: string) => {
+              setFilterOptions((prev) => ({
+                ...prev,
+                searchTerm: value,
+              }));
+            }}
+            disabled={tableData.data.length === 0 || tableData.loading}
+            icon
+            placeholder="Search"
+          />
+        )}
+      </div>
 
       {screens.toc ? (
         <>
           {/* filters section */}
-          <div className={styles.filters}>
-            <CustomInput
-              value={filterOptions.searchTerm}
-              onChange={(value: string) => {
-                setFilterOptions((prev) => ({
-                  ...prev,
-                  searchTerm: value,
-                }));
-              }}
-              disabled={tableData.data.length === 0 || tableData.loading}
-              icon
-              placeholder="Search"
-            />
-
-            <div className={styles.rhs}>
-              <CustomDropDown
+          {isAdmin && (
+            <div className={styles.filters}>
+              <CustomInput
+                value={filterOptions.searchTerm}
                 onChange={(value: string) => {
                   setFilterOptions((prev) => ({
                     ...prev,
-                    filterByStatus: value,
+                    searchTerm: value,
                   }));
                 }}
-                options={filterOptions.options}
-                value={filterOptions.filterByStatus}
-                placeholder="Filter by Status"
-                size="MD"
                 disabled={tableData.data.length === 0 || tableData.loading}
+                icon
+                placeholder="Search"
               />
-              {filterOptions?.searchTerm || filterOptions?.filterByStatus ? (
-                <button
-                  className={styles.clearFilterBtn}
-                  onClick={() => {
-                    setFilterOptions((prev: any) => ({
+
+              <div className={styles.rhs}>
+                <CustomDropDown
+                  onChange={(value: string) => {
+                    setFilterOptions((prev) => ({
                       ...prev,
-                      searchTerm: "",
-                      filterByStatus: "",
+                      filterByStatus: value,
                     }));
                   }}
-                >
-                  Clear All Filters{" "}
-                  <Close
-                    sx={{
-                      fontSize: "15px",
+                  options={filterOptions.options}
+                  value={filterOptions.filterByStatus}
+                  placeholder="Filter by Status"
+                  size="MD"
+                  disabled={tableData.data.length === 0 || tableData.loading}
+                />
+                {filterOptions?.searchTerm || filterOptions?.filterByStatus ? (
+                  <button
+                    className={styles.clearFilterBtn}
+                    onClick={() => {
+                      setFilterOptions((prev: any) => ({
+                        ...prev,
+                        searchTerm: "",
+                        filterByStatus: "",
+                      }));
                     }}
-                  />
-                </button>
-              ) : null}
+                  >
+                    Clear All Filters{" "}
+                    <Close
+                      sx={{
+                        fontSize: "15px",
+                      }}
+                    />
+                  </button>
+                ) : null}
 
-              <MenuButton
-                menuVisibility={filterOptions.menuBtnExternalController}
-                externalController={setFilterOptions}
-                buttonText="Create New"
-                disabled={tableData.loading}
-                menuItems={filterOptions.createOptions}
-              />
+                <MenuButton
+                  menuVisibility={filterOptions.menuBtnExternalController}
+                  externalController={setFilterOptions}
+                  buttonText="Create New"
+                  disabled={tableData.loading}
+                  menuItems={filterOptions.createOptions}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* table section */}
           <Table
@@ -650,46 +727,50 @@ const TableOfContents = (): JSX.Element => {
             renderActions={(item: any, index: number) => {
               return (
                 <>
-                  <DefaultButton
-                    disableRipple={true}
-                    style={{
-                      minWidth: "auto",
-                    }}
-                    btnType={"actionBtn"}
-                    text={
-                      <img
-                        src={contentDeveloperEdit}
+                  {isAdmin && (
+                    <>
+                      <DefaultButton
+                        disableRipple={true}
                         style={{
-                          width: "19px",
+                          minWidth: "auto",
+                        }}
+                        btnType={"actionBtn"}
+                        text={
+                          <img
+                            src={contentDeveloperEdit}
+                            style={{
+                              width: "19px",
+                            }}
+                          />
+                        }
+                        disabled={
+                          item?.fields.status?.toLowerCase() === "not started"
+                        }
+                        key={index}
+                        onClick={() => {
+                          console.log("clicked");
                         }}
                       />
-                    }
-                    disabled={
-                      item?.fields.status?.toLowerCase() === "not started"
-                    }
-                    key={index}
-                    onClick={() => {
-                      console.log("clicked");
-                    }}
-                  />
-                  <DefaultButton
-                    disableRipple={true}
-                    style={{
-                      minWidth: "auto",
-                    }}
-                    btnType={"actionBtn"}
-                    text={<img src={editIcon} />}
-                    key={index}
-                    onClick={() => {
-                      setScreens((prev) => ({
-                        ...prev,
-                        NewDocument: true,
-                        toc: false,
-                        pageTitle: `Edit Document (${item.name})`,
-                        editDocumentData: item,
-                      }));
-                    }}
-                  />
+                      <DefaultButton
+                        disableRipple={true}
+                        style={{
+                          minWidth: "auto",
+                        }}
+                        btnType={"actionBtn"}
+                        text={<img src={editIcon} />}
+                        key={index}
+                        onClick={() => {
+                          setScreens((prev) => ({
+                            ...prev,
+                            NewDocument: true,
+                            toc: false,
+                            pageTitle: `Edit Document (${item.name})`,
+                            editDocumentData: item,
+                          }));
+                        }}
+                      />
+                    </>
+                  )}
                   <DefaultButton
                     disableRipple={true}
                     style={{
@@ -713,32 +794,34 @@ const TableOfContents = (): JSX.Element => {
             }}
             renderActionsForFolders={(item: any, folderType: string) => {
               return (
-                <DefaultButton
-                  disableRipple={true}
-                  style={{
-                    minWidth: "auto",
-                  }}
-                  btnType={"actionBtn"}
-                  text={<img src={editIcon} />}
-                  key={folderType}
-                  onClick={() => {
-                    const popupType: number =
-                      folderType?.toLowerCase() === "parentfolder" ? 0 : 1;
-                    const popupTitle: string =
-                      folderType?.toLowerCase() === "parentfolder"
-                        ? "Edit Group"
-                        : "Edit Sub Group";
-                    togglePopupVisibility(
-                      setPopupController,
-                      popupType,
-                      "open",
-                      popupTitle,
-                      item
-                    );
+                isAdmin && (
+                  <DefaultButton
+                    disableRipple={true}
+                    style={{
+                      minWidth: "auto",
+                    }}
+                    btnType={"actionBtn"}
+                    text={<img src={editIcon} />}
+                    key={folderType}
+                    onClick={() => {
+                      const popupType: number =
+                        folderType?.toLowerCase() === "parentfolder" ? 0 : 1;
+                      const popupTitle: string =
+                        folderType?.toLowerCase() === "parentfolder"
+                          ? "Edit Group"
+                          : "Edit Sub Group";
+                      togglePopupVisibility(
+                        setPopupController,
+                        popupType,
+                        "open",
+                        popupTitle,
+                        item
+                      );
 
-                    setPopupInputValues(item, folderType);
-                  }}
-                />
+                      setPopupInputValues(item, folderType);
+                    }}
+                  />
+                )
               );
             }}
           />
