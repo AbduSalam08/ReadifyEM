@@ -8,6 +8,7 @@ const LISTNAMES = {
   SDDTemplatesMain: "SDDTemplatesMain",
   SectionDetails: "SectionDetails",
   MyTasks: "MyTasks",
+  Definition: "Definition",
 };
 const LIBNAMES = {
   AllDocuments: "AllDocuments",
