@@ -6,6 +6,7 @@ import arrowRightIcon from "../../../../assets/images/svg/arrowRight.svg";
 import pdfIcon from "../../../../assets/images/svg/pdfIcon.svg";
 import styles from "./Table.module.scss";
 import StatusPill from "../StatusPill/StatusPill";
+import { CurrentUserIsAdmin } from "../../../../constants/DefineUser";
 
 interface LibraryItem {
   name: string;
@@ -41,7 +42,7 @@ const TableItem: React.FC<TableItemProps> = ({
 }) => {
   const [data, setData] = useState(tableData);
   const [isOpen, setIsOpen] = useState(data.open);
-
+  const isAdmin: boolean = CurrentUserIsAdmin();
   useEffect(() => {
     setIsOpen(data.open);
   }, [data?.open]);
@@ -203,7 +204,7 @@ const TableItem: React.FC<TableItemProps> = ({
                   // console.log("Files onChange:", e);
                   handleData(e.value);
                 }}
-                dragdrop
+                dragdrop={isAdmin}
                 // focusOnHover={false}
               />
               <OrderList
@@ -216,7 +217,7 @@ const TableItem: React.FC<TableItemProps> = ({
                   // console.log("Folders onChange:", e);
                   handleData(e.value);
                 }}
-                dragdrop
+                dragdrop={isAdmin}
                 // focusOnHover={false}
               />
             </div>
@@ -295,7 +296,7 @@ const TableItem: React.FC<TableItemProps> = ({
                 // console.log("e: ", e);
                 handleData(e.value);
               }}
-              dragdrop
+              dragdrop={isAdmin}
               // focusOnHover={false}
             />
 
@@ -309,7 +310,7 @@ const TableItem: React.FC<TableItemProps> = ({
                 // console.log("e: ", e);
                 handleData(e.value);
               }}
-              dragdrop
+              dragdrop={isAdmin}
               // focusOnHover={false}
             />
           </div>

@@ -68,6 +68,7 @@
     @extend .flexCenter;
     width: 100%;
     justify-content: flex-start;
+    gap: 10px;
   }
 
   .footer {
@@ -75,4 +76,20 @@
     @extend .flexCenter;
     justify-content: space-between;
   }
+}
+.clearFilterBtn {
+  font-size: 15px;
+  width: 30px;
+  height: 30px;
+  padding: 10px;
+  font-family: "interMedium", sans-serif !important;
+  color: var(--primary-violet);
+  background-color: #593abb15;
+  border-radius: 50px;
+  cursor: pointer;
+  border: 0;
+  outline: 0;
+  @extend .flexCenter;
+  gap: 5px;
+  // margin-right: 10px;
 }

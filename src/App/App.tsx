@@ -48,7 +48,10 @@ const App = (props: any): JSX.Element => {
               <Route index Component={TableOfContents} />
               <Route path="em_manual" Component={TableOfContents} />
               <Route path="my_tasks" Component={MyTasks} />
-              <Route path="configure" Component={ConfigureSections} />
+              <Route
+                path="my_tasks/:docName/configure"
+                Component={ConfigureSections}
+              />
               <Route path="definitions" Component={Definitions} />
               <Route path="sdd_templates" Component={SDDTemplates} />
             </Route>
@@ -58,6 +61,10 @@ const App = (props: any): JSX.Element => {
               <Route index Component={TableOfContents} />
               <Route path="em_manual" index Component={TableOfContents} />
               <Route path="my_tasks" Component={MyTasks} />
+              <Route
+                path="my_tasks/:docName/configure"
+                Component={ConfigureSections}
+              />
             </Route>
           </Routes>
         </Suspense>

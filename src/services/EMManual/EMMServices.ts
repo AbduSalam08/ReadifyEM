@@ -10,6 +10,10 @@ import {
 } from "../../redux/features/EMMTableOfContentSlice";
 import SpServices from "../SPServices/SpServices";
 import { LIBNAMES, LISTNAMES } from "../../config/config";
+import {
+  UpdatePrimaryAuthorTask,
+  UpdateTask,
+} from "../MyTasks/MyTasksServices";
 
 export interface LibraryItem {
   ID?: number;
@@ -43,7 +47,7 @@ export const getLibraryItems = async (): Promise<{
     const folderItems: LibraryItem[] = [];
 
     for (const subFolder of folders) {
-      // removing FORMS defult folder using its unique ID which is dont needed in out application
+      // removing FORMS default folder using its unique ID which is dont needed in out application
       if (subFolder?.UniqueId !== "da7fc51c-8ee3-49b4-a6fd-0301e0533cc9") {
         const subFolderFields = await sp.web
           .getFolderByServerRelativePath(subFolder.ServerRelativeUrl)
@@ -97,6 +101,7 @@ export const getLibraryItems = async (): Promise<{
           });
       }
 
+      // if its admin role render all files with all status else render only restricted items by its approved status
       folderItems.push({
         ID: fileItemsFromList?.ID,
         fileID: fileFields?.ID,
@@ -194,17 +199,59 @@ const sortItemsBySequenceNo = (items: LibraryItem[]): LibraryItem[] => {
   return [...files, ...sortedFolders];
 };
 
+// filtering the data items by its doc status for non admin(user) role
+const filterData = (
+  data: LibraryItem[],
+  filterByStatus: string | any
+): LibraryItem[] => {
+  const matchesStatus = (item: LibraryItem): boolean => {
+    return (
+      filterByStatus === null ||
+      (item.type === "file" &&
+        item.fields?.status?.toLowerCase() === filterByStatus?.toLowerCase())
+    );
+  };
+
+  const filterRecursive = (items: LibraryItem[]): LibraryItem[] => {
+    return items
+      .map((item) => {
+        if (item.items) {
+          const filteredChildren = filterRecursive(item.items);
+          if (filteredChildren.length > 0) {
+            return {
+              ...item,
+              items: filteredChildren,
+            };
+          }
+        }
+
+        if (matchesStatus(item)) {
+          return { ...item };
+        }
+
+        return null;
+      })
+      .filter((item): item is LibraryItem => item !== null);
+  };
+
+  return filterRecursive(data);
+};
+
 // A function that loads all the table data and render it in the given table state
 export const LoadTableData = async (
   dispatch: Dispatch,
-  setTableData: (data: any) => void
+  setTableData: (data: any) => void,
+  isAdmin: boolean
 ): Promise<void> => {
   try {
     setTableData((prevData: any) => ({ ...prevData, loading: true }));
     const { items, DocumentPathOptions } = await getLibraryItems();
+    const AdminData: any[] = sortItemsBySequenceNo(items);
+    const UsersData = sortItemsBySequenceNo(filterData(items, "Approved"));
+
     setTableData((prevData: any) => ({
       ...prevData,
-      data: sortItemsBySequenceNo(items),
+      data: isAdmin ? AdminData : UsersData,
       loading: false,
     }));
     dispatch(setFoldersData(DocumentPathOptions));
@@ -245,7 +292,7 @@ export const createFolder = async (
   return folderCreation;
 };
 
-// fn used in changing a folder or group/subgroup and updating the value of its own
+// fn used in changing a folder or group/subgroup and updating the value of its own at the same time simentensoly it updates the docs and tasks which contains the path of the folder or sub folder
 export const EditFolderAndChangeItemPath = async (
   oldFolderPath: string,
   newFolderPath: string
@@ -256,22 +303,21 @@ export const EditFolderAndChangeItemPath = async (
     await oldFolder.moveTo(newFolderPath);
 
     // Retrieve files inside the updated folder
-    const newFolderFiles = await sp.web
+    const newFolderFiles: any = await sp.web
       .getFolderByServerRelativePath(newFolderPath)
       .files.select("*, ListItemAllFields/ID")
       .expand("ListItemAllFields")
       .get();
 
-    // Prepare batch for list item updates
-    const batch = sp.web.createBatch();
-
-    newFolderFiles.forEach((file: any) => {
+    // debugger;
+    // Update each file's document path
+    for (const file of newFolderFiles) {
       const itemId = file.ListItemAllFields.ID;
       const itemURL = file.ServerRelativeUrl?.split("/")
         ?.slice(0, -1)
         ?.join("/");
 
-      SpServices.SPReadItems({
+      const documentDetailsRes = await SpServices.SPReadItems({
         Listname: LISTNAMES.DocumentDetails,
         Filter: [
           {
@@ -280,29 +326,45 @@ export const EditFolderAndChangeItemPath = async (
             FilterValue: itemId,
           },
         ],
-      })
-        .then(async (res: any) => {
-          if (res.length > 0) {
-            await sp.web.lists
-              .getByTitle(LISTNAMES.DocumentDetails)
-              .items.getById(res[0].ID)
-              .inBatch(batch)
-              .update({
-                documentPath: itemURL,
-              });
-          }
-        })
-        .catch((err: any) => {
-          console.log("Error fetching items: ", err);
+      });
+
+      if (documentDetailsRes.length > 0) {
+        const documentId = documentDetailsRes[0].ID;
+        await sp.web.lists
+          .getByTitle(LISTNAMES.DocumentDetails)
+          .items.getById(documentId)
+          .update({ documentPath: itemURL });
+
+        const myTasksRes = await SpServices.SPReadItems({
+          Listname: LISTNAMES.MyTasks,
+          Select: "*,documentDetails/ID",
+          Expand: "documentDetails",
+          Filter: [
+            {
+              FilterKey: "documentDetailsId",
+              Operator: "eq",
+              FilterValue: documentId,
+            },
+          ],
         });
-    });
 
-    await batch.execute();
+        const hasPATask = myTasksRes.filter(
+          (item: any) => item?.role?.toLowerCase() === "primary author"
+        );
 
-    return true;
+        if (hasPATask.length !== 0) {
+          await UpdatePrimaryAuthorTask(documentId);
+          await UpdateTask(documentId);
+        } else {
+          console.log("No task available for this item.");
+        }
+      }
+    }
+
+    return "true";
   } catch (error: any) {
     console.error("Error in editFolderAndChangeItemPath: ", error.message);
-    return false;
+    return error;
   }
 };
 

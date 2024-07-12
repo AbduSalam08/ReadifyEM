@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { memo, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import Menu, { MenuProps } from "@mui/material/Menu";
@@ -121,4 +121,4 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   );
 };
 
-export default MenuButton;
+export default memo(MenuButton);

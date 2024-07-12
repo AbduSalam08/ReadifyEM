@@ -10,17 +10,14 @@ import { CONFIG } from "../../../../../config/config";
 
 interface Props {
   selectedItem?: any;
-  onChange: (value: string) => void;
+  onChange: (value: any[]) => void;
   placeholder?: string;
-  personSelectionLimit?: number;
+  personSelectionLimit?: number | any;
   size?: "SM" | "MD" | "XL";
-  isValid?: boolean;
+  isValid: boolean;
   errorMsg?: string;
-  labelText?: string;
-  withLabel?: boolean;
-  disabled?: boolean;
-  readOnly?: boolean;
   minWidth?: any;
+  noErrorMsg?: boolean; // if true, no error message will be shown
 }
 
 const CustomPeoplePicker: React.FC<Props> = ({
@@ -29,20 +26,16 @@ const CustomPeoplePicker: React.FC<Props> = ({
   personSelectionLimit,
   selectedItem,
   size,
-  withLabel,
-  labelText,
-  disabled,
   isValid,
   errorMsg,
   minWidth,
-  readOnly,
+  noErrorMsg = false,
 }) => {
   const multiPeoplePickerStyle = {
     root: {
       minWidth: minWidth ? minWidth : 200,
       background: "rgba(218, 218, 218, 0.29)",
       ".ms-BasePicker-text": {
-        // minHeigth: "43px",
         height: size === "SM" ? "34px" : size === "MD" ? "32px" : "43px",
         borderRadius: "4px",
         maxHeight: "50px",
@@ -85,97 +78,32 @@ const CustomPeoplePicker: React.FC<Props> = ({
     (state: any) => state.MainSPContext.value
   );
 
-  const handleChange = (e: any): void => {
-    onChange(e);
+  const handleChange = (items: any[]): void => {
+    onChange(items);
   };
+
+  const selectedUserItem =
+    personSelectionLimit > 1
+      ? selectedItem?.map((item: any) => item.secondaryText || item.Email)
+      : [selectedItem];
 
   return (
     <>
-      {/* <PeoplePicker
+      <PeoplePicker
         context={mainContext}
         webAbsoluteUrl={CONFIG.webURL}
-        //   titleText="Select People"
-        personSelectionLimit={personSelectionLimit}
+        personSelectionLimit={personSelectionLimit || 1}
         showtooltip={false}
         ensureUser={true}
         placeholder={placeholder}
-        // peoplePickerCntrlclassName={styles.}
-        onChange={(e: any) => {
-          handleChange(e);
-        }}
+        onChange={handleChange}
         styles={multiPeoplePickerStyle}
-        //   showHiddenInUI={true}
         principalTypes={[PrincipalType.User]}
-        defaultSelectedUsers={[selectedItem] || null}
+        defaultSelectedUsers={selectedUserItem}
         resolveDelay={1000}
       />
-      <p className={isValid ? styles.errorMsg : ""}>{isValid && errorMsg}</p> */}
-
-      <div
-        className={`${
-          withLabel ? styles.inputWrapperWithLabel : styles.inputWrapper
-        } ${disabled ? styles.disabledInput : ""}`}
-      >
-        {withLabel && <p className={styles.inputLabel}>{labelText}</p>}
-        {/* <IconField
-          disabled={disabled}
-          iconPosition="left"
-          className={`${inputWrapperClassName} ${
-            styles[`customInput${size}`]
-          } ${isValid ? styles.errorInput : ""}`}
-        >
-          {icon && (
-            <InputIcon
-              style={{
-                color: "var(--placeholder)",
-              }}
-              className={`pi pi-search`}
-            />
-          )}
-          <InputText
-            v-model="value1"
-            readOnly={readOnly}
-            disabled={disabled}
-            value={value || ""}
-            type={type}
-            placeholder={placeholder}
-            onChange={handleChange}
-            className={inputClassName}
-            style={{
-              paddingLeft: icon ? "30px" : "0px",
-            }}
-          />
-        </IconField> */}
-        <PeoplePicker
-          context={mainContext}
-          webAbsoluteUrl={CONFIG.webURL}
-          //   titleText="Select People"
-          personSelectionLimit={personSelectionLimit}
-          showtooltip={false}
-          ensureUser={true}
-          placeholder={placeholder}
-          // peoplePickerCntrlclassName={styles.}
-          onChange={(e: any) => {
-            handleChange(e);
-          }}
-          styles={multiPeoplePickerStyle}
-          //   showHiddenInUI={true}
-          principalTypes={[PrincipalType.User]}
-          defaultSelectedUsers={[selectedItem] || null}
-          resolveDelay={1000}
-          disabled={readOnly}
-        />
-      </div>
-
-      {isValid && (
-        <p
-          className={styles.errorMsg}
-          style={{
-            textAlign: isValid && !withLabel ? "left" : "right",
-          }}
-        >
-          {errorMsg}
-        </p>
+      {!noErrorMsg && (
+        <p className={isValid ? styles.errorMsg : ""}>{isValid && errorMsg}</p>
       )}
     </>
   );

@@ -6,10 +6,16 @@ const LISTNAMES = {
   DocumentDetails: "DocumentDetails",
   SDDTemplates: "SDDTemplates",
   SDDTemplatesMain: "SDDTemplatesMain",
+  SectionDetails: "SectionDetails",
+  MyTasks: "MyTasks",
   Definition: "Definition",
 };
 const LIBNAMES = {
   AllDocuments: "AllDocuments",
+};
+
+const GROUPS = {
+  AdminGroup: "ReadifyEM_Admin",
 };
 
 const initialPopupLoaders = {
@@ -22,4 +28,4 @@ const initialPopupLoaders = {
   text: "",
   secondaryText: "",
 };
-export { CONFIG, LISTNAMES, initialPopupLoaders, LIBNAMES };
+export { CONFIG, LISTNAMES, initialPopupLoaders, LIBNAMES, GROUPS };

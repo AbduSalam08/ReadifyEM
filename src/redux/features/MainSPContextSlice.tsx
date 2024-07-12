@@ -3,6 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const mainData = {
   value: [],
+  currentUserDetails: {
+    userName: "",
+    role: "",
+    email: "",
+  },
 };
 
 const MainSPContext = createSlice({
@@ -12,8 +17,12 @@ const MainSPContext = createSlice({
     setMainSPContext: (state, action) => {
       state.value = action.payload;
     },
+    setCurrentUserDetails: (state, payload) => {
+      state.currentUserDetails = payload.payload;
+    },
   },
 });
 
-export const { setMainSPContext } = MainSPContext.actions;
+export const { setMainSPContext, setCurrentUserDetails } =
+  MainSPContext.actions;
 export default MainSPContext.reducer;

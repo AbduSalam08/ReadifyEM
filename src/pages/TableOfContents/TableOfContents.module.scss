@@ -52,3 +52,8 @@
     -webkit-user-drag: none !important;
   }
 }
+.topTOCHeader {
+  width: 100%;
+  @extend .flexcenter;
+  justify-content: space-between;
+}
