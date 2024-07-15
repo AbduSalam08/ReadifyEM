@@ -22,10 +22,11 @@ interface Props {
   readOnly?: boolean;
   mandatory?: boolean;
   hideErrMsg?: boolean;
+  onlyImage?: boolean;
   minWidth?: any;
 }
 
-const CustomPeoplePicker: React.FC<Props> = ({
+const CustomMultiplePeoplePicker: React.FC<Props> = ({
   onChange,
   placeholder = "User",
   personSelectionLimit,
@@ -49,11 +50,11 @@ const CustomPeoplePicker: React.FC<Props> = ({
       background: "rgba(218, 218, 218, 0.29)",
       ".ms-BasePicker-text": {
         // minHeigth: "43px",
-        height: size === "SM" ? "34px" : size === "MD" ? "32px" : "43px",
+        // height: size === "SM" ? "34px" : size === "MD" ? "32px" : "43px",
         borderRadius: "4px",
-        maxHeight: "50px",
-        overflowX: "hidden",
-        padding: "0px 10px",
+        // maxHeight: "50px",
+        // overflowX: "hidden",
+        padding: "3px 10px",
         minWidth: minWidth ? minWidth : "290px",
         background: "#fff",
         border: isValid ? "1px solid #ff8585" : "1px solid #adadad50",
@@ -61,6 +62,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
         fontFamily: "interMedium",
       },
       ".ms-BasePicker-input": {
+        display: readOnly ? "none" : "flex",
         height: size === "SM" ? "30px" : size === "MD" ? "30px" : "41px",
         fontFamily: "interMedium",
       },
@@ -90,9 +92,19 @@ const CustomPeoplePicker: React.FC<Props> = ({
   const mainContext: any = useSelector(
     (state: any) => state.MainSPContext.value
   );
+  console.log(mainContext);
 
   const handleChange = (e: any): void => {
     onChange(e);
+  };
+  const getSelectedEmails = (selectedUsers: any) => {
+    let selectedEmails: string[] = [];
+    if (selectedUsers?.length) {
+      selectedUsers?.forEach((user: any) => {
+        selectedEmails.push(user?.email);
+      });
+    }
+    return selectedEmails;
   };
 
   return (
@@ -175,7 +187,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
           styles={multiPeoplePickerStyle}
           //   showHiddenInUI={true}
           principalTypes={[PrincipalType.User]}
-          defaultSelectedUsers={[selectedItem] || null}
+          defaultSelectedUsers={getSelectedEmails(selectedItem)}
           resolveDelay={1000}
           disabled={readOnly}
         />
@@ -196,12 +208,10 @@ const CustomPeoplePicker: React.FC<Props> = ({
           style={{
             textAlign: isValid && !withLabel ? "left" : "right",
           }}
-        >
-          {""}
-        </p>
+        ></p>
       )}
     </>
   );
 };
 
-export default memo(CustomPeoplePicker);
+export default memo(CustomMultiplePeoplePicker);
