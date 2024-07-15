@@ -7,7 +7,7 @@ const defaultTemplates = [
   "Policy",
   "Procedures",
   "Definitions",
-  "Supporting Material",
+  "Supporting Materials",
   "References",
 ];
 export { defaultTemplates };

@@ -1,7 +1,13 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable no-debugger */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @rushstack/no-new-null */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable no-useless-escape */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+import * as dayjs from "dayjs";
+
 /**
  *
  * Checks if a value is not empty or within the specified length.
@@ -158,6 +164,94 @@ const trimStartEnd = (value: string): string => {
   const trimmedValueStart = value?.trimStart();
   const trimmedValueEnd = trimmedValueStart?.trimEnd();
   return trimmedValueEnd;
+};
+
+// keyboardUtils.ts
+export const handleKeyDown = (
+  event: React.KeyboardEvent<HTMLInputElement>,
+  value: string,
+  onChange: (newValue: string) => void
+): void => {
+  const inputElement = event.target as HTMLInputElement;
+  const { selectionStart, selectionEnd } = inputElement;
+
+  // Handle space key
+  if (event.key === " ") {
+    event.preventDefault();
+    const newValue =
+      value?.slice(0, selectionStart!) + " " + value.slice(selectionEnd!);
+    onChange(newValue);
+    setTimeout(() => {
+      inputElement.selectionStart = inputElement.selectionEnd =
+        selectionStart! + 1;
+    }, 0);
+  }
+
+  // Handle Ctrl+A (Select All)
+  if (event.ctrlKey && event.key === "a") {
+    event.preventDefault();
+    inputElement.selectionStart = 0;
+    inputElement.selectionEnd = value.length;
+  }
+
+  // Handle Ctrl+C (Copy)
+  if (event.ctrlKey && event.key === "c") {
+    event.preventDefault();
+    const selectedText = value.slice(selectionStart!, selectionEnd!);
+    navigator.clipboard.writeText(selectedText);
+  }
+
+  // Handle Ctrl+V (Paste)
+  if (event.ctrlKey && event.key === "v") {
+    event.preventDefault();
+    navigator.clipboard.readText().then((clipboardText) => {
+      const newValue =
+        value.slice(0, selectionStart!) +
+        clipboardText +
+        value.slice(selectionEnd!);
+      onChange(newValue);
+      setTimeout(() => {
+        inputElement.selectionStart = inputElement.selectionEnd =
+          selectionStart! + clipboardText.length;
+      }, 0);
+    });
+  }
+};
+const customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
+export const calculateDueDateByRole = (
+  startDate: string,
+  role:
+    | "document"
+    | "content developer"
+    | "consultant"
+    | "approver"
+    | "reviewer"
+): any => {
+  const start = dayjs(startDate, "DD/MM/YYYY");
+  let dueDate;
+
+  switch (role.toLowerCase()) {
+    case "document":
+      dueDate = start.add(90, "day").format("DD/MM/YYYY");
+      break;
+    case "content developer":
+      dueDate = start.add(30, "day").format("DD/MM/YYYY");
+      break;
+    case "consultant":
+      dueDate = start.add(30, "day").format("DD/MM/YYYY");
+      break;
+    case "approver":
+      dueDate = start.add(7, "day").format("DD/MM/YYYY");
+      break;
+    case "reviewer":
+      dueDate = start.add(7, "day").format("DD/MM/YYYY");
+      break;
+    default:
+      dueDate = "Invalid role";
+  }
+
+  return dueDate;
 };
 
 export {

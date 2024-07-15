@@ -285,7 +285,6 @@ html {
 }
 
 /* font faces */
-
 @font-face {
   font-family: "interThin";
   src: url("../fonts/InterGF/Inter-Thin.ttf");
@@ -334,6 +333,7 @@ html {
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -370,7 +370,7 @@ body {
   position: relative;
   height: calc(100vh - 110px);
   overflow: auto;
-  /* margin-top: 57px; */
+  margin-top: 57px;
   background-color: var(--body-bgcolor);
 }
 
@@ -589,6 +589,15 @@ body {
 }
 
 /* MUI Customisation */
+.MuiMenu-paper {
+  height: max-content !important;
+}
+.MuiTooltip-tooltip {
+  font-size: 13px !important;
+  font-family: "interRegular", sans-serif !important;
+  padding: 6px 10px !important;
+  line-height: 18px !important;
+}
 .MuiTabs-root,
 .MuiTabs-scroller {
   min-height: 32px !important;
@@ -602,19 +611,23 @@ body {
   font-family: "interRegular", sans-serif !important;
 }
 .Mui-selected {
-  background-color: var(--tab-bgcolor) !important;
+  /* background-color: var(--tab-bgcolor) !important; */
   color: var(--tab-color) !important;
-  border-radius: 4px !important;
+  /* border-radius: 4px !important;
   font-size: 15px !important;
   min-height: 32px !important;
   padding: 0 20px !important;
-  text-transform: none !important;
+  text-transform: none !important; */
   font-family: "interSemiBold", sans-serif !important;
+  z-index: 99 !important;
 }
 .MuiTabs-indicator {
-  background-color: var(--tab-color) !important;
+  background-color: var(--tab-bgcolor) !important;
   border-radius: 4px !important;
-  height: 1.5px !important;
+  height: 32px !important;
+  border-bottom: 2px solid var(--tab-color) !important;
+  border-bottom-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
 }
 .MuiSelect-icon {
   color: var(--placeholder) !important;
@@ -624,7 +637,7 @@ body {
   font-family: "interRegular", sans-serif !important;
 }
 .MuiMenuItem-root.MuiMenuItem-gutters.Mui-selected {
-  padding: 0 15px !important;
+  padding: 6px 15px !important;
   font-size: 14px !important;
   font-family: "interRegular", sans-serif !important;
 }
@@ -715,14 +728,59 @@ body {
   overflow: visible !important;
   border-radius: 10px !important;
 }
-.sectionRowDropList.p-orderlist .p-orderlist-list {
+/* .sectionRowDropList.p-orderlist .p-orderlist-list {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 3px;
-}
-
+} */
 .p-treeselect-panel .p-treeselect-items-wrapper .p-treeselect-empty-message {
   display: none !important;
+}
+.p-calendar > .p-inputtext {
+  padding: 10px !important;
+  font-family: "interRegular", sans-serif !important;
+  font-size: 13px !important;
+}
+.p-calendar:not(.p-calendar-disabled).p-focus > .p-inputtext {
+  border: 1px solid #adadad50 !important;
+  border-color: #adadad50 !important;
+  box-shadow: none !important;
+}
+.p-datepicker-trigger.p-button {
+  background-color: var(--primary-violet) !important;
+  box-shadow: none !important;
+  border: 1px solid var(--primary-violet) !important;
+}
+.p-datepicker .p-datepicker-header .p-datepicker-title .p-datepicker-month {
+  border: 1px solid #eee !important;
+  outline: 0 !important;
+}
+
+.p-datepicker-month {
+  color: #000 !important;
+}
+.p-datepicker-month option {
+  color: #000 !important;
+}
+.p-datepicker-calendar thead tr th {
+  padding: 10px !important;
+}
+.p-datepicker-calendar {
+  font-family: "interRegular", sans-serif !important;
+  font-size: 13px !important;
+}
+.p-datepicker table td.p-datepicker-today > span.p-highlight {
+  background: var(--primary-violet) !important;
+}
+.p-datepicker table td > span {
+  width: 32px !important;
+  height: 32px !important;
+}
+.p-datepicker table td > span.p-highlight {
+  background: var(--primary-violet) !important;
+}
+.p-datepicker-group-container {
+  box-shadow: 0px 3px 10px #00000010 !important;
 }

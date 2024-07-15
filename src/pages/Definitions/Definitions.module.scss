@@ -1,41 +1,41 @@
 .flexcenter {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .SDDTWrapper {
-    width: 100%;
+  width: 100%;
 }
 
 .pageTitleHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .contentWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .filters {
-    @extend .flexcenter;
-    justify-content: space-between;
-    margin: 20px 0;
-    gap: 20px;
+  @extend .flexcenter;
+  justify-content: space-between;
+  margin: 20px 0;
+  gap: 20px;
 }
 
 .rhs {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
 }
 
 .subGroupInput {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .clearFilterBtn {
@@ -64,3 +64,4 @@
     font-size: 18px;
     color: #a38080;
 }
+

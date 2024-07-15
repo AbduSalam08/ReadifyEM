@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { useCallback } from "react";
+
+import { memo, useCallback } from "react";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
@@ -25,6 +26,9 @@ interface Props {
   mandatory?: boolean;
   hideErrMsg?: boolean;
   submitBtn?: boolean;
+  onKeyDown?: any;
+  noErrorMsg?: boolean;
+  autoFocus?: boolean;
 }
 
 const CustomInput: React.FC<Props> = ({
@@ -45,12 +49,15 @@ const CustomInput: React.FC<Props> = ({
   mandatory,
   hideErrMsg,
   submitBtn,
+  onKeyDown,
+  noErrorMsg = false,
+  autoFocus,
 }) => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue =
-        type === "number" ? parseFloat(e.target.value) : e.target.value;
-      onChange(newValue);
+      // const newValue =
+      // type === "number" ? parseFloat(e.target.value) : e.target.value;
+      onChange(e.target.value);
     },
     [onChange, type]
   );
@@ -90,14 +97,16 @@ const CustomInput: React.FC<Props> = ({
             />
           )}
           <InputText
-            v-model="value1"
+            // v-model="value1"
             readOnly={readOnly}
+            autoFocus={autoFocus}
             disabled={disabled}
-            value={value || ""}
+            value={value}
             type={type}
             placeholder={placeholder}
             onChange={handleChange}
             className={inputClassName}
+            onKeyDown={onKeyDown}
             style={{
               paddingLeft: icon ? "30px" : "0px",
             }}
@@ -115,7 +124,7 @@ const CustomInput: React.FC<Props> = ({
         </IconField>
       </div>
 
-      {isValid ? (
+      {isValid && !noErrorMsg && (
         <p
           className={`${styles.errorMsg}${hideErrMsg ? styles.hideErrMSg : ""}`}
           style={{
@@ -138,4 +147,4 @@ const CustomInput: React.FC<Props> = ({
   );
 };
 
-export default CustomInput;
+export default memo(CustomInput);

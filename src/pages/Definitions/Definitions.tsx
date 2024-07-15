@@ -1,3 +1,4 @@
+/* eslint-disable @rushstack/no-new-null */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -7,14 +8,13 @@ import { memo, useEffect, useState } from "react";
 import PageTitle from "../../webparts/readifyEmMain/components/common/PageTitle/PageTitle";
 import styles from "./Definitions.module.scss";
 import CustomInput from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomInput";
+
 import CustomTextArea from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomTextArea";
+
 import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
 import Table from "../../webparts/readifyEmMain/components/Table/Table";
 import Popup from "../../webparts/readifyEmMain/components/common/Popups/Popup";
 import CustomPeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomPeoplePicker";
-// import SDDSections from "../../webparts/readifyEmMain/components/SDDSections/SDDSections";
-// utils
-// import { emptyCheck } from "../../utils/validations";
 import { togglePopupVisibility } from "../../utils/togglePopup";
 import { initialPopupLoaders } from "../../config/config";
 import { IPopupLoaders } from "../../interface/MainInterface";
@@ -26,17 +26,15 @@ import {
   LoadDefinitionTableData,
   LoadDefinitionData,
   ApproveDefinition,
-  // LoadSectionsTemplateData,
-  // softDeleteTemplate,
-  // UpdateSDDTemplate,
 } from "../../services/Definitions/DefinitionServices";
-// import { defaultTemplates } from "../../constants/DefaultTemplates";
 import { useDispatch, useSelector } from "react-redux";
+
 
 // import {
 //   checkDuplicates,
 //   filterTemplateByName,
 // } from "../../utils/SDDTemplatesUtils";
+
 // assets
 const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
 const deleteIcon: any = require("../../assets/images/svg/deleteIcon.svg");
@@ -190,9 +188,9 @@ const Definitions = (): JSX.Element => {
       }));
     }
   };
-  const validateSections = () => {
+  const validateSections = (): any => {
     // return true;
-    let duplicateCheck = AllDefinitionData.filter((obj: any) => {
+    const duplicateCheck = AllDefinitionData.filter((obj: any) => {
       return (
         obj.definitionName === definitionsData.definitionName &&
         obj.ID !== definitionsData.ID
