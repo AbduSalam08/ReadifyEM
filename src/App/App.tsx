@@ -24,8 +24,6 @@ import SDDTemplates from "../pages/SDDTemplates/SDDTemplates";
 import MyTasks from "../pages/MyTasks/MyTasks";
 import ConfigureSections from "../pages/ConfigureSections/ConfigureSections";
 import Definitions from "../pages/Definitions/Definitions";
-// import ContentDevelopment from "../pages/ContentDevelopment/ContentDevelopment";
-
 
 const App = (props: any): JSX.Element => {
   const dispatch = useDispatch();
@@ -55,9 +53,6 @@ const App = (props: any): JSX.Element => {
                 Component={ConfigureSections}
               />
               <Route path="definitions" Component={Definitions} />
-              <Route path="configure" Component={ConfigureSections} />
-              <Route path="definitions" Component={Definitions} />
-              {/* <Route path="definitions" Component={ContentDevelopment} /> */}
               <Route path="sdd_templates" Component={SDDTemplates} />
             </Route>
 
