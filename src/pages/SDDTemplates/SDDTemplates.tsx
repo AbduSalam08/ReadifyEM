@@ -558,12 +558,12 @@ const SDDTemplates = (): JSX.Element => {
       if (hasDuplicatesAppendixSection) {
         updatedSectionsData.appendixSectionError = {
           isValid: false,
-          errorMsg: "Duplicate sections found",
+          errorMsg: "Duplicate sections found!",
         };
       } else if (hasDuplicatesNormalSection) {
         updatedSectionsData.normalSectionError = {
           isValid: false,
-          errorMsg: "Duplicate sections found",
+          errorMsg: "Duplicate sections found!",
         };
       }
     }
@@ -582,7 +582,7 @@ const SDDTemplates = (): JSX.Element => {
       togglePopupVisibility(setPopupController, popupIndex, "close");
       AddSDDTemplate(sectionsData, setPopupLoaders);
     } else {
-      console.log("invalid submission");
+      console.log("invalid");
     }
   };
 
@@ -593,22 +593,22 @@ const SDDTemplates = (): JSX.Element => {
       const popupIndex: number = popupController?.findIndex((e) => e.open);
       togglePopupVisibility(setPopupController, popupIndex, "close");
 
-      const currentTemplateName: any = popupController[popupIndex]?.popupData;
+      const currentTemplatName: any = popupController[popupIndex]?.popupData;
 
       const currentTemplateData: any = filterTemplateByName(
-        currentTemplateName?.templateName,
+        currentTemplatName?.templateName,
         AllSDDTemplateData
       );
 
       UpdateSDDTemplate(currentTemplateData[0], sectionsData, setPopupLoaders);
     } else {
-      console.log("invalid submission");
+      console.log("invalid");
     }
   };
 
   // main that calls all data
   const setMainData = async (): Promise<any> => {
-    await LoadTableData(dispatch, setTableData);
+    await LoadTableData(setTableData, dispatch);
   };
 
   // lifecycle hooks

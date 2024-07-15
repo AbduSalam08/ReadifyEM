@@ -1,4 +1,3 @@
-/* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable prefer-const */
 /* eslint-disable no-unused-expressions */
@@ -203,13 +202,6 @@ const NewDocument = ({
     .toLowerCase()
     .includes("edit document");
 
-  const editPageDocument: any = screens.pageTitle
-    ?.toLowerCase()
-    ?.split?.("(")[1];
-  const editPageDocumentTitle: any = editPageDocument
-    ?.split(".pdf")[0]
-    ?.toLowerCase();
-
   // the folder URL which comes form the screens props
   const splittedPath: any = screens.editDocumentData?.url;
 
@@ -253,25 +245,12 @@ const NewDocument = ({
 
       if (currentStep.key === "Title") {
         isValid = emptyCheck(value) && value !== null && value !== undefined;
-        duplicate = !isEditDocument
-          ? !masterList.files.some((el: any) => {
-              return (
-                trimStartEnd(el.label?.split(".pdf")[0])?.toLowerCase() ===
-                trimStartEnd(value)?.toLowerCase()
-              );
-            })
-          : !masterList.files
-              .filter(
-                (el: any) =>
-                  trimStartEnd(el.label?.split(".pdf")[0]?.toLowerCase()) !==
-                  trimStartEnd(editPageDocumentTitle)
-              )
-              .some((el: any) => {
-                return (
-                  trimStartEnd(el.label?.split(".pdf")[0])?.toLowerCase() ===
-                  trimStartEnd(value)?.toLowerCase()
-                );
-              });
+        duplicate = !masterList.files.some((el: any) => {
+          return (
+            trimStartEnd(el.label?.split(".pdf")[0])?.toLowerCase() ===
+            trimStartEnd(value)?.toLowerCase()
+          );
+        });
       } else {
         isValid =
           typeof value !== "object"
@@ -285,7 +264,10 @@ const NewDocument = ({
       updatedFormData[activeStep] = {
         ...currentStep,
         value: value,
-        isValid: currentStep.key === "Title" ? duplicate && isValid : isValid,
+        isValid:
+          currentStep.key === "Title" && !isEditDocument
+            ? duplicate && isValid
+            : isValid,
         errorMsg:
           currentStep.key === "Title"
             ? !isValid
@@ -396,12 +378,12 @@ const NewDocument = ({
           label: "Every year",
         },
         {
-          value: "Every two years",
-          label: "Every two years",
+          value: "Every two year",
+          label: "Every two year",
         },
         {
-          value: "Every three years",
-          label: "Every three years",
+          value: "Every three year",
+          label: "Every three year",
         },
       ]}
     />,
@@ -491,25 +473,12 @@ const NewDocument = ({
         const isValid =
           emptyCheck(value) && value !== null && value !== undefined;
 
-        const isDuplicate = !isEditDocument
-          ? masterList.files.some((el: any) => {
-              return (
-                trimStartEnd(el.label?.split(".pdf")[0])?.toLowerCase() ===
-                trimStartEnd(value)?.toLowerCase()
-              );
-            })
-          : masterList.files
-              .filter(
-                (el: any) =>
-                  trimStartEnd(el.label?.split(".pdf")[0]?.toLowerCase()) !==
-                  trimStartEnd(editPageDocumentTitle)
-              )
-              .some((el: any) => {
-                return (
-                  trimStartEnd(el.label?.split(".pdf")[0])?.toLowerCase() ===
-                  trimStartEnd(value)?.toLowerCase()
-                );
-              });
+        const isDuplicate = masterList.files.some((el: any) => {
+          return (
+            trimStartEnd(el.label?.split(".pdf")[0])?.toLowerCase() ===
+            trimStartEnd(value)?.toLowerCase()
+          );
+        });
 
         if (isDuplicate) {
           return "duplicate";
@@ -523,7 +492,7 @@ const NewDocument = ({
     };
 
     const currentStepValidation =
-      formData[activeStep].key === "Title"
+      formData[activeStep].key === "Title" && !isEditDocument
         ? validateTitle()
         : isCurrentStepValidated;
 
@@ -622,7 +591,7 @@ const NewDocument = ({
       ...prev,
       toc: true,
       NewDocument: false,
-      pageTitle: "EM Manual - Table of contents",
+      pageTitle: "EM Manual - Table Of Contents",
     }));
   };
 
@@ -754,7 +723,7 @@ const NewDocument = ({
             ...prev,
             toc: true,
             NewDocument: false,
-            pageTitle: "EM Manual - Table of contents",
+            pageTitle: "EM Manual - Table Of Contents",
           }));
         }}
         onHide={() => {

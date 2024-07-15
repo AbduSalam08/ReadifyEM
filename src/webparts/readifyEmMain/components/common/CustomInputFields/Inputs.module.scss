@@ -5,19 +5,22 @@
   align-items: flex-end;
   justify-content: flex-end;
 }
+
 .inputWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
 }
+
 .p_pickerInputWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
 }
-.p_pickerInputWrapper > div:first-child {
+
+.p_pickerInputWrapper>div:first-child {
   width: 100%;
 }
 
@@ -28,6 +31,7 @@
   justify-content: space-between;
   gap: 15px;
   width: 100%;
+
   .inputLabel {
     font-size: 16px;
     width: 100%;
@@ -35,28 +39,29 @@
     color: #414141;
   }
 }
- .inputLabel {
-   font-size: 16px;
-   width: 100%;
-   font-family: "interMedium", sans-serif;
-   color: #414141;
- }
 
- .sendBtn {
-   width: 28px;
-   height: 28px;
-   display: grid;
-   place-items: center;
-   border: 1px solid rgba(0, 0, 0, 0.06);
-   border-radius: 50%;
-   background-color: #fff;
-   margin-right: 10px;
+.inputLabel {
+  font-size: 16px;
+  width: 100%;
+  font-family: "interMedium", sans-serif;
+  color: #414141;
+}
 
-   img {
-     width: 12px;
-     height: 12px;
-   }
- }
+.sendBtn {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 50%;
+  background-color: #fff;
+  margin-right: 10px;
+
+  img {
+    width: 12px;
+    height: 12px;
+  }
+}
 
 .input {
   border: 1px solid #adadad50 !important;
@@ -69,6 +74,7 @@
   background-color: #fff;
   min-width: 265px;
   width: 100%;
+
   input {
     font-size: 14px;
     font-family: "interMedium", sans-serif !important;
@@ -79,6 +85,7 @@
     padding-left: 10px;
     color: #414141 !important;
   }
+
   span {
     // position: relative !important;
     top: 10px !important;
@@ -89,23 +96,27 @@
     color: #8e8e8e !important;
   }
 }
+
 .customInputXL {
   @extend .input;
   height: 43px;
   width: 100%;
 }
+
 .customInputMD {
   @extend .input;
   height: 34px;
   width: 100%;
   font-size: 14px;
 }
+
 .customInputSM {
   @extend .input;
   height: 30px;
   width: 100%;
   font-size: 14px;
 }
+
 // dropdown input
 .dropdowninput {
   border: 1px solid #adadad50 !important;
@@ -116,30 +127,36 @@
   outline: 0 !important;
   background-color: #fff;
 }
+
 .treeSelect {
   min-width: 265px;
   width: 100%;
   // max-width: 276px;
   border: 1px solid var(--ad-grey-50);
 }
+
 .customDropDownInputXL {
   @extend .dropdowninput;
   height: 43px !important;
 }
+
 .customDropDownInputMD {
   @extend .dropdowninput;
   height: 34px !important;
   font-size: 14px !important;
 }
+
 .customDropDownInputSM {
   @extend .dropdowninput;
   height: 30px !important;
   font-size: 14px !important;
 }
+
 .placeHolder {
   color: #8e8e8e !important;
   font-family: "interMedium", sans-serif !important;
 }
+
 .errorMsg {
   margin-top: 5px;
   margin-bottom: 16px;
@@ -150,6 +167,7 @@
   // text-transform: lowercase;
   animation: slideAndFade 0.17s both ease !important;
 }
+
 .emptyMsg {
   padding: 13px;
   margin-top: 5px;
@@ -161,104 +179,118 @@
   // text-transform: lowercase;
   animation: slideAndFade 0.17s both ease !important;
 }
+
 .errorInput {
   border: 1px solid #ff8585 !important;
 }
+
 @keyframes slideAndFade {
   0% {
     opacity: 0;
-    margin-top: -10px; /* Start off-screen */
+    margin-top: -10px;
+    /* Start off-screen */
   }
+
   100% {
     opacity: 1;
-    margin-top: 5px; /* Slide down */
+    margin-top: 5px;
+    /* Slide down */
   }
 }
+
 .disabledInput {
   opacity: 0.6 !important;
 }
+
 .pathSearchFilter {
   margin: 10px !important;
 }
-.mandatoryField::after{
+
+.mandatoryField::after {
   content: "*";
   color: red;
 }
-.readOnly{
-  border: none!important;
+
+.readOnly {
+  border: none !important;
 }
-.hideErrMSg{
-  display: none!important;
+
+.hideErrMSg {
+  display: none !important;
 }
 
 // mutiple persona style
 
-.personaSection{
+.personaSection {
   position: relative;
   display: flex;
   // gap: 10px;
-align-items: center;
+  align-items: center;
+}
+  // date picker styles
+  .d_input_container {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
-// date picker styles
-.d_input_container {
-  width: 100%;
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column;
-}
-.diabledField {
-  opacity: 0.6 !important;
-}
-.d_datepicker_wrapper {
-  width: 200px;
-  // border: 0.13rem solid #97979770;
-  background-color: transparent;
-  border-radius: 3px;
-  font-size: 1.4rem;
-  cursor: pointer;
-  height: 30px;
-  // border-radius: 0.6rem;
-}
-.d_datepicker {
-  width: 100%;
-  // border: 0.13rem solid #97979770;
-  background-color: transparent;
-  border-radius: 3px;
-  font-size: 1.4rem;
-  cursor: pointer;
-  border-radius: 4px;
-  height: 30px !important;
-}
-.inputContainer {
-  display: flex;
-  flex-direction: column;
-  height: 30px !important;
-  // margin-bottom: 1rem;
-}
+  .diabledField {
+    opacity: 0.6 !important;
+  }
 
-.disabledField {
-  opacity: 0.6;
-  pointer-events: none;
-}
+  .d_datepicker_wrapper {
+    width: 200px;
+    // border: 0.13rem solid #97979770;
+    background-color: transparent;
+    border-radius: 3px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    height: 30px;
+    // border-radius: 0.6rem;
+  }
 
-.datepickerWrapper {
-  position: relative;
-}
+  .d_datepicker {
+    width: 100%;
+    // border: 0.13rem solid #97979770;
+    background-color: transparent;
+    border-radius: 3px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    border-radius: 4px;
+    height: 30px !important;
+  }
 
-.datepicker {
-  width: 100%;
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
+  .inputContainer {
+    display: flex;
+    flex-direction: column;
+    height: 30px !important;
+    // margin-bottom: 1rem;
+  }
 
-.error {
-  border-color: red;
-}
+  .disabledField {
+    opacity: 0.6;
+    pointer-events: none;
+  }
 
-.errorMessage {
-  color: red;
-  font-size: 0.8rem;
-  margin-top: 0.5rem;
-}
+  .datepickerWrapper {
+    position: relative;
+  }
+
+  .datepicker {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .error {
+    border-color: red;
+  }
+
+  .errorMessage {
+    color: red;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }

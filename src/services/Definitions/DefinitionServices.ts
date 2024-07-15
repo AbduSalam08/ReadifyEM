@@ -12,6 +12,7 @@ import SpServices from "../SPServices/SpServices";
 // import * as dayjs from "dayjs";
 
 // Update Difinition Function
+
 const UpdateDefinition = async (
   formData: any,
   setLoaderState: any
@@ -71,7 +72,6 @@ const UpdateDefinition = async (
     });
   }
 };
-
 const DeleteDefinition = async (
   formData: any,
   setLoaderState: any
@@ -123,7 +123,6 @@ const DeleteDefinition = async (
     });
   }
 };
-
 const ApproveDefinition = async (
   formData: any,
   setLoaderState: any
@@ -313,7 +312,7 @@ const LoadDefinitionData = async (
     })
       .then((res: any) => {
         console.log(res);
-        const CurrentDefinitionDetails: any = {
+        let CurrentDefinitionDetails: any = {
           ID: templateID,
           definitionName: res?.Title ? res.Title : "",
           definitionDescription: res?.description ? res.description : "",

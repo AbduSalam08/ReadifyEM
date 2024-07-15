@@ -9,7 +9,6 @@ const completedImg = require("../../../../../../assets/images/svg/completedSVG.s
 const errorImg = require("../../../../../../assets/images/svg/errorImg.svg");
 // styles
 import styles from "../Popup.module.scss";
-import { memo } from "react";
 
 // interfaces
 interface Props {
@@ -100,4 +99,4 @@ const AlertPopup = ({
   );
 };
 
-export default memo(AlertPopup);
+export default AlertPopup;

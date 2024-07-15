@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, ButtonProps } from "@mui/material";
 import styles from "./Buttons.module.scss";
-import { memo } from "react";
 
 interface Props extends ButtonProps {
   text: any;
@@ -64,4 +63,4 @@ const DefaultButton = ({
   );
 };
 
-export default memo(DefaultButton);
+export default DefaultButton;

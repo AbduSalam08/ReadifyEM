@@ -3,11 +3,10 @@
   align-items: center;
   justify-content: center;
 }
-
-// task card styles
+// task card styes
 .taskCard {
-  width: 450px;
-  min-height: 175px;
+  width: 374px;
+  min-height: 165px;
   border-radius: 8px;
   background-color: var(--white);
   box-shadow: 0px 4px 24px -9px rgba(0, 0, 0, 0.1);
@@ -22,7 +21,7 @@
     border-radius: 7px;
     border-top-right-radius: 0;
     border-top-left-radius: 0;
-    // background-color: #1068a8;
+    background-color: #1068a8;
     width: 23px;
     height: 20px;
     margin-bottom: 5px;
@@ -54,8 +53,6 @@
         font-size: 13px;
         color: var(--ad-grey);
         font-family: "interRegular", sans-serif;
-        max-width: 230px;
-        line-height: 20px;
       }
     }
   }
@@ -65,13 +62,13 @@
     width: 100%;
     .actionBtn {
       font-size: 13px;
-      // border: 1px solid #1068a8;
+      border: 1px solid #1068a8;
       padding: 6px 10px;
       border-radius: 4px;
       outline: 0 !important;
       cursor: pointer;
       font-family: "interMedium", sans-serif;
-      // color: #1068a8;
+      color: #1068a8;
       background-color: transparent !important;
     }
     .dueDate {
@@ -89,56 +86,4 @@
       }
     }
   }
-}
-
-// button styles
-.actionBtn.primaryAuthorButton {
-  background-color: #fff;
-  color: #1068a8;
-  border: 1px solid #1068a8;
-}
-
-.actionBtn.sectionAuthorButton {
-  background-color: #fff;
-  color: #158e78;
-  border: 1px solid #158e78;
-}
-
-.actionBtn.consultantButton {
-  background-color: #fff;
-  color: #e79901;
-  border: 1px solid #e79901;
-}
-
-.actionBtn.reviewerButton {
-  background-color: #fff;
-  color: #ff5b65;
-  border: 1px solid #ff5b65;
-}
-
-.actionBtn.approverButton {
-  background-color: #fff;
-  color: #47b1ff;
-  border: 1px solid #47b1ff;
-}
-
-// badge styles
-.cardIndicator.primaryAuthorBadge {
-  background-color: #1068a8;
-}
-
-.cardIndicator.sectionAuthorBadge {
-  background-color: #19d3b2;
-}
-
-.cardIndicator.consultantBadge {
-  background-color: #e79901;
-}
-
-.cardIndicator.reviewerBadge {
-  background-color: #ff5b65;
-}
-
-.cardIndicator.approverBadge {
-  background-color: #47b1ff;
 }

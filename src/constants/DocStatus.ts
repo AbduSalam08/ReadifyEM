@@ -9,12 +9,4 @@ const DocStatus = [
   "Rework",
 ];
 
-const DocRoles = [
-  "Primary Author",
-  "Section Author",
-  "Consultant",
-  "Reviewer",
-  "Approver",
-];
-
-export { DocStatus, DocRoles };
+export { DocStatus };

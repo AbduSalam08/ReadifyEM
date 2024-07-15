@@ -90,7 +90,7 @@ const SDDSections = ({
       ...prev,
       [sectionErrorKey]: {
         isValid: !isDuplicate,
-        errorMsg: !isDuplicate ? "" : "Duplicate sections found",
+        errorMsg: !isDuplicate ? "" : "Duplicate sections found!",
       },
     }));
   };
@@ -141,7 +141,7 @@ const SDDSections = ({
       [objKey]: updatedSections,
       [sectionErrorKey]: {
         isValid: !isDuplicate,
-        errorMsg: !isDuplicate ? "" : "Duplicate sections found",
+        errorMsg: !isDuplicate ? "" : "Duplicate sections found!",
       },
     }));
   };
@@ -201,7 +201,7 @@ const SDDSections = ({
       isNotDefaultSection ? (
         <span className={styles.errorBadge}>
           {AllSectionsData[sectionErrorKey]?.errorMsg ||
-            "Duplicate sections found"}
+            "Duplicate sections found!"}
         </span>
       ) : (
         ""

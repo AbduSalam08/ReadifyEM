@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { memo } from "react";
 import styles from "./StepperHeader.module.scss";
 
 interface Props {
@@ -34,4 +33,4 @@ const StepperHeader = ({ steps, activeStep }: Props): JSX.Element => {
   );
 };
 
-export default memo(StepperHeader);
+export default StepperHeader;
