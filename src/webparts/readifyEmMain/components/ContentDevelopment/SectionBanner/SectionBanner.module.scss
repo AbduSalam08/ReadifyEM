@@ -1,0 +1,20 @@
+.headerContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ebeaec;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    .bannerSec{
+        display: flex;
+        justify-content: space-between;
+        gap:10px;
+        padding: 4px;
+        span{
+            font-size: 11px;
+            color:#7a7a7c;
+            font-weight: 600;
+        }
+    }
+}
