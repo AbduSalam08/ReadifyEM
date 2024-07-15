@@ -295,7 +295,6 @@ const LoadDefinitionData = async (
   update?: boolean,
   dispatch?: any
 ): Promise<any> => {
-  debugger;
   // Set loading state
   setSectionsData((prev: any) => ({
     ...prev,
