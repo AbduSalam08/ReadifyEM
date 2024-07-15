@@ -6,6 +6,7 @@ import arrowRightIcon from "../../../../assets/images/svg/arrowRight.svg";
 import pdfIcon from "../../../../assets/images/svg/pdfIcon.svg";
 import styles from "./Table.module.scss";
 import StatusPill from "../StatusPill/StatusPill";
+import { CurrentUserIsAdmin } from "../../../../constants/DefineUser";
 
 interface LibraryItem {
   name: string;
@@ -26,6 +27,7 @@ interface TableItemProps {
   renderActionsForFiles?: any;
   renderActionsForFolders?: any;
   defaultTable?: boolean;
+  columns?: any;
 }
 
 const TableItem: React.FC<TableItemProps> = ({
@@ -38,10 +40,11 @@ const TableItem: React.FC<TableItemProps> = ({
   renderActionsForFiles,
   renderActionsForFolders,
   defaultTable,
+  columns,
 }) => {
   const [data, setData] = useState(tableData);
   const [isOpen, setIsOpen] = useState(data.open);
-
+  const isAdmin: boolean = CurrentUserIsAdmin();
   useEffect(() => {
     setIsOpen(data.open);
   }, [data?.open]);
@@ -99,15 +102,25 @@ const TableItem: React.FC<TableItemProps> = ({
           justifyContent: "space-between",
         }}
       >
-        {Object.keys(item).map((key: string, i: number) => {
-          return (
-            key.toLowerCase() !== "id" && (
-              <div className={styles.item} title={item[key] || "-"} key={i}>
-                {item[key] || "-"}
-              </div>
-            )
-          );
-        })}
+        {columns?.length === 0
+          ? Object.keys(item).map((key: string, i: number) => {
+              return (
+                key.toLowerCase() !== "id" && (
+                  <div className={styles.item} title={item[key] || "-"} key={i}>
+                    {item[key] || "-"}
+                  </div>
+                )
+              );
+            })
+          : Object.keys(item).map((key: string, i: number) => {
+              return (
+                columns?.includes(key) && (
+                  <div className={styles.item} title={item[key] || "-"} key={i}>
+                    <span>{item[key] || "-"}</span>
+                  </div>
+                )
+              );
+            })}
         {actions && (
           <div className={styles.actionItem}>{renderActionsForFiles(item)}</div>
         )}
@@ -203,7 +216,7 @@ const TableItem: React.FC<TableItemProps> = ({
                   // console.log("Files onChange:", e);
                   handleData(e.value);
                 }}
-                dragdrop
+                dragdrop={isAdmin}
                 // focusOnHover={false}
               />
               <OrderList
@@ -216,7 +229,7 @@ const TableItem: React.FC<TableItemProps> = ({
                   // console.log("Folders onChange:", e);
                   handleData(e.value);
                 }}
-                dragdrop
+                dragdrop={isAdmin}
                 // focusOnHover={false}
               />
             </div>
@@ -295,7 +308,7 @@ const TableItem: React.FC<TableItemProps> = ({
                 // console.log("e: ", e);
                 handleData(e.value);
               }}
-              dragdrop
+              dragdrop={isAdmin}
               // focusOnHover={false}
             />
 
@@ -309,7 +322,7 @@ const TableItem: React.FC<TableItemProps> = ({
                 // console.log("e: ", e);
                 handleData(e.value);
               }}
-              dragdrop
+              dragdrop={isAdmin}
               // focusOnHover={false}
             />
           </div>

@@ -14,6 +14,7 @@ import { IPopupLoaders } from "../../../../interface/MainInterface";
 import { initialPopupLoaders } from "../../../../config/config";
 import { OrderList } from "primereact/orderlist";
 import { updateFolderSequenceNumber } from "../../../../services/EMManual/EMMServices";
+import { CurrentUserIsAdmin } from "../../../../constants/DefineUser";
 
 interface ITableProps {
   headers: string[];
@@ -28,6 +29,7 @@ interface ITableProps {
   renderActionsForFolders?: any;
   defaultTable?: any;
   loadData?: any;
+  columns?: any;
 }
 
 interface LibraryItem {
@@ -50,7 +52,10 @@ const Table: React.FC<ITableProps> = ({
   renderActionsForFolders,
   defaultTable,
   loadData,
+  columns,
 }: ITableProps): JSX.Element => {
+  const isAdmin: boolean = CurrentUserIsAdmin();
+
   const loaderTemplateData: any = defaultTable
     ? headers
     : [
@@ -74,6 +79,7 @@ const Table: React.FC<ITableProps> = ({
       ];
 
   const [DNDData, setDNDData] = useState<LibraryItem[]>([]);
+
   const [popupLoaders, setPopupLoaders] =
     useState<IPopupLoaders>(initialPopupLoaders);
 
@@ -209,6 +215,7 @@ const Table: React.FC<ITableProps> = ({
     return (
       <TableItem
         tableData={data}
+        columns={columns}
         itemTemplateLoading={TableItemLoading}
         handleData={handleData}
         loading={loading}
@@ -301,7 +308,7 @@ const Table: React.FC<ITableProps> = ({
             // console.log("e: ", e.value);
             handleData(e.value);
           }}
-          dragdrop
+          dragdrop={isAdmin}
           focusOnHover={false}
         />
       ) : // ))
@@ -311,6 +318,7 @@ const Table: React.FC<ITableProps> = ({
             tableData={data}
             itemTemplateLoading={TableItemLoading}
             handleData={handleData}
+            columns={columns}
             loading={loading}
             togglePanel={togglePanel}
             key={i}
@@ -324,24 +332,24 @@ const Table: React.FC<ITableProps> = ({
         <div className={styles.panelContainer}>
           {filters?.searchTerm && filters?.filterByStatus && (
             <span className={styles.errorMsg}>
-              <p>"{filters.searchTerm}"</p> Not found in{" "}
-              <p>"{filters.filterByStatus}"</p> status.
+              <p> "{filters.searchTerm}" </p> Not found in{" "}
+              <p> "{filters.filterByStatus}" </p> status.
             </span>
           )}
           {filters?.searchTerm && !filters?.filterByStatus && (
             <span className={styles.errorMsg}>
-              <p>"{filters.searchTerm}"</p> Not found!
+              <p> "{filters.searchTerm}" </p> Not found!
             </span>
           )}
           {!filters?.searchTerm && filters?.filterByStatus && (
             <span className={styles.errorMsg}>
-              No document found in <p>"{filters.filterByStatus}"</p> status.
+              No document found in <p> "{filters.filterByStatus}" </p> status.
             </span>
           )}
           {DNDData?.length === 0 &&
             !filters?.searchTerm &&
             !filters?.filterByStatus && (
-              <span className={styles.errorMsg}>No data found.</span>
+              <span className={styles.errorMsg}> No data found.</span>
             )}
         </div>
       )}

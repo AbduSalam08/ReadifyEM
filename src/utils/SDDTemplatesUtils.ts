@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const checkDuplicates = (data: any[]): boolean => {
   const allSections = [...data];
@@ -15,7 +16,7 @@ export const checkDuplicates = (data: any[]): boolean => {
     {}
   );
 
-  return Object.values(valuesCount).some((count: number) => count > 1);
+  return Object?.values(valuesCount)?.some((count: number) => count > 1);
 };
 
 // A simple function to filter the template by its name

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import styles from "./Header.module.scss";
 import DefaultButton from "../../common/Buttons/DefaultButton";
@@ -21,7 +22,7 @@ const Header: React.FC<Props> = ({
   documentStatus,
   onChange,
 }) => {
-  const selectSection = (index: number, title: string) => {
+  const selectSection = (index: number, title: string): any => {
     onChange(index, false, title);
   };
   return (

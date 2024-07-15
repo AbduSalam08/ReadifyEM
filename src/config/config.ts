@@ -14,6 +14,10 @@ const LIBNAMES = {
   AllDocuments: "AllDocuments",
 };
 
+const GROUPS = {
+  AdminGroup: "ReadifyEM_Admin",
+};
+
 const initialPopupLoaders = {
   visibility: false,
   isLoading: {
@@ -24,4 +28,4 @@ const initialPopupLoaders = {
   text: "",
   secondaryText: "",
 };
-export { CONFIG, LISTNAMES, initialPopupLoaders, LIBNAMES };
+export { CONFIG, LISTNAMES, initialPopupLoaders, LIBNAMES, GROUPS };

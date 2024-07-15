@@ -62,6 +62,7 @@
     color: #adadad;
     p {
       font-family: "interSemiBold", sans-serif;
+      padding: 0 5px;
     }
   }
   cursor: pointer;
@@ -226,10 +227,10 @@
     span {
       white-space: nowrap;
       text-overflow: ellipsis;
-      /* display: -webkit-box; */
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      /* display: -webkit-box; */
       max-width: 250px;
       height: 16px;
     }

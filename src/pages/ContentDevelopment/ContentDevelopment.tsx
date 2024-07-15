@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import Popup from "../../webparts/readifyEmMain/components/common/Popups/Popup";
 
@@ -250,6 +252,7 @@ const ContentDevelopment = (): JSX.Element => {
           // handleOnChangeFunction(value, "definitionName");
         }}
         readOnly={true}
+        noBorderInput={true}
         hideErrMsg={true}
         key={1}
       />,
@@ -263,6 +266,7 @@ const ContentDevelopment = (): JSX.Element => {
           // handleOnChangeFunction(value, "definitionName");
         }}
         readOnly={true}
+        noBorderInput={true}
         hideErrMsg={true}
         key={1}
       />,
@@ -276,6 +280,7 @@ const ContentDevelopment = (): JSX.Element => {
           // handleOnChangeFunction(value, "definitionName");
         }}
         readOnly={true}
+        noBorderInput={true}
         hideErrMsg={true}
         key={1}
       />,
@@ -289,6 +294,7 @@ const ContentDevelopment = (): JSX.Element => {
           // handleOnChangeFunction(value, "definitionName");
         }}
         readOnly={true}
+        noBorderInput={true}
         hideErrMsg={true}
         key={1}
       />,
@@ -302,6 +308,7 @@ const ContentDevelopment = (): JSX.Element => {
         }}
         selectedItem={documentDetails?.primaryAuthor?.email}
         readOnly={true}
+        // noBorderInput={true}
         key={5}
       />,
       <CustomMutiplePeoplePicker

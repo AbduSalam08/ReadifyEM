@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from "./SectionHeader.module.scss";
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
 import CustomMutiplePeoplePicker from "../../common/CustomInputFields/CustomMutiplePeoplePicker";
@@ -15,7 +16,7 @@ const SectionHeader: React.FC<Props> = ({
 }) => {
   console.log(sectionAuthor);
 
-  const handleOnChangeFunction = (value: any) => {
+  const handleOnChangeFunction = (value: any): any => {
     console.log(value);
   };
 

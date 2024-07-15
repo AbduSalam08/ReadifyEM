@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { useState } from "react";
 import styles from "./SectionComments.module.scss";
@@ -14,7 +15,7 @@ const SectionComments: React.FC<Props> = ({ commentsData, isHeader }) => {
 
   const [inputComment, setInputComment] = useState<string>("");
 
-  const onChangeFunction = (value: string) => {
+  const onChangeFunction = (value: string): any => {
     setInputComment(value);
   };
 

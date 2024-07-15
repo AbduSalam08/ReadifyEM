@@ -25,6 +25,10 @@ interface Props {
   mandatory?: boolean;
   hideErrMsg?: boolean;
   submitBtn?: boolean;
+  autoFocus?: boolean;
+  noErrorMsg?: boolean;
+  onKeyDown?: any;
+  noBorderInput?: boolean;
 }
 
 const CustomInput: React.FC<Props> = ({
@@ -45,6 +49,10 @@ const CustomInput: React.FC<Props> = ({
   mandatory,
   hideErrMsg,
   submitBtn,
+  autoFocus,
+  noErrorMsg,
+  onKeyDown,
+  noBorderInput,
 }) => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,7 +65,7 @@ const CustomInput: React.FC<Props> = ({
   // const MainSPContext = useSelector((state: any) => state.MainSPContext.value);
 
   return (
-    <>
+    <div className={styles.inputMainWrapper}>
       <div
         className={`${
           withLabel ? styles.inputWrapperWithLabel : styles.inputWrapper
@@ -78,7 +86,7 @@ const CustomInput: React.FC<Props> = ({
           className={`${inputWrapperClassName} ${
             styles[`customInput${size}`]
           } ${isValid ? styles.errorInput : ""} ${
-            readOnly ? styles.readOnly : ""
+            noBorderInput ? styles.noBorderInput : ""
           }`}
         >
           {icon && (
@@ -92,7 +100,9 @@ const CustomInput: React.FC<Props> = ({
           <InputText
             v-model="value1"
             readOnly={readOnly}
+            autoFocus={autoFocus}
             disabled={disabled}
+            onKeyDown={onKeyDown}
             value={value || ""}
             type={type}
             placeholder={placeholder}
@@ -115,7 +125,7 @@ const CustomInput: React.FC<Props> = ({
         </IconField>
       </div>
 
-      {isValid ? (
+      {/* {isValid ? (
         <p
           className={`${styles.errorMsg}${hideErrMsg ? styles.hideErrMSg : ""}`}
           style={{
@@ -133,8 +143,19 @@ const CustomInput: React.FC<Props> = ({
         >
           {""}
         </p>
+      )} */}
+
+      {isValid && !noErrorMsg && (
+        <p
+          className={styles.errorMsg}
+          style={{
+            textAlign: isValid && !withLabel ? "left" : "right",
+          }}
+        >
+          {errorMsg}
+        </p>
       )}
-    </>
+    </div>
   );
 };
 

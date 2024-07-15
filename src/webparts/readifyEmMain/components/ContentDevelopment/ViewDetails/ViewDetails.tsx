@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from "./ViewDetails.module.scss";
 
 interface Props {

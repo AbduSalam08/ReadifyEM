@@ -1,8 +1,9 @@
 import { Outlet } from "react-router-dom";
+import styles from "./UserLayout.module.scss";
 
 const UserLayout = (): JSX.Element => {
   return (
-    <div className="UserLayout">
+    <div className={styles.UserLayout}>
       <Outlet />
     </div>
   );

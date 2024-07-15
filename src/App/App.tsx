@@ -11,6 +11,12 @@ import Header from "../webparts/readifyEmMain/components/Header/Header";
 const TableOfContents = lazy(
   () => import("../pages/TableOfContents/TableOfContents")
 );
+import SDDTemplates from "../pages/SDDTemplates/SDDTemplates";
+import MyTasks from "../pages/MyTasks/MyTasks";
+import ConfigureSections from "../pages/ConfigureSections/ConfigureSections";
+import Definitions from "../pages/Definitions/Definitions";
+import ContentDevelopment from "../pages/ContentDevelopment/ContentDevelopment";
+
 const RoleAuthorizationHOC = lazy(() => import("../HOC/RoleAuthHOC"));
 
 // loader component
@@ -20,15 +26,9 @@ import ErrorElement from "../webparts/readifyEmMain/components/common/ErrorEleme
 
 // global style sheet
 import styles from "./App.module.scss";
-import SDDTemplates from "../pages/SDDTemplates/SDDTemplates";
-import MyTasks from "../pages/MyTasks/MyTasks";
-import ConfigureSections from "../pages/ConfigureSections/ConfigureSections";
-// import Definitions from "../pages/Definitions/Definitions";
-import ContentDevelopment from "../pages/ContentDevelopment/ContentDevelopment";
 
 const App = (props: any): JSX.Element => {
   const dispatch = useDispatch();
-
   // dispatching the main context into redux store
   useEffect(() => {
     dispatch(setMainSPContext(props.context));
@@ -49,9 +49,12 @@ const App = (props: any): JSX.Element => {
               <Route index Component={TableOfContents} />
               <Route path="em_manual" Component={TableOfContents} />
               <Route path="my_tasks" Component={MyTasks} />
-              <Route path="configure" Component={ConfigureSections} />
-              {/* <Route path="definitions" Component={Definitions} /> */}
-              <Route path="definitions" Component={ContentDevelopment} />
+              <Route
+                path="my_tasks/:docName/configure"
+                Component={ConfigureSections}
+              />
+              <Route path="definitions" Component={Definitions} />
+              <Route path="content_developer" Component={ContentDevelopment} />
               <Route path="sdd_templates" Component={SDDTemplates} />
             </Route>
 
@@ -60,6 +63,10 @@ const App = (props: any): JSX.Element => {
               <Route index Component={TableOfContents} />
               <Route path="em_manual" index Component={TableOfContents} />
               <Route path="my_tasks" Component={MyTasks} />
+              <Route
+                path="my_tasks/:docName/configure"
+                Component={ConfigureSections}
+              />
             </Route>
           </Routes>
         </Suspense>
