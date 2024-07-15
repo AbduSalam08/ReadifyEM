@@ -60,7 +60,7 @@ const initialPopupController = [
   {
     open: false,
     popupTitle: "Add New Definition",
-    popupWidth: "674px",
+    popupWidth: "550px",
     popupType: "custom",
     defaultCloseBtn: false,
     popupData: "",
@@ -68,7 +68,7 @@ const initialPopupController = [
   {
     open: false,
     popupTitle: "Edit Definition",
-    popupWidth: "674px",
+    popupWidth: "550px",
     popupType: "custom",
     defaultCloseBtn: false,
     popupData: "",
@@ -76,7 +76,7 @@ const initialPopupController = [
   {
     open: false,
     popupTitle: "View Definition",
-    popupWidth: "674px",
+    popupWidth: "550px",
     popupType: "custom",
     defaultCloseBtn: true,
     popupData: "",
@@ -85,7 +85,7 @@ const initialPopupController = [
     open: false,
     popupTitle: "Are you sure want to delete this Definition?",
     popupType: "confirmation",
-    popupWidth: "674px",
+    popupWidth: "460px",
     defaultCloseBtn: false,
     popupData: "",
   },
@@ -93,7 +93,7 @@ const initialPopupController = [
     open: false,
     popupTitle: "Are you sure want to approve this Definition?",
     popupType: "confirmation",
-    popupWidth: "674px",
+    popupWidth: "460px",
     defaultCloseBtn: false,
     popupData: "",
   },
@@ -102,11 +102,13 @@ const initialPopupController = [
 const Definitions = (): JSX.Element => {
   // redux dispatcher
   const dispatch = useDispatch();
+
   // redux selectors
   const AllDefinitionData = useSelector(
     (state: any) => state.DefinitionsData.AllDefinitions
   );
 
+  // initial definitions data
   const initialDefinitionsData = {
     ID: null,
     definitionName: "",
@@ -125,6 +127,7 @@ const Definitions = (): JSX.Element => {
   const [tableData, setTableData] = useState({
     headers: ["Definition Name", "Description"],
     loading: false,
+    masterList: [],
     data: [],
   });
 
@@ -147,8 +150,8 @@ const Definitions = (): JSX.Element => {
     ID: null,
     definitionName: "",
     IsValid: true,
-    IsDuplicate: false,
     ErrorMsg: "",
+    IsDuplicate: false,
     definitionDescription: "",
     referenceTitle: "",
     referenceAuthor: [],
@@ -156,8 +159,6 @@ const Definitions = (): JSX.Element => {
     isApproved: true,
     isLoading: false,
   });
-
-  console.log("render", AllDefinitionData, definitionsData);
 
   // util for closing popup
   const handleClosePopup = (index?: any): void => {
@@ -188,6 +189,8 @@ const Definitions = (): JSX.Element => {
       }));
     }
   };
+
+  // util for validating sections
   const validateSections = (): any => {
     // return true;
     const duplicateCheck = AllDefinitionData.filter((obj: any) => {
@@ -241,11 +244,13 @@ const Definitions = (): JSX.Element => {
       console.log("invalid");
     }
   };
+
   // main fn that handles submission of delete definition function
   const handleSoftDelete = (): void => {
     togglePopupVisibility(setPopupController, 3, "close");
     DeleteDefinition(definitionsData, setPopupLoaders);
   };
+
   // main fn that handles submission of delete definition function
   const handleApprove = (): void => {
     togglePopupVisibility(setPopupController, 4, "close");
@@ -267,284 +272,283 @@ const Definitions = (): JSX.Element => {
   // array of obj which contains all popup inputs
   const popupInputs: any[] = [
     [
-      <CustomInput
-        size="MD"
-        labelText="Definition Name"
-        withLabel
-        icon={false}
-        mandatory={true}
-        value={definitionsData.definitionName}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "definitionName");
-        }}
-        placeholder="Enter Definition Name"
-        isValid={
-          definitionsData.definitionName === "" && !definitionsData.IsValid
-            ? true
-            : definitionsData.definitionName !== "" &&
-              definitionsData.IsDuplicate
-            ? true
-            : false
-        }
-        errorMsg={
-          definitionsData.definitionName !== "" && definitionsData.IsDuplicate
-            ? definitionsData.ErrorMsg
-            : "The definition name field is required"
-        }
-        key={1}
-      />,
-      <CustomTextArea
-        size="MD"
-        labelText="Description"
-        withLabel
-        icon={false}
-        mandatory={true}
-        value={definitionsData.definitionDescription}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "definitionDescription");
-        }}
-        placeholder="Enter Description"
-        isValid={
-          definitionsData.definitionDescription === "" &&
-          !definitionsData.IsValid
-        }
-        errorMsg={"The description field is required"}
-        key={2}
-      />,
-      <p className={styles.subCategory} key={3}>
-        Reference
-      </p>,
-
-      <CustomInput
-        size="MD"
-        labelText="References Title"
-        withLabel
-        icon={false}
-        mandatory={true}
-        value={definitionsData.referenceTitle}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "referenceTitle");
-        }}
-        placeholder="Enter References Title"
-        isValid={
-          definitionsData.referenceTitle === "" && !definitionsData.IsValid
-        }
-        errorMsg={"The references title field is required"}
-        key={4}
-      />,
-      <CustomPeoplePicker
-        size="MD"
-        withLabel
-        labelText="Reference Author"
-        mandatory={true}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "referenceAuthor");
-        }}
-        selectedItem={definitionsData?.referenceAuthor[0]?.Email}
-        placeholder="Add Reference Author"
-        isValid={
-          definitionsData.referenceAuthor.length === 0 &&
-          !definitionsData.IsValid
-        }
-        errorMsg={"The reference author field is required"}
-        key={5}
-      />,
-      <CustomInput
-        size="MD"
-        labelText="References Link"
-        withLabel
-        icon={false}
-        mandatory={true}
-        value={definitionsData.referenceLink}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "referenceLink");
-        }}
-        placeholder="Enter References Link"
-        isValid={
-          definitionsData.referenceLink === "" && !definitionsData.IsValid
-        }
-        errorMsg={"The references Link field is required"}
-        key={6}
-      />,
+      <div key={1} className={styles.defWrapper}>
+        <CustomInput
+          size="MD"
+          labelText="Definition Name"
+          withLabel
+          icon={false}
+          value={
+            definitionsData.definitionName === "" && !definitionsData.IsValid
+              ? true
+              : definitionsData.definitionName !== "" &&
+                definitionsData.IsDuplicate
+              ? true
+              : false
+          }
+          onChange={(value: any) => {
+            handleTemplateNameChange(value, "definitionName");
+          }}
+          placeholder="Enter here"
+          isValid={!definitionsData.IsValid}
+          errorMsg={
+            definitionsData.definitionName !== "" && definitionsData.IsDuplicate
+              ? definitionsData.ErrorMsg
+              : "The definition name field is required"
+          }
+          key={1}
+        />
+        <CustomInput
+          size="MD"
+          labelText="Description"
+          withLabel
+          icon={false}
+          value={definitionsData.definitionDescription}
+          onChange={(value: any) => {
+            handleTemplateNameChange(value, "definitionDescription");
+          }}
+          placeholder="Enter here"
+          isValid={
+            definitionsData.definitionDescription === "" &&
+            !definitionsData.IsValid
+          }
+          errorMsg={"The description field is required"}
+          key={2}
+        />
+        <div key={3} className={styles.referenceWrapper}>
+          <span>References</span>
+          <CustomInput
+            size="MD"
+            labelText="Title"
+            withLabel
+            icon={false}
+            value={definitionsData.referenceTitle}
+            onChange={(value: any) => {
+              handleTemplateNameChange(value, "referenceTitle");
+            }}
+            inputWrapperClassName={styles.referenceInput}
+            placeholder="Enter here"
+            isValid={
+              definitionsData.referenceTitle === "" && !definitionsData.IsValid
+            }
+            errorMsg={"The references title field is required"}
+            key={3}
+          />
+          <CustomPeoplePicker
+            size="MD"
+            minWidth={"265px"}
+            withLabel
+            labelText="Author"
+            onChange={(value: any) => {
+              handleTemplateNameChange(value, "referenceAuthor");
+            }}
+            selectedItem={definitionsData?.referenceAuthor[0]?.Email}
+            placeholder="Add people"
+            isValid={
+              definitionsData.referenceAuthor.length === 0 &&
+              !definitionsData.IsValid
+            }
+            errorMsg={"The reference author field is required"}
+            key={4}
+          />
+          <CustomInput
+            size="MD"
+            labelText="Link"
+            withLabel
+            icon={false}
+            value={definitionsData.referenceLink}
+            onChange={(value: any) => {
+              handleTemplateNameChange(value, "referenceLink");
+            }}
+            placeholder="Enter here"
+            isValid={
+              definitionsData.referenceLink === "" && !definitionsData.IsValid
+            }
+            errorMsg={"The references Link field is required"}
+            key={5}
+          />
+        </div>
+      </div>,
     ],
     [
-      <CustomInput
-        size="MD"
-        labelText="Definition Name"
-        withLabel
-        icon={false}
-        mandatory={true}
-        value={definitionsData.definitionName}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "definitionName");
-        }}
-        placeholder="Enter Definition Name"
-        isValid={
-          definitionsData.definitionName === "" && !definitionsData.IsValid
-            ? true
-            : definitionsData.definitionName !== "" &&
-              definitionsData.IsDuplicate
-            ? true
-            : false
-        }
-        errorMsg={
-          definitionsData.definitionName !== "" && definitionsData.IsDuplicate
-            ? definitionsData.ErrorMsg
-            : "The definition name field is required"
-        }
-        key={1}
-      />,
-      <CustomTextArea
-        size="MD"
-        labelText="Description"
-        withLabel
-        icon={false}
-        mandatory={true}
-        value={definitionsData.definitionDescription}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "definitionDescription");
-        }}
-        placeholder="Enter Description"
-        isValid={
-          definitionsData.definitionDescription === "" &&
-          !definitionsData.IsValid
-        }
-        errorMsg={"The description field is required"}
-        key={2}
-      />,
-      <p className={styles.subCategory} key={3}>
-        Reference
-      </p>,
-      <CustomInput
-        size="MD"
-        labelText="References Title"
-        withLabel
-        icon={false}
-        mandatory={true}
-        value={definitionsData.referenceTitle}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "referenceTitle");
-        }}
-        placeholder="Enter References Title"
-        isValid={
-          definitionsData.referenceTitle === "" && !definitionsData.IsValid
-        }
-        errorMsg={"The references title field is required"}
-        key={4}
-      />,
-      <CustomPeoplePicker
-        size="MD"
-        withLabel
-        labelText="Reference Author"
-        mandatory={true}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "referenceAuthor");
-        }}
-        selectedItem={definitionsData?.referenceAuthor[0]?.Email}
-        placeholder="Add Reference Author"
-        isValid={
-          definitionsData.referenceAuthor.length === 0 &&
-          !definitionsData.IsValid
-        }
-        errorMsg={"The reference author field is required"}
-        key={5}
-      />,
-      <CustomInput
-        size="MD"
-        labelText="References Link"
-        withLabel
-        icon={false}
-        mandatory={true}
-        value={definitionsData.referenceLink}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "referenceLink");
-        }}
-        placeholder="Enter References Link"
-        isValid={
-          definitionsData.referenceLink === "" && !definitionsData.IsValid
-        }
-        errorMsg={"The references Link field is required"}
-        key={6}
-      />,
+      <div key={1} className={styles.defWrapper}>
+        <CustomInput
+          size="MD"
+          labelText="Definition Name"
+          withLabel
+          icon={false}
+          value={definitionsData.definitionName}
+          onChange={(value: any) => {
+            handleTemplateNameChange(value, "definitionName");
+          }}
+          placeholder="Enter here"
+          isValid={
+            definitionsData.definitionName === "" && !definitionsData.IsValid
+              ? true
+              : definitionsData.definitionName !== "" &&
+                definitionsData.IsDuplicate
+              ? true
+              : false
+          }
+          errorMsg={
+            definitionsData.definitionName !== "" && definitionsData.IsDuplicate
+              ? definitionsData.ErrorMsg
+              : "The definition name field is required"
+          }
+          key={1}
+        />
+        <CustomInput
+          size="MD"
+          labelText="Description"
+          withLabel
+          icon={false}
+          value={definitionsData.definitionDescription}
+          onChange={(value: any) => {
+            handleTemplateNameChange(value, "definitionDescription");
+          }}
+          placeholder="Enter here"
+          isValid={
+            definitionsData.definitionDescription === "" &&
+            !definitionsData.IsValid
+          }
+          errorMsg={"The description field is required"}
+          key={2}
+        />
+        <div key={3} className={styles.referenceWrapper}>
+          <span>References</span>
+          <CustomInput
+            size="MD"
+            labelText="Title"
+            withLabel
+            icon={false}
+            value={definitionsData.referenceTitle}
+            onChange={(value: any) => {
+              handleTemplateNameChange(value, "referenceTitle");
+            }}
+            placeholder="Enter here"
+            isValid={
+              definitionsData.referenceTitle === "" && !definitionsData.IsValid
+            }
+            errorMsg={"The references title field is required"}
+            key={3}
+          />
+          <CustomPeoplePicker
+            size="MD"
+            withLabel
+            labelText="Author"
+            minWidth={"265px"}
+            onChange={(value: any) => {
+              handleTemplateNameChange(value, "referenceAuthor");
+            }}
+            selectedItem={definitionsData?.referenceAuthor[0]?.Email}
+            placeholder="Add people"
+            isValid={
+              definitionsData.referenceAuthor.length === 0 &&
+              !definitionsData.IsValid
+            }
+            errorMsg={"The reference author field is required"}
+            key={4}
+          />
+          <CustomInput
+            size="MD"
+            labelText="Link"
+            withLabel
+            icon={false}
+            value={definitionsData.referenceLink}
+            onChange={(value: any) => {
+              handleTemplateNameChange(value, "referenceLink");
+            }}
+            placeholder="Enter here"
+            isValid={
+              definitionsData.referenceLink === "" && !definitionsData.IsValid
+            }
+            errorMsg={"The references Link field is required"}
+            key={5}
+          />
+        </div>
+      </div>,
     ],
     [
-      <CustomInput
-        size="MD"
-        labelText="Definition Name"
-        withLabel
-        icon={false}
-        value={definitionsData.definitionName}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "definitionName");
-        }}
-        // placeholder="Enter here"
-        // isValid={!definitionsData.IsValid}
-        // errorMsg={"Template name required"}
-        key={1}
-        readOnly={true}
-      />,
-      <CustomTextArea
-        size="MD"
-        labelText="Description"
-        withLabel
-        icon={false}
-        value={definitionsData.definitionDescription}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "definitionDescription");
-        }}
-        // placeholder="Enter here"
-        // isValid={!definitionsData.IsValid}
-        // errorMsg={definitionsData.ErrorMsg}
-        key={2}
-        readOnly={true}
-      />,
-      <p className={styles.subCategory} key={3}>
-        Reference
-      </p>,
-      <CustomInput
-        size="MD"
-        labelText="References Title"
-        withLabel
-        icon={false}
-        value={definitionsData.referenceTitle}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "referenceTitle");
-        }}
-        // placeholder="Enter here"
-        // isValid={!definitionsData.IsValid}
-        // errorMsg={definitionsData.ErrorMsg}
-        key={4}
-        readOnly={true}
-      />,
-      <CustomPeoplePicker
-        size="MD"
-        withLabel
-        labelText="Reference Author"
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "referenceAuthor");
-        }}
-        selectedItem={definitionsData?.referenceAuthor[0]?.Email}
-        // placeholder="Add people"
-        // isValid={!definitionsData.IsValid}
-        // errorMsg={definitionsData.ErrorMsg}
-        key={5}
-        readOnly={true}
-      />,
-      <CustomInput
-        size="MD"
-        labelText="References Link"
-        withLabel
-        icon={false}
-        value={definitionsData.referenceLink}
-        onChange={(value: any) => {
-          handleOnChangeFunction(value, "referenceLink");
-        }}
-        // placeholder="Enter here"
-        // isValid={!definitionsData.IsValid}
-        // errorMsg={definitionsData.ErrorMsg}
-        key={6}
-        readOnly={true}
-      />,
+      <div key={1} className={styles.defWrapper}>
+        <CustomInput
+          size="MD"
+          labelText="Definition Name"
+          withLabel
+          icon={false}
+          value={definitionsData.definitionName}
+          onChange={(value: any) => {
+            handleTemplateNameChange(value, "definitionName");
+          }}
+          placeholder="Enter here"
+          // isValid={!definitionsData.IsValid}
+          // errorMsg={"Template name required"}
+          key={1}
+          readOnly={true}
+        />
+        <CustomInput
+          size="MD"
+          labelText="Description"
+          withLabel
+          icon={false}
+          value={definitionsData.definitionDescription}
+          onChange={(value: any) => {
+            handleTemplateNameChange(value, "definitionDescription");
+          }}
+          placeholder="Enter here"
+          // isValid={!definitionsData.IsValid}
+          // errorMsg={definitionsData.ErrorMsg}
+          key={2}
+          readOnly={true}
+        />
+        <div key={3} className={styles.referenceWrapper}>
+          <span>References</span>
+          <CustomInput
+            size="MD"
+            labelText="Title"
+            withLabel
+            icon={false}
+            value={definitionsData.referenceTitle}
+            onChange={(value: any) => {
+              handleTemplateNameChange(value, "referenceTitle");
+            }}
+            placeholder="Enter here"
+            // isValid={!definitionsData.IsValid}
+            // errorMsg={definitionsData.ErrorMsg}
+            key={3}
+            readOnly={true}
+          />
+          <CustomPeoplePicker
+            size="MD"
+            withLabel
+            labelText="Author"
+            minWidth={"265px"}
+            onChange={(value: any) => {
+              handleTemplateNameChange(value, "referenceAuthor");
+            }}
+            selectedItem={definitionsData?.referenceAuthor[0]?.Email}
+            placeholder="Add people"
+            // isValid={!definitionsData.IsValid}
+            // errorMsg={definitionsData.ErrorMsg}
+            key={4}
+            readOnly={true}
+          />
+          <CustomInput
+            size="MD"
+            labelText="Link"
+            withLabel
+            icon={false}
+            value={definitionsData.referenceLink}
+            onChange={(value: any) => {
+              handleTemplateNameChange(value, "referenceLink");
+            }}
+            placeholder="Enter here"
+            // isValid={!definitionsData.IsValid}
+            // errorMsg={definitionsData.ErrorMsg}
+            key={5}
+            readOnly={true}
+          />
+        </div>
+      </div>
     ],
   ];
 
@@ -723,6 +727,7 @@ const Definitions = (): JSX.Element => {
           filters={filterOptions}
           loading={tableData.loading}
           loadData={setMainData}
+          columns={["definitionName", "definitionDescription"]}
           renderActions={(item: any, index: number) => {
             return (
               <>

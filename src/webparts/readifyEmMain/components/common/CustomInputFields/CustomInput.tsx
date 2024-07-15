@@ -64,7 +64,7 @@ const CustomInput: React.FC<Props> = ({
   // const MainSPContext = useSelector((state: any) => state.MainSPContext.value);
 
   return (
-    <>
+    <div className={styles.inputMainWrapper}>
       <div
         className={`${
           withLabel ? styles.inputWrapperWithLabel : styles.inputWrapper
@@ -143,7 +143,7 @@ const CustomInput: React.FC<Props> = ({
           {""}
         </p>
       )}
-    </>
+    </div>
   );
 };
 

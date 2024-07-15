@@ -113,19 +113,21 @@ const MyTasks = (): JSX.Element => {
           <PageTitle text={"My Tasks"} />
 
           {/* filters section */}
-          <CustomInput
-            value={filterOptions.searchTerm}
-            onChange={(value: string) => {
-              setFilterOptions((prev) => ({
-                ...prev,
-                searchTerm: value,
-              }));
-              taskSearchFilter(value);
-            }}
-            // disabled={tasksData?.data?.length === 0 || tasksData?.loading}
-            icon
-            placeholder="Search"
-          />
+          <div>
+            <CustomInput
+              value={filterOptions.searchTerm}
+              onChange={(value: string) => {
+                setFilterOptions((prev) => ({
+                  ...prev,
+                  searchTerm: value,
+                }));
+                taskSearchFilter(value);
+              }}
+              // disabled={tasksData?.data?.length === 0 || tasksData?.loading}
+              icon
+              placeholder="Search"
+            />
+          </div>
         </div>
 
         <div className={styles.f2Section}>

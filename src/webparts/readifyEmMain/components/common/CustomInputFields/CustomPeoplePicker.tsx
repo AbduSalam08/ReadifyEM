@@ -160,7 +160,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
 
   const multiPeoplePickerStyle = {
     root: {
-      minWidth: minWidth ? minWidth : 200,
+      minWidth: minWidth ? minWidth : "100%",
       background: "rgba(218, 218, 218, 0.29)",
       ".ms-BasePicker-text": {
         height: size === "SM" ? "34px" : size === "MD" ? "32px" : "43px",
@@ -168,6 +168,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
         maxHeight: "50px",
         overflowX: "hidden",
         padding: "0px 10px",
+        paddingLeft: "4px",
         minWidth: minWidth ? minWidth : "290px",
         background: "#fff",
         border: isValid ? "1px solid #ff8585" : "1px solid #adadad50",
@@ -215,10 +216,12 @@ const CustomPeoplePicker: React.FC<Props> = ({
       : [selectedItem];
 
   return (
-    <>
+    <div className={styles.inputMainWrapper}>
       <div
         className={`${
-          withLabel ? styles.inputWrapperWithLabel : styles.inputWrapper
+          withLabel
+            ? styles.p_pickerInputWrapperWithLabel
+            : styles.p_pickerInputWrapper
         } ${disabled ? styles.disabledInput : ""}`}
       >
        
@@ -261,13 +264,11 @@ const CustomPeoplePicker: React.FC<Props> = ({
           ensureUser={true}
           placeholder={placeholder}
           // peoplePickerCntrlclassName={styles.}
-          onChange={(e: any) => {
-            handleChange(e);
-          }}
+          onChange={handleChange}
           styles={multiPeoplePickerStyle}
           //   showHiddenInUI={true}
           principalTypes={[PrincipalType.User]}
-          defaultSelectedUsers={[selectedUserItem] || null}
+          defaultSelectedUsers={selectedUserItem}
           resolveDelay={1000}
           disabled={readOnly}
         />
@@ -292,7 +293,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
           {""}
         </p>
       )}
-    </>
+    </div>
   );
 };
 
