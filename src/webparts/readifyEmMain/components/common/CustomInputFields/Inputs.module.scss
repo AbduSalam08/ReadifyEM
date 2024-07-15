@@ -16,6 +16,28 @@
     color: #414141;
   }
 }
+ .inputLabel {
+   font-size: 16px;
+   width: 100%;
+   font-family: "interMedium", sans-serif;
+   color: #414141;
+ }
+
+ .sendBtn {
+   width: 28px;
+   height: 28px;
+   display: grid;
+   place-items: center;
+   border: 1px solid rgba(0, 0, 0, 0.06);
+   border-radius: 50%;
+   background-color: #fff;
+   margin-right: 10px;
+
+   img {
+     width: 12px;
+     height: 12px;
+   }
+ }
 
 .input {
   border: 1px solid #adadad50 !important;
@@ -101,6 +123,17 @@
 }
 .errorMsg {
   margin-top: 5px;
+  margin-bottom: 16px;
+  color: red;
+  font-family: "interMedium", sans-serif;
+  font-size: 14px;
+  text-align: left;
+  // text-transform: lowercase;
+  animation: slideAndFade 0.17s both ease !important;
+}
+.emptyMsg {
+  padding: 13px;
+  margin-top: 5px;
   margin-bottom: 5px;
   color: red;
   font-family: "interMedium", sans-serif;
@@ -128,6 +161,24 @@
 .pathSearchFilter {
   margin: 10px !important;
 }
+.mandatoryField::after{
+  content: "*";
+  color: red;
+}
+.readOnly{
+  border: none!important;
+}
+.hideErrMSg{
+  display: none!important;
+}
+
+// mutiple persona style
+
+.personaSection{
+  position: relative;
+  display: flex;
+  // gap: 10px;
+align-items: center;
 
 // date picker styles
 .d_input_container {
