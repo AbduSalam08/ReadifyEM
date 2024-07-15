@@ -324,24 +324,24 @@ const Table: React.FC<ITableProps> = ({
         <div className={styles.panelContainer}>
           {filters?.searchTerm && filters?.filterByStatus && (
             <span className={styles.errorMsg}>
-              <p>"{filters.searchTerm}"</p> Not found in{" "}
-              <p>"{filters.filterByStatus}"</p> status.
+              <p> "{filters.searchTerm}" </p> Not found in{" "}
+              <p> "{filters.filterByStatus}" </p> status.
             </span>
           )}
           {filters?.searchTerm && !filters?.filterByStatus && (
             <span className={styles.errorMsg}>
-              <p>"{filters.searchTerm}"</p> Not found!
+              <p> "{filters.searchTerm}" </p> Not found!
             </span>
           )}
           {!filters?.searchTerm && filters?.filterByStatus && (
             <span className={styles.errorMsg}>
-              No document found in <p>"{filters.filterByStatus}"</p> status.
+              No document found in <p> "{filters.filterByStatus}" </p> status.
             </span>
           )}
           {DNDData?.length === 0 &&
             !filters?.searchTerm &&
             !filters?.filterByStatus && (
-              <span className={styles.errorMsg}>No data found.</span>
+              <span className={styles.errorMsg}> No data found.</span>
             )}
         </div>
       )}

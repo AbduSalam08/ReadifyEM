@@ -62,7 +62,6 @@
     height: 12px;
   }
 }
-
 .input {
   border: 1px solid #adadad50 !important;
   border-radius: 4px !important;
@@ -227,6 +226,42 @@
   // gap: 10px;
   align-items: center;
 }
+// date picker styles
+.d_input_container {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.diabledField {
+  opacity: 0.6 !important;
+}
+.d_datepicker_wrapper {
+  width: 200px;
+  // border: 0.13rem solid #97979770;
+  background-color: transparent;
+  border-radius: 3px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  height: 30px;
+  // border-radius: 0.6rem;
+}
+.d_datepicker {
+  width: 100%;
+  // border: 0.13rem solid #97979770;
+  background-color: transparent;
+  border-radius: 3px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  border-radius: 4px;
+  height: 30px !important;
+}
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  height: 30px !important;
+  // margin-bottom: 1rem;
+}
   // date picker styles
   .d_input_container {
     width: 100%;
@@ -267,7 +302,6 @@
     height: 30px !important;
     // margin-bottom: 1rem;
   }
-
   .disabledField {
     opacity: 0.6;
     pointer-events: none;
@@ -294,3 +328,32 @@
     font-size: 0.8rem;
     margin-top: 0.5rem;
   }
+.errorMessage {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+.mandatoryField::after {
+  content: "*";
+  color: red;
+}
+
+.readOnly {
+  border: none !important;
+}
+
+.hideErrMSg {
+  display: none !important;
+}
+
+.emptyMsg {
+  padding: 13px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  color: red;
+  font-family: "interMedium", sans-serif;
+  font-size: 14px;
+  text-align: left;
+  // text-transform: lowercase;
+  animation: slideAndFade 0.17s both ease !important;
+}

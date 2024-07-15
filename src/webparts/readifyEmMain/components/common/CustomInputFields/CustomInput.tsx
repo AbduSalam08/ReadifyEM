@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
-const SendBtn = require("../../../../../assets/images/png/Send.png");
 import styles from "./Inputs.module.scss";
 
 interface Props {
@@ -25,6 +25,9 @@ interface Props {
   mandatory?: boolean;
   hideErrMsg?: boolean;
   submitBtn?: boolean;
+  onKeyDown?: any;
+  noErrorMsg?: boolean;
+  autoFocus?: boolean;
 }
 
 const CustomInput: React.FC<Props> = ({
@@ -45,6 +48,9 @@ const CustomInput: React.FC<Props> = ({
   mandatory,
   hideErrMsg,
   submitBtn,
+  onKeyDown,
+  noErrorMsg = false,
+  autoFocus,
 }) => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,23 +69,13 @@ const CustomInput: React.FC<Props> = ({
           withLabel ? styles.inputWrapperWithLabel : styles.inputWrapper
         } ${disabled ? styles.disabledInput : ""}`}
       >
-        {withLabel && (
-          <p
-            className={`${styles.inputLabel} ${
-              mandatory ? styles.mandatoryField : ""
-            }`}
-          >
-            {labelText}
-          </p>
-        )}
+        {withLabel && <p className={styles.inputLabel}>{labelText}</p>}
         <IconField
           disabled={disabled}
           iconPosition="left"
           className={`${inputWrapperClassName} ${
             styles[`customInput${size}`]
-          } ${isValid ? styles.errorInput : ""} ${
-            readOnly ? styles.readOnly : ""
-          }`}
+          } ${isValid ? styles.errorInput : ""}`}
         >
           {icon && (
             <InputIcon
@@ -102,36 +98,17 @@ const CustomInput: React.FC<Props> = ({
               paddingLeft: icon ? "30px" : "0px",
             }}
           />
-          {submitBtn && (
-            <button
-              className={styles.sendBtn}
-              // onClick={() => {
-              //   navigate(-1);
-              // }}
-            >
-              <img src={SendBtn} alt={"back to my tasks"} />
-            </button>
-          )}
         </IconField>
       </div>
 
       {isValid ? (
         <p
-          className={`${styles.errorMsg}${hideErrMsg ? styles.hideErrMSg : ""}`}
+          className={styles.errorMsg}
           style={{
             textAlign: isValid && !withLabel ? "left" : "right",
           }}
         >
           {errorMsg}
-        </p>
-      ) : (
-        <p
-          className={`${styles.errorMsg}${hideErrMsg ? styles.hideErrMSg : ""}`}
-          style={{
-            textAlign: isValid && !withLabel ? "left" : "right",
-          }}
-        >
-          {""}
         </p>
       )}
     </>

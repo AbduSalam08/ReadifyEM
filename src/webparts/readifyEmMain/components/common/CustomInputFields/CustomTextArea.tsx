@@ -40,7 +40,7 @@ const CustomTextArea: React.FC<Props> = ({
   readOnly,
   mandatory,
 }) => {
-  const handleChange = (e: any) => {
+  const handleChange = (e: any): any => {
     onChange(e.target.value);
   };
   // useCallback(
@@ -56,10 +56,15 @@ const CustomTextArea: React.FC<Props> = ({
   return (
     <>
       <div
-        style={{ display: "flex", width: "100%" }}
-        // className={`${
-        //   withLabel ? styles.inputWrapperWithLabel : styles.inputWrapper
-        // } ${disabled ? styles.disabledInput : ""}`}
+        className={`${
+          withLabel ? styles.inputWrapperWithLabel : styles.inputWrapper
+        } ${disabled ? styles.disabledInput : ""}`}
+        style={{
+          display: "flex",
+          width: "100%",
+          gap: 0,
+          alignItems: "flex-start",
+        }}
       >
         {withLabel && (
           <p
@@ -100,8 +105,9 @@ const CustomTextArea: React.FC<Props> = ({
             // paddingLeft: icon ? "30px" : "0px",
             border: `${isValid ? "1px solid #ff8585" : "1px solid #e5e5e5"}`,
             padding: "5px 10px",
-            width: "50%",
+            width: "70%",
             fontSize: "14px",
+            fontFamily: `interMedium, sans-serif`,
           }}
         />
         {/* </IconField> */}

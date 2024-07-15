@@ -20,8 +20,6 @@ interface Props {
   withLabel?: boolean;
   disabled?: boolean;
   readOnly?: boolean;
-  mandatory?: boolean;
-  hideErrMsg?: boolean;
   minWidth?: any;
 }
 
@@ -38,11 +36,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
   errorMsg,
   minWidth,
   readOnly,
-  mandatory,
-  hideErrMsg,
 }) => {
-  console.log(selectedItem);
-
   const multiPeoplePickerStyle = {
     root: {
       minWidth: minWidth ? minWidth : 200,
@@ -122,44 +116,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
           withLabel ? styles.inputWrapperWithLabel : styles.inputWrapper
         } ${disabled ? styles.disabledInput : ""}`}
       >
-        {withLabel && (
-          <p
-            className={`${styles.inputLabel} ${
-              mandatory ? styles.mandatoryField : ""
-            }`}
-          >
-            {labelText}
-          </p>
-        )}
-        {/* <IconField
-          disabled={disabled}
-          iconPosition="left"
-          className={`${inputWrapperClassName} ${
-            styles[`customInput${size}`]
-          } ${isValid ? styles.errorInput : ""}`}
-        >
-          {icon && (
-            <InputIcon
-              style={{
-                color: "var(--placeholder)",
-              }}
-              className={`pi pi-search`}
-            />
-          )}
-          <InputText
-            v-model="value1"
-            readOnly={readOnly}
-            disabled={disabled}
-            value={value || ""}
-            type={type}
-            placeholder={placeholder}
-            onChange={handleChange}
-            className={inputClassName}
-            style={{
-              paddingLeft: icon ? "30px" : "0px",
-            }}
-          />
-        </IconField> */}
+        {withLabel && <p className={styles.inputLabel}>{labelText}</p>}
         <PeoplePicker
           context={mainContext}
           webAbsoluteUrl={CONFIG.webURL}
@@ -181,23 +138,14 @@ const CustomPeoplePicker: React.FC<Props> = ({
         />
       </div>
 
-      {isValid ? (
+      {isValid && (
         <p
-          className={`${styles.errorMsg}${hideErrMsg ? styles.hideErrMSg : ""}`}
+          className={styles.errorMsg}
           style={{
             textAlign: isValid && !withLabel ? "left" : "right",
           }}
         >
           {errorMsg}
-        </p>
-      ) : (
-        <p
-          className={`${styles.errorMsg}${hideErrMsg ? styles.hideErrMSg : ""}`}
-          style={{
-            textAlign: isValid && !withLabel ? "left" : "right",
-          }}
-        >
-          {""}
         </p>
       )}
     </>

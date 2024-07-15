@@ -18,7 +18,16 @@ const UpdateDefinition = async (
   setLoaderState: any
 ): Promise<any> => {
   const templateTitle = formData?.definitionName;
-
+  setLoaderState({
+    isLoading: {
+      inprogress: true,
+      success: false,
+      error: false,
+    },
+    visibility: true,
+    text: `Updating definition, please wait...`,
+    //  secondaryText: `The Standardized definition template "${templateTitle}" has been updated successfully! `,
+  });
   try {
     const payloadJSON = {
       Title: formData?.definitionName,
@@ -77,7 +86,16 @@ const DeleteDefinition = async (
   setLoaderState: any
 ): Promise<any> => {
   const templateTitle = formData?.definitionName;
-
+  setLoaderState({
+    isLoading: {
+      inprogress: true,
+      success: false,
+      error: false,
+    },
+    visibility: true,
+    text: `Deleting definition, please wait...`,
+    //  secondaryText: `The Standardized definition template "${templateTitle}" has been updated successfully! `,
+  });
   try {
     await SpServices.SPUpdateItem({
       Listname: LISTNAMES.Definition,
@@ -128,7 +146,16 @@ const ApproveDefinition = async (
   setLoaderState: any
 ): Promise<any> => {
   const templateTitle = formData?.definitionName;
-
+  setLoaderState({
+    isLoading: {
+      inprogress: true,
+      success: false,
+      error: false,
+    },
+    visibility: true,
+    text: `Updating definition, please wait...`,
+    //  secondaryText: `The Standardized definition template "${templateTitle}" has been updated successfully! `,
+  });
   try {
     await SpServices.SPUpdateItem({
       Listname: LISTNAMES.Definition,
@@ -181,7 +208,16 @@ const AddDefinition = async (
   setLoaderState: any
 ): Promise<any> => {
   const templateTitle = formData?.definitionName;
-
+  setLoaderState({
+    isLoading: {
+      inprogress: true,
+      success: false,
+      error: false,
+    },
+    visibility: true,
+    text: `Creating new definition, please wait...`,
+    //  secondaryText: `The Standardized definition template "${templateTitle}" has been updated successfully! `,
+  });
   try {
     const payloadJSON = {
       Title: formData?.definitionName,
@@ -295,6 +331,7 @@ const LoadDefinitionData = async (
   update?: boolean,
   dispatch?: any
 ): Promise<any> => {
+  debugger;
   // Set loading state
   setSectionsData((prev: any) => ({
     ...prev,
