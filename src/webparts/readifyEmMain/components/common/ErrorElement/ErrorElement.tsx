@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+import { memo } from "react";
 import styles from "./ErrorElement.module.scss";
 const errorImg = require("../../../../../assets/images/svg/errorImg.svg");
 
@@ -23,4 +24,4 @@ const ErrorElement = ({ headerText, secondaryText }: IProps): JSX.Element => {
   );
 };
 
-export default ErrorElement;
+export default memo(ErrorElement);

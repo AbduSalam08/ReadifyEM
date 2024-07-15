@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable no-constant-condition */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -13,10 +14,12 @@ const RoleAuthorizationHOC = (): JSX.Element => {
   const mainContext: any = useSelector(
     (state: any) => state.MainSPContext.value
   );
+  console.log("mainContext: ", mainContext);
 
   const currentUserDetails: any = useSelector(
     (state: any) => state.MainSPContext.currentUserDetails
   );
+  console.log("currentUserDetails: ", currentUserDetails);
 
   const getRoleAuth = async (): Promise<any> => {
     const currentUserDetails: any = {
@@ -27,6 +30,7 @@ const RoleAuthorizationHOC = (): JSX.Element => {
   };
 
   useEffect(() => {
+    debugger;
     getRoleAuth();
   }, []);
 

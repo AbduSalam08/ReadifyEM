@@ -1,8 +1,10 @@
+/* eslint-disable no-debugger */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { sp } from "@pnp/sp";
 // import { GROUPS } from "../../config/config";
 import { setCurrentUserDetails } from "../../redux/features/MainSPContextSlice";
+import { GROUPS } from "../../config/config";
 // import SpServices from "../SPServices/SpServices";
 
 export const RoleAuth = async (
@@ -12,13 +14,14 @@ export const RoleAuth = async (
   let currentUserDetails: any;
 
   await sp.web.siteGroups
-    // .getByName(GROUPS.AdminGroup)
-    .getByName("ReadifyEM_Admin")
+    // .getByName("ReadifyEM_Admin")
+    .getByName(GROUPS.AdminGroup)
     .users.get()
     .then((res: any) => {
       const defineUserIsAdmin: any[] = res?.filter((item: any) => {
         return currentUser?.Email === item?.UserPrincipalName;
       });
+      console.log("defineUserIsAdmin: ", defineUserIsAdmin);
 
       // setting the current user details
       if (defineUserIsAdmin?.length === 0) {

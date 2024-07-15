@@ -4,6 +4,7 @@ import DefaultButton from "../Buttons/DefaultButton";
 // styles
 import styles from "./Popup.module.scss";
 import { CircularProgress } from "@mui/material";
+import { memo } from "react";
 
 interface Props {
   popupTitle?: string;
@@ -129,4 +130,4 @@ const Popup = ({
   );
 };
 
-export default Popup;
+export default memo(Popup);

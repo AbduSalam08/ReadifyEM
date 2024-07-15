@@ -10,7 +10,10 @@
   text-transform: capitalize;
   border-radius: 40px;
   height: 27px;
+  user-select: none !important;
+  -moz-user-select: none !important;
 }
+
 .rolesPill {
   padding: 4px 12px;
   min-width: 112px;
@@ -45,8 +48,9 @@
 }
 
 .inDevelopment {
-  background-color: #2196f3; /* Blue color, change as needed */
-  color: white;
+  background-color: #fff2e2; /* Blue color, change as needed */
+  color: #995c13;
+  padding: 4px 20px !important;
 }
 
 .inReview {
@@ -88,14 +92,14 @@
 
 .sectionAuthor {
   @extend .rolesPill;
-  background-color: #00bcd4; /* Cyan color, change as needed */
-  color: white;
+  background-color: #eafffb; /* Cyan color, change as needed */
+  color: #158e78;
 }
 
 .consultant {
   @extend .rolesPill;
-  background-color: #ff9800; /* Orange color, change as needed */
-  color: black;
+  background-color: #fff6e5; /* Orange color, change as needed */
+  color: #e79901;
 }
 
 .reviewer {

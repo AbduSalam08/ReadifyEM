@@ -92,13 +92,12 @@ const CustomMultiplePeoplePicker: React.FC<Props> = ({
   const mainContext: any = useSelector(
     (state: any) => state.MainSPContext.value
   );
-  console.log(mainContext);
 
   const handleChange = (e: any): void => {
     onChange(e);
   };
-  const getSelectedEmails = (selectedUsers: any) => {
-    let selectedEmails: string[] = [];
+  const getSelectedEmails = (selectedUsers: any): any => {
+    const selectedEmails: string[] = [];
     if (selectedUsers?.length) {
       selectedUsers?.forEach((user: any) => {
         selectedEmails.push(user?.email);
@@ -204,11 +203,13 @@ const CustomMultiplePeoplePicker: React.FC<Props> = ({
         </p>
       ) : (
         <p
-          className={`${styles.errorMsg}${hideErrMsg ? styles.hideErrMSg : ""}`}
+          className={`${styles.errorMsg} ${
+            hideErrMsg ? styles.hideErrMSg : ""
+          }`}
           style={{
             textAlign: isValid && !withLabel ? "left" : "right",
           }}
-        ></p>
+        />
       )}
     </>
   );

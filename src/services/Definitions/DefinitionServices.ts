@@ -12,13 +12,21 @@ import SpServices from "../SPServices/SpServices";
 // import * as dayjs from "dayjs";
 
 // Update Difinition Function
-
 const UpdateDefinition = async (
   formData: any,
   setLoaderState: any
 ): Promise<any> => {
   const templateTitle = formData?.definitionName;
-
+  setLoaderState({
+    isLoading: {
+      inprogress: true,
+      success: false,
+      error: false,
+    },
+    visibility: true,
+    text: `Updating definition, please wait...`,
+    //  secondaryText: `The Standardized definition template "${templateTitle}" has been updated successfully! `,
+  });
   try {
     const payloadJSON = {
       Title: formData?.definitionName,
@@ -72,12 +80,22 @@ const UpdateDefinition = async (
     });
   }
 };
+
 const DeleteDefinition = async (
   formData: any,
   setLoaderState: any
 ): Promise<any> => {
   const templateTitle = formData?.definitionName;
-
+  setLoaderState({
+    isLoading: {
+      inprogress: true,
+      success: false,
+      error: false,
+    },
+    visibility: true,
+    text: `Deleting definition, please wait...`,
+    //  secondaryText: `The Standardized definition template "${templateTitle}" has been updated successfully! `,
+  });
   try {
     await SpServices.SPUpdateItem({
       Listname: LISTNAMES.Definition,
@@ -123,12 +141,22 @@ const DeleteDefinition = async (
     });
   }
 };
+
 const ApproveDefinition = async (
   formData: any,
   setLoaderState: any
 ): Promise<any> => {
   const templateTitle = formData?.definitionName;
-
+  setLoaderState({
+    isLoading: {
+      inprogress: true,
+      success: false,
+      error: false,
+    },
+    visibility: true,
+    text: `Updating definition, please wait...`,
+    //  secondaryText: `The Standardized definition template "${templateTitle}" has been updated successfully! `,
+  });
   try {
     await SpServices.SPUpdateItem({
       Listname: LISTNAMES.Definition,
@@ -181,7 +209,16 @@ const AddDefinition = async (
   setLoaderState: any
 ): Promise<any> => {
   const templateTitle = formData?.definitionName;
-
+  setLoaderState({
+    isLoading: {
+      inprogress: true,
+      success: false,
+      error: false,
+    },
+    visibility: true,
+    text: `Creating new definition, please wait...`,
+    //  secondaryText: `The Standardized definition template "${templateTitle}" has been updated successfully! `,
+  });
   try {
     const payloadJSON = {
       Title: formData?.definitionName,
@@ -295,6 +332,7 @@ const LoadDefinitionData = async (
   update?: boolean,
   dispatch?: any
 ): Promise<any> => {
+  debugger;
   // Set loading state
   setSectionsData((prev: any) => ({
     ...prev,
@@ -312,7 +350,7 @@ const LoadDefinitionData = async (
     })
       .then((res: any) => {
         console.log(res);
-        let CurrentDefinitionDetails: any = {
+        const CurrentDefinitionDetails: any = {
           ID: templateID,
           definitionName: res?.Title ? res.Title : "",
           definitionDescription: res?.description ? res.description : "",
