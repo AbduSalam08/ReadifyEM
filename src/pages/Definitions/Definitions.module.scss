@@ -38,25 +38,25 @@
 }
 
 .clearFilterBtn {
-  font-size: 13px;
-  font-family: "interMedium", sans-serif !important;
-  color: var(--primary-violet);
-  background-color: #593abb15;
-  border-radius: 50px;
-  width: 150px;
-  padding: 5px 0;
-  cursor: pointer;
-  border: 0;
-  outline: 0;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
+    font-size: 13px;
+    font-family: "interMedium", sans-serif !important;
+    color: var(--primary-violet);
+    background-color: #593abb15;
+    border-radius: 50px;
+    width: 150px;
+    padding: 5px 0;
+    cursor: pointer;
+    border: 0;
+    outline: 0;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
 
-.definitionInputBox {
-  margin-bottom: 20px;
+.definitionInputBox{
+    margin-bottom: 20px;
 }
 .referenceWrapper {
   display: flex;
@@ -81,4 +81,9 @@
   width: 100%;
   gap: 10px;
   flex-direction: column;
+}
+.subCategory{
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #a38080;
 }

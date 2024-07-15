@@ -8,6 +8,9 @@ import { memo, useEffect, useState } from "react";
 import PageTitle from "../../webparts/readifyEmMain/components/common/PageTitle/PageTitle";
 import styles from "./Definitions.module.scss";
 import CustomInput from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomInput";
+
+import CustomTextArea from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomTextArea";
+
 import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
 import Table from "../../webparts/readifyEmMain/components/Table/Table";
 import Popup from "../../webparts/readifyEmMain/components/common/Popups/Popup";
@@ -25,11 +28,18 @@ import {
   ApproveDefinition,
 } from "../../services/Definitions/DefinitionServices";
 import { useDispatch, useSelector } from "react-redux";
+
+
+// import {
+//   checkDuplicates,
+//   filterTemplateByName,
+// } from "../../utils/SDDTemplatesUtils";
+
 // assets
 const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
 const deleteIcon: any = require("../../assets/images/svg/deleteIcon.svg");
 const viewDocBtn: any = require("../../assets/images/svg/viewEye.svg");
-const ApproveBtn: any = require("../../assets/images/svg/completedSVG.svg");
+const ApproveBtn: any = require("../../assets/images/png/checkmark.png");
 
 interface IDefinitionDetails {
   ID: number | null;
@@ -161,7 +171,7 @@ const Definitions = (): JSX.Element => {
   // });
 
   // fn for onchange of definition name
-  const handleTemplateNameChange = (value: string | any, key: string): void => {
+  const handleOnChangeFunction = (value: string | any, key: string): void => {
     if (key === "referenceAuthor") {
       console.log(value);
       setDefinitionsData((prev: any) => ({
@@ -538,7 +548,7 @@ const Definitions = (): JSX.Element => {
             readOnly={true}
           />
         </div>
-      </div>,
+      </div>
     ],
   ];
 
