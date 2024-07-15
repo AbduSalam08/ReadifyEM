@@ -28,10 +28,9 @@
 }
 
 .rhs {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @extend .flexcenter;
   gap: 15px;
+  width: 100%;
 }
 
 .subGroupInput {
@@ -58,4 +57,28 @@
 
 .definitionInputBox {
   margin-bottom: 20px;
+}
+.referenceWrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  span {
+    font-size: 16px;
+    color: #adadad;
+    font-family: "interMedium", sans-serif !important;
+  }
+}
+.referenceInput {
+  width: 100% !important;
+}
+.defWrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 10px;
+  flex-direction: column;
 }

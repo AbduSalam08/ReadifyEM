@@ -23,7 +23,7 @@ import styles from "./App.module.scss";
 import SDDTemplates from "../pages/SDDTemplates/SDDTemplates";
 import MyTasks from "../pages/MyTasks/MyTasks";
 import ConfigureSections from "../pages/ConfigureSections/ConfigureSections";
-// import Definitions from "../pages/Definitions/Definitions";
+import Definitions from "../pages/Definitions/Definitions";
 
 const App = (props: any): JSX.Element => {
   const dispatch = useDispatch();
@@ -52,7 +52,7 @@ const App = (props: any): JSX.Element => {
                 path="my_tasks/:docName/configure"
                 Component={ConfigureSections}
               />
-              <Route path="definitions" element={<h1>Definitions</h1>} />
+              <Route path="definitions" Component={Definitions} />
               <Route path="sdd_templates" Component={SDDTemplates} />
             </Route>
 

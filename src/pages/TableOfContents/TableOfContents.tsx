@@ -658,18 +658,20 @@ const TableOfContents = (): JSX.Element => {
           {/* filters section */}
           {isAdmin && (
             <div className={styles.filters}>
-              <CustomInput
-                value={filterOptions.searchTerm}
-                onChange={(value: string) => {
-                  setFilterOptions((prev) => ({
-                    ...prev,
-                    searchTerm: value,
-                  }));
-                }}
-                disabled={tableData.data.length === 0 || tableData.loading}
-                icon
-                placeholder="Search"
-              />
+              <div>
+                <CustomInput
+                  value={filterOptions.searchTerm}
+                  onChange={(value: string) => {
+                    setFilterOptions((prev) => ({
+                      ...prev,
+                      searchTerm: value,
+                    }));
+                  }}
+                  disabled={tableData.data.length === 0 || tableData.loading}
+                  icon
+                  placeholder="Search"
+                />
+              </div>
 
               <div className={styles.rhs}>
                 <CustomDropDown

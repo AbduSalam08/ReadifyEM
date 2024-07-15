@@ -29,6 +29,7 @@ interface ITableProps {
   renderActionsForFolders?: any;
   defaultTable?: any;
   loadData?: any;
+  columns?: any;
 }
 
 interface LibraryItem {
@@ -51,6 +52,7 @@ const Table: React.FC<ITableProps> = ({
   renderActionsForFolders,
   defaultTable,
   loadData,
+  columns,
 }: ITableProps): JSX.Element => {
   const isAdmin: boolean = CurrentUserIsAdmin();
 
@@ -77,6 +79,7 @@ const Table: React.FC<ITableProps> = ({
       ];
 
   const [DNDData, setDNDData] = useState<LibraryItem[]>([]);
+
   const [popupLoaders, setPopupLoaders] =
     useState<IPopupLoaders>(initialPopupLoaders);
 
@@ -212,6 +215,7 @@ const Table: React.FC<ITableProps> = ({
     return (
       <TableItem
         tableData={data}
+        columns={columns}
         itemTemplateLoading={TableItemLoading}
         handleData={handleData}
         loading={loading}
@@ -314,6 +318,7 @@ const Table: React.FC<ITableProps> = ({
             tableData={data}
             itemTemplateLoading={TableItemLoading}
             handleData={handleData}
+            columns={columns}
             loading={loading}
             togglePanel={togglePanel}
             key={i}

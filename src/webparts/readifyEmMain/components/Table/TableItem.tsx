@@ -27,6 +27,7 @@ interface TableItemProps {
   renderActionsForFiles?: any;
   renderActionsForFolders?: any;
   defaultTable?: boolean;
+  columns?: any;
 }
 
 const TableItem: React.FC<TableItemProps> = ({
@@ -39,6 +40,7 @@ const TableItem: React.FC<TableItemProps> = ({
   renderActionsForFiles,
   renderActionsForFolders,
   defaultTable,
+  columns,
 }) => {
   const [data, setData] = useState(tableData);
   const [isOpen, setIsOpen] = useState(data.open);
@@ -100,15 +102,25 @@ const TableItem: React.FC<TableItemProps> = ({
           justifyContent: "space-between",
         }}
       >
-        {Object.keys(item).map((key: string, i: number) => {
-          return (
-            key.toLowerCase() !== "id" && (
-              <div className={styles.item} title={item[key] || "-"} key={i}>
-                {item[key] || "-"}
-              </div>
-            )
-          );
-        })}
+        {columns?.length === 0
+          ? Object.keys(item).map((key: string, i: number) => {
+              return (
+                key.toLowerCase() !== "id" && (
+                  <div className={styles.item} title={item[key] || "-"} key={i}>
+                    {item[key] || "-"}
+                  </div>
+                )
+              );
+            })
+          : Object.keys(item).map((key: string, i: number) => {
+              return (
+                columns?.includes(key) && (
+                  <div className={styles.item} title={item[key] || "-"} key={i}>
+                    <span>{item[key] || "-"}</span>
+                  </div>
+                )
+              );
+            })}
         {actions && (
           <div className={styles.actionItem}>{renderActionsForFiles(item)}</div>
         )}
