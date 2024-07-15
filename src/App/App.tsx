@@ -23,6 +23,7 @@ import styles from "./App.module.scss";
 import SDDTemplates from "../pages/SDDTemplates/SDDTemplates";
 import MyTasks from "../pages/MyTasks/MyTasks";
 import ConfigureSections from "../pages/ConfigureSections/ConfigureSections";
+import ContentDevelopment from "../pages/ContentDevelopment/ContentDevelopment";
 import Definitions from "../pages/Definitions/Definitions";
 
 const App = (props: any): JSX.Element => {
@@ -61,10 +62,6 @@ const App = (props: any): JSX.Element => {
               <Route index Component={TableOfContents} />
               <Route path="em_manual" index Component={TableOfContents} />
               <Route path="my_tasks" Component={MyTasks} />
-              <Route
-                path="my_tasks/:docName/configure"
-                Component={ConfigureSections}
-              />
             </Route>
           </Routes>
         </Suspense>

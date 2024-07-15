@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NavLink } from "react-router-dom";
 import styles from "./NavBar.module.scss";
-import { memo } from "react";
 
 interface NavBarTabProps {
   tab: any;
@@ -42,4 +41,4 @@ const NavBarTab = ({
   );
 };
 
-export default memo(NavBarTab);
+export default NavBarTab;

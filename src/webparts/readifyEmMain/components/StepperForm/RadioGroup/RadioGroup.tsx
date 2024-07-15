@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import styles from "./RadioGroup.module.scss";
-import { memo } from "react";
 
 interface Props {
   radioOptions: any[];
@@ -46,4 +45,4 @@ const CustomRadioGroup = ({
   );
 };
 
-export default memo(CustomRadioGroup);
+export default CustomRadioGroup;

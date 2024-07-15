@@ -2,7 +2,7 @@
 /* eslint-disable react/self-closing-comp */
 import { TreeSelect } from "primereact/treeselect";
 import styles from "./Inputs.module.scss";
-import { memo, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { emptyCheck } from "../../../../../utils/validations";
 import CustomInput from "./CustomInput";
 import { filterLibraryItemsByLabel } from "../../../../../utils/EMManualUtils";
@@ -102,4 +102,4 @@ const CustomTreeDropDown: React.FC<Props> = ({
     </>
   );
 };
-export default memo(CustomTreeDropDown);
+export default CustomTreeDropDown;

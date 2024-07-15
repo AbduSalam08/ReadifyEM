@@ -12,7 +12,7 @@ import tocInActive from "../../assets/navBar/InActive/toc.svg";
 import tasksInActive from "../../assets/navBar/InActive/tasks.svg";
 import definitionsInActive from "../../assets/navBar/InActive/definitons.svg";
 import SDDTemplatesInActive from "../../assets/navBar/InActive/SDDTemplates.svg";
-import { memo, useState } from "react";
+import { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import styles from "./NavBar.module.scss";
@@ -104,4 +104,4 @@ const NavBar = ({ isAdmin }: { isAdmin: boolean }): JSX.Element => {
   );
 };
 
-export default memo(NavBar);
+export default NavBar;

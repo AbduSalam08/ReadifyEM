@@ -1,4 +1,3 @@
-import { memo } from "react";
 import styles from "./StatusPill.module.scss";
 
 interface Props {
@@ -130,4 +129,4 @@ const StatusPill = ({
   );
 };
 
-export default memo(StatusPill);
+export default StatusPill;

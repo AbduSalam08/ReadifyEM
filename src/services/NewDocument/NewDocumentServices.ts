@@ -8,11 +8,6 @@ import { LIBNAMES, LISTNAMES } from "../../config/config";
 import SpServices from "../SPServices/SpServices";
 import { sp } from "@pnp/sp";
 import { trimStartEnd } from "../../utils/validations";
-import {
-  AddPrimaryAuthorTask,
-  UpdatePrimaryAuthorTask,
-  UpdateTask,
-} from "../MyTasks/MyTasksServices";
 
 // Interface for the properties
 interface IProps {
@@ -80,8 +75,7 @@ const AddNewDocumentToLib = async ({
           fileDetailsId: fileItem.ID,
         },
       })
-        .then(async (res: any) => {
-          await AddPrimaryAuthorTask(fileID);
+        .then((res: any) => {
           setLoaderState({
             isLoading: {
               inprogress: false,
@@ -211,48 +205,13 @@ const UpdateDocumentInLib = async ({
           console.log("err: ", err);
         });
     }
-    // debugger;
+
     sp.web.lists
       .getByTitle(LIBNAMES.AllDocuments)
       .items.getById(fileID)
       .update(documentFields)
-      .then(async (res: any) => {
-        // debugger;
-        await SpServices.SPReadItems({
-          Listname: LISTNAMES.MyTasks,
-          Select: "*,documentDetails/ID",
-          Expand: "documentDetails",
-          Filter: [
-            {
-              FilterKey: "documentDetailsId",
-              Operator: "eq",
-              FilterValue: DocumentID,
-            },
-          ],
-        })
-          .then(async (res: any) => {
-            const hasPATask: any[] = res?.filter((item: any) => {
-              return item?.role?.toLowerCase() === "primary author";
-            });
-            if (hasPATask?.length !== 0) {
-              await UpdatePrimaryAuthorTask(DocumentID);
-              await UpdateTask(DocumentID);
-            } else {
-              await AddPrimaryAuthorTask(DocumentID);
-            }
-          })
-          .catch(async (err: any) => {
-            console.log("err: ", err);
-            await UpdatePrimaryAuthorTask(DocumentID);
-          });
-
-        // if (!isDraft) {
-        //   await AddPrimaryAuthorTask(DocumentID);
-        // } else {
-        //   await UpdatePrimaryAuthorTask(DocumentID);
-        //   // await UpdateTask(DocumentID);
-        // }
-
+      .then((res: any) => {
+        console.log("res");
         setLoaderState({
           isLoading: {
             inprogress: false,
