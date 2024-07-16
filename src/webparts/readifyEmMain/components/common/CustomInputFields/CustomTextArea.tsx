@@ -21,6 +21,7 @@ interface Props {
   inputClassName?: any;
   inputWrapperClassName?: any;
   readOnly?: any;
+  noBorderInput?: boolean;
 }
 
 const CustomTextArea: React.FC<Props> = ({
@@ -39,6 +40,7 @@ const CustomTextArea: React.FC<Props> = ({
   inputWrapperClassName,
   readOnly,
   mandatory,
+  noBorderInput,
 }) => {
   const handleChange = (e: any): any => {
     onChange(e.target.value);
@@ -103,7 +105,13 @@ const CustomTextArea: React.FC<Props> = ({
           cols={30}
           style={{
             // paddingLeft: icon ? "30px" : "0px",
-            border: `${isValid ? "1px solid #ff8585" : "1px solid #e5e5e5"}`,
+            border: `${
+              isValid
+                ? "1px solid #ff8585"
+                : noBorderInput
+                ? "none"
+                : `1px solid #e5e5e5`
+            }`,
             padding: "5px 10px",
             width: "70%",
             fontSize: "14px",

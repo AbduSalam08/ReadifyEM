@@ -136,6 +136,7 @@ interface Props {
   minWidth?: any;
   hideErrMsg?: boolean;
   noErrorMsg?: boolean; // if true, no error message will be shown
+  noBorderInput?: boolean;
 }
 
 const CustomPeoplePicker: React.FC<Props> = ({
@@ -152,6 +153,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
   minWidth,
   noErrorMsg = false,
   readOnly,
+  noBorderInput,
 }) => {
   const multiPeoplePickerStyle = {
     root: {
@@ -166,7 +168,11 @@ const CustomPeoplePicker: React.FC<Props> = ({
         paddingLeft: "4px",
         minWidth: minWidth ? minWidth : "290px",
         background: "#fff",
-        border: isValid ? "1px solid #ff8585" : "1px solid #adadad50",
+        border: isValid
+          ? "1px solid #ff8585"
+          : noBorderInput
+          ? "none"
+          : "1px solid #adadad50",
         outline: "none",
         fontFamily: "interMedium",
       },
