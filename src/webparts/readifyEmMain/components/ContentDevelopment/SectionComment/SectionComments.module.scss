@@ -1,67 +1,67 @@
-.commentSecMain{
-    border: 1px solid #ebeaec;
-    padding: 10px 20px;
-    border-radius: 5px;
-    height: 50vh;
+.commentSecMain {
+  border: 1px solid #ebeaec;
+  padding: 10px 20px;
+  border-radius: 5px;
+  height: 50vh;
 }
 .headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ebeaec;
+}
+.comments {
+  background: linear-gradient(95.74deg, #593abb -14.38%, #3c2584 -173.31%);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 10px 0px 10px 10px;
+  margin-bottom: 6px;
+  .commentAuthor {
+    border-bottom: 1px solid #6447bb;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #ebeaec;
-}
-.comments{
-    background: linear-gradient(95.74deg, #593ABB -14.38%,#3C2584 -173.31%);
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 10px 0px 10px 10px;
-    margin-bottom: 6px;
-    .commentAuthor {
-            border-bottom: 1px solid #6447bb;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 5px;
-            margin-bottom: 5px;
-    
-            span {
-                font-size: 12px;
-                color:#FFFFFF;
-            }
-    
-            .role {
-                background: #D9D9D94D;
-                padding: 3px 5px 3px 5px;
-                border-radius: 3px;
-                color: #FFFFFF;
-            }
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+
+    span {
+      font-size: 12px;
+      color: #ffffff;
     }
-    p{
-        font-size: 12px;
-        font-weight: 400;
-        padding: 4px 0px 8px 0px;
-        line-height: 16px;
+
+    .role {
+      background: #d9d9d94d;
+      padding: 3px 5px 3px 5px;
+      border-radius: 3px;
+      color: #ffffff;
     }
-    .date {
-        display: flex;
-        justify-content: end;
-        font-size: 11px;
-    }
+  }
+  p {
+    font-size: 12px;
+    font-weight: 400;
+    padding: 4px 0px 8px 0px;
+    line-height: 16px;
+  }
+  .date {
+    display: flex;
+    justify-content: end;
+    font-size: 11px;
+  }
 }
 
 .closeBtn {
-    width: 28px;
-    height: 28px;
-    display: grid;
-    place-items: center;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 50%;
-    background-color: #fff;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 50%;
+  background-color: #fff;
 
-    img {
-        width: 16px;
-        height: 16px;
-    }
+  img {
+    width: 16px;
+    height: 16px;
+  }
 }

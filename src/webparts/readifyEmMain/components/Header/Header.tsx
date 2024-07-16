@@ -14,15 +14,9 @@ const Header = (): JSX.Element => {
   const currentUserDetails: any = useSelector(
     (state: any) => state.MainSPContext.currentUserDetails
   );
-  console.log("currentUserDetails: ", currentUserDetails);
   const isAdmin: boolean = currentUserDetails?.role === "Admin";
+
   const rootPath = isAdmin ? "/admin" : "/user";
-  console.log(
-    "window.location.href: ",
-    window.location.href.includes("workbench")
-  );
-  const isWorkBenchLink: boolean = window.location.href.includes("workbench");
-  console.log("isWorkBenchLink: ", isWorkBenchLink);
 
   const navigate = useNavigate();
 
@@ -74,16 +68,6 @@ const Header = (): JSX.Element => {
       navigate("/user");
     }
   }, [isAdmin]);
-
-  // useEffect(() => {
-  //   if (isWorkBenchLink) {
-  //     console.log("isWorkBenchLink: ", isWorkBenchLink);
-  //     navigate("/user");
-  //   } else {
-  //     console.log("isnotWorkBenchLink");
-  //     navigate("/user");
-  //   }
-  // }, [isWorkBenchLink]);
 
   return (
     <div className={styles.headerWrapper}>

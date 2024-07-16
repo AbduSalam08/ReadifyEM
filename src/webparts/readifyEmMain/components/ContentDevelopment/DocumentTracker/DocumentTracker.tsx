@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import styles from "./DocumentTracker.module.scss";
 import MultiplePeoplePersona from "../../common/CustomInputFields/MultiplePeoplePersona";
@@ -145,7 +147,7 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
     },
   ];
 
-  const customizedMarker = (item: any) => {
+  const customizedMarker = (item: any): any => {
     return (
       <span
         className="flex w-2rem h-2rem align-items-center justify-content-center text-white border-circle z-1 shadow-1"
@@ -162,7 +164,7 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
     );
   };
 
-  const customizedContent = (item: any) => {
+  const customizedContent = (item: any): any => {
     return <div>{item.content}</div>;
   };
 

@@ -43,7 +43,7 @@ const App = (props: any): JSX.Element => {
         <Suspense fallback={<AppLoader />}>
           <Routes>
             {/* Invalid route page */}
-            <Route path="*" element={ErrorElement} />
+            <Route path="*" Component={ErrorElement} />
             {/* ADMIN ROUTES */}
             <Route path="/admin" Component={RoleAuthorizationHOC}>
               <Route index Component={TableOfContents} />
@@ -54,7 +54,10 @@ const App = (props: any): JSX.Element => {
                 Component={ConfigureSections}
               />
               <Route path="definitions" Component={Definitions} />
-              <Route path="content_developer" Component={ContentDevelopment} />
+              <Route
+                path="my_tasks/:docName/content_developer"
+                Component={ContentDevelopment}
+              />
               <Route path="sdd_templates" Component={SDDTemplates} />
             </Route>
 
@@ -66,6 +69,10 @@ const App = (props: any): JSX.Element => {
               <Route
                 path="my_tasks/:docName/configure"
                 Component={ConfigureSections}
+              />
+              <Route
+                path="my_tasks/:docName/content_developer"
+                Component={ContentDevelopment}
               />
             </Route>
           </Routes>

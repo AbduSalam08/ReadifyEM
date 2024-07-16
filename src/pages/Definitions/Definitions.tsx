@@ -499,7 +499,7 @@ const Definitions = (): JSX.Element => {
           // isValid={!definitionsData.IsValid}
           // errorMsg={definitionsData.ErrorMsg}
           readOnly={true}
-          // noBorderInput={true}
+          noBorderInput={true}
         />
         <div key={3} className={styles.referenceWrapper}>
           <span>References</span>
@@ -533,6 +533,7 @@ const Definitions = (): JSX.Element => {
             // errorMsg={definitionsData.ErrorMsg}
             key={4}
             readOnly={true}
+            noBorderInput={true}
           />
           <CustomInput
             size="MD"

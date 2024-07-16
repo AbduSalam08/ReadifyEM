@@ -261,7 +261,17 @@ const MyTasks = (): JSX.Element => {
                       navigate(`/user/my_tasks/${item?.docName}/configure`);
                     }
                   } else {
-                    console.log("content developer coming soon...");
+                    // await getUniqueTaskData(item?.taskID, dispatch);
+
+                    if (isAdmin) {
+                      navigate(
+                        `/admin/my_tasks/${item?.docName}/content_developer`
+                      );
+                    } else {
+                      navigate(
+                        `/user/my_tasks/${item?.docName}/content_developer`
+                      );
+                    }
                   }
                 }}
                 roles={item?.role}

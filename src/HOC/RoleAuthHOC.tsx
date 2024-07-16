@@ -30,7 +30,6 @@ const RoleAuthorizationHOC = (): JSX.Element => {
   };
 
   useEffect(() => {
-    debugger;
     getRoleAuth();
   }, []);
 
