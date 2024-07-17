@@ -11,11 +11,13 @@ import SectionComments from "../../webparts/readifyEmMain/components/ContentDeve
 import SectionContent from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionContent/SectionContent";
 import CustomInput from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomInput";
 import CustomPeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomPeoplePicker";
-import CustomMutiplePeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomMutiplePeoplePicker";
+// import CustomMutiplePeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomMutiplePeoplePicker";
 import SpServices from "../../services/SPServices/SpServices";
 // import ViewDetails from "../../webparts/readifyEmMain/components/ContentDevelopment/ViewDetails/ViewDetails";
 import DocumentTracker from "../../webparts/readifyEmMain/components/ContentDevelopment/DocumentTracker/DocumentTracker";
 import { togglePopupVisibility } from "../../utils/togglePopup";
+// styles
+import styles from "./ContentDevelopment.module.scss";
 
 const AllSectionsData = [
   {
@@ -105,8 +107,7 @@ const Details = {
   nextReviewDate: "03/03/24",
   comments: [
     {
-      comment:
-        "This is a comment This is a comment This is a comment This is a comment This is a comment This is a comment",
+      comment: "This is a comment This is a comment",
       commentAuthor: {
         name: "Kawin V",
         email: "Kawin@chandrudemo.onmicrosoft.com",
@@ -115,8 +116,7 @@ const Details = {
       role: "Section Author",
     },
     {
-      comment:
-        "This is a comment This is a comment This is a comment This is a comment This is a comment This is a comment",
+      comment: "This is a comment This is a comment",
       commentAuthor: {
         name: "Madhesh Maasi",
         email: "Madhesh@chandrudemo.onmicrosoft.com",
@@ -127,6 +127,7 @@ const Details = {
   ],
   isLoading: false,
 };
+
 const docDetails = {
   documentName: "Document Name1",
   documentStatus: "In Development",
@@ -196,7 +197,6 @@ const ContentDevelopment = (): JSX.Element => {
   ];
 
   // initial States
-
   // AllSections State
   const [allSections, setAllSections] = useState<any>([]);
   const [sectionDetails, setSectionDetails] = useState<any>(Details);
@@ -213,25 +213,6 @@ const ContentDevelopment = (): JSX.Element => {
   const handleClosePopup = (index?: any): void => {
     togglePopupVisibility(setPopupController, index, "close");
   };
-  // fn for onchange of definition name
-  // const handleOnChangeFunction = (value: string | any, key: string): void => {
-  //   if (key === "referenceAuthor") {
-  //     console.log(value);
-  //     setDocumentDetails((prev: any) => ({
-  //       ...prev,
-  //       referenceAuthor:
-  //         value.length > 0
-  //           ? [{ Id: value[0]?.id, Email: value[0]?.secondaryText }]
-  //           : [],
-  //     }));
-  //   } else {
-  //     setDocumentDetails((prev: any) => ({
-  //       ...prev,
-  //       [key]: value,
-  //       IsDuplicate: false,
-  //     }));
-  //   }
-  // };
 
   const popupInputs: any[] = [
     [
@@ -239,6 +220,8 @@ const ContentDevelopment = (): JSX.Element => {
         commentsData={sectionDetails.comments}
         isHeader={false}
         key={1}
+        noCommentInput={true}
+        viewOnly={true}
       />,
     ],
     [<DocumentTracker sectionData={sectionDetails} key={1} />],
@@ -304,6 +287,9 @@ const ContentDevelopment = (): JSX.Element => {
         withLabel
         labelText="Primary author"
         personSelectionLimit={1}
+        minWidth={"250px"}
+        maxWidth={"250px"}
+        noBorderInput={true}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "referenceAuthor");
         }}
@@ -311,29 +297,42 @@ const ContentDevelopment = (): JSX.Element => {
         readOnly={true}
         // noBorderInput={true}
         key={5}
+        noRemoveBtn={true}
       />,
-      <CustomMutiplePeoplePicker
+      <CustomPeoplePicker
         size="MD"
         withLabel
+        minWidth={"250px"}
+        maxWidth={"250px"}
+        minHeight={"70px"}
+        maxHeight={"70px"}
         labelText="Reviwers"
-        personSelectionLimit={5}
+        personSelectionLimit={documentDetails?.reviewers?.length}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "referenceAuthor");
         }}
         selectedItem={documentDetails?.reviewers}
         readOnly={true}
+        noRemoveBtn={true}
+        // noBorderInput={true}
         key={5}
       />,
-      <CustomMutiplePeoplePicker
+      <CustomPeoplePicker
         size="MD"
         withLabel
+        minWidth={"250px"}
+        maxWidth={"250px"}
+        minHeight={"70px"}
+        maxHeight={"70px"}
         labelText="Approvers"
-        personSelectionLimit={5}
+        personSelectionLimit={documentDetails?.approvers?.length}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "referenceAuthor");
         }}
         selectedItem={documentDetails?.approvers}
         readOnly={true}
+        noRemoveBtn={true}
+        // noBorderInput={true}
         key={5}
       />,
     ],
@@ -351,16 +350,6 @@ const ContentDevelopment = (): JSX.Element => {
           handleClosePopup(0);
         },
       },
-      // {
-      //   text: "Submit",
-      //   btnType: "primary",
-      //   disabled: false,
-      //   endIcon: false,
-      //   startIcon: false,
-      //   onClick: () => {
-      //     // handleSubmit();
-      //   },
-      // },
     ],
     [
       {
@@ -373,16 +362,6 @@ const ContentDevelopment = (): JSX.Element => {
           handleClosePopup(1);
         },
       },
-      // {
-      //   text: "Save changes",
-      //   btnType: "primary",
-      //   disabled: false,
-      //   endIcon: false,
-      //   startIcon: false,
-      //   onClick: () => {
-      //     handleUpdate();
-      //   },
-      // },
     ],
     [
       {
@@ -426,14 +405,6 @@ const ContentDevelopment = (): JSX.Element => {
       togglePopupVisibility(setPopupController, value, "open", popupTitle);
     }
   };
-  // const viewCommentFunction = (value: number) => {
-  //    togglePopupVisibility(
-  //      setPopupController,
-  //      value,
-  //      "open",
-  //      `Promoted Comments`
-  //    );
-  // };
 
   return (
     <>
@@ -449,14 +420,7 @@ const ContentDevelopment = (): JSX.Element => {
           />
         </div>
         <div style={{ width: "100%", display: "flex" }}>
-          <div
-            style={{
-              width: "320px",
-              border: "1px solid #e4caca",
-              padding: "10px",
-              borderRadius: "5px",
-            }}
-          >
+          <div className={styles.sectionWrapper}>
             <AllSections
               activeSection={activeSection}
               data={allSections}
@@ -466,15 +430,7 @@ const ContentDevelopment = (): JSX.Element => {
               key={1}
             />
           </div>
-          <div
-            style={{
-              width: "75%",
-              padding: "10px",
-              borderRadius: "5px",
-              background: "#fff",
-              marginLeft: "20px",
-            }}
-          >
+          <div className={styles.contentWrapper}>
             {sectionDetails?.sectionName !== "" && (
               <SectionHeader
                 documentName={sectionDetails.sectionName}
@@ -490,10 +446,11 @@ const ContentDevelopment = (): JSX.Element => {
               nextReviewDate={sectionDetails.nextReviewDate}
             />
             <div style={{ width: "100%", display: "flex" }}>
-              <div style={{ width: "65%", marginRight: "10px" }}>
+              <div style={{ width: "75%" }}>
                 <SectionContent sectionNumber={1} ID={55} />
               </div>
-              <div style={{ width: "35%" }}>
+              <div style={{ width: "25%" }}>
+
                 <SectionComments
                   commentsData={sectionDetails.comments}
                   isHeader={true}

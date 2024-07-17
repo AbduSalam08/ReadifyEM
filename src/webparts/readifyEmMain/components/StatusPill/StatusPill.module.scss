@@ -1,3 +1,19 @@
+:root {
+  --overdue-color: #f44336;
+  --notStarted-color: #eaeaea;
+  --inDevelopment-color: #fff2e2;
+  --inReview-color: #9c27b0;
+  --inRework-color: #ff5722;
+  --inApproval-color: #673ab7;
+  --approved-color: #4caf50;
+  --current-color: #ffc107;
+  --hidden-color: #607d8b;
+  --contentInProgress-color: #fff7e8;
+  --reviewInProgress-color: #e3fdff;
+  --approvalInProgress-color: #e3e8ff;
+  --reworkInProgress-color: #ffe3e5;
+}
+
 .statusPill {
   padding: 4px 12px;
   min-width: 112px;
@@ -12,6 +28,60 @@
   height: 27px;
   user-select: none !important;
   -moz-user-select: none !important;
+
+  &.overdue {
+    background-color: var(--overdue-color);
+    color: white;
+  }
+  &.notStarted {
+    background-color: var(--notStarted-color);
+    color: #414141;
+  }
+  &.inDevelopment {
+    background-color: var(--inDevelopment-color);
+    color: #995c13;
+    padding: 4px 20px !important;
+  }
+  &.inReview {
+    background-color: var(--inReview-color);
+    color: white;
+  }
+  &.inRework {
+    background-color: var(--inRework-color);
+    color: white;
+  }
+  &.inApproval {
+    background-color: var(--inApproval-color);
+    color: white;
+  }
+  &.approved {
+    background-color: var(--approved-color);
+    color: white;
+  }
+  &.current {
+    background-color: var(--current-color);
+    color: black;
+  }
+  &.hidden {
+    background-color: var(--hidden-color);
+    color: white;
+  }
+  &.contentInProgress {
+    background-color: var(--contentInProgress-color);
+    color: #b57801;
+  }
+  &.reviewInProgress {
+    background-color: var(--reviewInProgress-color);
+    color: #01573e;
+  }
+  &.approvalInProgress {
+    background-color: var(--approvalInProgress-color);
+    color: #0000c4;
+  }
+  &.reworkInProgress {
+    background-color: var(--reworkInProgress-color);
+    color: #c4000c;
+  }
 }
 
 .rolesPill {
@@ -34,98 +104,73 @@
   height: 8px;
   border-radius: 50%;
   margin-right: 4px;
-  background-color: #4caf50; /* Green color, change as needed */
-}
-
-.overdue {
-  background-color: #f44336; /* Red color, change as needed */
-  color: white;
-}
-
-.notStarted {
-  background-color: #eaeaea; /* Grey color, change as needed */
-  color: #414141;
-}
-
-.inDevelopment {
-  background-color: #fff2e2; /* Blue color, change as needed */
-  color: #995c13;
-  padding: 4px 20px !important;
-}
-
-.inReview {
-  background-color: #9c27b0; /* Purple color, change as needed */
-  color: white;
-}
-
-.inRework {
-  background-color: #ff5722; /* Deep orange color, change as needed */
-  color: white;
-}
-
-.inApproval {
-  background-color: #673ab7; /* Deep purple color, change as needed */
-  color: white;
-}
-
-.approved {
-  background-color: #4caf50; /* Green color, change as needed */
-  color: white;
-}
-
-.current {
-  background-color: #ffc107; /* Amber color, change as needed */
-  color: black; /* Dark text for contrast */
-}
-
-.hidden {
-  background-color: #607d8b; /* Blue-grey color, change as needed */
-  color: white;
 }
 
 /* Role-specific styles */
 .primaryAuthor {
   @extend .rolesPill;
-  background-color: #e2eeff; /* Yellow color, change as needed */
+  background-color: #e2eeff;
   color: #1068a8;
 }
 
 .sectionAuthor {
   @extend .rolesPill;
-  background-color: #eafffb; /* Cyan color, change as needed */
+  background-color: #eafffb;
   color: #158e78;
 }
 
 .consultant {
   @extend .rolesPill;
-  background-color: #fff6e5; /* Orange color, change as needed */
+  background-color: #fff6e5;
   color: #e79901;
 }
 
 .reviewer {
   @extend .rolesPill;
-  background-color: #795548; /* Brown color, change as needed */
+  background-color: #795548;
   color: white;
 }
 
 .approver {
   @extend .rolesPill;
-  background-color: #8bc34a; /* Light green color, change as needed */
+  background-color: #8bc34a;
   color: black;
 }
 
 .SM {
   font-size: 12px;
   font-family: "interMedium", sans-serif !important;
-  padding: 2px 4px;
+  padding: 0px 10px;
+  height: 22px !important;
 }
 
 .MD {
   font-size: 14px;
-  padding: 4px 8px;
+  padding: 4px 25px;
 }
 
 .XL {
   font-size: 18px;
-  padding: 8px 16px;
+  padding: 8px 30px;
+}
+
+.contentInProgressDOT {
+  background-color: #b57801;
+  margin: 0 5px;
+  margin-left: 0;
+}
+.reviewInProgressDOT {
+  background-color: #01573e;
+  margin: 0 5px;
+  margin-left: 0;
+}
+.approvalInProgressDOT {
+  background-color: #0000c4;
+  margin: 0 5px;
+  margin-left: 0;
+}
+.reworkInProgressDOT {
+  background-color: #c4000c;
+  margin: 0 5px;
+  margin-left: 0;
 }

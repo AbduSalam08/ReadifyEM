@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { memo } from "react";
 // import {
@@ -123,7 +124,7 @@ import { CONFIG } from "../../../../../config/config";
 
 interface Props {
   selectedItem?: any;
-  onChange: (value: any[]) => void;
+  onChange?: (value: any[]) => void;
   placeholder?: string;
   personSelectionLimit?: number | any;
   size?: "SM" | "MD" | "XL";
@@ -137,6 +138,10 @@ interface Props {
   hideErrMsg?: boolean;
   noErrorMsg?: boolean; // if true, no error message will be shown
   noBorderInput?: boolean;
+  maxWidth?: any;
+  minHeight?: any;
+  maxHeight?: any;
+  noRemoveBtn?: boolean;
 }
 
 const CustomPeoplePicker: React.FC<Props> = ({
@@ -154,18 +159,26 @@ const CustomPeoplePicker: React.FC<Props> = ({
   noErrorMsg = false,
   readOnly,
   noBorderInput,
+  maxWidth,
+  noRemoveBtn,
+  minHeight,
+  maxHeight,
 }) => {
   const multiPeoplePickerStyle = {
     root: {
       minWidth: minWidth ? minWidth : "100%",
+      maxWidth: maxWidth ? maxWidth : "100%",
       background: "rgba(218, 218, 218, 0.29)",
       ".ms-BasePicker-text": {
+        // alignItems: "flex-start",
         height: size === "SM" ? "34px" : size === "MD" ? "32px" : "43px",
         borderRadius: "4px",
-        maxHeight: "50px",
+        // maxHeight: "50px",
         overflowX: "hidden",
         padding: "0px 10px",
         paddingLeft: "4px",
+        minHeight: minHeight ? minHeight : "34px",
+        maxHeight: maxHeight ? maxHeight : "50px",
         minWidth: minWidth ? minWidth : "290px",
         background: "#fff",
         border: isValid
@@ -187,7 +200,12 @@ const CustomPeoplePicker: React.FC<Props> = ({
         display: "none",
       },
       ".ms-BasePicker-text:hover": {
-        border: isValid ? "1px solid #ff8585" : "1px solid #adadad50",
+        border:
+          !noBorderInput && isValid
+            ? "1px solid #ff8585"
+            : !noBorderInput
+            ? "1px solid #adadad50"
+            : "none",
       },
       ".ms-TooltipHost": {
         fontFamily: "interMedium",
@@ -197,8 +215,18 @@ const CustomPeoplePicker: React.FC<Props> = ({
       ".ms-PickerPersona-container": {
         background: "#e8e8e8",
       },
+      ".ms-PickerItem-removeButton": {
+        display: noRemoveBtn ? "none" : "block",
+      },
       ".ms-PickerItem-removeButton:focus": {
         background: "#555",
+      },
+      ".ms-BasePicker-itemsWrapper": {
+        // padding: "3px 0",
+        height: "100%",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        gap: "2px",
       },
     },
   };
@@ -208,12 +236,14 @@ const CustomPeoplePicker: React.FC<Props> = ({
   );
 
   const handleChange = (items: any[]): void => {
-    onChange(items);
+    onChange && onChange(items);
   };
 
   const selectedUserItem =
     personSelectionLimit > 1
-      ? selectedItem?.map((item: any) => item.secondaryText || item.Email)
+      ? selectedItem?.map(
+          (item: any) => item.secondaryText || item.Email || item.email
+        )
       : [selectedItem];
 
   return (

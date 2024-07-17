@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from "./SectionHeader.module.scss";
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
-import CustomMutiplePeoplePicker from "../../common/CustomInputFields/CustomMutiplePeoplePicker";
+// import CustomMutiplePeoplePicker from "../../common/CustomInputFields/CustomMutiplePeoplePicker";
 
 interface Props {
   documentName: string;
@@ -23,34 +23,43 @@ const SectionHeader: React.FC<Props> = ({
   return (
     <>
       <div className={styles.headerContainer}>
-        <h2>{documentName}</h2>
+        <span className={styles.sectionName}>{documentName}</span>
         <div style={{ display: "flex", gap: "10px" }}>
-          <div>
-            <span
-              style={{ display: "flex", marginBottom: "7px", color: "#424242" }}
-            >
-              Section Author (you)
-            </span>
+          <div className={styles.authors}>
+            <span className={styles.label}>Section Author (you)</span>
             <CustomPeoplePicker
               size="SM"
+              maxWidth={"200px"}
+              minWidth={"200px"}
+              noRemoveBtn={true}
               selectedItem={sectionAuthor.email}
               onChange={(value: any) => {
                 handleOnChangeFunction(value);
               }}
-              isValid={true}
+              isValid={false}
               placeholder="Add Reference Author"
               readOnly
               hideErrMsg
-              key={1}
             />
           </div>
-          <div>
-            <span
-              style={{ display: "flex", marginBottom: "7px", color: "#424242" }}
-            >
-              Consultant
-            </span>
-            <CustomMutiplePeoplePicker
+          <div className={styles.authors}>
+            <span className={styles.label}>Consultant</span>
+
+            <CustomPeoplePicker
+              size="SM"
+              maxWidth={"200px"}
+              minWidth={"200px"}
+              personSelectionLimit={5}
+              selectedItem={consultants}
+              onChange={(value: any) => {
+                handleOnChangeFunction(value);
+              }}
+              isValid={false}
+              placeholder="Add Reference Author"
+              // readOnly
+              hideErrMsg
+            />
+            {/* <CustomMutiplePeoplePicker
               size="SM"
               personSelectionLimit={5}
               selectedItem={consultants}
@@ -62,7 +71,7 @@ const SectionHeader: React.FC<Props> = ({
               readOnly
               hideErrMsg
               key={1}
-            />
+            /> */}
           </div>
         </div>
       </div>
