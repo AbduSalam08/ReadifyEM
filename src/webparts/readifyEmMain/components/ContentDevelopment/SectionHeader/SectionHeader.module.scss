@@ -1,10 +1,26 @@
-
-.headerContainer{
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #f4f4f6;
-    padding: 10px 20px;
-    margin-bottom: 10px;
-    border-radius: 5px;
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f4f4f6;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+.authors {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 5px;
+  .label {
+    font-family: "interRegular", sans-serif !important;
+    color: #414141;
+    font-size: 13px;
+  }
+}
+.sectionName {
+  font-size: 20px;
+  color: #424242;
+  font-family: "interMedium", sans-serif !important;
 }

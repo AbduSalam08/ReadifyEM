@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from "./AllSections.module.scss";
 import MultiplePeoplePersona from "../../common/CustomInputFields/MultiplePeoplePersona";
+import StatusPill from "../../StatusPill/StatusPill";
+const commentsIcon: any = require("../../../../../assets/images/svg/commentsIcon.svg");
 
 interface Props {
   data: any;
@@ -26,12 +29,12 @@ const AllSections: React.FC<Props> = ({ activeSection, data, onChange }) => {
   return (
     <div>
       <div className={styles.sectionHeader}>
-        <h3>All Sections</h3>
+        <span className={styles.sectionsTitle}>All Sections</span>
         <div
           className={styles.commentBox}
           onClick={() => selectSection(0, "View comments")}
         >
-          comments
+          comments <img src={commentsIcon} alt="comments icon" />
         </div>
       </div>
       {data.length > 0 &&
@@ -44,23 +47,20 @@ const AllSections: React.FC<Props> = ({ activeSection, data, onChange }) => {
               key={index}
               onClick={() => selectSection(index, "Select section")}
             >
-              <div
-                className={styles.sectionList}
-                style={{ marginBottom: "10px" }}
-              >
-                <h3>{item.sectionName}</h3>
+              <div className={styles.sectionList}>
+                <span className={styles.sectionsName}>{item.sectionName}</span>
                 <span className={styles.commentCount}>
                   {item.commentsCount}
                 </span>
               </div>
-              <div
-                className={styles.sectionList}
-                style={{ marginBottom: "10px" }}
-              >
-                <span style={{ fontSize: "14px", color: "#ADADAD" }}>
-                  Assigned to you
-                </span>
-                <div style={{ marginRight: "55px" }}>
+              <div className={styles.sectionList}>
+                <span className={styles.assignedText}>Assigned to you</span>
+                <div
+                  style={{
+                    marginRight: "55px",
+                    marginTop: "7px",
+                  }}
+                >
                   <MultiplePeoplePersona
                     data={item.sectionPersons}
                     positionLeft={15}
@@ -68,14 +68,19 @@ const AllSections: React.FC<Props> = ({ activeSection, data, onChange }) => {
                 </div>
               </div>
               <div className={styles.sectionList}>
-                <span className={styles.statusSec}>{item.sectionStatus}</span>
+                {/* <span className={styles.statusSec}>{item.sectionStatus}</span> */}
+                <StatusPill
+                  status={item?.sectionStatus}
+                  size="SM"
+                  ontrackDot={true}
+                />
                 <span className={styles.visibleDateSec}>{item.updateDate}</span>
               </div>
             </div>
           ) : (
             <div className={styles.sectionDisabled} key={index}>
               <div className={styles.sectionList}>
-                <h3>{item.sectionName}</h3>
+                <span className={styles.sectionsName}>{item.sectionName}</span>
                 <span className={styles.disableDateSec}>{item.updateDate}</span>
               </div>
             </div>

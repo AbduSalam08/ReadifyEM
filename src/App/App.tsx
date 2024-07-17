@@ -54,6 +54,7 @@ const App = (props: any): JSX.Element => {
                 Component={ConfigureSections}
               />
               <Route path="definitions" Component={Definitions} />
+              {/* <Route path="definitions" element={<h1>Definitions</h1>} /> */}
               <Route
                 path="my_tasks/:docName/content_developer"
                 Component={ContentDevelopment}

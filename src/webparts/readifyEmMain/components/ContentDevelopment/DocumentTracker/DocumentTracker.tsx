@@ -3,8 +3,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import styles from "./DocumentTracker.module.scss";
 import MultiplePeoplePersona from "../../common/CustomInputFields/MultiplePeoplePersona";
-const checkMark = require("../../../../../assets/images/png/checkMarkBlue.png");
-const warning = require("../../../../../assets/images/png/exclamation.png");
+const checkMark = require("../../../../../assets/images/svg/checkIconViolet.svg");
+const warning = require("../../../../../assets/images/svg/exclamationDarkRed.svg");
 import { Timeline } from "primereact/timeline";
 import "./DocumentTracker.css";
 
@@ -19,14 +19,16 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
       date: "15/10/2020 10:30",
       icon: "pi pi-shopping-cart",
       color: "#593ABB",
-      borderColor: "#cdbff7",
+      borderColor: "#ffffffd4",
       image: "game-controller.jpg",
       serialNumber: 1,
       content: (
         <div className={styles.trackSection}>
           <div className={styles.trackerContent}>
             <div className={styles.trackerHeadlineSec}>
-              <h3 style={{ color: "#593ABB" }}>Primary Auhtor</h3>
+              <span className={styles.roleType} style={{ color: "#593ABB" }}>
+                Primary Auhtor
+              </span>
               <MultiplePeoplePersona
                 data={sectionData?.primaryAuthor}
                 positionLeft={15}
@@ -37,7 +39,7 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
           <div className={styles.statusSection}>
             {/* <p>Rework in progress</p> */}
             <button className={styles.backBtn}>
-              <img src={checkMark} alt={"back to my tasks"} />
+              <img src={checkMark} />
             </button>
           </div>
         </div>
@@ -48,47 +50,21 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
       date: "15/10/2020 14:00",
       icon: "pi pi-cog",
       color: "#C4000C",
-      borderColor: "#ffffff96",
+      borderColor: "#fee4e5",
       serialNumber: 2,
       content: (
         <div className={styles.trackSection}>
           <div className={styles.trackerContent}>
             <div className={styles.trackerHeadlineSec}>
-              <h3 style={{ color: "#C4000C" }}>Section Auhtors</h3>
+              <span className={styles.roleType} style={{ color: "#C4000C" }}>
+                Section Auhtors
+              </span>
               <MultiplePeoplePersona
                 data={sectionData?.sectionAuthors}
                 positionLeft={15}
               />
             </div>
             <span>Content Development</span>
-          </div>
-          <div className={styles.statusSection}>
-            {/* <p>Rework in progress</p> */}
-            <button className={styles.backBtn}>
-              <img src={checkMark} alt={"back to my tasks"} />
-            </button>
-          </div>
-        </div>
-      ),
-    },
-    {
-      status: "Shipped",
-      date: "15/10/2020 16:15",
-      icon: "pi pi-shopping-cart",
-      color: "#593ABB",
-      borderColor: "#cdbff7",
-      serialNumber: 3,
-      content: (
-        <div className={styles.trackSection}>
-          <div className={styles.trackerContent}>
-            <div className={styles.trackerHeadlineSec}>
-              <h3 style={{ color: "#593ABB" }}>Reviewer's</h3>
-              <MultiplePeoplePersona
-                data={sectionData?.reviewers}
-                positionLeft={15}
-              />
-            </div>
-            <span>Review & Reject progress for all section</span>
           </div>
           <div className={styles.statusSection}>
             <p style={{ color: "#C4000C" }}>Rework in progress</p>
@@ -100,17 +76,49 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
       ),
     },
     {
+      status: "Shipped",
+      date: "15/10/2020 16:15",
+      icon: "pi pi-shopping-cart",
+      color: "#593ABB",
+      borderColor: "#ffffffd4",
+      serialNumber: 3,
+      content: (
+        <div className={styles.trackSection}>
+          <div className={styles.trackerContent}>
+            <div className={styles.trackerHeadlineSec}>
+              <span className={styles.roleType} style={{ color: "#593ABB" }}>
+                Reviewer(s)
+              </span>
+              <MultiplePeoplePersona
+                data={sectionData?.reviewers}
+                positionLeft={15}
+              />
+            </div>
+            <span>Review & Reject progress for all section</span>
+          </div>
+          <div className={styles.statusSection}>
+            {/* <p>Rework in progress</p> */}
+            <button className={styles.backBtn}>
+              <img src={checkMark} alt={"back to my tasks"} />
+            </button>
+          </div>
+        </div>
+      ),
+    },
+    {
       status: "Delivered",
       date: "16/10/2020 10:00",
       icon: "pi pi-check",
       color: "#555555",
-      borderColor: "#e7dfdfde",
+      borderColor: "#ffffffd4",
       serialNumber: 4,
       content: (
         <div className={styles.trackSection}>
           <div className={styles.trackerContent}>
             <div className={styles.trackerHeadlineSec}>
-              <h3 style={{ color: "#555555" }}>Approver's</h3>
+              <span className={styles.roleType} style={{ color: "#555555" }}>
+                Approver(s)
+              </span>
               <MultiplePeoplePersona
                 data={sectionData?.Approvers}
                 positionLeft={15}
@@ -134,12 +142,14 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
       date: "16/10/2020 10:00",
       icon: "pi pi-check",
       color: "#555555",
-      borderColor: "#e7dfdfde",
+      borderColor: "#ffffffd4",
       serialNumber: 5,
       content: (
         <div>
           <div className={styles.trackerContent}>
-            <h3 style={{ color: "#555555" }}>Document Published</h3>
+            <span className={styles.roleType} style={{ color: "#555555" }}>
+              Document Published
+            </span>
             <span>Final output of the document</span>
           </div>
         </div>

@@ -1,8 +1,19 @@
+.flexCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .commentSecMain {
   border: 1px solid #ebeaec;
-  padding: 10px 20px;
+  padding: 10px;
   border-radius: 5px;
-  height: 50vh;
+  max-height: 50vh;
+  width: 100%;
+  .commentsTitle {
+    font-size: 14px;
+    color: #555;
+    font-family: "interMedium", sans-serif;
+  }
 }
 .headerContainer {
   display: flex;
@@ -12,30 +23,46 @@
   margin-bottom: 10px;
   border-bottom: 1px solid #ebeaec;
 }
+.commentsWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-height: 50vh;
+}
 .comments {
-  background: linear-gradient(95.74deg, #593abb -14.38%, #3c2584 -173.31%);
   color: #fff;
-  padding: 5px 10px;
+  padding: 8px 10px;
   border-radius: 10px 0px 10px 10px;
   margin-bottom: 6px;
+  width: 94%;
+  background: linear-gradient(
+    95.74deg,
+    #9f80ff -14.38%,
+    #6b5cab -7.97%,
+    #27195e 174.15%
+  );
+
   .commentAuthor {
-    border-bottom: 1px solid #6447bb;
+    border-bottom: 1px solid #ffffff21;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding-bottom: 5px;
     margin-bottom: 5px;
-
     span {
-      font-size: 12px;
+      font-size: 11px;
       color: #ffffff;
+      font-family: "interMedium", sans-serif;
     }
-
     .role {
+      text-align: center;
       background: #d9d9d94d;
-      padding: 3px 5px 3px 5px;
+      padding: 4px 7px;
       border-radius: 3px;
       color: #ffffff;
+      font-size: 11px;
+      font-family: "interRegular", sans-serif;
     }
   }
   p {
@@ -43,25 +70,57 @@
     font-weight: 400;
     padding: 4px 0px 8px 0px;
     line-height: 16px;
+    font-family: "interRegular", sans-serif;
   }
   .date {
     display: flex;
     justify-content: end;
-    font-size: 11px;
+    font-size: 10px;
+    color: #ebeaec;
+    font-family: "interRegular", sans-serif;
   }
 }
 
 .closeBtn {
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
   display: grid;
   place-items: center;
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 50%;
   background-color: #fff;
-
   img {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 12px;
   }
+}
+.commentsBar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // gap: 10px;
+  background-color: #fff;
+  border: 1px solid #adadad25;
+  border-radius: 4px;
+}
+.sendBtn {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 4px;
+  background-color: #fff;
+  margin-right: 10px;
+  padding: 0 10px;
+  @extend .flexCenter;
+  cursor: pointer;
+  img {
+    width: 15px;
+    height: 15px;
+  }
+}
+.commentBoxInput {
+  min-width: 90% !important;
 }
