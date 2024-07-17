@@ -5,7 +5,7 @@ import styles from "./Inputs.module.scss";
 
 interface Props {
   data?: any;
-  positionLeft: number;
+  positionLeft?: number;
 }
 
 const CustomMutiplePeoplePersona: React.FC<Props> = ({
@@ -22,9 +22,9 @@ const CustomMutiplePeoplePersona: React.FC<Props> = ({
                 root: {
                   margin: "0 !important;",
                   position: "absolute",
-                  borderRadius: "10px",
+                  borderRadius: "50%",
                   border: "3px solid #fff",
-                  left: `${positionLeft * index}px`,
+                  left: `${positionLeft && positionLeft * index}px`,
                   zIndex: `${index}`,
                   // ".ms-Persona ": {
                   //   Position: "absolute",
@@ -37,6 +37,10 @@ const CustomMutiplePeoplePersona: React.FC<Props> = ({
                     display: "none",
                   },
                   ".ms-Persona-image": {
+                    width: "20px !important",
+                    height: "20px !important",
+                  },
+                  ".ms-Persona-imageArea": {
                     width: "20px !important",
                     height: "20px !important",
                   },
