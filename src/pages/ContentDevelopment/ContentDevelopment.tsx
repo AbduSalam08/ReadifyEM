@@ -8,6 +8,7 @@ import Header from "../../webparts/readifyEmMain/components/ContentDevelopment/C
 import SectionHeader from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionHeader/SectionHeader";
 import SectionBanner from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionBanner/sectionBanner";
 import SectionComments from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionComment/SectionComments";
+import SectionContent from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionContent/SectionContent";
 import CustomInput from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomInput";
 import CustomPeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomPeoplePicker";
 // import CustomMutiplePeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomMutiplePeoplePicker";
@@ -445,8 +446,11 @@ const ContentDevelopment = (): JSX.Element => {
               nextReviewDate={sectionDetails.nextReviewDate}
             />
             <div style={{ width: "100%", display: "flex" }}>
-              <div style={{ width: "75%" }}>Section Content</div>
+              <div style={{ width: "75%" }}>
+                <SectionContent sectionNumber={1} ID={55} />
+              </div>
               <div style={{ width: "25%" }}>
+
                 <SectionComments
                   commentsData={sectionDetails.comments}
                   isHeader={true}

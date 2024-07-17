@@ -15,6 +15,7 @@ import {
   IUpdateList,
   ISPList,
   IDetailsListGroup,
+  ISPAttachments,
   ISPAttachment,
   IAttachDelete,
   ISPListChoiceField,
@@ -129,12 +130,18 @@ const SPReadItemUsingId = async (params: IListItemUsingId): Promise<any[]> => {
     .get();
 };
 
-const SPAddAttachments = async (params: ISPAttachment) => {
+const SPAddAttachments = async (params: ISPAttachments) => {
   const files: any[] = params.Attachments;
   return await sp.web.lists
     .getByTitle(params.ListName)
     .items.getById(params.ListID)
     .attachmentFiles.addMultiple(files);
+};
+const SPAddAttachment = async (params: ISPAttachment) => {
+  return await sp.web.lists
+    .getByTitle(params.ListName)
+    .items.getById(params.ListID)
+    .attachmentFiles.add(params.FileName, params.Attachments);
 };
 
 const SPGetAttachments = async (params: ISPList) => {
@@ -150,6 +157,13 @@ const SPDeleteAttachments = async (params: IAttachDelete) => {
     .items.getById(params.ListID)
     .attachmentFiles.getByName(params.AttachmentName)
     .recycle();
+};
+const SPReadAttachments = async (params: IAttachDelete) => {
+  return await sp.web.lists
+    .getByTitle(params.ListName)
+    .items.getById(params.ListID)
+    .attachmentFiles.getByName(params.AttachmentName)
+    .getText();
 };
 
 const SPGetChoices = async (params: ISPListChoiceField) => {
@@ -254,10 +268,12 @@ export default {
   SPDetailsListGroupItems,
   SPGetChoices,
   SPAddAttachments,
+  SPAddAttachment,
   SPGetAttachments,
   SPDeleteAttachments,
   SPReadItemUsingId,
   batchInsert,
   batchUpdate,
   batchDelete,
+  SPReadAttachments,
 };

@@ -1,0 +1,20 @@
+.quillWrap {
+    width: 60%;
+    padding: 0;
+    margin-right: 10px;
+    border-bottom: 1px solid #eee;
+}
+.quillWrap .ql-container .ql-editor {
+    padding: 5px 10px;
+}
+.ql-tooltip {
+    z-index: 9999;
+    width: 476px!important;
+}
+.ql-editor::before {
+    font-size: 13px !important;
+    color: #adadad !important;
+    text-decoration: none !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+}
