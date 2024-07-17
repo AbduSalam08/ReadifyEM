@@ -3,6 +3,7 @@
   "compilerOptions": {
     "target": "es6",
     "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports":true,
     "module": "esnext",
     "moduleResolution": "node",
     "jsx": "react-jsx",

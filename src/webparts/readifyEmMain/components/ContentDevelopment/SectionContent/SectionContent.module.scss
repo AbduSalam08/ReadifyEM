@@ -1,0 +1,175 @@
+#workbenchPageContent {
+    max-width: 100%;
+}
+
+.content_3f3fd3c2,
+.CanvasZone {
+    padding: 0 !important;
+    max-width: 100% !important;
+}
+
+.p-orderlist-controls {
+    display: none !important;
+}
+
+.p-orderlist-list {
+    min-height: 0 !important;
+}
+
+.arrowIcon {
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+.p-orderlist-item {
+    border-bottom: 1px solid #adadad60;
+    padding-bottom: 10px;
+}
+
+.p-orderlist-droppoint-highlight {
+    background-color: blue !important;
+}
+
+.richText img {
+    height: 500px;
+    width: 500px;
+}
+
+.submitBTN {
+    padding: 4px 2px 4px 10px;
+    border: none;
+    background: #0099ff;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+}
+
+.submitBTN>span {
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.pdfBTN {
+    padding: 4px 2px 4px 10px;
+    border: none;
+    background: #ff4d4d;
+    color: white;
+    font-weight: 600;
+    border-radius: 4px;
+}
+
+.pdfBTN>span {
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.primaryButton {
+    padding: 8px 15px;
+    background-color: #0099ff;
+    color: #fff;
+    border: 0;
+    font-family: serif;
+    font-size: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.textPlayGround {
+    border: 1px solid #adadad60;
+    padding: 10px 15px;
+    border-radius: 4px;
+}
+
+.placeholder {
+    color: #adadad;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.renderedInput {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 5px;
+    margin: 10px 0;
+}
+
+.renderedInput .pointText {
+    font-size: 13px;
+    padding: 2px 10px;
+    color: #555;
+    border-radius: 5px;
+    font-weight: 600;
+    background-color: #eeeeee;
+}
+
+.renderedInput input {
+    border: 0;
+    border-bottom: 1px solid #adadad60;
+    outline: 0;
+    /* margin: 0 5px; */
+    padding-bottom: 5px;
+    min-width: 50%;
+    margin-right: 10px;
+}
+
+.renderedInput button {
+    border: 0;
+    height: 100%;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 15px;
+    cursor: pointer;
+    outline: 0;
+}
+
+/* full width style */
+#workbenchPageContent {
+    max-width: 100%;
+}
+
+.content_3f3fd3c2,
+.CanvasZone {
+    padding: 0 !important;
+    max-width: 100% !important;
+}
+
+/*  */
+.quillWrap {
+    width: 60%;
+    padding: 0;
+    margin-right: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.quillWrap .ql-container .ql-editor {
+    padding: 5px 10px;
+}
+
+.ql-tooltip {
+    z-index: 9999;
+}
+
+.ql-editor::before {
+    font-size: 13px !important;
+    color: #adadad !important;
+    text-decoration: none !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+}
+
+.primaryButton {
+    padding: 5px 15px;
+    background-color: #0099ff;
+    color: #fff;
+    border: 0;
+    font-family: serif;
+    border-radius: 4px;
+}

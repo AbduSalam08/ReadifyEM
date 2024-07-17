@@ -71,8 +71,14 @@ export interface IAttachDelete {
   AttachmentName: string | any;
 }
 
+export interface ISPAttachments {
+  ListName: string | any;
+  ListID: number | any;
+  Attachments: IAttachContents[] | any;
+}
 export interface ISPAttachment {
   ListName: string | any;
+  FileName: string | any;
   ListID: number | any;
   Attachments: IAttachContents[] | any;
 }
