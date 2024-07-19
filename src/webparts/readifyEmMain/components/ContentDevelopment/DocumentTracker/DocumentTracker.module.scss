@@ -8,10 +8,10 @@
 }
 .trackerContent {
   margin-left: 10px;
-  width: 60%;
+  width: 59%;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  // gap: 5px;
   align-items: flex-start;
   justify-content: center;
   .roleType {
@@ -27,14 +27,14 @@
 .trackerHeadlineSec {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 20px;
 }
 .trackSection {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 5px;
+  // margin-top: 5px;
 }
 .statusSection {
   display: flex;

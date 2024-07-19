@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
@@ -16,6 +17,8 @@ import SpServices from "../../services/SPServices/SpServices";
 // import ViewDetails from "../../webparts/readifyEmMain/components/ContentDevelopment/ViewDetails/ViewDetails";
 import DocumentTracker from "../../webparts/readifyEmMain/components/ContentDevelopment/DocumentTracker/DocumentTracker";
 import { togglePopupVisibility } from "../../utils/togglePopup";
+// images
+const commentIcon = require("../../assets/images/svg/violetCommentIcon.svg");
 // styles
 import styles from "./ContentDevelopment.module.scss";
 
@@ -100,11 +103,6 @@ const Details = {
     { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
     { name: "kali muthu", email: "kalimuthu@chandrudemo.onmicrosoft.com" },
   ],
-  version: "1.0",
-  type: "insurance",
-  createdDate: "03/03/24",
-  lastReviewDate: "03/03/24",
-  nextReviewDate: "03/03/24",
   comments: [
     {
       comment: "This is a comment This is a comment",
@@ -125,6 +123,12 @@ const Details = {
       role: "Section Author",
     },
   ],
+  version: "1.0",
+  type: "insurance",
+  createdDate: "03/03/24",
+  lastReviewDate: "03/03/24",
+  nextReviewDate: "03/03/24",
+
   isLoading: false,
 };
 
@@ -201,6 +205,8 @@ const ContentDevelopment = (): JSX.Element => {
   const [allSections, setAllSections] = useState<any>([]);
   const [sectionDetails, setSectionDetails] = useState<any>(Details);
   const [documentDetails, setDocumentDetails] = useState<any>(docDetails);
+  const [toggleCommentSection, setToggleCommentSection] = useState(false);
+  console.log("toggleCommentSection: ", toggleCommentSection);
 
   // Active Section Index
   const [activeSection, setActiveSection] = useState<number>(0);
@@ -377,21 +383,6 @@ const ContentDevelopment = (): JSX.Element => {
     ],
   ];
 
-  useEffect(() => {
-    setAllSections(AllSectionsData);
-    setSectionDetails(Details);
-    setDocumentDetails(docDetails);
-    SpServices.getAllUsers()
-      .then((res: any) => {
-        res.forEach((obj: any) => {
-          console.log(obj.Id, obj.LoginName);
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
   const popuphandleOnChanges = (
     value: number,
     condition: boolean,
@@ -405,6 +396,21 @@ const ContentDevelopment = (): JSX.Element => {
       togglePopupVisibility(setPopupController, value, "open", popupTitle);
     }
   };
+
+  useEffect(() => {
+    setAllSections(AllSectionsData);
+    setSectionDetails(Details);
+    setDocumentDetails(docDetails);
+    SpServices.getAllUsers()
+      .then((res: any) => {
+        res.forEach((obj: any) => {
+          console.log("obj.Id, obj.LoginName");
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   return (
     <>
@@ -445,15 +451,47 @@ const ContentDevelopment = (): JSX.Element => {
               lastReviewDate={sectionDetails.lastReviewDate}
               nextReviewDate={sectionDetails.nextReviewDate}
             />
-            <div style={{ width: "100%", display: "flex" }}>
-              <div style={{ width: "75%" }}>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "stretch",
+                justifyContent: "center",
+                gap: "10px",
+              }}
+            >
+              <div style={{ width: toggleCommentSection ? "100%" : "75%" }}>
                 <SectionContent sectionNumber={1} ID={55} />
               </div>
-              <div style={{ width: "25%" }}>
-
+              <div
+                style={{
+                  width: toggleCommentSection ? "1px" : "25%",
+                  transition: "all .2s",
+                  position: "relative",
+                  maxHeight: "405px",
+                  border: toggleCommentSection
+                    ? "1px solid #eee"
+                    : "1px solid transparent",
+                  // overflow: "hidden",
+                }}
+              >
+                {toggleCommentSection ? (
+                  <button
+                    className={styles.commentsToggleBtn}
+                    onClick={() => {
+                      setToggleCommentSection(false);
+                    }}
+                  >
+                    <img src={commentIcon} alt={"comments"} />
+                  </button>
+                ) : (
+                  ""
+                )}
                 <SectionComments
                   commentsData={sectionDetails.comments}
                   isHeader={true}
+                  setToggleCommentSection={setToggleCommentSection}
+                  toggleCommentSection={toggleCommentSection}
                 />
               </div>
             </div>
