@@ -26,7 +26,7 @@ interface definitionDetails {
   isSelected: boolean;
 }
 interface IDefinitionDetails {
-  ID: number | null;
+  ID: number | any;
   definitionName: string;
   IsValid: boolean;
   IsDuplicate: boolean;
@@ -68,6 +68,7 @@ const Definition: React.FC<Props> = ({ ID }) => {
   };
   const [allDefinitions, setAllDefinitions] = useState<any[]>([]);
   const [filterDefinitions, setFilterDefinitions] = useState<any[]>([]);
+  console.log("setFilterDefinitions: ", setFilterDefinitions);
   const [selectedDefinitions, setSelectedDefinitions] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState("");
 
@@ -124,6 +125,7 @@ const Definition: React.FC<Props> = ({ ID }) => {
           labelText="Definition Name"
           withLabel
           icon={false}
+          secWidth="100%"
           value={definitionsData.definitionName}
           isValid={
             definitionsData.definitionName === "" && !definitionsData.IsValid
@@ -169,6 +171,7 @@ const Definition: React.FC<Props> = ({ ID }) => {
             size="MD"
             labelText="Title"
             withLabel
+            secWidth="100%"
             icon={false}
             value={definitionsData.referenceTitle}
             onChange={(value: any) => {
@@ -203,6 +206,7 @@ const Definition: React.FC<Props> = ({ ID }) => {
             size="MD"
             labelText="Link"
             withLabel
+            secWidth="100%"
             icon={false}
             value={definitionsData.referenceLink}
             onChange={(value: any) => {
@@ -246,10 +250,10 @@ const Definition: React.FC<Props> = ({ ID }) => {
     ],
   ];
 
-  const handleSearchOnChange = (value: string) => {
+  const handleSearchOnChange = (value: string): void => {
     console.log(value);
     setSearchValue(value);
-    let filterValues = allDefinitions?.filter((obj: any) => {
+    const filterValues = allDefinitions?.filter((obj: any) => {
       if (obj.title.toLowerCase().includes(value.toLowerCase().trim())) {
         return obj;
       }
@@ -257,7 +261,7 @@ const Definition: React.FC<Props> = ({ ID }) => {
     setFilterDefinitions(filterValues);
   };
 
-  const getAllDefinition = async () => {
+  const getAllDefinition = async (): Promise<any> => {
     await SpServices.SPReadItems({
       Listname: "Definition",
       Select: "*",
@@ -271,7 +275,7 @@ const Definition: React.FC<Props> = ({ ID }) => {
       ],
     })
       .then((res: any[]) => {
-        let tempArray: definitionDetails[] = [];
+        const tempArray: definitionDetails[] = [];
         res?.forEach((item: any) => {
           tempArray.push({
             ID: item.ID,
@@ -286,11 +290,11 @@ const Definition: React.FC<Props> = ({ ID }) => {
       .catch((err) => console.log(err));
   };
 
-  const onSelectDefinition = (id: number) => {
-    let tempArray = allDefinitions;
-    let index = tempArray.findIndex((obj: any) => obj.ID == id);
+  const onSelectDefinition = (id: number): void => {
+    const tempArray = allDefinitions;
+    const index = tempArray.findIndex((obj: any) => obj.ID === id);
     console.log(index);
-    let definitionObject = tempArray[index];
+    const definitionObject = tempArray[index];
     definitionObject.isSelected = !definitionObject.isSelected;
     tempArray[index] = definitionObject;
     setAllDefinitions([...tempArray]);
@@ -298,115 +302,145 @@ const Definition: React.FC<Props> = ({ ID }) => {
 
   useEffect(() => {
     getAllDefinition();
-  });
+  }, []);
 
   return (
-    <div className={styles.textPlayGround}>
-      <div className={styles.definitionHeaderWrapper}>
-        <span>Setup Header</span>
-        <DefaultButton
-          btnType="primaryBlue"
-          text={"New"}
-          size="medium"
-          onClick={() => {
-            togglePopupVisibility(setPopupController, 0, "open");
-            setDefinitionsData(initialDefinitionsData);
-          }}
-        />
-      </div>
-      <div className={styles.filterMainWrapper}>
-        <CustomInput
-          value={searchValue}
-          placeholder="Search definitions"
-          onChange={(value: any) => {
-            handleSearchOnChange(value);
-          }}
-        />
-        {searchValue !== "" && (
-          <div className={styles.filterSecWrapper}>
-            {filterDefinitions.map((obj: any, index: number) => {
-              return (
-                <div key={index} className={styles.filterDefinitionSec}>
-                  <div style={{ width: "10%" }}>
-                    <Checkbox
-                      checkedIcon={<RadioButtonCheckedIcon />}
-                      icon={<RadioButtonUncheckedIcon />}
-                      key={index}
-                      //   name={user?.value}
-                      //   value={user?.sectionSelected}
-                      checked={obj.isSelected}
-                      //   id={user.value}
-                      onClick={(ev) => {
-                        onSelectDefinition(obj.ID);
-                        ev.preventDefault();
-                      }}
-                    />
-                    {/* <RadioButton
-                      inputId="ingredient1"
-                      name="pizza"
-                      value="Cheese"
-                      onClick={(ev) => {
-                        onSelectDefinition(obj.ID);
-                        ev.preventDefault();
-                      }}
-                      checked={obj.isSelected}
-                    />
-                    <label htmlFor="ingredient1" className="ml-2">
-                      {obj.title}
-                    </label> */}
-                  </div>
-                  <div style={{ width: "30%" }}>
-                    <span>{obj.title}</span>
-                  </div>
-                  <div style={{ width: "60%" }}>
-                    <span>{obj.description}</span>
-                  </div>
-                </div>
-              );
-            })}
+    <div>
+      <div className={styles.textPlayGround}>
+        <div className={styles.definitionHeaderWrapper}>
+          <span>Setup Header</span>
+        </div>
+        <div className={styles.filterMainWrapper}>
+          <div className={styles.TopFilters}>
+            <CustomInput
+              value={searchValue}
+              secWidth="257px"
+              placeholder="Search definitions"
+              onChange={(value: any) => {
+                handleSearchOnChange(value);
+              }}
+            />
+            <DefaultButton
+              btnType="primary"
+              text={"New"}
+              size="medium"
+              onClick={() => {
+                togglePopupVisibility(setPopupController, 0, "open");
+                setDefinitionsData(initialDefinitionsData);
+              }}
+            />
           </div>
-        )}
-      </div>
-      <div style={{ padding: "10px 0px" }}>
-        {selectedDefinitions.map((obj: any, index: number) => {
-          return (
-            <div key={index} className={styles.SelectedDefinitionSec}>
-              <div style={{ width: "30%" }}>
-                <span className={styles.definitionTitle}>{obj.title}</span>
-              </div>
-              <div style={{ width: "67%" }}>
-                <span className={styles.definitionDescription}>
-                  {obj.description}
-                </span>
-              </div>
-              <button className={styles.closeBtn}>
-                <img src={closeBtn} alt={"back to my tasks"} />
-              </button>
+          {searchValue !== "" && (
+            <div className={styles.filterSecWrapper}>
+              {filterDefinitions.map((obj: any, index: number) => {
+                return (
+                  <div
+                    key={index}
+                    className={
+                      obj.isSelected
+                        ? styles.filterDefinitionSecSelected
+                        : styles.filterDefinitionSec
+                    }
+                    onClick={() => {
+                      onSelectDefinition(obj.ID);
+                    }}
+                  >
+                    <div style={{ width: "10%" }}>
+                      <Checkbox
+                        checkedIcon={<RadioButtonCheckedIcon />}
+                        icon={<RadioButtonUncheckedIcon />}
+                        key={index}
+                        //   name={user?.value}
+                        //   value={user?.sectionSelected}
+                        checked={obj.isSelected}
+                        //   id={user.value}
+                        onClick={(ev) => {
+                          onSelectDefinition(obj.ID);
+                          ev.preventDefault();
+                        }}
+                      />
+                    </div>
+                    <div className={styles.title} style={{ width: "30%" }}>
+                      <span>{obj.title}</span>
+                    </div>
+                    <div
+                      className={styles.description}
+                      style={{ width: "60%" }}
+                    >
+                      <span>{obj.description}</span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
+          )}
+        </div>
+        <div style={{ padding: "10px 0px" }}>
+          {selectedDefinitions.map((obj: any, index: number) => {
+            return (
+              <div key={index} className={styles.SelectedDefinitionSec}>
+                <div style={{ width: "30%" }}>
+                  <span className={styles.definitionTitle}>{obj.title}</span>
+                </div>
+                <div style={{ width: "67%" }}>
+                  <span className={styles.definitionDescription}>
+                    {obj.description}
+                  </span>
+                </div>
+                <button className={styles.closeBtn}>
+                  <img src={closeBtn} />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+        {popupController?.map((popupData: any, index: number) => (
+          <Popup
+            key={index}
+            isLoading={definitionsData?.isLoading}
+            PopupType={popupData.popupType}
+            onHide={() =>
+              togglePopupVisibility(setPopupController, index, "close")
+            }
+            popupTitle={
+              popupData.popupType !== "confimation" && popupData.popupTitle
+            }
+            popupActions={popupActions[index]}
+            visibility={popupData.open}
+            content={popupInputs[index]}
+            popupWidth={popupData.popupWidth}
+            defaultCloseBtn={popupData.defaultCloseBtn || false}
+            confirmationTitle={
+              popupData.popupType !== "custom" ? popupData.popupTitle : ""
+            }
+          />
+        ))}
       </div>
-      {popupController?.map((popupData: any, index: number) => (
-        <Popup
-          key={index}
-          isLoading={definitionsData?.isLoading}
-          PopupType={popupData.popupType}
-          onHide={() =>
-            togglePopupVisibility(setPopupController, index, "close")
-          }
-          popupTitle={
-            popupData.popupType !== "confimation" && popupData.popupTitle
-          }
-          popupActions={popupActions[index]}
-          visibility={popupData.open}
-          content={popupInputs[index]}
-          popupWidth={popupData.popupWidth}
-          defaultCloseBtn={popupData.defaultCloseBtn || false}
-          confirmationTitle={
-            popupData.popupType !== "custom" ? popupData.popupTitle : ""
-          }
+
+      <div
+        style={{
+          display: "flex",
+          gap: "15px",
+          margin: "10px 0px",
+          justifyContent: "end",
+        }}
+      >
+        <DefaultButton text="Close" btnType="lightGreyVariant" />
+        <DefaultButton
+          text="Reject"
+          btnType="lightGreyVariant"
+          onClick={() => {
+            // _addData();
+          }}
         />
-      ))}
+        <DefaultButton
+          text="Submit"
+          btnType="primary"
+          onClick={() => {
+            // _addData();
+          }}
+        />
+      </div>
     </div>
   );
 };

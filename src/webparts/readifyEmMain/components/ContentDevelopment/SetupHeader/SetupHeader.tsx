@@ -4,9 +4,6 @@
 import styles from "./SetupHeader.module.scss";
 import CustomInput from "../../common/CustomInputFields/CustomInput";
 import DefaultButton from "../../common/Buttons/DefaultButton";
-// import { ProgressBar } from "primereact/progressbar";
-// import { FileUpload } from "primereact/fileupload";
-// const add = require("../../../../../assets/images/png/add.png");
 import { FileUpload } from "primereact/fileupload";
 import { useState, useRef } from "react";
 import { Button } from "primereact/button";
@@ -28,28 +25,23 @@ const SetupHeader: React.FC<Props> = ({ version, type, headerTitle }) => {
   const [headerDetails, setHeaderDetails] = useState(initialHeaderDetails);
   const [totalSize, setTotalSize] = useState(0);
 
-  const handleOnChange = (value: string, key: string) => {
+  const handleOnChange = (value: string, key: string): void => {
     console.log(value, key);
     setHeaderDetails({ ...headerDetails, [key]: value });
   };
 
-  const onTemplateUpload = (e: any) => {
+  const onTemplateUpload = (e: any): void => {
     let _totalSize = 0;
     e.files.forEach((file: any) => {
       _totalSize += file.size || 0;
     });
 
     setTotalSize(_totalSize);
-    //  toast.current.show({
-    //    severity: "info",
-    //    summary: "Success",
-    //    detail: "File Uploaded",
-    //  });
   };
 
-  const onTemplateSelect = (e: any) => {
+  const onTemplateSelect = (e: any): void => {
     let _totalSize = totalSize;
-    let files = e.files;
+    const files = e.files;
 
     Object.keys(files).forEach((key) => {
       _totalSize += files[key].size || 0;
@@ -57,40 +49,40 @@ const SetupHeader: React.FC<Props> = ({ version, type, headerTitle }) => {
     setTotalSize(_totalSize);
   };
 
-  const onTemplateClear = () => {
+  const onTemplateClear = (): void => {
     setTotalSize(0);
   };
-  const onTemplateRemove = (file: any, callback: any) => {
+  const onTemplateRemove = (file: any, callback: any): void => {
     setTotalSize(totalSize - file.size);
     callback();
   };
 
-  const itemTemplate = (file: any, props: any) => {
+  const itemTemplate = (file: any, props: any): any => {
     return (
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <div
           style={{
             width: "100%",
             display: "flex",
             flexWrap: "wrap",
             justifyContent: "center",
+            gap: "10px",
           }}
         >
           <img
             alt={file.name}
             role="presentation"
             src={file.objectURL}
-            width={50}
-            height={50}
+            width={"100%"}
+            height={"100%"}
           />
-          <span
-            style={{
-              display: "flex",
-              width: "100%",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <span className={styles.selectedFileName}>
             {file.name}
             <Button
               type="button"
@@ -100,27 +92,13 @@ const SetupHeader: React.FC<Props> = ({ version, type, headerTitle }) => {
             />
           </span>
         </div>
-        {/* <Tag
-           value={props.formatSize}
-           severity="warning"
-           className="px-3 py-2"
-         /> */}
-        {/* <Button
-          type="button"
-          icon="pi pi-times"
-          className="p-button-outlined p-button-rounded p-button-danger ml-auto"
-          onClick={() => onTemplateRemove(file, props.onRemove)}
-        /> */}
       </div>
     );
   };
 
-  const emptyTemplate = () => {
+  const emptyTemplate = (): any => {
     return (
       <div className="flex align-items-center flex-column fileUploadSection">
-        {/* <button className={styles.addBtn}>
-          <img src={add} alt={"back to my tasks"} />
-        </button> */}
         <i
           className="pi pi-plus mt-3 p-5"
           style={{
@@ -129,24 +107,14 @@ const SetupHeader: React.FC<Props> = ({ version, type, headerTitle }) => {
             backgroundColor: "#e8e6e6",
             color: "#c5c3c3",
           }}
-        ></i>
-        {/* <span
-          style={{ fontSize: "1.2em", color: "var(--text-color-secondary)" }}
-          className="my-5"
-        >
-          Drag and Drop Image Here
-        </span> */}
+        />
       </div>
     );
   };
 
-  const headerTemplate = (options: any) => {
+  const headerTemplate = (options: any): any => {
+    console.log("options: ", options);
     const { className, chooseButton } = options;
-    // const value = totalSize / 10000;
-    // const formatedValue =
-    //   fileUploadRef && fileUploadRef.current
-    //     ? fileUploadRef.current.formatSize(totalSize)
-    //     : "0 B";
 
     return (
       <div
@@ -155,19 +123,22 @@ const SetupHeader: React.FC<Props> = ({ version, type, headerTitle }) => {
           backgroundColor: "transparent",
           display: "flex",
           alignItems: "center",
+          gap: "10px",
         }}
       >
-        {/* <DefaultButton btnType="lightGreyVariant" text="Upload Image" /> */}
-        <div className="uploadImageSec">Upload Image</div>
-        {chooseButton}
-        {/* <div className="flex align-items-center gap-3 ml-auto">
-          <span>{formatedValue} / 1 MB</span>
-          <ProgressBar
-            value={value}
-            showValue={false}
-            style={{ width: "10rem", height: "12px" }}
-          ></ProgressBar>
-        </div> */}
+        <p className={styles.uploadLabel}>Document Logo</p>
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexWrap: "nowrap",
+          }}
+        >
+          <div className="uploadImageSec">Upload Image</div>
+          {chooseButton}
+        </div>
       </div>
     );
   };
@@ -179,7 +150,6 @@ const SetupHeader: React.FC<Props> = ({ version, type, headerTitle }) => {
       </div>
       <div className={styles.setupHeaderWrapper}>
         <div className={styles.logoUploadWrapper}>
-          <p className={styles.uploadLabel}>Document Logo</p>
           <FileUpload
             ref={fileUploadRef}
             // name="demo[]"
@@ -194,9 +164,8 @@ const SetupHeader: React.FC<Props> = ({ version, type, headerTitle }) => {
             headerTemplate={headerTemplate}
             itemTemplate={itemTemplate}
             emptyTemplate={emptyTemplate}
-            // chooseOptions={chooseOptions}
-            // uploadOptions={uploadOptions}
-            // cancelOptions={cancelOptions}
+            // uploadLabel="Browse"
+            chooseLabel="Browse"
           />
         </div>
         <div className={styles.headerDetailsWrapper}>
@@ -218,6 +187,7 @@ const SetupHeader: React.FC<Props> = ({ version, type, headerTitle }) => {
             }}
             withLabel
             topLabel
+            secWidth="307px"
           />
           <CustomInput
             value={headerDetails.version}
@@ -227,6 +197,7 @@ const SetupHeader: React.FC<Props> = ({ version, type, headerTitle }) => {
             }}
             withLabel
             topLabel
+            secWidth="307px"
           />
           <div
             style={{
