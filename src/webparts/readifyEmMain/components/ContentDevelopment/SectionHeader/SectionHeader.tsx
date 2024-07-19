@@ -6,6 +6,8 @@ import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicke
 interface Props {
   documentName: string;
   sectionAuthor: any;
+  PrimaryAuthor?: any;
+  isPrimaryAuthor?: Boolean;
   consultants: any[];
 }
 
@@ -13,6 +15,8 @@ const SectionHeader: React.FC<Props> = ({
   documentName,
   sectionAuthor,
   consultants,
+  PrimaryAuthor,
+  isPrimaryAuthor,
 }) => {
   console.log(sectionAuthor);
 
@@ -26,13 +30,19 @@ const SectionHeader: React.FC<Props> = ({
         <span className={styles.sectionName}>{documentName}</span>
         <div style={{ display: "flex", gap: "10px" }}>
           <div className={styles.authors}>
-            <span className={styles.label}>Section Author (you)</span>
+            <span className={styles.label}>
+              {!isPrimaryAuthor
+                ? "Section Author (you)"
+                : "Primary Author (you)"}
+            </span>
             <CustomPeoplePicker
               size="SM"
               maxWidth={"200px"}
               minWidth={"200px"}
               noRemoveBtn={true}
-              selectedItem={sectionAuthor.email}
+              selectedItem={
+                !isPrimaryAuthor ? sectionAuthor.email : PrimaryAuthor.email
+              }
               onChange={(value: any) => {
                 handleOnChangeFunction(value);
               }}
@@ -42,37 +52,25 @@ const SectionHeader: React.FC<Props> = ({
               hideErrMsg
             />
           </div>
-          <div className={styles.authors}>
-            <span className={styles.label}>Consultant</span>
-
-            <CustomPeoplePicker
-              size="SM"
-              maxWidth={"200px"}
-              minWidth={"200px"}
-              personSelectionLimit={5}
-              selectedItem={consultants}
-              onChange={(value: any) => {
-                handleOnChangeFunction(value);
-              }}
-              isValid={false}
-              placeholder="Add Reference Author"
-              // readOnly
-              hideErrMsg
-            />
-            {/* <CustomMutiplePeoplePicker
-              size="SM"
-              personSelectionLimit={5}
-              selectedItem={consultants}
-              onChange={(value: any) => {
-                handleOnChangeFunction(value);
-              }}
-              isValid={true}
-              placeholder="Add Reference Author"
-              readOnly
-              hideErrMsg
-              key={1}
-            /> */}
-          </div>
+          {!isPrimaryAuthor && (
+            <div className={styles.authors}>
+              <span className={styles.label}>Consultant</span>
+              <CustomPeoplePicker
+                size="SM"
+                maxWidth={"200px"}
+                minWidth={"200px"}
+                personSelectionLimit={5}
+                selectedItem={consultants}
+                onChange={(value: any) => {
+                  handleOnChangeFunction(value);
+                }}
+                isValid={false}
+                placeholder="Add Reference Author"
+                // readOnly
+                hideErrMsg
+              />
+            </div>
+          )}
         </div>
       </div>
     </>

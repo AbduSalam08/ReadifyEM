@@ -16,6 +16,7 @@ interface Props {
   size?: "SM" | "MD" | "XL";
   isValid?: any;
   errorMsg?: string;
+  secWidth?: string;
   withLabel?: boolean;
   labelText?: string;
   disabled?: boolean;
@@ -29,6 +30,7 @@ interface Props {
   noErrorMsg?: boolean;
   onKeyDown?: any;
   noBorderInput?: boolean;
+  topLabel?: boolean;
 }
 
 const CustomInput: React.FC<Props> = ({
@@ -53,6 +55,8 @@ const CustomInput: React.FC<Props> = ({
   noErrorMsg,
   onKeyDown,
   noBorderInput,
+  topLabel,
+  secWidth,
 }) => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,11 +69,18 @@ const CustomInput: React.FC<Props> = ({
   // const MainSPContext = useSelector((state: any) => state.MainSPContext.value);
 
   return (
-    <div className={styles.inputMainWrapper}>
+    <div
+      // className={styles.inputMainWrapper}
+      className={`${styles.inputMainWrapper} ${
+        topLabel ? styles.topinputMainWrapper : ""
+      } ${secWidth !== "" ? styles.secWidth : ""} `}
+    >
       <div
         className={`${
           withLabel ? styles.inputWrapperWithLabel : styles.inputWrapper
-        } ${disabled ? styles.disabledInput : ""}`}
+        } ${disabled ? styles.disabledInput : ""} ${
+          topLabel ? styles.topLabel : ""
+        } `}
       >
         {withLabel && (
           <p

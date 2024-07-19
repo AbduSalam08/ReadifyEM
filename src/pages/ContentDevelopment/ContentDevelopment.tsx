@@ -11,7 +11,9 @@ import SectionBanner from "../../webparts/readifyEmMain/components/ContentDevelo
 import SectionComments from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionComment/SectionComments";
 import SectionContent from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionContent/SectionContent";
 import CustomInput from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomInput";
+import SetupHeader from "../../webparts/readifyEmMain/components/ContentDevelopment/SetupHeader/SetupHeader";
 import CustomPeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomPeoplePicker";
+import Definition from "../../webparts/readifyEmMain/components/ContentDevelopment/Definition/Definition";
 // import CustomMutiplePeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomMutiplePeoplePicker";
 import SpServices from "../../services/SPServices/SpServices";
 // import ViewDetails from "../../webparts/readifyEmMain/components/ContentDevelopment/ViewDetails/ViewDetails";
@@ -23,6 +25,18 @@ const commentIcon = require("../../assets/images/svg/violetCommentIcon.svg");
 import styles from "./ContentDevelopment.module.scss";
 
 const AllSectionsData = [
+  {
+    sectionName: "Header",
+    sectionStatus: "Content in progress",
+    commentsCount: 5,
+    updateDate: "03/07/24",
+    sectionPersons: [
+      { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
+      { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
+      { name: "kali muthu", email: "kalimuthu@chandrudemo.onmicrosoft.com" },
+    ],
+    sectionPermission: true,
+  },
   {
     sectionName: "Section Title1",
     sectionStatus: "Content in progress",
@@ -60,7 +74,18 @@ const AllSectionsData = [
     sectionPermission: true,
   },
   {
-    sectionName: "Section Title3",
+    sectionName: "Appendix",
+    sectionStatus: "Rework in progress",
+    commentsCount: 2,
+    updateDate: "03/07/24",
+    sectionPersons: [
+      { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
+      { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
+    ],
+    sectionPermission: true,
+  },
+  {
+    sectionName: "Definition",
     sectionStatus: "Rework in progress",
     commentsCount: 2,
     updateDate: "03/07/24",
@@ -85,9 +110,10 @@ const Details = {
     { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
     { name: "kali muthu", email: "kalimuthu@chandrudemo.onmicrosoft.com" },
   ],
-  primaryAuthor: [
-    { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
-  ],
+  primaryAuthor: {
+    name: "Madhesh Maasi",
+    email: "Madhesh@chandrudemo.onmicrosoft.com",
+  },
   sectionAuthors: [
     { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
     { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
@@ -103,6 +129,12 @@ const Details = {
     { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
     { name: "kali muthu", email: "kalimuthu@chandrudemo.onmicrosoft.com" },
   ],
+  headerTitle: "WelCome aboard",
+  version: "1.0",
+  type: "insurance",
+  createdDate: "03/03/24",
+  lastReviewDate: "03/03/24",
+  nextReviewDate: "03/03/24",
   comments: [
     {
       comment: "This is a comment This is a comment",
@@ -202,7 +234,7 @@ const ContentDevelopment = (): JSX.Element => {
 
   // initial States
   // AllSections State
-  const [allSections, setAllSections] = useState<any>([]);
+  const [allSections, setAllSections] = useState<any>(AllSectionsData);
   const [sectionDetails, setSectionDetails] = useState<any>(Details);
   const [documentDetails, setDocumentDetails] = useState<any>(docDetails);
   const [toggleCommentSection, setToggleCommentSection] = useState(false);
@@ -434,14 +466,26 @@ const ContentDevelopment = (): JSX.Element => {
                 popuphandleOnChanges(value, condition, popupTitle)
               }
               key={1}
+              // primaryAuthor={true}
             />
           </div>
           <div className={styles.contentWrapper}>
-            {sectionDetails?.sectionName !== "" && (
+            {sectionDetails?.sectionName !== "" &&
+            allSections[activeSection].sectionName === "Header" ? (
               <SectionHeader
                 documentName={sectionDetails.sectionName}
                 sectionAuthor={sectionDetails.sectionAuthor}
                 consultants={sectionDetails.consultants}
+                PrimaryAuthor={sectionDetails.primaryAuthor}
+                isPrimaryAuthor={true}
+              />
+            ) : (
+              <SectionHeader
+                documentName={sectionDetails.sectionName}
+                sectionAuthor={sectionDetails.sectionAuthor}
+                consultants={sectionDetails.consultants}
+                PrimaryAuthor={sectionDetails.primaryAuthor}
+                isPrimaryAuthor={false}
               />
             )}
             <SectionBanner
@@ -451,7 +495,16 @@ const ContentDevelopment = (): JSX.Element => {
               lastReviewDate={sectionDetails.lastReviewDate}
               nextReviewDate={sectionDetails.nextReviewDate}
             />
-            <div
+            {allSections[activeSection].sectionName === "Header" ? (
+              <div style={{ width: "100%" }}>
+                <SetupHeader
+                  version={sectionDetails.version}
+                  type={sectionDetails.type}
+                  headerTitle={sectionDetails.headerTitle}
+                  />
+              </div>
+            ) : (
+              <div
               style={{
                 width: "100%",
                 display: "flex",
@@ -460,10 +513,20 @@ const ContentDevelopment = (): JSX.Element => {
                 gap: "10px",
               }}
             >
-              <div style={{ width: toggleCommentSection ? "100%" : "75%" }}>
-                <SectionContent sectionNumber={1} ID={55} />
-              </div>
-              <div
+                <div style={{ width: toggleCommentSection ? "100%" : "75%" }}>
+                  {allSections[activeSection].sectionName === "Definition" ? (
+                    <Definition ID={55} />
+                  ) : allSections[activeSection].sectionName === "Appendix" ? (
+                    <SetupHeader
+                      version={sectionDetails.version}
+                      type={sectionDetails.type}
+                      headerTitle={sectionDetails.headerTitle}
+                    />
+                  ) : (
+                    <SectionContent sectionNumber={1} ID={55} />
+                  )}
+                </div>
+                    <div
                 style={{
                   width: toggleCommentSection ? "1px" : "25%",
                   transition: "all .2s",
@@ -475,7 +538,7 @@ const ContentDevelopment = (): JSX.Element => {
                   // overflow: "hidden",
                 }}
               >
-                {toggleCommentSection ? (
+                      {toggleCommentSection ? (
                   <button
                     className={styles.commentsToggleBtn}
                     onClick={() => {
@@ -487,14 +550,15 @@ const ContentDevelopment = (): JSX.Element => {
                 ) : (
                   ""
                 )}
-                <SectionComments
-                  commentsData={sectionDetails.comments}
-                  isHeader={true}
-                  setToggleCommentSection={setToggleCommentSection}
-                  toggleCommentSection={toggleCommentSection}
-                />
+                  <SectionComments
+                    commentsData={sectionDetails.comments}
+                    isHeader={true}
+                    setToggleCommentSection={setToggleCommentSection}
+                    toggleCommentSection={toggleCommentSection}
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
