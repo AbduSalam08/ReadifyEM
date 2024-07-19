@@ -5,9 +5,9 @@ import * as React from "react";
 // import { useState } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "./ContentEditor.css";
-const ImageResize = require("quill-image-resize-module-react");
+// const ImageResize = require("quill-image-resize-module-react");
 
-Quill.register("modules/imageResize", ImageResize);
+// Quill.register("modules/imageResize", ImageResize);
 //Text direction
 Quill.register(Quill.import("attributors/style/direction"), true);
 //Alignment

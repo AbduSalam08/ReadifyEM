@@ -3,7 +3,9 @@
 import { useState } from "react";
 import styles from "./SectionComments.module.scss";
 import CustomInput from "../../common/CustomInputFields/CustomInput";
-const closeBtn = require("../../../../../assets/images/png/close.png");
+import CommentCard from "./CommentCard";
+import { ChevronRight } from "@mui/icons-material";
+// const commentIcon = require("../../../../../assets/images/svg/violetCommentIcon.svg");
 const sendBtn = require("../../../../../assets/images/png/Send.png");
 
 interface Props {
@@ -11,6 +13,8 @@ interface Props {
   isHeader: boolean;
   noCommentInput?: boolean;
   viewOnly?: boolean;
+  toggleCommentSection?: boolean;
+  setToggleCommentSection?: any;
 }
 
 const SectionComments: React.FC<Props> = ({
@@ -18,9 +22,10 @@ const SectionComments: React.FC<Props> = ({
   isHeader,
   noCommentInput,
   viewOnly,
+  toggleCommentSection,
+  setToggleCommentSection,
 }) => {
   // initial States
-
   const [inputComment, setInputComment] = useState<string>("");
 
   const onChangeFunction = (value: string): any => {
@@ -30,33 +35,42 @@ const SectionComments: React.FC<Props> = ({
   return (
     <>
       <div
-        className={styles.commentSecMain}
+        className={
+          !toggleCommentSection
+            ? styles.commentSecMain
+            : styles.closedCommentSection
+        }
         style={{
-          backgroundColor: viewOnly ? "#D9D9D935" : "#fff",
+          backgroundColor: viewOnly ? "#93939335" : "#fff",
           border: viewOnly ? "none" : "1px solid #ebeaec",
+          borderTopLeftRadius: toggleCommentSection ? "0" : "5px",
         }}
       >
         {isHeader && (
           <div className={styles.headerContainer}>
-            <span className={styles.commentsTitle}>Comments</span>
-            <button className={styles.closeBtn}>
-              <img src={closeBtn} alt={"back to my tasks"} />
+            {/* <button
+              className={styles.commentsToggleBtn}
+              onClick={() => {
+                setToggleCommentSection(false);
+              }}
+            >
+              <img src={commentIcon} alt={"comments"} />
+            </button> */}
+            <button
+              className={styles.closeBtn}
+              onClick={() => {
+                setToggleCommentSection(true);
+              }}
+            >
+              <ChevronRight />
             </button>
+            <span className={styles.commentsTitle}>Comments</span>
           </div>
         )}
-        <div>
+        <div className={styles.commentBoxWrapper}>
           <div className={styles.commentsWrapper}>
             {commentsData?.map((item: any, index: number) => {
-              return (
-                <div className={styles.comments} key={index}>
-                  <div className={styles.commentAuthor}>
-                    <span>{item.commentAuthor.name}</span>
-                    <span className={styles.role}>{item.role}</span>
-                  </div>
-                  <p>{item.comment}</p>
-                  <span className={styles.date}>{item.commentDateAndTime}</span>
-                </div>
-              );
+              return <CommentCard index={index} item={item} key={index} />;
             })}
           </div>
           {!noCommentInput && (
