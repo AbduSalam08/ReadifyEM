@@ -1,0 +1,56 @@
+.p-fileupload-buttonbar{
+    display: none;
+}
+.fileUploadSection{
+    background-color: #fbf4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    border: 2px dashed #bebcbc;
+    height: 150px;
+   
+}
+.fileUploadSection i {
+    background-color: #fbf4f4!important;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    border: 1px solid #bebcbc;
+    align-items: center;
+    font-size: 35px !important;
+}
+.p-fileupload{
+    width: 70%;
+}
+.p-progressbar{
+    display: none;
+}
+.p-fileupload-row img{
+    width: 50%;
+    height: 50%;
+}
+.imageDeleteBtn{
+    width: 20px;
+    height: 20px;
+    font-size: 13px;
+    margin-left: 10px;
+}
+.p-fileupload-choose{
+    padding: 11px 18px;
+}
+.p-fileupload-choose svg{
+    display: none;
+}
+.p-fileupload-buttonbar{
+    gap: 0px;
+    width: 100%;
+    margin-bottom: 15px;
+}
+.uploadImageSec{
+    width: 71%;
+    padding: 11px 10px;
+    border: 1px solid #ced4da;
+    margin: 0px;
+    border-right: 0px;
+}

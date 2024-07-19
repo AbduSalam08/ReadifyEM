@@ -297,3 +297,23 @@
   font-size: 0.8rem;
   margin-top: 0.5rem;
 }
+.topinputMainWrapper{
+  margin-bottom: 10px;
+  .topLabel {
+      flex-direction: column;
+      gap: 10px;
+  
+      p {
+        font-family: "interRegular", sans-serif !important;
+        font-size: 14px;
+      }
+      input{
+        font-family: "interRegular", sans-serif !important;
+        font-size: 12px;
+      }
+    }
+}
+.secWidth{
+  width: 306px;
+}
+
