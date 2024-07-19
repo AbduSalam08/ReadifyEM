@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import Popup from "../../webparts/readifyEmMain/components/common/Popups/Popup";
 
 import AllSections from "../../webparts/readifyEmMain/components/ContentDevelopment/AllSections/AllSections";
@@ -13,6 +13,7 @@ import SectionContent from "../../webparts/readifyEmMain/components/ContentDevel
 import CustomInput from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomInput";
 import SetupHeader from "../../webparts/readifyEmMain/components/ContentDevelopment/SetupHeader/SetupHeader";
 import CustomPeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomPeoplePicker";
+import SupportingDocuments from "../../webparts/readifyEmMain/components/ContentDevelopment/SupportingDocuments/SupportingDocuments";
 import Definition from "../../webparts/readifyEmMain/components/ContentDevelopment/Definition/Definition";
 // import CustomMutiplePeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomMutiplePeoplePicker";
 import SpServices from "../../services/SPServices/SpServices";
@@ -75,6 +76,17 @@ const AllSectionsData = [
   },
   {
     sectionName: "Appendix",
+    sectionStatus: "Rework in progress",
+    commentsCount: 2,
+    updateDate: "03/07/24",
+    sectionPersons: [
+      { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
+      { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
+    ],
+    sectionPermission: true,
+  },
+  {
+    sectionName: "Supporting Documents",
     sectionStatus: "Rework in progress",
     commentsCount: 2,
     updateDate: "03/07/24",
@@ -155,12 +167,6 @@ const Details = {
       role: "Section Author",
     },
   ],
-  version: "1.0",
-  type: "insurance",
-  createdDate: "03/03/24",
-  lastReviewDate: "03/03/24",
-  nextReviewDate: "03/03/24",
-
   isLoading: false,
 };
 
@@ -501,18 +507,18 @@ const ContentDevelopment = (): JSX.Element => {
                   version={sectionDetails.version}
                   type={sectionDetails.type}
                   headerTitle={sectionDetails.headerTitle}
-                  />
+                />
               </div>
             ) : (
               <div
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "stretch",
-                justifyContent: "center",
-                gap: "10px",
-              }}
-            >
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "stretch",
+                  justifyContent: "center",
+                  gap: "10px",
+                }}
+              >
                 <div style={{ width: toggleCommentSection ? "100%" : "75%" }}>
                   {allSections[activeSection].sectionName === "Definition" ? (
                     <Definition ID={55} />
@@ -522,34 +528,37 @@ const ContentDevelopment = (): JSX.Element => {
                       type={sectionDetails.type}
                       headerTitle={sectionDetails.headerTitle}
                     />
+                  ) : allSections[activeSection].sectionName ===
+                    "Supporting Documents" ? (
+                    <SupportingDocuments ID={55} />
                   ) : (
                     <SectionContent sectionNumber={1} ID={55} />
                   )}
                 </div>
-                    <div
-                style={{
-                  width: toggleCommentSection ? "1px" : "25%",
-                  transition: "all .2s",
-                  position: "relative",
-                  maxHeight: "405px",
-                  border: toggleCommentSection
-                    ? "1px solid #eee"
-                    : "1px solid transparent",
-                  // overflow: "hidden",
-                }}
-              >
-                      {toggleCommentSection ? (
-                  <button
-                    className={styles.commentsToggleBtn}
-                    onClick={() => {
-                      setToggleCommentSection(false);
-                    }}
-                  >
-                    <img src={commentIcon} alt={"comments"} />
-                  </button>
-                ) : (
-                  ""
-                )}
+                <div
+                  style={{
+                    width: toggleCommentSection ? "1px" : "25%",
+                    transition: "all .2s",
+                    position: "relative",
+                    maxHeight: "405px",
+                    border: toggleCommentSection
+                      ? "1px solid #eee"
+                      : "1px solid transparent",
+                    // overflow: "hidden",
+                  }}
+                >
+                  {toggleCommentSection ? (
+                    <button
+                      className={styles.commentsToggleBtn}
+                      onClick={() => {
+                        setToggleCommentSection(false);
+                      }}
+                    >
+                      <img src={commentIcon} alt={"comments"} />
+                    </button>
+                  ) : (
+                    ""
+                  )}
                   <SectionComments
                     commentsData={sectionDetails.comments}
                     isHeader={true}
@@ -587,4 +596,4 @@ const ContentDevelopment = (): JSX.Element => {
   );
 };
 
-export default ContentDevelopment;
+export default memo(ContentDevelopment);
