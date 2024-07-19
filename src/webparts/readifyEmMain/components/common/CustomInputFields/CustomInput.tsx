@@ -56,7 +56,7 @@ const CustomInput: React.FC<Props> = ({
   onKeyDown,
   noBorderInput,
   topLabel,
-  secWidth,
+  secWidth = "100%",
 }) => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +73,10 @@ const CustomInput: React.FC<Props> = ({
       // className={styles.inputMainWrapper}
       className={`${styles.inputMainWrapper} ${
         topLabel ? styles.topinputMainWrapper : ""
-      } ${secWidth !== "" ? styles.secWidth : ""} `}
+      }`}
+      style={{
+        width: secWidth ? secWidth : "auto",
+      }}
     >
       <div
         className={`${

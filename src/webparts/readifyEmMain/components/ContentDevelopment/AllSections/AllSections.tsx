@@ -56,7 +56,7 @@ const AllSections: React.FC<Props> = ({ activeSection, data, onChange }) => {
               <div className={styles.sectionList}>
                 <span className={styles.assignedText}>Assigned to you</span>
                 <div>
-                  <MultiplePeoplePersona data={item.sectionPersons} />
+                  <MultiplePeoplePersona data={[item.sectionPersons]} />
                 </div>
               </div>
               <div className={styles.sectionList}>

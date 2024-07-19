@@ -603,6 +603,7 @@ const TableOfContents = (): JSX.Element => {
   // lifecycle hooks
   useEffect(() => {
     setMainData();
+    // console.log("s");
   }, [dispatch]);
 
   // template for future use

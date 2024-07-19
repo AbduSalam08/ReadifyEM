@@ -142,7 +142,7 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       /* display: -webkit-box; */
-      -webkit-line-clamp: 3;
+      // -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
       max-width: 250px;
@@ -227,7 +227,7 @@
     span {
       white-space: nowrap;
       text-overflow: ellipsis;
-      -webkit-line-clamp: 3;
+      // -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
       /* display: -webkit-box; */
