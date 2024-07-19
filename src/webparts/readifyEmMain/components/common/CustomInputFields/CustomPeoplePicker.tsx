@@ -171,12 +171,11 @@ const CustomPeoplePicker: React.FC<Props> = ({
       background: "rgba(218, 218, 218, 0.29)",
       ".ms-BasePicker-text": {
         // alignItems: "flex-start",
+        // maxHeight: "50px",
         height: size === "SM" ? "34px" : size === "MD" ? "32px" : "43px",
         borderRadius: "4px",
-        // maxHeight: "50px",
         overflowX: "hidden",
-        padding: "0px 10px",
-        paddingLeft: "4px",
+        padding: "0px 4px",
         minHeight: minHeight ? minHeight : "34px",
         maxHeight: maxHeight ? maxHeight : "50px",
         minWidth: minWidth ? minWidth : "290px",
@@ -214,6 +213,8 @@ const CustomPeoplePicker: React.FC<Props> = ({
       },
       ".ms-PickerPersona-container": {
         background: "#e8e8e8",
+        maxWidth: "auto",
+        minWidth: "auto",
       },
       ".ms-PickerItem-removeButton": {
         display: noRemoveBtn ? "none" : "block",
@@ -222,11 +223,13 @@ const CustomPeoplePicker: React.FC<Props> = ({
         background: "#555",
       },
       ".ms-BasePicker-itemsWrapper": {
-        // padding: "3px 0",
         height: "100%",
         alignItems: "center",
         justifyContent: "flex-start",
+        flexWrap: "nowrap",
         gap: "2px",
+        overflow: "auto",
+        // padding: "3px 0",
       },
     },
   };

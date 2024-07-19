@@ -55,16 +55,8 @@ const AllSections: React.FC<Props> = ({ activeSection, data, onChange }) => {
               </div>
               <div className={styles.sectionList}>
                 <span className={styles.assignedText}>Assigned to you</span>
-                <div
-                  style={{
-                    marginRight: "55px",
-                    marginTop: "7px",
-                  }}
-                >
-                  <MultiplePeoplePersona
-                    data={item.sectionPersons}
-                    positionLeft={15}
-                  />
+                <div>
+                  <MultiplePeoplePersona data={item.sectionPersons} />
                 </div>
               </div>
               <div className={styles.sectionList}>

@@ -16,7 +16,7 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
   const events = [
     {
       status: "Ordered",
-      date: "15/10/2020 10:30",
+      date: "15/10/2020 10:`30",
       icon: "pi pi-shopping-cart",
       color: "#593ABB",
       borderColor: "#ffffffd4",
@@ -27,7 +27,7 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
           <div className={styles.trackerContent}>
             <div className={styles.trackerHeadlineSec}>
               <span className={styles.roleType} style={{ color: "#593ABB" }}>
-                Primary Auhtor
+                Primary Author
               </span>
               <MultiplePeoplePersona
                 data={sectionData?.primaryAuthor}
@@ -57,7 +57,7 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
           <div className={styles.trackerContent}>
             <div className={styles.trackerHeadlineSec}>
               <span className={styles.roleType} style={{ color: "#C4000C" }}>
-                Section Auhtors
+                Section Author(s)
               </span>
               <MultiplePeoplePersona
                 data={sectionData?.sectionAuthors}
@@ -147,7 +147,10 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
       content: (
         <div>
           <div className={styles.trackerContent}>
-            <span className={styles.roleType} style={{ color: "#555555" }}>
+            <span
+              className={styles.roleType}
+              style={{ color: "#555555", marginBottom: "5px" }}
+            >
               Document Published
             </span>
             <span>Final output of the document</span>

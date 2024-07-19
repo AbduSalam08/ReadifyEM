@@ -1,12 +1,15 @@
-.p-timeline-event-opposite{
-display: none!important;
+.p-timeline-event-opposite {
+  display: none !important;
 }
-.p-timeline-event{
-    height: 100px;
+.p-timeline-event {
+  height: 100px;
 }
-.p-timeline-event:first-child{
-    padding-top: 10px;
+.p-timeline-event:first-child {
+  padding-top: 10px;
 }
-.p-timeline-event:last-child{
-    height: 50px;
+.p-timeline-event:last-child {
+  height: 50px;
+}
+.p-timeline-event-separator {
+  font-family: "interMedium", sans-serif !important;
 }

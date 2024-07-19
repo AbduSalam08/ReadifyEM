@@ -1,3 +1,8 @@
+.flexCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .sectionWrapper {
   width: 21%;
   border: 1px solid #adadad40;
@@ -10,4 +15,26 @@
   border-radius: 5px;
   background: #fff;
   margin-left: 15px;
+}
+.commentsToggleBtn {
+  // width: 20px;
+  // height: 20px;
+  @extend .flexCenter;
+  // background-color: #eee;
+  background-color: #e8e1ff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  // border: 1px solid #adadad40;
+  border: 1px solid #cab9ff;
+  // box-shadow: 0px 0 10px #00000015;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: 0;
+  position: absolute;
+  top: -0px;
+  left: -40px;
+  img {
+    width: 20px;
+    height: 20px;
+  }
 }
