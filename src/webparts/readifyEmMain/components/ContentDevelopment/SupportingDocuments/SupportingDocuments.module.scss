@@ -1,0 +1,173 @@
+.textPlayGround {
+    border: 1px solid #adadad60;
+    padding: 10px 15px;
+    border-radius: 4px;
+}
+
+.definitionHeaderWrapper {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0px 20px 0px;
+
+    span {
+        font-family: "interMedium", sans-serif !important;
+        font-size: 20px;
+    }
+}
+
+.filterMainWrapper {
+    position: relative;
+}
+
+.filterSecWrapper {
+    position: absolute;
+    z-index: 100;
+    background: #fff;
+    width: 70%;
+    border: 1px solid #adadad60;
+    padding: 0px 10px;
+    height: 242px;
+    overflow: auto;
+}
+
+.filterDefinitionSec {
+    display: flex;
+    // justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0px;
+}
+
+.SelectedDocumentsSec {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 20px;
+    border: 1px solid #e2d6d660;
+    margin-bottom: 10px;
+    .documentName {
+        font-family: "interMedium", sans-serif !important;
+        font-size: 13px;
+        padding-bottom: 5px;
+    }
+    .documentLink {
+        font-family: "interRegular", sans-serif !important;
+        font-size: 12px;
+        color:"#593ABB";
+        text-decoration: none;
+    }
+}
+.documentInputSec {
+    width: 90%;
+    display: flex;
+    gap: 30px;
+}
+
+.closeBtn {
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 50%;
+    background-color: #fff;
+
+    img {
+        width: 15px;
+        height: 12px;
+    }
+}
+
+
+
+// popup design
+
+.flexcenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.SDDTWrapper {
+    width: 100%;
+}
+
+.pageTitleHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.contentWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filters {
+    @extend .flexcenter;
+    justify-content: space-between;
+    margin: 20px 0;
+    gap: 20px;
+}
+
+.rhs {
+    @extend .flexcenter;
+    gap: 15px;
+    width: 100%;
+}
+
+.subGroupInput {
+    margin-bottom: 10px;
+}
+
+.clearFilterBtn {
+    font-size: 13px;
+    font-family: "interMedium", sans-serif !important;
+    color: var(--primary-violet);
+    background-color: #593abb15;
+    border-radius: 50px;
+    width: 150px;
+    padding: 5px 0;
+    cursor: pointer;
+    border: 0;
+    outline: 0;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.definitionInputBox {
+    margin-bottom: 20px;
+}
+
+.referenceWrapper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+
+    span {
+        font-size: 16px;
+        color: #adadad;
+        font-family: "interMedium", sans-serif !important;
+    }
+}
+
+.referenceInput {
+    width: 100% !important;
+}
+
+.defWrapper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 10px;
+    flex-direction: column;
+}
