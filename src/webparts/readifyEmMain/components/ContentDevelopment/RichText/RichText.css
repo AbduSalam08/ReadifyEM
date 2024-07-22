@@ -1,0 +1,28 @@
+.customeRichText {
+  height: 100%;
+}
+.customeRichText .ql-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  background-color: #d9d9d940;
+  height: 42px;
+  border: 0 !important;
+  font-family: "interRegular", sans-serif;
+}
+.customeRichText .ql-container {
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  border: 1px solid #eee !important;
+  font-family: "interRegular", sans-serif;
+  /* height: 363px !important; */
+  height: calc(100% - 55px) !important;
+}
+strong {
+  font-family: "interSemiBold", sans-serif !important;
+}
+em {
+  font-style: italic !important;
+}

@@ -25,7 +25,8 @@
   }
 }
 .cardsSection {
-  max-height: 60vh;
+  // max-height: 60vh;
+  max-height: calc(100vh - 250px);
   overflow: auto;
   @extend .flexcenter;
   justify-content: flex-start;

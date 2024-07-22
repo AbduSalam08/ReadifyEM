@@ -24,6 +24,10 @@ import { togglePopupVisibility } from "../../utils/togglePopup";
 const commentIcon = require("../../assets/images/svg/violetCommentIcon.svg");
 // styles
 import styles from "./ContentDevelopment.module.scss";
+import RichText from "../../webparts/readifyEmMain/components/ContentDevelopment/RichText/RichText";
+// import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
+import AppendixContent from "../../webparts/readifyEmMain/components/ContentDevelopment/AppendixContent/AppendixContent";
+import ContentTypeConfirmation from "../../webparts/readifyEmMain/components/ContentDevelopment/ContentTypeConfirmation/ContentTypeConfirmation";
 
 const AllSectionsData = [
   {
@@ -39,7 +43,7 @@ const AllSectionsData = [
     sectionPermission: true,
   },
   {
-    sectionName: "Section Title1",
+    sectionName: "Introduction",
     sectionStatus: "Content in progress",
     commentsCount: 5,
     updateDate: "03/07/24",
@@ -49,9 +53,21 @@ const AllSectionsData = [
       { name: "kali muthu", email: "kalimuthu@chandrudemo.onmicrosoft.com" },
     ],
     sectionPermission: true,
+    contentType: "initial",
   },
   {
-    sectionName: "Section Title2",
+    sectionName: "Purpose",
+    sectionStatus: "Review in progress",
+    commentsCount: 1,
+    updateDate: "03/08/24",
+    sectionPersons: [
+      { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
+    ],
+    sectionPermission: false,
+    contentType: "initial",
+  },
+  {
+    sectionName: "Objectives",
     sectionStatus: "Content in progress",
     commentsCount: 3,
     updateDate: "03/07/24",
@@ -60,19 +76,8 @@ const AllSectionsData = [
       { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
       { name: "kali muthu", email: "kalimuthu@chandrudemo.onmicrosoft.com" },
     ],
-    sectionPermission: false,
-  },
-  {
-    sectionName: "Section Title3",
-    sectionStatus: "Rework in progress",
-    commentsCount: 2,
-    updateDate: "03/07/24",
-    sectionPersons: [
-      { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
-      { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
-      { name: "kali muthu", email: "kalimuthu@chandrudemo.onmicrosoft.com" },
-    ],
     sectionPermission: true,
+    contentType: "initial",
   },
   {
     sectionName: "Appendix",
@@ -110,22 +115,26 @@ const AllSectionsData = [
 ];
 
 const Details = {
-  sectionName: "Section Title1",
+  sectionName: "Introduction",
   sectionStatus: "Content in progress",
-  sectionAuthor: {
-    ID: 6,
-    name: "Madhesh Maasi",
-    email: "Madhesh@chandrudemo.onmicrosoft.com",
-  },
+  sectionAuthor: [
+    {
+      ID: 6,
+      name: "Madhesh Maasi",
+      email: "Madhesh@chandrudemo.onmicrosoft.com",
+    },
+  ],
   consultants: [
     { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
     { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
     { name: "kali muthu", email: "kalimuthu@chandrudemo.onmicrosoft.com" },
   ],
-  primaryAuthor: {
-    name: "Madhesh Maasi",
-    email: "Madhesh@chandrudemo.onmicrosoft.com",
-  },
+  primaryAuthor: [
+    {
+      name: "Madhesh Maasi",
+      email: "Madhesh@chandrudemo.onmicrosoft.com",
+    },
+  ],
   sectionAuthors: [
     { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
     { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
@@ -141,12 +150,6 @@ const Details = {
     { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
     { name: "kali muthu", email: "kalimuthu@chandrudemo.onmicrosoft.com" },
   ],
-  headerTitle: "WelCome aboard",
-  version: "1.0",
-  type: "insurance",
-  createdDate: "03/03/24",
-  lastReviewDate: "03/03/24",
-  nextReviewDate: "03/03/24",
   comments: [
     {
       comment: "This is a comment This is a comment",
@@ -167,6 +170,12 @@ const Details = {
       role: "Section Author",
     },
   ],
+  headerTitle: "WelCome aboard",
+  version: "1.0",
+  type: "insurance",
+  createdDate: "03/03/24",
+  lastReviewDate: "03/03/24",
+  nextReviewDate: "03/03/24",
   isLoading: false,
 };
 
@@ -244,6 +253,7 @@ const ContentDevelopment = (): JSX.Element => {
   const [sectionDetails, setSectionDetails] = useState<any>(Details);
   const [documentDetails, setDocumentDetails] = useState<any>(docDetails);
   const [toggleCommentSection, setToggleCommentSection] = useState(false);
+  const [contentType, setContentType] = useState("initial");
   console.log("toggleCommentSection: ", toggleCommentSection);
 
   // Active Section Index
@@ -348,9 +358,9 @@ const ContentDevelopment = (): JSX.Element => {
         withLabel
         minWidth={"250px"}
         maxWidth={"250px"}
-        minHeight={"70px"}
-        maxHeight={"70px"}
-        labelText="Reviwers"
+        minHeight={"42px"}
+        maxHeight={"42px"}
+        labelText="Reviewers"
         personSelectionLimit={documentDetails?.reviewers?.length}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "referenceAuthor");
@@ -366,8 +376,8 @@ const ContentDevelopment = (): JSX.Element => {
         withLabel
         minWidth={"250px"}
         maxWidth={"250px"}
-        minHeight={"70px"}
-        maxHeight={"70px"}
+        minHeight={"42px"}
+        maxHeight={"42px"}
         labelText="Approvers"
         personSelectionLimit={documentDetails?.approvers?.length}
         onChange={(value: any) => {
@@ -480,17 +490,17 @@ const ContentDevelopment = (): JSX.Element => {
             allSections[activeSection].sectionName === "Header" ? (
               <SectionHeader
                 documentName={sectionDetails.sectionName}
-                sectionAuthor={sectionDetails.sectionAuthor}
+                sectionAuthor={sectionDetails.sectionAuthor[0]}
                 consultants={sectionDetails.consultants}
-                PrimaryAuthor={sectionDetails.primaryAuthor}
+                PrimaryAuthor={sectionDetails.primaryAuthor[0]}
                 isPrimaryAuthor={true}
               />
             ) : (
               <SectionHeader
                 documentName={sectionDetails.sectionName}
-                sectionAuthor={sectionDetails.sectionAuthor}
+                sectionAuthor={sectionDetails.sectionAuthor[0]}
                 consultants={sectionDetails.consultants}
-                PrimaryAuthor={sectionDetails.primaryAuthor}
+                PrimaryAuthor={sectionDetails.primaryAuthor[0]}
                 isPrimaryAuthor={false}
               />
             )}
@@ -507,6 +517,7 @@ const ContentDevelopment = (): JSX.Element => {
                   version={sectionDetails.version}
                   type={sectionDetails.type}
                   headerTitle={sectionDetails.headerTitle}
+                  primaryAuthorDefaultHeader={true}
                 />
               </div>
             ) : (
@@ -519,20 +530,29 @@ const ContentDevelopment = (): JSX.Element => {
                   gap: "10px",
                 }}
               >
-                <div style={{ width: toggleCommentSection ? "100%" : "75%" }}>
+                <div
+                  style={{
+                    width: toggleCommentSection ? "100%" : "75%",
+                    height: "calc(100vh - 286px)",
+                  }}
+                >
                   {allSections[activeSection].sectionName === "Definition" ? (
                     <Definition ID={55} />
                   ) : allSections[activeSection].sectionName === "Appendix" ? (
-                    <SetupHeader
-                      version={sectionDetails.version}
-                      type={sectionDetails.type}
-                      headerTitle={sectionDetails.headerTitle}
+                    <AppendixContent
+                      sectionDetails={sectionDetails}
+                      contentType={contentType}
+                      setContentType={setContentType}
                     />
                   ) : allSections[activeSection].sectionName ===
                     "Supporting Documents" ? (
                     <SupportingDocuments ID={55} />
-                  ) : (
+                  ) : contentType === "initial" ? (
+                    <ContentTypeConfirmation setContentType={setContentType} />
+                  ) : contentType === "list" ? (
                     <SectionContent sectionNumber={1} ID={55} />
+                  ) : (
+                    <RichText />
                   )}
                 </div>
                 <div
@@ -540,7 +560,7 @@ const ContentDevelopment = (): JSX.Element => {
                     width: toggleCommentSection ? "1px" : "25%",
                     transition: "all .2s",
                     position: "relative",
-                    maxHeight: "405px",
+                    height: "calc(100vh - 286px)",
                     border: toggleCommentSection
                       ? "1px solid #eee"
                       : "1px solid transparent",

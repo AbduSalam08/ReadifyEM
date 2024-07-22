@@ -13,6 +13,7 @@ interface Props {
 }
 
 const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
+  console.log("sectionData: ", sectionData);
   const events = [
     {
       status: "Ordered",
@@ -30,7 +31,7 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
                 Primary Author
               </span>
               <MultiplePeoplePersona
-                data={[sectionData?.primaryAuthor]}
+                data={sectionData?.primaryAuthor}
                 positionLeft={15}
               />
             </div>
@@ -60,7 +61,7 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
                 Section Author(s)
               </span>
               <MultiplePeoplePersona
-                data={[sectionData?.sectionAuthors]}
+                data={sectionData?.sectionAuthors}
                 positionLeft={15}
               />
             </div>
@@ -90,7 +91,7 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
                 Reviewer(s)
               </span>
               <MultiplePeoplePersona
-                data={[sectionData?.reviewers]}
+                data={sectionData?.reviewers}
                 positionLeft={15}
               />
             </div>
@@ -120,7 +121,7 @@ const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
                 Approver(s)
               </span>
               <MultiplePeoplePersona
-                data={[sectionData?.Approvers]}
+                data={sectionData?.Approvers}
                 positionLeft={15}
               />
             </div>

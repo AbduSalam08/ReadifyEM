@@ -1,0 +1,29 @@
+.flexCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.initialContent {
+  height: 58vh;
+  background-color: #fff;
+  border-radius: 6px;
+  border: 1px solid #00000020;
+  @extend .flexCenter;
+  .contentTypeBox {
+    height: 100px;
+    border-radius: 4px;
+    background-color: #fafafa;
+    @extend .flexCenter;
+    flex-direction: column;
+    gap: 15px;
+    padding: 0 30px;
+    span {
+      font-family: "interMedium", sans-serif;
+      color: #424242;
+    }
+    .actionsBtns {
+      @extend .flexCenter;
+      gap: 10px;
+    }
+  }
+}

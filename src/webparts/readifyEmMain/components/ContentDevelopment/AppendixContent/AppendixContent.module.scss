@@ -1,0 +1,14 @@
+.appxContentWrapper {
+  padding: 10px 15px;
+  max-height: 40vh !important;
+  overflow: auto;
+  .label {
+    font-family: "interMedium", sans-serif;
+    margin-bottom: 10px;
+    display: block;
+  }
+}
+.scrollableApxSection {
+  max-height: calc(100% - 55px);
+  overflow: auto;
+}

@@ -7,7 +7,7 @@ interface Props {
   documentName: string;
   sectionAuthor: any;
   PrimaryAuthor?: any;
-  isPrimaryAuthor?: Boolean;
+  isPrimaryAuthor?: boolean;
   consultants: any[];
 }
 

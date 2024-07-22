@@ -1,7 +1,9 @@
 .textPlayGround {
-  border: 1px solid #adadad60;
+  //   border: 1px solid #adadad60;
   padding: 10px 15px;
   border-radius: 4px;
+  height: 88%;
+  max-height: 88%;
 }
 .headerWrapper {
   display: flex;
@@ -10,6 +12,21 @@
   span {
     font-family: "interMedium", sans-serif !important;
     font-size: 20px;
+  }
+}
+.headerWrapperAppendix {
+  display: flex;
+  border-radius: 4px;
+  justify-content: flex-start;
+  padding: 20px 0;
+  background: #eee;
+  height: 40px;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 0 10px;
+  span {
+    font-family: "interMedium", sans-serif !important;
+    font-size: 16px;
   }
 }
 .setupHeaderWrapper {

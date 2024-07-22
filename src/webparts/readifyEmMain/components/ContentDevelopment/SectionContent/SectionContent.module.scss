@@ -82,14 +82,19 @@
   border: 1px solid #ebeaec;
   padding: 10px 15px;
   border-radius: 4px;
-  max-height: 350px;
+  // max-height: 350px;
+  height: 88%;
+  max-height: 88%;
+
   overflow: auto;
 }
 
 .placeholder {
   color: #adadad;
-  padding: 0;
+  font-family: "interMedium", sans-serif !important;
   margin: 0;
+  margin-top: 10px;
+  padding: 0;
   font-size: 14px;
   user-select: none;
   -webkit-user-drag: none;
