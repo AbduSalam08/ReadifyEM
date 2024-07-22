@@ -19,12 +19,6 @@ const closeBtn = require("../../../../../assets/images/png/close.png");
 interface Props {
   ID: number;
 }
-interface definitionDetails {
-  ID: number;
-  title: any;
-  description: any;
-  isSelected: boolean;
-}
 interface documentDetails {
   ID: number;
   documentName: any;
@@ -32,35 +26,23 @@ interface documentDetails {
   isSelected: boolean;
   isNew: boolean;
 }
-interface IDefinitionDetails {
-  ID: number | any;
-  definitionName: string;
-  IsValid: boolean;
-  IsDuplicate: boolean;
-  ErrorMsg: string;
-  definitionDescription: string;
-  referenceTitle: string;
-  referenceAuthor: any[];
-  referenceLink: string;
-  isApproved: boolean;
-  isLoading: boolean;
-}
+
+// interface IDefinitionDetails {
+//   ID: number | null;
+//   definitionName: string;
+//   IsValid: boolean;
+//   IsDuplicate: boolean;
+//   ErrorMsg: string;
+//   definitionDescription: string;
+//   referenceTitle: string;
+//   referenceAuthor: any[];
+//   referenceLink: string;
+//   isApproved: boolean;
+//   isLoading: boolean;
+// }
 
 const SupportingDocuments: React.FC<Props> = ({ ID }) => {
   // initial definitions data
-  const initialDefinitionsData = {
-    ID: null,
-    definitionName: "",
-    IsValid: true,
-    ErrorMsg: "",
-    IsDuplicate: false,
-    definitionDescription: "",
-    referenceTitle: "",
-    referenceAuthor: [],
-    referenceLink: "",
-    isApproved: true,
-    isLoading: false,
-  };
   const [allDefinitions, setAllDefinitions] = useState<any[]>([]);
   const [filterDefinitions, setFilterDefinitions] = useState<any[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<any[]>([]);
@@ -71,20 +53,20 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
   //     initialPopupController
   //   );
 
-  const [definitionsData, setDefinitionsData] = useState<IDefinitionDetails>({
-    ID: null,
-    definitionName: "",
-    IsValid: true,
-    ErrorMsg: "",
-    IsDuplicate: false,
-    definitionDescription: "",
-    referenceTitle: "",
-    referenceAuthor: [],
-    referenceLink: "",
-    isApproved: true,
-    isLoading: false,
-  });
-  console.log(definitionsData, selectedDocuments, filterDefinitions);
+  //   const [definitionsData, setDefinitionsData] = useState<IDefinitionDetails>({
+  //     ID: null,
+  //     definitionName: "",
+  //     IsValid: true,
+  //     ErrorMsg: "",
+  //     IsDuplicate: false,
+  //     definitionDescription: "",
+  //     referenceTitle: "",
+  //     referenceAuthor: [],
+  //     referenceLink: "",
+  //     isApproved: true,
+  //     isLoading: false,
+  //   });
+  console.log(selectedDocuments, filterDefinitions);
 
   const handleSearchOnChange = (value: string): any => {
     console.log(value);
@@ -97,22 +79,43 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
     setFilterDefinitions(filterValues);
   };
 
-  const getAllDefinition = async (): Promise<any> => {
+  const getApprovedDocuments = async (documents: any) => {
+    let approvedDocuments: any = [];
+    await documents.forEach(async (document: any) => {
+      await SpServices.SPGetAttachments({
+        Listname: "AllDocuments",
+        ID: document.documentId,
+      })
+        .then((res: any) => {
+          console.log(res);
+          if (res.length > 0) {
+            approvedDocuments.push(document);
+          }
+        })
+        .catch((err: any) => {
+          console.log(err);
+        });
+    });
+    console.log(approvedDocuments);
+  };
+
+  const getAllDocuments = async () => {
+
     await SpServices.SPReadItems({
-      Listname: "Definition",
-      Select: "*",
-      Expand: "",
+      Listname: "DocumentDetails",
+      Select: "*,fileDetails/ID",
+      Expand: "fileDetails",
       Filter: [
         {
-          FilterKey: "isApproved",
+          FilterKey: "status",
           Operator: "eq",
-          FilterValue: 1,
+          FilterValue: "Approved",
         },
       ],
     })
       .then((res: any[]) => {
-        const tempArray: definitionDetails[] = [];
-        const tempSelectedDocumentsArray: documentDetails[] = [
+        let tempArray: any[] = [];
+        let tempSelectedDocumentsArray: documentDetails[] = [
           {
             ID: 1,
             documentName: "Document one",
@@ -152,12 +155,11 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
         res?.forEach((item: any) => {
           tempArray.push({
             ID: item.ID,
-            title: item.Title,
-            description: item.description,
-            isSelected: false,
+            documentId: item.fileDetailsId,
+            documentName: item.Title,
           });
         });
-        setAllDefinitions([...tempArray]);
+        getApprovedDocuments(tempArray);
         setSelectedDocuments([...tempSelectedDocumentsArray]);
       })
       .catch((err) => console.log(err));
@@ -200,7 +202,7 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
   };
 
   useEffect(() => {
-    getAllDefinition();
+    getAllDocuments();
   }, []);
 
   return (
@@ -214,7 +216,7 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
             size="medium"
             onClick={() => {
               // togglePopupVisibility(setPopupController, 0, "open");
-              setDefinitionsData(initialDefinitionsData);
+              //   setDefinitionsData(initialDefinitionsData);
               AddNewDocument();
             }}
           />
