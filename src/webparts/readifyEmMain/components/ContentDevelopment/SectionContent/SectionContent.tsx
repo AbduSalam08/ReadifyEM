@@ -308,6 +308,7 @@ import ContentEditor from "./ContentEditor/ContentEditor";
 interface IProps {
   sectionNumber: number;
   ID: number;
+  noActionBtns?: boolean;
 }
 
 interface IPoint {
@@ -317,7 +318,11 @@ interface IPoint {
 
 import SpServices from "../../../../../services/SPServices/SpServices";
 
-const SectionContent: React.FC<IProps> = ({ sectionNumber, ID }) => {
+const SectionContent: React.FC<IProps> = ({
+  sectionNumber,
+  ID,
+  noActionBtns,
+}) => {
   const [points, setPoints] = useState<IPoint[]>([
     { text: String(sectionNumber), value: "" },
   ]);
@@ -335,12 +340,17 @@ const SectionContent: React.FC<IProps> = ({ sectionNumber, ID }) => {
   };
 
   const handleAddPoint = (): void => {
-    const lastPoint = points[points.length - 1];
-    if (lastPoint.value.trim() === "") {
-      alert("Please enter a value for the last point before adding a new one.");
-      return;
-    }
-    const newPoint = getNextPoint(lastPoint);
+    // if (points.length > 0) {
+    //   const lastPoint = points[points.length - 1];
+    //   if (lastPoint.value.trim() === "") {
+    //     alert(
+    //       "Please enter a value for the last point before adding a new one."
+    //     );
+    //     return;
+    //   }
+    // }
+
+    const newPoint = getNextPoint(points[points.length - 1]);
     setPoints([...points, newPoint]);
   };
 
@@ -533,8 +543,21 @@ const SectionContent: React.FC<IProps> = ({ sectionNumber, ID }) => {
   }, []);
 
   return (
-    <div>
+    <div className="sectionWrapper">
       <div className={styles.textPlayGround}>
+        <DefaultButton
+          btnType="primary"
+          startIcon={
+            <i
+              className="pi pi-plus-circle"
+              style={{
+                fontSize: "12px",
+              }}
+            />
+          }
+          text={"Add new point"}
+          onClick={handleAddPoint}
+        />
         {sortedPoints.length > 1 ? (
           sortedPoints.map((item: any, idx: number) =>
             item.text !== String(sectionNumber) ? renderPoint(item, idx) : ""
@@ -543,48 +566,35 @@ const SectionContent: React.FC<IProps> = ({ sectionNumber, ID }) => {
           <p className={styles.placeholder}>content goes here as points...</p>
         )}
       </div>
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginTop: "15px",
-        }}
-      >
-        <button
-          className={styles.primaryButton}
+      {!noActionBtns && (
+        <div
           style={{
-            padding: "5px 15px",
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            marginTop: "15px",
           }}
-          onClick={handleAddPoint}
         >
-          <i
-            className="pi pi-plus-circle"
-            style={{
-              marginRight: "10px",
-            }}
-          />
-          Add New Point
-        </button>
-        <div style={{ display: "flex", gap: "15px" }}>
-          <DefaultButton text="Cancel" btnType="darkGreyVariant" />
-          <DefaultButton
-            text="Save and Close"
-            btnType="lightGreyVariant"
-            onClick={() => {
-              _addData();
-            }}
-          />
-          <DefaultButton
-            text="Submit"
-            btnType="primary"
-            onClick={() => {
-              _addData();
-            }}
-          />
+          <div style={{ display: "flex", gap: "15px" }}>
+            <DefaultButton text="Cancel" btnType="darkGreyVariant" />
+            <DefaultButton
+              text="Save and Close"
+              btnType="lightGreyVariant"
+              onClick={() => {
+                _addData();
+              }}
+            />
+            <DefaultButton
+              text="Submit"
+              btnType="primary"
+              onClick={() => {
+                _addData();
+              }}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -26,6 +26,7 @@ interface documentDetails {
   isSelected: boolean;
   isNew: boolean;
 }
+
 // interface IDefinitionDetails {
 //   ID: number | null;
 //   definitionName: string;
@@ -39,18 +40,6 @@ interface documentDetails {
 //   isApproved: boolean;
 //   isLoading: boolean;
 // }
-
-// local constants
-// const initialPopupController = [
-//   {
-//     open: false,
-//     popupTitle: "Add New Definition",
-//     popupWidth: "550px",
-//     popupType: "custom",
-//     defaultCloseBtn: false,
-//     popupData: "",
-//   },
-// ];
 
 const SupportingDocuments: React.FC<Props> = ({ ID }) => {
   // initial definitions data
@@ -79,165 +68,10 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
   //   });
   console.log(selectedDocuments, filterDefinitions);
 
-  // util for closing popup
-  //   const handleClosePopup = (index?: any): void => {
-  //     togglePopupVisibility(setPopupController, index, "close");
-  //   };
-
-  //   const handleOnChange = (value: string | any, key: string): void => {
-  //     if (key === "referenceAuthor") {
-  //       console.log(value);
-  //       setDefinitionsData((prev: any) => ({
-  //         ...prev,
-  //         referenceAuthor:
-  //           value.length > 0
-  //             ? [{ Id: value[0]?.id, Email: value[0]?.secondaryText }]
-  //             : [],
-  //       }));
-  //     } else {
-  //       setDefinitionsData((prev: any) => ({
-  //         ...prev,
-  //         [key]: value,
-  //         IsDuplicate: false,
-  //       }));
-  //     }
-  //   };
-
-  // array of obj which contains all popup inputs
-  //   const popupInputs: any[] = [
-  //     [
-  //       <div key={1} className={styles.defWrapper}>
-  //         <CustomInput
-  //           size="MD"
-  //           labelText="Definition Name"
-  //           withLabel
-  //           icon={false}
-  //           value={definitionsData.definitionName}
-  //           isValid={
-  //             definitionsData.definitionName === "" && !definitionsData.IsValid
-  //               ? true
-  //               : definitionsData.definitionName !== "" &&
-  //                 definitionsData.IsDuplicate
-  //               ? true
-  //               : false
-  //           }
-  //           onChange={(value: any) => {
-  //             handleOnChange(value, "definitionName");
-  //           }}
-  //           placeholder="Enter here"
-  //           // isValid={!definitionsData.IsValid}
-  //           errorMsg={
-  //             definitionsData.definitionName !== "" && definitionsData.IsDuplicate
-  //               ? definitionsData.ErrorMsg
-  //               : "The definition name field is required"
-  //           }
-  //           key={1}
-  //         />
-  //         <CustomTextArea
-  //           size="MD"
-  //           labelText="Description"
-  //           withLabel
-  //           icon={false}
-  //           mandatory={true}
-  //           value={definitionsData.definitionDescription}
-  //           onChange={(value: any) => {
-  //             handleOnChange(value, "definitionDescription");
-  //           }}
-  //           placeholder="Enter Description"
-  //           isValid={
-  //             definitionsData.definitionDescription === "" &&
-  //             !definitionsData.IsValid
-  //           }
-  //           errorMsg={"The description field is required"}
-  //           key={2}
-  //         />
-  //         <div key={3} className={styles.referenceWrapper}>
-  //           <span>References</span>
-  //           <CustomInput
-  //             size="MD"
-  //             labelText="Title"
-  //             withLabel
-  //             icon={false}
-  //             value={definitionsData.referenceTitle}
-  //             onChange={(value: any) => {
-  //               handleOnChange(value, "referenceTitle");
-  //             }}
-  //             inputWrapperClassName={styles.referenceInput}
-  //             placeholder="Enter here"
-  //             isValid={
-  //               definitionsData.referenceTitle === "" && !definitionsData.IsValid
-  //             }
-  //             errorMsg={"The references title field is required"}
-  //             key={3}
-  //           />
-  //           <CustomPeoplePicker
-  //             size="MD"
-  //             minWidth={"265px"}
-  //             withLabel
-  //             labelText="Author"
-  //             onChange={(value: any) => {
-  //               handleOnChange(value, "referenceAuthor");
-  //             }}
-  //             selectedItem={definitionsData?.referenceAuthor[0]?.Email}
-  //             placeholder="Add people"
-  //             isValid={
-  //               definitionsData.referenceAuthor.length === 0 &&
-  //               !definitionsData.IsValid
-  //             }
-  //             errorMsg={"The reference author field is required"}
-  //             key={4}
-  //           />
-  //           <CustomInput
-  //             size="MD"
-  //             labelText="Link"
-  //             withLabel
-  //             icon={false}
-  //             value={definitionsData.referenceLink}
-  //             onChange={(value: any) => {
-  //               handleOnChange(value, "referenceLink");
-  //             }}
-  //             placeholder="Enter here"
-  //             isValid={
-  //               definitionsData.referenceLink === "" && !definitionsData.IsValid
-  //             }
-  //             errorMsg={"The references Link field is required"}
-  //             key={5}
-  //           />
-  //         </div>
-  //       </div>,
-  //     ],
-  //   ];
-
-  // array of obj which contains all popup action buttons
-  //   const popupActions: any[] = [
-  //     [
-  //       {
-  //         text: "Cancel",
-  //         btnType: "darkGreyVariant",
-  //         disabled: false,
-  //         endIcon: false,
-  //         startIcon: false,
-  //         onClick: () => {
-  //           handleClosePopup(0);
-  //         },
-  //       },
-  //       {
-  //         text: "Submit",
-  //         btnType: "primary",
-  //         disabled: false,
-  //         endIcon: false,
-  //         startIcon: false,
-  //         onClick: () => {
-  //           // handleSubmit();
-  //         },
-  //       },
-  //     ],
-  //   ];
-
-  const handleSearchOnChange = (value: string) => {
+  const handleSearchOnChange = (value: string): any => {
     console.log(value);
     setSearchValue(value);
-    let filterValues = allDefinitions?.filter((obj: any) => {
+    const filterValues = allDefinitions?.filter((obj: any) => {
       if (obj.title.toLowerCase().includes(value.toLowerCase().trim())) {
         return obj;
       }
@@ -266,6 +100,7 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
   };
 
   const getAllDocuments = async () => {
+
     await SpServices.SPReadItems({
       Listname: "DocumentDetails",
       Select: "*,fileDetails/ID",
@@ -330,18 +165,18 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
       .catch((err) => console.log(err));
   };
 
-  const onSelectDefinition = (id: number) => {
-    let tempArray = allDefinitions;
-    let index = tempArray.findIndex((obj: any) => obj.ID == id);
+  const onSelectDefinition = (id: number): void => {
+    const tempArray = allDefinitions;
+    const index = tempArray.findIndex((obj: any) => obj.ID === id);
     console.log(index);
-    let definitionObject = tempArray[index];
+    const definitionObject = tempArray[index];
     definitionObject.isSelected = !definitionObject.isSelected;
     tempArray[index] = definitionObject;
     setAllDefinitions([...tempArray]);
   };
 
-  const AddNewDocument = () => {
-    let tempArray = selectedDocuments;
+  const AddNewDocument = (): any => {
+    const tempArray = selectedDocuments;
     tempArray.unshift({
       ID: selectedDocuments.length + 1,
       documentName: "Document six",
@@ -352,11 +187,11 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
     setAllDefinitions([...tempArray]);
   };
 
-  const documentOnchange = (value: string, id: number, key: string) => {
-    console.log(value, id);
-    let tempArray: any[] = [...selectedDocuments];
-    let index = tempArray.map((obj: any) => {
-      if (obj.ID == id) {
+  const documentOnchange = (value: string, id: number, key: string): void => {
+    // console.log(value, id);
+    const tempArray: any[] = [...selectedDocuments];
+    const index = tempArray.map((obj: any) => {
+      if (obj.ID === id) {
         obj[key] = value;
         return obj;
       } else {
@@ -371,12 +206,12 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
   }, []);
 
   return (
-    <div>
+    <div className="sectionWrapper">
       <div className={styles.textPlayGround}>
         <div className={styles.definitionHeaderWrapper}>
           <span>Add supporting documents links</span>
           <DefaultButton
-            btnType="primaryBlue"
+            btnType="primary"
             text={"New"}
             size="medium"
             onClick={() => {
@@ -393,12 +228,20 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
             onChange={(value: any) => {
               handleSearchOnChange(value);
             }}
+            secWidth="257px"
           />
           {searchValue !== "" && (
             <div className={styles.filterSecWrapper}>
               {filterDefinitions.map((obj: any, index: number) => {
                 return (
-                  <div key={index} className={styles.filterDefinitionSec}>
+                  <div
+                    key={index}
+                    className={
+                      obj?.isSelected
+                        ? styles.filterDefinitionSecSelected
+                        : styles.filterDefinitionSec
+                    }
+                  >
                     <div style={{ width: "10%" }}>
                       <Checkbox
                         checkedIcon={<RadioButtonCheckedIcon />}
@@ -427,10 +270,10 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
                       {obj.title}
                     </label> */}
                     </div>
-                    <div style={{ width: "30%" }}>
+                    <div className={styles.title}>
                       <span>{obj.title}</span>
                     </div>
-                    <div style={{ width: "60%" }}>
+                    <div className={styles.description}>
                       <span>{obj.description}</span>
                     </div>
                   </div>
@@ -475,7 +318,7 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
                     <p className={styles.documentName}>{obj.documentName}</p>
                     <a
                       href={obj.documentLink}
-                      target="_blank"
+                      // target="_blank"
                       className={styles.documentLink}
                     >
                       {obj.documentLink}

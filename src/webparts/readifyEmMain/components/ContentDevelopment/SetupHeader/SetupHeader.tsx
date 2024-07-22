@@ -13,9 +13,17 @@ interface Props {
   version: string;
   type: string;
   headerTitle: string;
+  primaryAuthorDefaultHeader?: boolean;
+  noActionBtns?: boolean;
 }
 
-const SetupHeader: React.FC<Props> = ({ version, type, headerTitle }) => {
+const SetupHeader: React.FC<Props> = ({
+  version,
+  type,
+  headerTitle,
+  primaryAuthorDefaultHeader,
+  noActionBtns,
+}) => {
   const fileUploadRef = useRef<any>(null);
   const initialHeaderDetails = {
     version: version,
@@ -145,7 +153,13 @@ const SetupHeader: React.FC<Props> = ({ version, type, headerTitle }) => {
 
   return (
     <div className={styles.textPlayGround}>
-      <div className={styles.headerWrapper}>
+      <div
+        className={
+          primaryAuthorDefaultHeader
+            ? styles.headerWrapper
+            : styles.headerWrapperAppendix
+        }
+      >
         <span>Setup Header</span>
       </div>
       <div className={styles.setupHeaderWrapper}>
@@ -199,23 +213,25 @@ const SetupHeader: React.FC<Props> = ({ version, type, headerTitle }) => {
             topLabel
             secWidth="307px"
           />
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "end",
-              gap: "10px",
-              marginTop: "30px",
-            }}
-          >
-            <DefaultButton text="Cancel" btnType="darkGreyVariant" />
-            <DefaultButton
-              text="Submit"
-              btnType="primary"
-              onClick={() => {
-                // _addData();
+          {!noActionBtns && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "end",
+                gap: "10px",
+                marginTop: "30px",
               }}
-            />
-          </div>
+            >
+              <DefaultButton text="Cancel" btnType="darkGreyVariant" />
+              <DefaultButton
+                text="Submit"
+                btnType="primary"
+                onClick={() => {
+                  // _addData();
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

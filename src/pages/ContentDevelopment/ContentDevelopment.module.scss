@@ -8,7 +8,7 @@
   border: 1px solid #adadad40;
   padding: 10px;
   border-radius: 5px;
-  max-height: 535px;
+  max-height: calc(100vh - 95px);
   overflow: auto;
 }
 .contentWrapper {

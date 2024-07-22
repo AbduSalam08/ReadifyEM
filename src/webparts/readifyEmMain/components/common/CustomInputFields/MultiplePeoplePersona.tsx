@@ -86,26 +86,31 @@ const CustomMutiplePeoplePersona: React.FC<Props> = ({
   return (
     <div className={styles.personaSection}>
       <AvatarGroup>
-        {data?.map((person: any, index: number) => (
-          <Avatar
-            key={index}
-            image={`/_layouts/15/userphoto.aspx?size=S&username=${person.email}`}
-            shape="circle"
-            size="normal"
-            style={{
-              margin: "0 !important",
-              border: "3px solid transparent",
-              width: "25px",
-              height: "25px",
-              marginLeft: data?.length > 1 ? "-10px" : "0",
-              // position: "absolute",
-              // left: `${positionLeft ? positionLeft * index : 0}px`,
-              // top: `${positionTop ? positionTop : 0}px`,
-              // zIndex: index,
-            }}
-            label={person.name}
-          />
-        ))}
+        {data?.map((person: any, index: number) => {
+          console.log("person: ", person);
+          return (
+            <Avatar
+              key={index}
+              image={`/_layouts/15/userphoto.aspx?size=S&username=${
+                person.email || person.Email
+              }`}
+              shape="circle"
+              size="normal"
+              style={{
+                margin: "0 !important",
+                border: "3px solid #fff",
+                width: "25px",
+                height: "25px",
+                marginLeft: data?.length > 1 ? "-10px" : "0",
+                // position: "absolute",
+                // left: `${positionLeft ? positionLeft * index : 0}px`,
+                // top: `${positionTop ? positionTop : 0}px`,
+                // zIndex: index,
+              }}
+              label={person.name}
+            />
+          );
+        })}
       </AvatarGroup>
     </div>
   );

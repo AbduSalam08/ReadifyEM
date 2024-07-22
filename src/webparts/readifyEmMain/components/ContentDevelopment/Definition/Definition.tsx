@@ -305,7 +305,7 @@ const Definition: React.FC<Props> = ({ ID }) => {
   }, []);
 
   return (
-    <div>
+    <div className={"sectionWrapper"}>
       <div className={styles.textPlayGround}>
         <div className={styles.definitionHeaderWrapper}>
           <span>Setup Header</span>
