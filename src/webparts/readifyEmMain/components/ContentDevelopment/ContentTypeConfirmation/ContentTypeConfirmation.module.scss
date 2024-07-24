@@ -4,7 +4,11 @@
   justify-content: center;
 }
 .initialContent {
-  height: 58vh;
+  // height: 58vh;
+  height: calc(100vh - 287px);
+  max-height: calc(100vh - 287px);
+  // height: calc(65vh - 287px);
+  // max-height: calc(65vh - 287px);
   background-color: #fff;
   border-radius: 6px;
   border: 1px solid #00000020;

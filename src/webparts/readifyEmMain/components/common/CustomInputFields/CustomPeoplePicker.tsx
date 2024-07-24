@@ -142,6 +142,7 @@ interface Props {
   minHeight?: any;
   maxHeight?: any;
   noRemoveBtn?: boolean;
+  multiUsers?: boolean;
 }
 
 const CustomPeoplePicker: React.FC<Props> = ({
@@ -163,6 +164,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
   noRemoveBtn,
   minHeight,
   maxHeight,
+  multiUsers = false,
 }) => {
   const multiPeoplePickerStyle = {
     root: {
@@ -242,12 +244,23 @@ const CustomPeoplePicker: React.FC<Props> = ({
     onChange && onChange(items);
   };
 
-  const selectedUserItem =
-    personSelectionLimit > 1
-      ? selectedItem?.map(
-          (item: any) => item.secondaryText || item.Email || item.email
-        )
-      : [selectedItem];
+  const selectedUserItem = (() => {
+    if (!multiUsers) {
+      return personSelectionLimit > 1 ? [] : [selectedItem];
+    } else {
+      if (personSelectionLimit >= 1) {
+        return (
+          selectedItem?.map(
+            (item: any) => item.secondaryText || item.Email || item.email
+          ) || []
+        );
+      }
+    }
+
+    return [selectedItem];
+  })();
+
+  console.log("selectedItem: ", selectedItem);
 
   return (
     <div className={styles.inputMainWrapper}>

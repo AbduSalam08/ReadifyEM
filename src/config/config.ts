@@ -7,6 +7,7 @@ const LISTNAMES = {
   SDDTemplates: "SDDTemplates",
   SDDTemplatesMain: "SDDTemplatesMain",
   SectionDetails: "SectionDetails",
+  SectionComments: "SectionComments",
   MyTasks: "MyTasks",
   Definition: "Definition",
 };

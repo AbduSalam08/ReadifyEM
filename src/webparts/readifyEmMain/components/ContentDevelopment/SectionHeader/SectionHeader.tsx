@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from "./SectionHeader.module.scss";
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
+import { useSelector } from "react-redux";
 // import CustomMutiplePeoplePicker from "../../common/CustomInputFields/CustomMutiplePeoplePicker";
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
   PrimaryAuthor?: any;
   isPrimaryAuthor?: boolean;
   consultants: any[];
+  activeSectionData: any;
 }
 
 const SectionHeader: React.FC<Props> = ({
@@ -17,12 +19,20 @@ const SectionHeader: React.FC<Props> = ({
   consultants,
   PrimaryAuthor,
   isPrimaryAuthor,
+  activeSectionData,
 }) => {
-  console.log(sectionAuthor);
-
   const handleOnChangeFunction = (value: any): any => {
     console.log(value);
   };
+  console.log(
+    "activeSectionData?.assignedToUser: ",
+    activeSectionData?.assignedToUser
+  );
+
+  const currentUserDetails: any = useSelector(
+    (state: any) => state?.MainSPContext?.currentUserDetails
+  );
+  console.log("currentUserDetails: ", currentUserDetails);
 
   return (
     <>
@@ -32,8 +42,18 @@ const SectionHeader: React.FC<Props> = ({
           <div className={styles.authors}>
             <span className={styles.label}>
               {!isPrimaryAuthor
-                ? "Section Author (you)"
-                : "Primary Author (you)"}
+                ? `Section Author ${
+                    activeSectionData?.sectionAuthor?.email ===
+                    currentUserDetails?.email
+                      ? "(you)"
+                      : ""
+                  }`
+                : `Primary Author ${
+                    activeSectionData?.sectionAuthor?.email ===
+                    currentUserDetails?.email
+                      ? "(you)"
+                      : ""
+                  }`}
             </span>
             <CustomPeoplePicker
               size="SM"
@@ -41,7 +61,7 @@ const SectionHeader: React.FC<Props> = ({
               minWidth={"200px"}
               noRemoveBtn={true}
               selectedItem={
-                !isPrimaryAuthor ? sectionAuthor.email : PrimaryAuthor.email
+                !isPrimaryAuthor ? sectionAuthor?.email : PrimaryAuthor?.email
               }
               onChange={(value: any) => {
                 handleOnChangeFunction(value);
@@ -68,6 +88,7 @@ const SectionHeader: React.FC<Props> = ({
                 placeholder="Add Reference Author"
                 // readOnly
                 hideErrMsg
+                multiUsers={true}
               />
             </div>
           )}

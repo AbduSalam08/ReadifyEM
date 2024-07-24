@@ -9,9 +9,15 @@ import DefaultButton from "../../common/Buttons/DefaultButton";
 
 interface IRichTextProps {
   noActionBtns?: boolean;
+  activeIndex?: any;
+  setSectionData?: any;
 }
 
-const RichText = ({ noActionBtns }: IRichTextProps): JSX.Element => {
+const RichText = ({
+  noActionBtns,
+  activeIndex,
+  setSectionData,
+}: IRichTextProps): JSX.Element => {
   const modules: any = {
     toolbar: [
       [
@@ -83,6 +89,7 @@ const RichText = ({ noActionBtns }: IRichTextProps): JSX.Element => {
         modules={modules}
         formats={formats}
         value={description}
+        placeholder="Content goes here"
         className="customeRichText"
         onChange={(text) => {
           _handleOnChange(text);
@@ -97,7 +104,34 @@ const RichText = ({ noActionBtns }: IRichTextProps): JSX.Element => {
             gap: "15px",
           }}
         >
-          <DefaultButton text="Cancel" btnType="darkGreyVariant" />
+          <DefaultButton
+            text="Reset content"
+            btnType="secondaryRed"
+            onClick={() => {
+              setSectionData((prev: any) => {
+                const updatedSections = [...prev];
+                updatedSections[activeIndex] = {
+                  ...updatedSections[activeIndex],
+                  contentType: "initial",
+                };
+                return updatedSections;
+              });
+            }}
+          />
+          <DefaultButton
+            text="Cancel"
+            btnType="darkGreyVariant"
+            onClick={() => {
+              setSectionData((prev: any) => {
+                const updatedSections = [...prev];
+                updatedSections[activeIndex] = {
+                  ...updatedSections[activeIndex],
+                  contentType: "list",
+                };
+                return updatedSections;
+              });
+            }}
+          />
           <DefaultButton
             text="Save and Close"
             btnType="lightGreyVariant"

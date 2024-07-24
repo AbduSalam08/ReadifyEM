@@ -24,7 +24,7 @@ const SectionBanner: React.FC<Props> = ({
           <img src={sampleDocHeaderImg} alt="doc header logo" />
         </div>
         <div className={styles.headerText}>
-          <p>Welcome Abroad!</p>
+          <p>Document Header!</p>
           <span>Version : {version}</span>
         </div>
         <div className={styles.bannerSecWrapper}>

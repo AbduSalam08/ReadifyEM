@@ -5,7 +5,7 @@
   --inReview-color: #9c27b0;
   --inRework-color: #ff5722;
   --inApproval-color: #673ab7;
-  --approved-color: #4caf50;
+  --approved-color: #deffe6;
   --current-color: #ffc107;
   --hidden-color: #607d8b;
   --contentInProgress-color: #fff7e8;
@@ -56,7 +56,7 @@
   }
   &.approved {
     background-color: var(--approved-color);
-    color: white;
+    color: #2d810f;
   }
   &.current {
     background-color: var(--current-color);
@@ -133,7 +133,7 @@
 
 .approver {
   @extend .rolesPill;
-  background-color: #8bc34a;
+  background-color: #deffe6;
   color: black;
 }
 

@@ -37,6 +37,8 @@ import DefaultButton from "../../webparts/readifyEmMain/components/common/Button
 import { togglePopupVisibility } from "../../utils/togglePopup";
 import { filterDataByURL } from "../../utils/NewDocumentUtils";
 import { CurrentUserIsAdmin } from "../../constants/DefineUser";
+import { useNavigate } from "react-router-dom";
+import { getSectionsDetails } from "../../services/ContentDeveloper/ContentDeveloperServices";
 // import * as dayjs from "dayjs";
 // utils
 // images
@@ -89,6 +91,7 @@ const popupInitialData = {
 const TableOfContents = (): JSX.Element => {
   //Dispatcher
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   // checking is that the current user is an admin or not.
   const isAdmin: boolean = CurrentUserIsAdmin();
   // reducer selectors
@@ -754,7 +757,26 @@ const TableOfContents = (): JSX.Element => {
                         }
                         key={index}
                         onClick={() => {
-                          console.log("clicked");
+                          if (isAdmin) {
+                            navigate(
+                              `/admin/my_tasks/${item?.docName}/content_developer`
+                            );
+                            const taskDetails = {
+                              documentDetailsId: item?.ID,
+                              role: "admin",
+                            };
+                            getSectionsDetails(taskDetails, null, dispatch);
+                          }
+                          // else {
+                          //   navigate(
+                          //     `/user/my_tasks/${item?.docName}/content_developer`
+                          //   );
+                          //   const taskDetails = {
+                          //     documentDetailsId: item?.ID,
+                          //     role: "admin",
+                          //   };
+                          //   getSectionsDetails(taskDetails, null, dispatch);
+                          // }
                         }}
                       />
                       <DefaultButton

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useNavigate } from "react-router-dom";
 import DefaultButton from "../../common/Buttons/DefaultButton";
 import ContentTypeConfirmation from "../ContentTypeConfirmation/ContentTypeConfirmation";
 import RichText from "../RichText/RichText";
@@ -10,14 +11,27 @@ import styles from "./AppendixContent.module.scss";
 interface IAppendixSectionProps {
   sectionDetails: any;
   contentType?: any;
-  setContentType?: any;
+  setSectionData?: any;
+  activeIndex?: any;
+  currentDocDetailsData?: any;
 }
 
 const AppendixContent = ({
   sectionDetails,
   contentType,
-  setContentType,
+  setSectionData,
+  activeIndex,
+  currentDocDetailsData,
 }: IAppendixSectionProps): JSX.Element => {
+  const navigate = useNavigate();
+  console.log("sectionDetails: ", sectionDetails);
+
+  const showActionBtns: boolean =
+    currentDocDetailsData?.taskRole?.toLowerCase() !== "consultant" &&
+    currentDocDetailsData?.taskRole?.toLowerCase() !== "reviewer" &&
+    currentDocDetailsData?.taskRole?.toLowerCase() !== "approver" &&
+    currentDocDetailsData?.taskRole?.toLowerCase() !== "admin";
+
   return (
     <>
       <div className={styles.scrollableApxSection}>
@@ -32,11 +46,25 @@ const AppendixContent = ({
           <span className={styles.label}>Content</span>
 
           {contentType === "initial" ? (
-            <ContentTypeConfirmation setContentType={setContentType} />
+            <ContentTypeConfirmation
+              customWrapperClassName={styles.customInitialContent}
+              activeIndex={activeIndex}
+              setSectionData={setSectionData}
+            />
           ) : contentType === "list" ? (
-            <SectionContent sectionNumber={1} ID={55} noActionBtns={true} />
+            <SectionContent
+              activeIndex={activeIndex}
+              setSectionData={setSectionData}
+              sectionNumber={1}
+              ID={55}
+              noActionBtns={true}
+            />
           ) : (
-            <RichText noActionBtns={true} />
+            <RichText
+              activeIndex={activeIndex}
+              setSectionData={setSectionData}
+              noActionBtns={true}
+            />
           )}
         </div>
       </div>
@@ -48,21 +76,45 @@ const AppendixContent = ({
           gap: "15px",
         }}
       >
-        <DefaultButton text="Cancel" btnType="darkGreyVariant" />
         <DefaultButton
-          text="Save and Close"
-          btnType="lightGreyVariant"
+          text="Cancel"
+          btnType="darkGreyVariant"
           onClick={() => {
-            // _addData();
+            navigate(-1);
           }}
         />
-        <DefaultButton
-          text="Submit"
-          btnType="primary"
-          onClick={() => {
-            // _addData();
-          }}
-        />
+        {showActionBtns && (
+          <>
+            <DefaultButton
+              text="Reset content"
+              btnType="secondaryRed"
+              onClick={() => {
+                setSectionData((prev: any) => {
+                  const updatedSections = [...prev];
+                  updatedSections[activeIndex] = {
+                    ...updatedSections[activeIndex],
+                    contentType: "initial",
+                  };
+                  return updatedSections;
+                });
+              }}
+            />
+            <DefaultButton
+              text="Save and Close"
+              btnType="lightGreyVariant"
+              onClick={() => {
+                // _addData();
+              }}
+            />
+            <DefaultButton
+              text="Submit"
+              btnType="primary"
+              onClick={() => {
+                // _addData();
+              }}
+            />
+          </>
+        )}
       </div>
     </>
   );

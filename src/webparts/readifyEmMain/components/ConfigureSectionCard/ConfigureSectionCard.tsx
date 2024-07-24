@@ -35,6 +35,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
   setSections,
   handleDrag,
 }) => {
+  console.log("sections: ", sections);
   const filteredSection = sections[objKey]?.filter(
     (item: any) => !item?.removed
   );
@@ -45,9 +46,11 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
     value: string | any
   ): void => {
     setSections((prevState: any) => {
-      const validSections = prevState[objKey]?.filter(
-        (item: any) => !item?.removed
-      );
+      // const validSections = prevState[objKey]?.filter(
+      //   (item: any) => !item?.removed
+      // );
+      const validSections = prevState[objKey];
+
       const updatedSections = [...validSections];
 
       const updatedSection =
@@ -61,7 +64,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
           : {
               ...updatedSections[index],
               [field]: {
-                ...updatedSections[index][field],
+                ...updatedSections[index]?.[field],
                 value,
                 isValid:
                   field === "sectionName"
@@ -141,6 +144,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
       } else {
         // All sections are valid, proceed to add the new section
         const newSection = {
+          ID: null,
           templateSectionID: null,
           sectionOrderNo: String(
             prevState[objKey]?.length + 1
@@ -186,6 +190,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
   const hasDuplicates = checkDuplicatesForSDD(sections[objKey]);
 
   const SectionRow = (section: any): JSX.Element => {
+    console.log("section: ", section);
     const sectionName = section?.sectionName?.value;
     const sectionSelected = section?.sectionSelected;
     const sectionAuthorPlaceholder = "Section author";
@@ -194,7 +199,11 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
     const sectionType = section?.sectionType;
 
     const sectionInputPlaceHolder: string =
-      sectionType === "defaultSection" ? "Section Name" : "Appendix Name";
+      sectionType === "defaultSection"
+        ? "Section Name"
+        : sectionType === "appendixSection"
+        ? "Appendix Name"
+        : "Section Name";
 
     const currentItemIndex: number = sections[objKey]?.findIndex(
       (item: any) => section?.sectionOrderNo === item?.sectionOrderNo
@@ -289,7 +298,10 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
               }}
               noErrorMsg={true}
               minWidth={"100%"}
-              selectedItem={section.sectionAuthor?.value[0]?.secondaryText}
+              selectedItem={
+                section.sectionAuthor?.value[0]?.secondaryText ||
+                section.sectionAuthor?.value[0]?.email
+              }
               size="SM"
               placeholder={sectionAuthorPlaceholder}
               personSelectionLimit={1}
@@ -307,10 +319,11 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
               selectedItem={section.consultants.value}
               placeholder={consultantPlaceholder}
               personSelectionLimit={personSelectionLimit}
+              multiUsers={true}
             />
           </div>
         </div>
-        {currentItemIndex !== 0 && (
+        {(currentItemIndex !== 0 || sectionType === "appendixSection") && (
           <button
             className={styles.deleteIcon}
             onClick={() => {

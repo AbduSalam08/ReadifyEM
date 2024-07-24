@@ -24,6 +24,12 @@ import { DocRoles } from "../../constants/DocStatus";
 import { Close } from "@mui/icons-material";
 import CustomDateInput from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomDateInput";
 import * as dayjs from "dayjs";
+import { getSectionsDetails } from "../../services/ContentDeveloper/ContentDeveloperServices";
+import {
+  setCDDocDetails,
+  setCDSectionData,
+} from "../../redux/features/ContentDevloperSlice";
+import { setConfigurePageDetails } from "../../redux/features/SectionConfigurationSlice";
 
 const MyTasks = (): JSX.Element => {
   // router navigate
@@ -105,6 +111,16 @@ const MyTasks = (): JSX.Element => {
     });
     setTasksData({ loading: false, data: filteredData });
   };
+
+  useEffect(() => {
+    dispatch(setCDDocDetails(null));
+    dispatch(setCDSectionData([]));
+    dispatch(
+      setConfigurePageDetails({
+        pageKey: "add",
+      })
+    );
+  }, []);
 
   return (
     <div className={styles.myTasksWrapper}>
@@ -249,6 +265,7 @@ const MyTasks = (): JSX.Element => {
                     ? "Configure"
                     : "Open"
                 }
+                taskData={item}
                 description={item?.pathName}
                 onClick={async () => {
                   // handle the card configuration and card routes here
@@ -267,10 +284,12 @@ const MyTasks = (): JSX.Element => {
                       navigate(
                         `/admin/my_tasks/${item?.docName}/content_developer`
                       );
+                      getSectionsDetails(item, currentUserDetails, dispatch);
                     } else {
                       navigate(
                         `/user/my_tasks/${item?.docName}/content_developer`
                       );
+                      getSectionsDetails(item, currentUserDetails, dispatch);
                     }
                   }
                 }}

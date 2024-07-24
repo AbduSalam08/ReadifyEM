@@ -19,6 +19,7 @@ interface Props {
     | "Current"
     | "Hidden"
     | "Content in progress"
+    | "content in progress"
     | "Rework in progress"
     | "Review in progress"
     | "Approval in progress";
@@ -58,6 +59,8 @@ const StatusPill: React.FC<Props> = ({
         return styles.hidden;
       case "Content in progress":
         return styles.contentInProgress;
+      case "content in progress":
+        return styles.contentInProgress;
       case "Review in progress":
         return styles.reviewInProgress;
       case "Approval in progress":
@@ -89,6 +92,8 @@ const StatusPill: React.FC<Props> = ({
       case "Hidden":
         return styles.hidden;
       case "Content in progress":
+        return styles.contentInProgressDOT;
+      case "content in progress":
         return styles.contentInProgressDOT;
       case "Review in progress":
         return styles.reviewInProgressDOT;
@@ -122,6 +127,8 @@ const StatusPill: React.FC<Props> = ({
       case "Hidden":
         return "Hidden";
       case "Content in progress":
+        return "Content in progress";
+      case "content in progress":
         return "Content in progress";
       case "Review in progress":
         return "Review in progress";

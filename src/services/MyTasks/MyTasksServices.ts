@@ -145,6 +145,8 @@ export const getUniqueTaskData = async (
   taskID: any,
   dispatch: any
 ): Promise<any> => {
+  console.log("dispatch: ", dispatch);
+  console.log("taskID: ", taskID);
   // debugger;
   const TASK_ID: any =
     typeof taskID === "object" && taskID?.length !== 0 ? taskID[0] : taskID;
@@ -233,7 +235,7 @@ export const AddPrimaryAuthorTask = async (fileID: any): Promise<any> => {
       primaryAuthorTasks.push({
         ...defaultFields,
         role: "Primary Author",
-        taskAssingedBy: item?.Author?.ID,
+        taskAssignedBy: item?.Author?.ID,
         taskAssignee: item?.primaryAuthor?.ID,
       });
     });
@@ -248,7 +250,7 @@ export const AddPrimaryAuthorTask = async (fileID: any): Promise<any> => {
         documentDetailsId: taskItem?.documentDetailsId,
         taskDueDate: taskItem?.taskDueDate,
         role: taskItem?.role,
-        taskAssignedById: taskItem?.taskAssingedBy,
+        taskAssignedById: taskItem?.taskAssignedBy,
         taskAssigneeId: taskItem?.taskAssignee,
         completed: false,
         docVersion: taskItem?.docVersion,
@@ -311,7 +313,7 @@ export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
       primaryAuthorTasks.push({
         ...defaultFields,
         role: "Primary Author",
-        taskAssingedBy: item?.Author?.ID,
+        taskAssignedBy: item?.Author?.ID,
         taskAssignee: item?.primaryAuthor?.ID,
       });
     });
@@ -344,7 +346,7 @@ export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
           documentDetailsId: taskItem?.documentDetailsId,
           taskDueDate: taskItem?.taskDueDate,
           role: taskItem?.role,
-          taskAssignedById: taskItem?.taskAssingedBy,
+          taskAssignedById: taskItem?.taskAssignedBy,
           taskAssigneeId: taskItem?.taskAssignee,
           completed: false,
           docVersion: taskItem?.docVersion,
@@ -480,7 +482,7 @@ export const UpdateTask = async (fileID: any, formData?: any): Promise<any> => {
       pathName: item?.documentPath?.split("sites/ReadifyEM/AllDocuments/")[1],
       docVersion: item?.documentVersion,
       // role: "Primary Author",
-      // taskAssingedBy: item?.Author?.ID,
+      // taskAssignedBy: item?.Author?.ID,
       // taskAssignee: item?.primaryAuthor?.ID,
     }));
 
@@ -507,7 +509,7 @@ export const UpdateTask = async (fileID: any, formData?: any): Promise<any> => {
           documentDetailsId: taskItem?.documentDetailsId,
           taskDueDate: taskItem?.taskDueDate,
           role: taskItem?.role,
-          taskAssignedById: taskItem?.taskAssingedBy,
+          taskAssignedById: taskItem?.taskAssignedBy,
           taskAssigneeId: taskItem?.taskAssignee,
           completed: false,
           docVersion: taskItem?.docVersion,
