@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { memo, useEffect, useState } from "react";
 import styles from "./Definition.module.scss";
-// import { RadioButton } from "primereact/radiobutton";
 import Checkbox from "@mui/material/Checkbox";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
@@ -11,20 +11,22 @@ import Popup from "../../common/Popups/Popup";
 import { togglePopupVisibility } from "../../../../../utils/togglePopup";
 import CustomInput from "../../common/CustomInputFields/CustomInput";
 import DefaultButton from "../../common/Buttons/DefaultButton";
-import SpServices from "../../../../../services/SPServices/SpServices";
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
 import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
 const closeBtn = require("../../../../../assets/images/png/close.png");
 
+import {
+  getAllSectionDefinitions,
+  getMasterDefinition,
+  AddSectionDefinition,
+  addNewDefinition,
+} from "../../../../../services/ContentDevelopment/SectionDefinition/SectionDefinitionServices";
+
 interface Props {
-  ID: number;
+  documentId: number;
+  sectionId: number;
 }
-interface definitionDetails {
-  ID: number;
-  title: any;
-  description: any;
-  isSelected: boolean;
-}
+
 interface IDefinitionDetails {
   ID: number | any;
   definitionName: string;
@@ -51,7 +53,7 @@ const initialPopupController = [
   },
 ];
 
-const Definition: React.FC<Props> = ({ ID }) => {
+const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
   // initial definitions data
   const initialDefinitionsData = {
     ID: null,
@@ -66,7 +68,7 @@ const Definition: React.FC<Props> = ({ ID }) => {
     isApproved: true,
     isLoading: false,
   };
-  const [allDefinitions, setAllDefinitions] = useState<any[]>([]);
+  const [sectionDefinitions, setSectionDefinitions] = useState<any[]>([]);
   const [filterDefinitions, setFilterDefinitions] = useState<any[]>([]);
   console.log("setFilterDefinitions: ", setFilterDefinitions);
   const [selectedDefinitions, setSelectedDefinitions] = useState<any[]>([]);
@@ -90,7 +92,12 @@ const Definition: React.FC<Props> = ({ ID }) => {
     isApproved: true,
     isLoading: false,
   });
-  console.log(selectedDefinitions, filterDefinitions);
+  console.log(
+    selectedDefinitions,
+    filterDefinitions,
+    sectionDefinitions,
+    definitionsData
+  );
 
   // util for closing popup
   const handleClosePopup = (index?: any): void => {
@@ -113,6 +120,18 @@ const Definition: React.FC<Props> = ({ ID }) => {
         [key]: value,
         IsDuplicate: false,
       }));
+    }
+  };
+
+  const addNewSectionDefinition = async () => {
+    let reRender = await addNewDefinition(
+      definitionsData,
+      documentId,
+      sectionId
+    );
+    if (reRender) {
+      togglePopupVisibility(setPopupController, 0, "close");
+      getAllSecDefinitions();
     }
   };
 
@@ -244,7 +263,7 @@ const Definition: React.FC<Props> = ({ ID }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          // handleSubmit();
+          addNewSectionDefinition();
         },
       },
     ],
@@ -253,55 +272,108 @@ const Definition: React.FC<Props> = ({ ID }) => {
   const handleSearchOnChange = (value: string): void => {
     console.log(value);
     setSearchValue(value);
-    const filterValues = allDefinitions?.filter((obj: any) => {
-      if (obj.title.toLowerCase().includes(value.toLowerCase().trim())) {
+    const filterValues = sectionDefinitions?.filter((obj: any) => {
+      if (
+        obj.definitionTitle.toLowerCase().includes(value.toLowerCase().trim())
+      ) {
         return obj;
       }
     });
     setFilterDefinitions(filterValues);
   };
 
-  const getAllDefinition = async (): Promise<any> => {
-    await SpServices.SPReadItems({
-      Listname: "Definition",
-      Select: "*",
-      Expand: "",
-      Filter: [
-        {
-          FilterKey: "isApproved",
-          Operator: "eq",
-          FilterValue: 1,
-        },
-      ],
-    })
-      .then((res: any[]) => {
-        const tempArray: definitionDetails[] = [];
-        res?.forEach((item: any) => {
-          tempArray.push({
-            ID: item.ID,
-            title: item.Title,
-            description: item.description,
-            isSelected: false,
-          });
-        });
-        setAllDefinitions([...tempArray]);
-        setSelectedDefinitions([...tempArray]);
-      })
-      .catch((err) => console.log(err));
+  const getMainDefinition = async (Data: any) => {
+    let tempArray: any = await getMasterDefinition(Data);
+    setSectionDefinitions(await tempArray);
+  };
+
+  const getAllSecDefinitions = async (): Promise<any> => {
+    let tempArray: any = await getAllSectionDefinitions(documentId, sectionId);
+    setSelectedDefinitions(await tempArray);
+    getMainDefinition(tempArray);
   };
 
   const onSelectDefinition = (id: number): void => {
-    const tempArray = allDefinitions;
+    const tempArray = filterDefinitions;
+    let tempSelectedDocuments = [...selectedDefinitions];
     const index = tempArray.findIndex((obj: any) => obj.ID === id);
     console.log(index);
     const definitionObject = tempArray[index];
     definitionObject.isSelected = !definitionObject.isSelected;
     tempArray[index] = definitionObject;
-    setAllDefinitions([...tempArray]);
+    if (definitionObject.isSelected) {
+      const isMatch = selectedDefinitions.some(
+        (obj: any) => obj.definitionTitle === definitionObject.definitionTitle
+      );
+      if (isMatch) {
+        const index = tempSelectedDocuments.findIndex((select: any) => {
+          return select.definitionTitle === definitionObject.definitionTitle;
+        });
+        tempSelectedDocuments[index].isDeleted = false;
+        setSelectedDefinitions([...tempSelectedDocuments]);
+      } else {
+        setSelectedDefinitions((prev: any) => {
+          return [
+            {
+              ID: definitionObject.ID,
+              definitionTitle: definitionObject.definitionTitle,
+              definitionDescription: definitionObject.definitionDescription,
+              referenceAuthor: definitionObject?.referenceAuthor,
+              referenceLink: definitionObject.referenceLink,
+              referenceTitle: definitionObject.referenceTitle,
+              isSelected: false,
+              isNew: false,
+              status: true,
+            },
+            ...prev,
+          ];
+        });
+      }
+    } else {
+      const isMatch = selectedDefinitions.some(
+        (obj: any) => obj.definitionTitle === definitionObject.definitionTitle
+      );
+      if (isMatch) {
+        const index = tempSelectedDocuments.findIndex((select: any) => {
+          return select.definitionTitle === definitionObject.definitionTitle;
+        });
+        if (tempSelectedDocuments[index].status) {
+          tempSelectedDocuments = tempSelectedDocuments.filter(
+            (selectedObj: any) => {
+              return (
+                selectedObj.definitionTitle !== definitionObject.definitionTitle
+              );
+            }
+          );
+          setSelectedDefinitions([...tempSelectedDocuments]);
+        } else {
+          tempSelectedDocuments[index].isDeleted = true;
+          setSelectedDefinitions([...tempSelectedDocuments]);
+        }
+      }
+    }
+    setFilterDefinitions([...tempArray]);
+  };
+
+  const submitSectionDefinition = async () => {
+    let reRender = await AddSectionDefinition(
+      [...selectedDefinitions],
+      documentId,
+      sectionId
+    );
+    if (reRender) {
+      getAllSecDefinitions();
+    }
+  };
+
+  const removeDefinition = (index: number) => {
+    let tempSelectedDocuments = [...selectedDefinitions];
+    tempSelectedDocuments[index].isDeleted = true;
+    setSelectedDefinitions([...tempSelectedDocuments]);
   };
 
   useEffect(() => {
-    getAllDefinition();
+    getAllSecDefinitions();
   }, []);
 
   return (
@@ -341,33 +413,34 @@ const Definition: React.FC<Props> = ({ ID }) => {
                         ? styles.filterDefinitionSecSelected
                         : styles.filterDefinitionSec
                     }
-                    onClick={() => {
-                      onSelectDefinition(obj.ID);
-                    }}
                   >
                     <div style={{ width: "10%" }}>
                       <Checkbox
                         checkedIcon={<RadioButtonCheckedIcon />}
                         icon={<RadioButtonUncheckedIcon />}
                         key={index}
-                        //   name={user?.value}
-                        //   value={user?.sectionSelected}
                         checked={obj.isSelected}
-                        //   id={user.value}
                         onClick={(ev) => {
                           onSelectDefinition(obj.ID);
                           ev.preventDefault();
                         }}
                       />
                     </div>
-                    <div className={styles.title} style={{ width: "30%" }}>
-                      <span>{obj.title}</span>
+                    <div
+                      className={styles.title}
+                      style={{ width: "30%" }}
+                      onClick={(ev) => {
+                        onSelectDefinition(obj.ID);
+                        ev.preventDefault();
+                      }}
+                    >
+                      <span>{obj.definitionTitle}</span>
                     </div>
                     <div
                       className={styles.description}
                       style={{ width: "60%" }}
                     >
-                      <span>{obj.description}</span>
+                      <span>{obj.definitionDescription}</span>
                     </div>
                   </div>
                 );
@@ -378,19 +451,26 @@ const Definition: React.FC<Props> = ({ ID }) => {
         <div style={{ padding: "10px 0px" }}>
           {selectedDefinitions.map((obj: any, index: number) => {
             return (
-              <div key={index} className={styles.SelectedDefinitionSec}>
-                <div style={{ width: "30%" }}>
-                  <span className={styles.definitionTitle}>{obj.title}</span>
+              !obj.isDeleted && (
+                <div key={index} className={styles.SelectedDefinitionSec}>
+                  <div style={{ width: "30%" }}>
+                    <span className={styles.definitionTitle}>
+                      {obj.definitionTitle}
+                    </span>
+                  </div>
+                  <div style={{ width: "67%" }}>
+                    <span className={styles.definitionDescription}>
+                      {obj.definitionDescription}
+                    </span>
+                  </div>
+                  <button className={styles.closeBtn}>
+                    <img
+                      src={closeBtn}
+                      onClick={() => removeDefinition(index)}
+                    />
+                  </button>
                 </div>
-                <div style={{ width: "67%" }}>
-                  <span className={styles.definitionDescription}>
-                    {obj.description}
-                  </span>
-                </div>
-                <button className={styles.closeBtn}>
-                  <img src={closeBtn} />
-                </button>
-              </div>
+              )
             );
           })}
         </div>
@@ -437,7 +517,7 @@ const Definition: React.FC<Props> = ({ ID }) => {
           text="Submit"
           btnType="primary"
           onClick={() => {
-            // _addData();
+            submitSectionDefinition();
           }}
         />
       </div>

@@ -10,6 +10,9 @@ const LISTNAMES = {
   SectionComments: "SectionComments",
   MyTasks: "MyTasks",
   Definition: "Definition",
+  sectionDefinition: "SectionDefinition",
+  sectionSupportingDoc: "SupportingDocuments",
+  AllDocuments: "AllDocuments",
 };
 const LIBNAMES = {
   AllDocuments: "AllDocuments",
