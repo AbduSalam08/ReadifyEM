@@ -8,6 +8,7 @@ import { FileUpload } from "primereact/fileupload";
 import { useState, useRef } from "react";
 import { Button } from "primereact/button";
 import "./SetupHeader.css";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   version: string;
@@ -32,6 +33,8 @@ const SetupHeader: React.FC<Props> = ({
   };
   const [headerDetails, setHeaderDetails] = useState(initialHeaderDetails);
   const [totalSize, setTotalSize] = useState(0);
+
+  const navigate = useNavigate();
 
   const handleOnChange = (value: string, key: string): void => {
     console.log(value, key);
@@ -222,7 +225,13 @@ const SetupHeader: React.FC<Props> = ({
                 marginTop: "30px",
               }}
             >
-              <DefaultButton text="Cancel" btnType="darkGreyVariant" />
+              <DefaultButton
+                text="Cancel"
+                btnType="darkGreyVariant"
+                onClick={() => {
+                  navigate(-1);
+                }}
+              />
               <DefaultButton
                 text="Submit"
                 btnType="primary"

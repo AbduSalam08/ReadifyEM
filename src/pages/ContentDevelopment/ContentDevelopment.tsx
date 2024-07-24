@@ -16,7 +16,7 @@ import CustomPeoplePicker from "../../webparts/readifyEmMain/components/common/C
 import SupportingDocuments from "../../webparts/readifyEmMain/components/ContentDevelopment/SupportingDocuments/SupportingDocuments";
 import Definition from "../../webparts/readifyEmMain/components/ContentDevelopment/Definition/Definition";
 // import CustomMutiplePeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomMutiplePeoplePicker";
-import SpServices from "../../services/SPServices/SpServices";
+// import SpServices from "../../services/SPServices/SpServices";
 // import ViewDetails from "../../webparts/readifyEmMain/components/ContentDevelopment/ViewDetails/ViewDetails";
 import DocumentTracker from "../../webparts/readifyEmMain/components/ContentDevelopment/DocumentTracker/DocumentTracker";
 import { togglePopupVisibility } from "../../utils/togglePopup";
@@ -28,91 +28,9 @@ import RichText from "../../webparts/readifyEmMain/components/ContentDevelopment
 // import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
 import AppendixContent from "../../webparts/readifyEmMain/components/ContentDevelopment/AppendixContent/AppendixContent";
 import ContentTypeConfirmation from "../../webparts/readifyEmMain/components/ContentDevelopment/ContentTypeConfirmation/ContentTypeConfirmation";
-
-const AllSectionsData = [
-  {
-    sectionName: "Header",
-    sectionStatus: "Content in progress",
-    commentsCount: 5,
-    updateDate: "03/07/24",
-    sectionPersons: [
-      { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
-      { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
-      { name: "kali muthu", email: "kalimuthu@chandrudemo.onmicrosoft.com" },
-    ],
-    sectionPermission: true,
-  },
-  {
-    sectionName: "Introduction",
-    sectionStatus: "Content in progress",
-    commentsCount: 5,
-    updateDate: "03/07/24",
-    sectionPersons: [
-      { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
-      { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
-      { name: "kali muthu", email: "kalimuthu@chandrudemo.onmicrosoft.com" },
-    ],
-    sectionPermission: true,
-    contentType: "initial",
-  },
-  {
-    sectionName: "Purpose",
-    sectionStatus: "Review in progress",
-    commentsCount: 1,
-    updateDate: "03/08/24",
-    sectionPersons: [
-      { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
-    ],
-    sectionPermission: false,
-    contentType: "initial",
-  },
-  {
-    sectionName: "Objectives",
-    sectionStatus: "Content in progress",
-    commentsCount: 3,
-    updateDate: "03/07/24",
-    sectionPersons: [
-      { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
-      { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
-      { name: "kali muthu", email: "kalimuthu@chandrudemo.onmicrosoft.com" },
-    ],
-    sectionPermission: true,
-    contentType: "initial",
-  },
-  {
-    sectionName: "Appendix",
-    sectionStatus: "Rework in progress",
-    commentsCount: 2,
-    updateDate: "03/07/24",
-    sectionPersons: [
-      { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
-      { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
-    ],
-    sectionPermission: true,
-  },
-  {
-    sectionName: "Supporting Documents",
-    sectionStatus: "Rework in progress",
-    commentsCount: 2,
-    updateDate: "03/07/24",
-    sectionPersons: [
-      { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
-      { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
-    ],
-    sectionPermission: true,
-  },
-  {
-    sectionName: "Definition",
-    sectionStatus: "Rework in progress",
-    commentsCount: 2,
-    updateDate: "03/07/24",
-    sectionPersons: [
-      { name: "Madhesh Maasi", email: "Madhesh@chandrudemo.onmicrosoft.com" },
-      { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
-    ],
-    sectionPermission: true,
-  },
-];
+import { useSelector } from "react-redux";
+import CircularSpinner from "../../webparts/readifyEmMain/components/common/AppLoader/CircularSpinner";
+// import ErrorElement from "../../webparts/readifyEmMain/components/common/ErrorElement/ErrorElement";
 
 const Details = {
   sectionName: "Introduction",
@@ -170,51 +88,11 @@ const Details = {
       role: "Section Author",
     },
   ],
-  headerTitle: "WelCome aboard",
+  headerTitle: "Welcome aboard",
   version: "1.0",
   type: "insurance",
   createdDate: "03/03/24",
   lastReviewDate: "03/03/24",
-  nextReviewDate: "03/03/24",
-  isLoading: false,
-};
-
-const docDetails = {
-  documentName: "Document Name1",
-  documentStatus: "In Development",
-  primaryAuthor: {
-    ID: 6,
-    name: "Madhesh Maasi",
-    email: "Madhesh@chandrudemo.onmicrosoft.com",
-  },
-  reviewers: [
-    {
-      id: 11,
-      text: "Madhesh Maasi",
-      email: "Madhesh@chandrudemo.onmicrosoft.com",
-    },
-    { id: 56, text: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
-    {
-      id: 22,
-      text: "kali muthu",
-      email: "kalimuthu@chandrudemo.onmicrosoft.com",
-    },
-  ],
-  approvers: [
-    {
-      id: 11,
-      text: "Madhesh Maasi",
-      email: "Madhesh@chandrudemo.onmicrosoft.com",
-    },
-    { id: 56, text: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
-    {
-      id: 22,
-      text: "kali muthu",
-      email: "kalimuthu@chandrudemo.onmicrosoft.com",
-    },
-  ],
-  createdDate: "03/03/24",
-  dueOnDate: "03/03/24",
   nextReviewDate: "03/03/24",
   isLoading: false,
 };
@@ -247,17 +125,37 @@ const ContentDevelopment = (): JSX.Element => {
     },
   ];
 
+  const [initialLoader, setInitialLoader] = useState(true);
+
+  // selectors
+  const AllSectionsDataMain: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDSectionsData
+  );
+
+  const currentDocDetailsData: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDDocDetails
+  );
+
   // initial States
   // AllSections State
-  const [allSections, setAllSections] = useState<any>(AllSectionsData);
   const [sectionDetails, setSectionDetails] = useState<any>(Details);
-  const [documentDetails, setDocumentDetails] = useState<any>(docDetails);
+  const [AllSectionsData, setAllSectionsData] =
+    useState<any>(AllSectionsDataMain);
+
+  console.log("AllSectionsData: rendered ", AllSectionsData);
+
   const [toggleCommentSection, setToggleCommentSection] = useState(false);
-  const [contentType, setContentType] = useState("initial");
-  console.log("toggleCommentSection: ", toggleCommentSection);
+
+  // const [contentType, setContentType] = useState("initial");
 
   // Active Section Index
   const [activeSection, setActiveSection] = useState<number>(0);
+
+  const enabledSection = AllSectionsDataMain?.filter(
+    (el: any) => el?.sectionPermission
+  );
+
+  const activeItemsFirstIndex = AllSectionsDataMain?.indexOf(enabledSection[0]);
 
   const [popupController, setPopupController] = useState(
     initialPopupController
@@ -267,6 +165,12 @@ const ContentDevelopment = (): JSX.Element => {
   const handleClosePopup = (index?: any): void => {
     togglePopupVisibility(setPopupController, index, "close");
   };
+
+  const showActionBtns: boolean =
+    currentDocDetailsData?.taskRole?.toLowerCase() !== "consultant" &&
+    currentDocDetailsData?.taskRole?.toLowerCase() !== "reviewer" &&
+    currentDocDetailsData?.taskRole?.toLowerCase() !== "approver" &&
+    currentDocDetailsData?.taskRole?.toLowerCase() !== "admin";
 
   const popupInputs: any[] = [
     [
@@ -285,7 +189,7 @@ const ContentDevelopment = (): JSX.Element => {
         labelText="Document name"
         withLabel
         icon={false}
-        value={documentDetails.documentName}
+        value={currentDocDetailsData?.documentName}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "definitionName");
         }}
@@ -299,7 +203,7 @@ const ContentDevelopment = (): JSX.Element => {
         labelText="Created on"
         withLabel
         icon={false}
-        value={documentDetails.createdDate}
+        value={currentDocDetailsData?.createdDate}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "definitionName");
         }}
@@ -313,7 +217,7 @@ const ContentDevelopment = (): JSX.Element => {
         labelText="Due on"
         withLabel
         icon={false}
-        value={documentDetails.dueOnDate}
+        value={currentDocDetailsData?.dueOnDate}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "definitionName");
         }}
@@ -327,7 +231,7 @@ const ContentDevelopment = (): JSX.Element => {
         labelText="Next review date"
         withLabel
         icon={false}
-        value={documentDetails.nextReviewDate}
+        value={currentDocDetailsData?.nextReviewDate}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "definitionName");
         }}
@@ -347,9 +251,10 @@ const ContentDevelopment = (): JSX.Element => {
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "referenceAuthor");
         }}
-        selectedItem={documentDetails?.primaryAuthor?.email}
+        selectedItem={currentDocDetailsData?.primaryAuthor?.email}
         readOnly={true}
         // noBorderInput={true}
+
         key={5}
         noRemoveBtn={true}
       />,
@@ -361,13 +266,14 @@ const ContentDevelopment = (): JSX.Element => {
         minHeight={"42px"}
         maxHeight={"42px"}
         labelText="Reviewers"
-        personSelectionLimit={documentDetails?.reviewers?.length}
+        personSelectionLimit={currentDocDetailsData?.reviewers?.length}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "referenceAuthor");
         }}
-        selectedItem={documentDetails?.reviewers}
+        selectedItem={currentDocDetailsData?.reviewers}
         readOnly={true}
         noRemoveBtn={true}
+        multiUsers={true}
         // noBorderInput={true}
         key={5}
       />,
@@ -379,13 +285,14 @@ const ContentDevelopment = (): JSX.Element => {
         minHeight={"42px"}
         maxHeight={"42px"}
         labelText="Approvers"
-        personSelectionLimit={documentDetails?.approvers?.length}
+        personSelectionLimit={currentDocDetailsData?.approvers?.length}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "referenceAuthor");
         }}
-        selectedItem={documentDetails?.approvers}
+        selectedItem={currentDocDetailsData?.approvers}
         readOnly={true}
         noRemoveBtn={true}
+        multiUsers={true}
         // noBorderInput={true}
         key={5}
       />,
@@ -446,151 +353,207 @@ const ContentDevelopment = (): JSX.Element => {
   };
 
   useEffect(() => {
-    setAllSections(AllSectionsData);
     setSectionDetails(Details);
-    setDocumentDetails(docDetails);
-    SpServices.getAllUsers()
-      .then((res: any) => {
-        res.forEach((obj: any) => {
-          console.log("obj.Id, obj.LoginName");
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    setAllSectionsData(AllSectionsDataMain);
+    // setActiveSection();
+    setInitialLoader(currentDocDetailsData?.isLoading);
+  }, [currentDocDetailsData?.isLoading]);
+
+  useEffect(() => {
+    setActiveSection(activeItemsFirstIndex);
+  }, [activeItemsFirstIndex]);
+
+  useEffect(() => {
+    if (AllSectionsDataMain?.length !== 0) {
+      setAllSectionsData(AllSectionsDataMain);
+    }
+    console.log("AllSectionsDataMain: ", AllSectionsDataMain);
+  }, [AllSectionsDataMain?.length]);
 
   return (
     <>
-      <div style={{ width: "100%" }}>
-        <div style={{ width: "100%" }}>
-          <Header
-            documentName="Document Name"
-            role="Section Author"
-            documentStatus="In Development"
-            onChange={(value: any, condition: boolean, popupTitle: string) =>
-              popuphandleOnChanges(value, condition, popupTitle)
-            }
-          />
-        </div>
-        <div style={{ width: "100%", display: "flex" }}>
-          <div className={styles.sectionWrapper}>
-            <AllSections
-              activeSection={activeSection}
-              data={allSections}
-              onChange={(value: any, condition: boolean, popupTitle: string) =>
-                popuphandleOnChanges(value, condition, popupTitle)
-              }
-              key={1}
-              // primaryAuthor={true}
-            />
-          </div>
-          <div className={styles.contentWrapper}>
-            {sectionDetails?.sectionName !== "" &&
-            allSections[activeSection].sectionName === "Header" ? (
-              <SectionHeader
-                documentName={sectionDetails.sectionName}
-                sectionAuthor={sectionDetails.sectionAuthor[0]}
-                consultants={sectionDetails.consultants}
-                PrimaryAuthor={sectionDetails.primaryAuthor[0]}
-                isPrimaryAuthor={true}
+      {
+        !initialLoader &&
+        AllSectionsData?.length !== 0 &&
+        currentDocDetailsData !== null ? (
+          <div style={{ width: "100%" }}>
+            <div style={{ width: "100%" }}>
+              <Header
+                documentName={currentDocDetailsData?.documentName}
+                currentDocDetailsData={currentDocDetailsData}
+                role={currentDocDetailsData?.taskRole}
+                documentStatus={currentDocDetailsData?.documentStatus}
+                onChange={(
+                  value: any,
+                  condition: boolean,
+                  popupTitle: string
+                ) => popuphandleOnChanges(value, condition, popupTitle)}
               />
-            ) : (
-              <SectionHeader
-                documentName={sectionDetails.sectionName}
-                sectionAuthor={sectionDetails.sectionAuthor[0]}
-                consultants={sectionDetails.consultants}
-                PrimaryAuthor={sectionDetails.primaryAuthor[0]}
-                isPrimaryAuthor={false}
-              />
-            )}
-            <SectionBanner
-              version={sectionDetails.version}
-              type={sectionDetails.type}
-              createDate={sectionDetails.createdDate}
-              lastReviewDate={sectionDetails.lastReviewDate}
-              nextReviewDate={sectionDetails.nextReviewDate}
-            />
-            {allSections[activeSection].sectionName === "Header" ? (
-              <div style={{ width: "100%" }}>
-                <SetupHeader
-                  version={sectionDetails.version}
-                  type={sectionDetails.type}
-                  headerTitle={sectionDetails.headerTitle}
-                  primaryAuthorDefaultHeader={true}
+            </div>
+            <div style={{ width: "100%", display: "flex" }}>
+              <div className={styles.sectionWrapper}>
+                <AllSections
+                  activeSection={activeSection}
+                  data={AllSectionsData}
+                  onChange={(
+                    value: any,
+                    condition: boolean,
+                    popupTitle: string
+                  ) => popuphandleOnChanges(value, condition, popupTitle)}
+                  key={1}
+                  // primaryAuthor={true}
                 />
               </div>
-            ) : (
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "stretch",
-                  justifyContent: "center",
-                  gap: "10px",
-                }}
-              >
-                <div
-                  style={{
-                    width: toggleCommentSection ? "100%" : "75%",
-                    height: "calc(100vh - 286px)",
-                  }}
-                >
-                  {allSections[activeSection].sectionName === "Definition" ? (
-                    <Definition documentId={572} sectionId={85} />
-                  ) : allSections[activeSection].sectionName === "Appendix" ? (
-                    <AppendixContent
-                      sectionDetails={sectionDetails}
-                      contentType={contentType}
-                      setContentType={setContentType}
+              <div className={styles.contentWrapper}>
+                {AllSectionsData[activeSection]?.sectionName !== "" &&
+                AllSectionsData[activeSection]?.sectionName?.toLowerCase() ===
+                  "header" ? (
+                  <SectionHeader
+                    activeSectionData={AllSectionsData}
+                    documentName={AllSectionsData[activeSection]?.sectionName}
+                    sectionAuthor={
+                      AllSectionsData[activeSection]?.sectionAuthor[0]
+                    }
+                    consultants={AllSectionsData[activeSection]?.consultants}
+                    PrimaryAuthor={sectionDetails.primaryAuthor[0]}
+                    isPrimaryAuthor={true}
+                  />
+                ) : (
+                  <SectionHeader
+                    activeSectionData={AllSectionsData}
+                    documentName={AllSectionsData[activeSection]?.sectionName}
+                    sectionAuthor={
+                      AllSectionsData[activeSection]?.sectionAuthor[0]
+                    }
+                    consultants={AllSectionsData[activeSection]?.consultants}
+                    PrimaryAuthor={sectionDetails.primaryAuthor[0]}
+                    isPrimaryAuthor={false}
+                  />
+                )}
+                <SectionBanner
+                  version={sectionDetails.version}
+                  type={sectionDetails.type}
+                  createDate={currentDocDetailsData?.createdDate}
+                  lastReviewDate={currentDocDetailsData?.lastReviewDate || "-"}
+                  nextReviewDate={currentDocDetailsData?.nextReviewDate}
+                />
+                {AllSectionsData[activeSection]?.sectionType?.toLowerCase() ===
+                "header section" ? (
+                  <div style={{ width: "100%" }}>
+                    <SetupHeader
+                      version={sectionDetails.version}
+                      type={sectionDetails.type}
+                      headerTitle={sectionDetails.headerTitle}
+                      primaryAuthorDefaultHeader={true}
                     />
-                  ) : allSections[activeSection].sectionName ===
-                    "Supporting Documents" ? (
-                    <SupportingDocuments documentId={572} sectionId={85} />
-                  ) : contentType === "initial" ? (
-                    <ContentTypeConfirmation setContentType={setContentType} />
-                  ) : contentType === "list" ? (
-                    <SectionContent sectionNumber={1} ID={55} />
-                  ) : (
-                    <RichText />
-                  )}
-                </div>
-                <div
-                  style={{
-                    width: toggleCommentSection ? "1px" : "25%",
-                    transition: "all .2s",
-                    position: "relative",
-                    height: "calc(100vh - 286px)",
-                    border: toggleCommentSection
-                      ? "1px solid #eee"
-                      : "1px solid transparent",
-                    // overflow: "hidden",
-                  }}
-                >
-                  {toggleCommentSection ? (
-                    <button
-                      className={styles.commentsToggleBtn}
-                      onClick={() => {
-                        setToggleCommentSection(false);
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      alignItems: "stretch",
+                      justifyContent: "center",
+                      gap: "10px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: toggleCommentSection ? "100%" : "75%",
+                        height: "calc(100vh - 286px)",
                       }}
                     >
-                      <img src={commentIcon} alt={"comments"} />
-                    </button>
-                  ) : (
-                    ""
-                  )}
-                  <SectionComments
-                    commentsData={sectionDetails.comments}
-                    isHeader={true}
-                    setToggleCommentSection={setToggleCommentSection}
-                    toggleCommentSection={toggleCommentSection}
-                  />
-                </div>
+                      {AllSectionsData[
+                        activeSection
+                      ]?.sectionName?.toLowerCase() === "definitions" ? (
+                        <Definition documentId={572} sectionId={85} />
+                      ) : AllSectionsData[
+                          activeSection
+                        ]?.sectionType?.toLowerCase() === "appendix section" ? (
+                        <AppendixContent
+                          sectionDetails={sectionDetails}
+                          contentType={
+                            AllSectionsData[activeSection]?.contentType
+                          }
+                          currentDocDetailsData={currentDocDetailsData}
+                          activeIndex={activeSection}
+                          setSectionData={setAllSectionsData}
+                        />
+                      ) : AllSectionsData[
+                          activeSection
+                        ]?.sectionName?.toLowerCase() ===
+                        "supporting materials" ? (
+                        <SupportingDocuments documentId={572} sectionId={85} />
+                      ) : AllSectionsData[activeSection]?.contentType ===
+                        "initial" ? (
+                        <ContentTypeConfirmation
+                          activeIndex={activeSection}
+                          setSectionData={setAllSectionsData}
+                        />
+                      ) : AllSectionsData[activeSection]?.contentType ===
+                        "list" ? (
+                        <SectionContent
+                          activeIndex={activeSection}
+                          setSectionData={setAllSectionsData}
+                          sectionNumber={1}
+                          ID={55}
+                          noActionBtns={!showActionBtns}
+                        />
+                      ) : (
+                        <RichText
+                          activeIndex={activeSection}
+                          setSectionData={setAllSectionsData}
+                          noActionBtns={!showActionBtns}
+                        />
+                      )}
+                    </div>
+                    <div
+                      style={{
+                        width: toggleCommentSection ? "1px" : "25%",
+                        transition: "all .2s",
+                        position: "relative",
+                        height: "calc(100vh - 286px)",
+                        border: toggleCommentSection
+                          ? "1px solid #eee"
+                          : "1px solid transparent",
+                        // overflow: "hidden",
+                      }}
+                    >
+                      {toggleCommentSection ? (
+                        <button
+                          className={styles.commentsToggleBtn}
+                          onClick={() => {
+                            setToggleCommentSection(false);
+                          }}
+                        >
+                          <img src={commentIcon} alt={"comments"} />
+                        </button>
+                      ) : (
+                        ""
+                      )}
+                      <SectionComments
+                        commentsData={sectionDetails.comments}
+                        isHeader={true}
+                        setToggleCommentSection={setToggleCommentSection}
+                        toggleCommentSection={toggleCommentSection}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
-        </div>
-      </div>
+        ) : (
+          <CircularSpinner />
+        )
+        // initialLoader &&
+        // AllSectionsData?.length === 0 &&
+        // currentDocDetailsData === null ?
+        //  :   (
+        //   AllSectionsData?.length === 0 &&
+        //   currentDocDetailsData === null && <ErrorElement />
+        // )
+      }
       {popupController?.map((popupData: any, index: number) => (
         <Popup
           key={index}

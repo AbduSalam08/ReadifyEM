@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -15,7 +16,9 @@ import { LoadTableData } from "../../services/SDDTemplates/SDDTemplatesServices"
 import { useDispatch, useSelector } from "react-redux";
 import {
   AddSections,
+  getUniqueSectionsDetails,
   LoadSectionsTemplateData,
+  updateSections,
 } from "../../services/ConfigureSections/ConfigureSectionsServices";
 import ErrorElement from "../../webparts/readifyEmMain/components/common/ErrorElement/ErrorElement";
 import { IPopupLoaders } from "../../interface/MainInterface";
@@ -42,6 +45,14 @@ const ConfigureSections = (): JSX.Element => {
   const currentTaskData: any = useSelector(
     (state: any) => state.myTasksData?.uniqueTaskData
   );
+  const ConfigurePageDetails: any = useSelector(
+    (state: any) => state.SectionConfiguration?.ConfigurePageDetails
+  );
+
+  const AllSectionsDataConfiguration: any = useSelector(
+    (state: any) => state.SectionConfiguration?.AllSectionsData
+  );
+  console.log("AllSectionsDataConfiguration: ", AllSectionsDataConfiguration);
 
   const [popupLoaders, setPopupLoaders] =
     useState<IPopupLoaders>(initialPopupLoaders);
@@ -52,7 +63,6 @@ const ConfigureSections = (): JSX.Element => {
   });
 
   // filter states
-
   const defaultSectionsData: any = defaultTemplates?.map(
     (item: string, index: number) => {
       return {
@@ -116,36 +126,12 @@ const ConfigureSections = (): JSX.Element => {
       errorMsg: "",
     },
     defaultSections: [...defaultSectionsData],
-    appendixSections: [
-      // {
-      //   sectionOrderNo: "1",
-      //   sectionName: {
-      //     value: "",
-      //     placeHolder: "Appendix name",
-      //     isValid: true,
-      //   },
-      //   sectionSelected: false,
-      //   sectionAuthor: {
-      //     value: [],
-      //     placeHolder: "Section author",
-      //     isValid: true,
-      //   },
-      //   consultants: {
-      //     value: [],
-      //     placeHolder: "Consultants",
-      //     isValid: true,
-      //     personSelectionLimit: 10,
-      //   },
-      //   sectionType: "appendixSection",
-      //   removed: false,
-      //   sectionIsValid: true,
-      // },
-    ],
+    appendixSections: [],
     isLoading: false,
   });
 
   // main that calls all data
-  const setMainData = async (): Promise<any> => {
+  const setMainData = async () => {
     await LoadTableData(dispatch);
   };
 
@@ -243,14 +229,40 @@ const ConfigureSections = (): JSX.Element => {
 
   const handleSubmitSection = async (): Promise<any> => {
     if (validateSections(sectionsData)) {
-      await AddSections(sectionsData, setPopupLoaders, currentTaskData);
+      if (ConfigurePageDetails?.pageKey === "update") {
+        await updateSections(sectionsData, setPopupLoaders, currentTaskData);
+      } else {
+        await AddSections(sectionsData, setPopupLoaders, currentTaskData);
+      }
     }
+  };
+
+  const getAllSectionsData = async (): Promise<any> => {
+    await getUniqueSectionsDetails(
+      currentTaskData?.documentDetailsId,
+      setSectionsData,
+      dispatch
+    );
   };
 
   // lifecycle hooks
   useEffect(() => {
-    setMainData();
+    if (ConfigurePageDetails?.pageKey === "update") {
+      getAllSectionsData();
+      setMainData();
+    } else {
+      setMainData();
+    }
   }, []);
+
+  useEffect(() => {
+    if (ConfigurePageDetails?.pageKey === "update") {
+      getAllSectionsData();
+      setMainData();
+    } else {
+      setMainData();
+    }
+  }, [ConfigurePageDetails]);
 
   return (
     <>
@@ -267,7 +279,7 @@ const ConfigureSections = (): JSX.Element => {
             >
               <img src={arrowBackBtn} alt={"back to my tasks"} />
             </button>
-            <PageTitle text="Standardized Document Developer" />
+            <PageTitle text={"Standardized Document Developer"} />
             <StatusPill roles={currentTaskData?.role} size="SM" />
           </div>
 
@@ -285,25 +297,30 @@ const ConfigureSections = (): JSX.Element => {
             </div>
 
             <div className={styles.filters}>
-              <CustomDropDown
-                onChange={(value: string) => {
-                  const templateID = AllSDDTemplateData?.filter(
-                    (templateData: any) => templateData?.templateName === value
-                  );
-                  setSectionsData((prev: any) => ({
-                    ...prev,
-                    templateDetails: {
-                      templateID: templateID[0]?.ID,
-                      templateName: value,
-                    },
-                  }));
-                  getTemplateDetails(templateID[0]?.ID);
-                }}
-                options={templateOptions}
-                value={sectionsData?.templateDetails?.templateName}
-                placeholder="Select existing templates"
-                size="MD"
-              />
+              {ConfigurePageDetails?.pageKey !== "update" ? (
+                <CustomDropDown
+                  onChange={(value: string) => {
+                    const templateID = AllSDDTemplateData?.filter(
+                      (templateData: any) =>
+                        templateData?.templateName === value
+                    );
+                    setSectionsData((prev: any) => ({
+                      ...prev,
+                      templateDetails: {
+                        templateID: templateID[0]?.ID,
+                        templateName: value,
+                      },
+                    }));
+                    getTemplateDetails(templateID[0]?.ID);
+                  }}
+                  options={templateOptions}
+                  value={sectionsData?.templateDetails?.templateName}
+                  placeholder="Select existing templates"
+                  size="MD"
+                />
+              ) : (
+                ""
+              )}
               {sectionsData.templateDetails.templateName ? (
                 <button
                   className={styles.clearFilterBtn}

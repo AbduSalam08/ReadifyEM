@@ -150,7 +150,7 @@
 
 /*  */
 .quillWrap {
-  width: 60%;
+  width: 100%;
   padding: 0;
   margin-right: 10px;
   border-bottom: 1px solid #eee;
@@ -188,4 +188,18 @@
 }
 .actionButtons {
   display: flex;
+  opacity: 0;
+  margin-left: -5px;
+  transition: all 0.1s;
+}
+
+.renderedInput {
+  transition: all 0.1s;
+  &::hover {
+    .actionButtons {
+      transition: all 0.1s;
+      opacity: 1;
+      margin-left: 0px;
+    }
+  }
 }

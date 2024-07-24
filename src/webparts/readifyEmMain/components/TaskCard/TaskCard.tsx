@@ -5,8 +5,15 @@ import { memo } from "react";
 import StatusPill from "../StatusPill/StatusPill";
 // images
 const dueDataImg: any = require("../../../../assets/images/svg/dueDate.svg");
+const editConfigurationImg: any = require("../../../../assets/images/svg/taskConfigurationEditIcon.svg");
 // styles
 import styles from "./TaskCard.module.scss";
+import { CurrentUserIsAdmin } from "../../../../constants/DefineUser";
+import { useNavigate } from "react-router-dom";
+import { getUniqueTaskData } from "../../../../services/MyTasks/MyTasksServices";
+import { useDispatch } from "react-redux";
+// import { getUniqueSectionsDetails } from "../../../../services/ConfigureSections/ConfigureSectionsServices";
+import { setConfigurePageDetails } from "../../../../redux/features/SectionConfigurationSlice";
 
 interface CardProps {
   title: string;
@@ -21,6 +28,7 @@ interface CardProps {
   dueDate: string;
   onClick: any;
   btnText: string;
+  taskData?: any;
 }
 
 const roleClasses = {
@@ -54,16 +62,45 @@ const TaskCard: React.FC<CardProps> = ({
   dueDate,
   onClick,
   btnText,
+  taskData,
 }) => {
+  console.log("taskData: ", taskData);
   const roleClass = roleClasses[roles];
-
+  const isAdmin = CurrentUserIsAdmin();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   return (
     <div className={styles.taskCard}>
       <div className={styles.cardTopSection}>
         <div className={`${styles.cardIndicator} ${roleClass.badge}`} />
         <div className={styles.cardHeader}>
           <span className={styles.cardTitle}>{title}</span>
-          <StatusPill roles={roles} size={pillSize} />
+          <div className={styles.pillRHS}>
+            {btnText?.toLowerCase() === "open" && roles === "Primary Author" ? (
+              <button
+                onClick={async () => {
+                  await getUniqueTaskData(taskData?.taskID, dispatch);
+                  // await getUniqueSectionsDetails(taskData?.documentDetailsId);
+                  dispatch(
+                    setConfigurePageDetails({
+                      pageKey: "update",
+                    })
+                  );
+
+                  if (isAdmin) {
+                    navigate(`/admin/my_tasks/${title}/configure`);
+                  } else {
+                    navigate(`/user/my_tasks/${title}/configure`);
+                  }
+                }}
+              >
+                <img src={editConfigurationImg} alt="editConfigurationImg" />
+              </button>
+            ) : (
+              ""
+            )}
+            <StatusPill roles={roles} size={pillSize} />
+          </div>
         </div>
         <div className={styles.cardContent}>
           <span className={styles.secondaryText}>{description}</span>

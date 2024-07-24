@@ -16,8 +16,6 @@ interface Props {
 }
 
 const AllSections: React.FC<Props> = ({ activeSection, data, onChange }) => {
-  console.log(data);
-
   const selectSection = (index: number, type: string): any => {
     if (type === "View comments") {
       onChange(index, false, "Promoted Comments");
@@ -49,14 +47,31 @@ const AllSections: React.FC<Props> = ({ activeSection, data, onChange }) => {
             >
               <div className={styles.sectionList}>
                 <span className={styles.sectionsName}>{item.sectionName}</span>
-                <span className={styles.commentCount}>
-                  {item.commentsCount}
-                </span>
+                {item.commentsCount !== 0 ? (
+                  <span className={styles.commentCount}>
+                    {item.commentsCount}
+                  </span>
+                ) : (
+                  ""
+                )}
               </div>
               <div className={styles.sectionList}>
-                <span className={styles.assignedText}>Assigned to you</span>
-                <div>
-                  <MultiplePeoplePersona data={item.sectionPersons} />
+                {item?.assignedToUser ? (
+                  <span className={styles.assignedText}>Assigned to you</span>
+                ) : (
+                  ""
+                )}
+                <div
+                  style={{
+                    marginLeft: "8px",
+                  }}
+                >
+                  <MultiplePeoplePersona
+                    data={[
+                      ...(item.consultants || []),
+                      ...(item.sectionAuthor || []),
+                    ]}
+                  />
                 </div>
               </div>
               <div className={styles.sectionList}>
@@ -66,14 +81,14 @@ const AllSections: React.FC<Props> = ({ activeSection, data, onChange }) => {
                   size="SM"
                   ontrackDot={true}
                 />
-                <span className={styles.visibleDateSec}>{item.updateDate}</span>
+                <span className={styles.visibleDateSec}>{item.dueDate}</span>
               </div>
             </div>
           ) : (
             <div className={styles.sectionDisabled} key={index}>
               <div className={styles.sectionList}>
                 <span className={styles.sectionsName}>{item.sectionName}</span>
-                <span className={styles.disableDateSec}>{item.updateDate}</span>
+                <span className={styles.disableDateSec}>{item.dueDate}</span>
               </div>
             </div>
           );

@@ -302,6 +302,7 @@
 import * as React from "react";
 import { useState } from "react";
 import styles from "./SectionContent.module.scss";
+
 import DefaultButton from "../../common/Buttons/DefaultButton";
 import ContentEditor from "./ContentEditor/ContentEditor";
 
@@ -309,6 +310,8 @@ interface IProps {
   sectionNumber: number;
   ID: number;
   noActionBtns?: boolean;
+  activeIndex?: any;
+  setSectionData?: any;
 }
 
 interface IPoint {
@@ -316,24 +319,29 @@ interface IPoint {
   value: string;
 }
 
-import SpServices from "../../../../../services/SPServices/SpServices";
+// import SpServices from "../../../../../services/SPServices/SpServices";
+import { useNavigate } from "react-router-dom";
 
 const SectionContent: React.FC<IProps> = ({
   sectionNumber,
   ID,
   noActionBtns,
+  activeIndex,
+  setSectionData,
 }) => {
   const [points, setPoints] = useState<IPoint[]>([
     { text: String(sectionNumber), value: "" },
   ]);
+  const navigate = useNavigate();
+
   const [subPointSequences, setSubPointSequences] = useState<{
     [key: string]: number;
   }>({});
 
-  const [newAttachment, setNewAttachment] = useState<boolean>(true);
+  // const [newAttachment, setNewAttachment] = useState<boolean>(true);
 
   const getNextPoint = (lastPoint: IPoint): IPoint => {
-    const parts = lastPoint.text.split(".");
+    const parts = lastPoint?.text.split(".");
     const majorPart = parseInt(parts[0]);
     const minorPart = parseInt(parts[1]) + 1 || 1;
     return { text: `${majorPart}.${minorPart}`, value: "" };
@@ -432,7 +440,10 @@ const SectionContent: React.FC<IProps> = ({
 
     return (
       <div key={index} style={{ position: "relative" }}>
-        <div style={nestedStyle} className={styles.renderedInput}>
+        <div
+          style={nestedStyle}
+          className={`${styles.renderedInput} renderedInput`}
+        >
           {ancestors}
           <span style={{ marginRight: "5px" }} className={styles.pointText}>
             {point.text}
@@ -477,70 +488,70 @@ const SectionContent: React.FC<IProps> = ({
     return pointA.length - pointB.length;
   });
 
-  const readTextFileFromTXT = (data: any): void => {
-    SpServices.SPReadAttachments({
-      ListName: "SectionDetails",
-      ListID: ID,
-      AttachmentName: data?.FileName,
-    })
-      .then((res: any) => {
-        const parsedValue: any = JSON.parse(res);
-        setPoints([...parsedValue]);
-      })
-      .catch((err: any) => {
-        console.log("err: ", err);
-      });
-  };
+  // const readTextFileFromTXT = (data: any): void => {
+  //   SpServices.SPReadAttachments({
+  //     ListName: "SectionDetails",
+  //     ListID: ID,
+  //     AttachmentName: data?.FileName,
+  //   })
+  //     .then((res: any) => {
+  //       const parsedValue: any = JSON.parse(res);
+  //       setPoints([...parsedValue]);
+  //     })
+  //     .catch((err: any) => {
+  //       console.log("err: ", err);
+  //     });
+  // };
 
-  const getSectionData = (): void => {
-    SpServices.SPGetAttachments({ Listname: "SectionDetails", ID: ID })
-      .then((res: any) => {
-        if (res.length > 0) {
-          readTextFileFromTXT(res[0]);
-          setNewAttachment(false);
-        }
-      })
-      .catch((err) => console.log(err));
-  };
+  // const getSectionData = (): void => {
+  //   SpServices.SPGetAttachments({ Listname: "SectionDetails", ID: ID })
+  //     .then((res: any) => {
+  //       if (res.length > 0) {
+  //         readTextFileFromTXT(res[0]);
+  //         // setNewAttachment(false);
+  //       }
+  //     })
+  //     .catch((err) => console.log(err));
+  // };
 
-  const convertToTxtFile = (): any => {
-    const blob = new Blob([JSON.stringify(points)], { type: "text/plain" });
-    const file: any = new File([blob], "Sample.txt", { type: "text/plain" });
-    return file;
-  };
+  // const convertToTxtFile = (): any => {
+  //   const blob = new Blob([JSON.stringify(points)], { type: "text/plain" });
+  //   const file: any = new File([blob], "Sample.txt", { type: "text/plain" });
+  //   return file;
+  // };
 
-  const addAttachment = async (itemID: number, _file: any) => {
-    await SpServices.SPAddAttachment({
-      ListName: "SectionDetails",
-      ListID: itemID,
-      FileName: "Sample.txt",
-      Attachments: _file,
-    }).catch((err: any) => {
-      console.log("err: ", err);
-    });
-  };
+  // const addAttachment = async (itemID: number, _file: any) => {
+  //   await SpServices.SPAddAttachment({
+  //     ListName: "SectionDetails",
+  //     ListID: itemID,
+  //     FileName: "Sample.txt",
+  //     Attachments: _file,
+  //   }).catch((err: any) => {
+  //     console.log("err: ", err);
+  //   });
+  // };
 
-  const updateAttachment = async (itemID: number, _file: any) => {
-    await SpServices.SPDeleteAttachments({
-      ListName: "SectionDetails",
-      ListID: itemID,
-      AttachmentName: "Sample.txt",
-    }).catch((err) => console.log(err));
-    await addAttachment(itemID, _file);
-  };
+  // const updateAttachment = async (itemID: number, _file: any) => {
+  //   await SpServices.SPDeleteAttachments({
+  //     ListName: "SectionDetails",
+  //     ListID: itemID,
+  //     AttachmentName: "Sample.txt",
+  //   }).catch((err) => console.log(err));
+  //   await addAttachment(itemID, _file);
+  // };
 
-  const _addData = async () => {
-    const _file: any = await convertToTxtFile();
-    if (newAttachment) {
-      await addAttachment(ID, _file);
-    } else {
-      await updateAttachment(ID, _file);
-    }
-  };
+  // const _addData = async () => {
+  //   const _file: any = await convertToTxtFile();
+  //   if (newAttachment) {
+  //     await addAttachment(ID, _file);
+  //   } else {
+  //     await updateAttachment(ID, _file);
+  //   }
+  // };
 
-  React.useEffect(() => {
-    getSectionData();
-  }, []);
+  // React.useEffect(() => {
+  //   getSectionData();
+  // }, []);
 
   return (
     <div className="sectionWrapper">
@@ -563,7 +574,7 @@ const SectionContent: React.FC<IProps> = ({
             item.text !== String(sectionNumber) ? renderPoint(item, idx) : ""
           )
         ) : (
-          <p className={styles.placeholder}>content goes here as points...</p>
+          <p className={styles.placeholder}>Content goes here as points...</p>
         )}
       </div>
       {!noActionBtns && (
@@ -577,19 +588,39 @@ const SectionContent: React.FC<IProps> = ({
           }}
         >
           <div style={{ display: "flex", gap: "15px" }}>
-            <DefaultButton text="Cancel" btnType="darkGreyVariant" />
+            <DefaultButton
+              text="Cancel"
+              btnType="darkGreyVariant"
+              onClick={() => {
+                navigate(-1);
+              }}
+            />
+            <DefaultButton
+              text="Reset content"
+              btnType="secondaryRed"
+              onClick={() => {
+                setSectionData((prev: any) => {
+                  const updatedSections = [...prev];
+                  updatedSections[activeIndex] = {
+                    ...updatedSections[activeIndex],
+                    contentType: "initial",
+                  };
+                  return updatedSections;
+                });
+              }}
+            />
             <DefaultButton
               text="Save and Close"
               btnType="lightGreyVariant"
               onClick={() => {
-                _addData();
+                // _addData();
               }}
             />
             <DefaultButton
               text="Submit"
               btnType="primary"
               onClick={() => {
-                _addData();
+                // _addData();
               }}
             />
           </div>

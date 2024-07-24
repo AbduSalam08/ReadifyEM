@@ -1,6 +1,6 @@
 .appxContentWrapper {
   padding: 10px 15px;
-  max-height: 40vh !important;
+  // max-height: 40vh !important;
   overflow: auto;
   .label {
     font-family: "interMedium", sans-serif;
@@ -11,4 +11,8 @@
 .scrollableApxSection {
   max-height: calc(100% - 55px);
   overflow: auto;
+}
+.customInitialContent {
+  height: calc(65vh - 235px) !important;
+  max-height: calc(65vh - 235px) !important;
 }
