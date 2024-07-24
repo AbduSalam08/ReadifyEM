@@ -9,6 +9,9 @@ const LISTNAMES = {
   SectionDetails: "SectionDetails",
   MyTasks: "MyTasks",
   Definition: "Definition",
+  sectionDefinition: "SectionDefinition",
+  sectionSupportingDoc: "SupportingDocuments",
+  AllDocuments: "AllDocuments",
 };
 const LIBNAMES = {
   AllDocuments: "AllDocuments",
