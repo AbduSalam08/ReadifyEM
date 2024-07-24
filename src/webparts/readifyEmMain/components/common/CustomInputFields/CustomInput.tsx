@@ -5,6 +5,7 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 const SendBtn = require("../../../../../assets/images/png/Send.png");
+const ClearBtn = require("../../../../../assets/images/png/close.png");
 import styles from "./Inputs.module.scss";
 
 interface Props {
@@ -26,6 +27,7 @@ interface Props {
   mandatory?: boolean;
   hideErrMsg?: boolean;
   submitBtn?: boolean;
+  clearBtn?: boolean;
   autoFocus?: boolean;
   noErrorMsg?: boolean;
   onKeyDown?: any;
@@ -51,6 +53,7 @@ const CustomInput: React.FC<Props> = ({
   mandatory,
   hideErrMsg,
   submitBtn,
+  clearBtn,
   autoFocus,
   noErrorMsg,
   onKeyDown,
@@ -134,6 +137,16 @@ const CustomInput: React.FC<Props> = ({
               // }}
             >
               <img src={SendBtn} alt={"back to my tasks"} />
+            </button>
+          )}
+          {clearBtn && (
+            <button
+              className={styles.sendBtn}
+              // onClick={() => {
+              //   navigate(-1);
+              // }}
+            >
+              <img src={ClearBtn} alt={"back to my tasks"} />
             </button>
           )}
         </IconField>

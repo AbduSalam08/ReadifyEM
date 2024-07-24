@@ -537,7 +537,7 @@ const ContentDevelopment = (): JSX.Element => {
                   }}
                 >
                   {allSections[activeSection].sectionName === "Definition" ? (
-                    <Definition ID={55} />
+                    <Definition documentId={572} sectionId={85} />
                   ) : allSections[activeSection].sectionName === "Appendix" ? (
                     <AppendixContent
                       sectionDetails={sectionDetails}
@@ -546,7 +546,7 @@ const ContentDevelopment = (): JSX.Element => {
                     />
                   ) : allSections[activeSection].sectionName ===
                     "Supporting Documents" ? (
-                    <SupportingDocuments ID={55} />
+                    <SupportingDocuments documentId={572} sectionId={85} />
                   ) : contentType === "initial" ? (
                     <ContentTypeConfirmation setContentType={setContentType} />
                   ) : contentType === "list" ? (

@@ -3,21 +3,25 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { memo, useEffect, useState } from "react";
 import styles from "./SupportingDocuments.module.scss";
-// import { RadioButton } from "primereact/radiobutton";
 import Checkbox from "@mui/material/Checkbox";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-// import Popup from "../../common/Popups/Popup";
-// import { togglePopupVisibility } from "../../../../../utils/togglePopup";
 import CustomInput from "../../common/CustomInputFields/CustomInput";
 import DefaultButton from "../../common/Buttons/DefaultButton";
-import SpServices from "../../../../../services/SPServices/SpServices";
-// import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
-// import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
+// import SpServices from "../../../../../services/SPServices/SpServices";
 const closeBtn = require("../../../../../assets/images/png/close.png");
+const checkBtn = require("../../../../../assets/images/png/checkmark.png");
+
+import {
+  getAllDocuments,
+  getDocumentDeatils,
+  getApprovedDocuments,
+  submitSupportingDocuments,
+} from "../../../../../services/ContentDevelopment/SupportingDocument/SupportingDocumentServices";
 
 interface Props {
-  ID: number;
+  documentId: number;
+  sectionId: number;
 }
 interface documentDetails {
   ID: number;
@@ -25,154 +29,104 @@ interface documentDetails {
   documentLink: any;
   isSelected: boolean;
   isNew: boolean;
+  status: boolean;
+  isDeleted: boolean;
 }
 
-// interface IDefinitionDetails {
-//   ID: number | null;
-//   definitionName: string;
-//   IsValid: boolean;
-//   IsDuplicate: boolean;
-//   ErrorMsg: string;
-//   definitionDescription: string;
-//   referenceTitle: string;
-//   referenceAuthor: any[];
-//   referenceLink: string;
-//   isApproved: boolean;
-//   isLoading: boolean;
-// }
-
-const SupportingDocuments: React.FC<Props> = ({ ID }) => {
+const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
   // initial definitions data
-  const [allDefinitions, setAllDefinitions] = useState<any[]>([]);
-  const [filterDefinitions, setFilterDefinitions] = useState<any[]>([]);
-  const [selectedDocuments, setSelectedDocuments] = useState<any[]>([]);
+  const [allDocumentsLink, setAllDocumentsLink] = useState<any[]>([]);
+  const [filterDocuments, setFilterDocuments] = useState<any[]>([]);
+  const [selectedDocuments, setSelectedDocuments] = useState<documentDetails[]>(
+    []
+  );
   const [searchValue, setSearchValue] = useState("");
-
-  // popup view and actions controller
-  //   const [popupController, setPopupController] = useState(
-  //     initialPopupController
-  //   );
-
-  //   const [definitionsData, setDefinitionsData] = useState<IDefinitionDetails>({
-  //     ID: null,
-  //     definitionName: "",
-  //     IsValid: true,
-  //     ErrorMsg: "",
-  //     IsDuplicate: false,
-  //     definitionDescription: "",
-  //     referenceTitle: "",
-  //     referenceAuthor: [],
-  //     referenceLink: "",
-  //     isApproved: true,
-  //     isLoading: false,
-  //   });
-  console.log(selectedDocuments, filterDefinitions);
+  console.log(selectedDocuments, filterDocuments);
 
   const handleSearchOnChange = (value: string): any => {
     console.log(value);
     setSearchValue(value);
-    const filterValues = allDefinitions?.filter((obj: any) => {
-      if (obj.title.toLowerCase().includes(value.toLowerCase().trim())) {
+    const filterValues = allDocumentsLink?.filter((obj: any) => {
+      if (obj.FileRef.toLowerCase().includes(value.toLowerCase().trim())) {
         return obj;
       }
     });
-    setFilterDefinitions(filterValues);
+    setFilterDocuments(filterValues);
   };
 
-  const getApprovedDocuments = async (documents: any) => {
-    let approvedDocuments: any = [];
-    await documents.forEach(async (document: any) => {
-      await SpServices.SPGetAttachments({
-        Listname: "AllDocuments",
-        ID: document.documentId,
-      })
-        .then((res: any) => {
-          console.log(res);
-          if (res.length > 0) {
-            approvedDocuments.push(document);
-          }
-        })
-        .catch((err: any) => {
-          console.log(err);
-        });
-    });
-    console.log(approvedDocuments);
+  const getApprovedDocumentsLinks = async (documents: any) => {
+    let approvedDocuments: any = await getApprovedDocuments(documents);
+    setAllDocumentsLink(approvedDocuments);
   };
 
-  const getAllDocuments = async () => {
-
-    await SpServices.SPReadItems({
-      Listname: "DocumentDetails",
-      Select: "*,fileDetails/ID",
-      Expand: "fileDetails",
-      Filter: [
-        {
-          FilterKey: "status",
-          Operator: "eq",
-          FilterValue: "Approved",
-        },
-      ],
-    })
-      .then((res: any[]) => {
-        let tempArray: any[] = [];
-        let tempSelectedDocumentsArray: documentDetails[] = [
-          {
-            ID: 1,
-            documentName: "Document one",
-            documentLink: "Document one Link",
-            isSelected: true,
-            isNew: false,
-          },
-          {
-            ID: 3,
-            documentName: "Document two",
-            documentLink: "Document two Link",
-            isSelected: true,
-            isNew: false,
-          },
-          {
-            ID: 4,
-            documentName: "Document three",
-            documentLink: "Document three Link",
-            isSelected: true,
-            isNew: false,
-          },
-          {
-            ID: 5,
-            documentName: "Document four",
-            documentLink: "Document four Link",
-            isSelected: true,
-            isNew: false,
-          },
-          {
-            ID: 6,
-            documentName: "Document five",
-            documentLink: "Document five Link",
-            isSelected: true,
-            isNew: false,
-          },
-        ];
-        res?.forEach((item: any) => {
-          tempArray.push({
-            ID: item.ID,
-            documentId: item.fileDetailsId,
-            documentName: item.Title,
-          });
-        });
-        getApprovedDocuments(tempArray);
-        setSelectedDocuments([...tempSelectedDocumentsArray]);
-      })
-      .catch((err) => console.log(err));
+  const getMainDocumentDeatails = async (Data: any[]) => {
+    let tempDocumentsDetails: any = await getDocumentDeatils(Data);
+    getApprovedDocumentsLinks(tempDocumentsDetails);
   };
 
-  const onSelectDefinition = (id: number): void => {
-    const tempArray = allDefinitions;
+  const getAllSelectedDocuments = async () => {
+    let tempSelectedDocumentsArray: any = await getAllDocuments(
+      sectionId,
+      documentId
+    );
+    setSelectedDocuments([...tempSelectedDocumentsArray]);
+    getMainDocumentDeatails([...tempSelectedDocumentsArray]);
+  };
+
+  const onSelectDocument = (id: number): void => {
+    const tempArray = [...filterDocuments];
+    let tempSelectedDocuments = [...selectedDocuments];
     const index = tempArray.findIndex((obj: any) => obj.ID === id);
-    console.log(index);
-    const definitionObject = tempArray[index];
-    definitionObject.isSelected = !definitionObject.isSelected;
-    tempArray[index] = definitionObject;
-    setAllDefinitions([...tempArray]);
+    const documentObject = tempArray[index];
+    documentObject.isSelected = !documentObject.isSelected;
+    tempArray[index] = documentObject;
+    if (documentObject.isSelected) {
+      const isMatch = selectedDocuments.some(
+        (obj: any) => obj.documentName === documentObject.documentName
+      );
+      if (isMatch) {
+        const index = tempSelectedDocuments.findIndex((select: any) => {
+          return select.documentName === documentObject.documentName;
+        });
+        tempSelectedDocuments[index].isDeleted = false;
+        setSelectedDocuments([...tempSelectedDocuments]);
+      } else {
+        setSelectedDocuments((prev: any) => {
+          return [
+            {
+              ID: selectedDocuments.length + 1,
+              documentName: documentObject.documentName,
+              documentLink: documentObject.FileRef,
+              isSelected: false,
+              isNew: false,
+              status: true,
+            },
+            ...prev,
+          ];
+        });
+      }
+    } else {
+      const isMatch = selectedDocuments.some(
+        (obj: any) => obj.documentName === documentObject.documentName
+      );
+      if (isMatch) {
+        const index = tempSelectedDocuments.findIndex((select: any) => {
+          return select.documentName === documentObject.documentName;
+        });
+        if (tempSelectedDocuments[index].status) {
+          tempSelectedDocuments = tempSelectedDocuments.filter(
+            (selectedObj: any) => {
+              return selectedObj.documentName !== documentObject.documentName;
+            }
+          );
+          setSelectedDocuments([...tempSelectedDocuments]);
+        } else {
+          tempSelectedDocuments[index].isDeleted = true;
+          setSelectedDocuments([...tempSelectedDocuments]);
+        }
+      }
+    }
+    setFilterDocuments([...tempArray]);
   };
 
   const AddNewDocument = (): any => {
@@ -183,8 +137,21 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
       documentLink: "Document six Link",
       isSelected: false,
       isNew: true,
+      status: true,
+      isDeleted: false,
     });
-    setAllDefinitions([...tempArray]);
+    setSelectedDocuments([...tempArray]);
+  };
+
+  const checkinNewSupportingDocument = (index: number) => {
+    let tempSelectedDocuments = [...selectedDocuments];
+    tempSelectedDocuments[index].isNew = false;
+    setSelectedDocuments([...tempSelectedDocuments]);
+  };
+  const removeSupportingDocument = (index: number) => {
+    let tempSelectedDocuments = [...selectedDocuments];
+    tempSelectedDocuments[index].isDeleted = true;
+    setSelectedDocuments([...tempSelectedDocuments]);
   };
 
   const documentOnchange = (value: string, id: number, key: string): void => {
@@ -198,12 +165,23 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
         return obj;
       }
     });
-    setAllDefinitions([...index]);
+    setSelectedDocuments([...index]);
   };
 
   useEffect(() => {
-    getAllDocuments();
+    getAllSelectedDocuments();
   }, []);
+
+  const submitSupDocuments = async () => {
+    let reRender: boolean = await submitSupportingDocuments(
+      [...selectedDocuments],
+      documentId,
+      sectionId
+    );
+    if (reRender) {
+      getAllSelectedDocuments();
+    }
+  };
 
   return (
     <div className="sectionWrapper">
@@ -229,10 +207,11 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
               handleSearchOnChange(value);
             }}
             secWidth="257px"
+            clearBtn
           />
           {searchValue !== "" && (
             <div className={styles.filterSecWrapper}>
-              {filterDefinitions.map((obj: any, index: number) => {
+              {filterDocuments.map((obj: any, index: number) => {
                 return (
                   <div
                     key={index}
@@ -252,30 +231,26 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
                         checked={obj.isSelected}
                         //   id={user.value}
                         onClick={(ev) => {
-                          onSelectDefinition(obj.ID);
+                          onSelectDocument(obj.ID);
                           ev.preventDefault();
                         }}
+                        size="small"
                       />
-                      {/* <RadioButton
-                      inputId="ingredient1"
-                      name="pizza"
-                      value="Cheese"
-                      onClick={(ev) => {
-                        onSelectDefinition(obj.ID);
-                        ev.preventDefault();
-                      }}
-                      checked={obj.isSelected}
-                    />
-                    <label htmlFor="ingredient1" className="ml-2">
-                      {obj.title}
-                    </label> */}
                     </div>
-                    <div className={styles.title}>
-                      <span>{obj.title}</span>
+                    <div
+                      onClick={(ev) => {
+                        onSelectDocument(obj.ID);
+                      }}
+                      className={styles.title}
+                    >
+                      <span>{obj.documentName}</span>
                     </div>
                     <div className={styles.description}>
-                      <span>{obj.description}</span>
+                      <span>{obj.FileRef}</span>
                     </div>
+                    {/* <div className={styles.description}>
+                      <span>{obj.description}</span>
+                    </div> */}
                   </div>
                 );
               })}
@@ -285,77 +260,70 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
         <div style={{ padding: "10px 0px" }}>
           {selectedDocuments.map((obj: any, index: number) => {
             return (
-              <div
-                key={index}
-                className={styles.SelectedDocumentsSec}
-                style={{ backgroundColor: obj.isNew ? "#593ABB10" : "" }}
-              >
-                {obj.isNew ? (
-                  <div className={styles.documentInputSec}>
-                    <CustomInput
-                      onChange={(value: string) => {
-                        documentOnchange(value, obj.ID, "documentName");
-                      }}
-                      value={obj.documentName}
-                      placeholder="Enter here"
-                      withLabel
-                      labelText="Document Name"
-                      topLabel
-                    />
-                    <CustomInput
-                      onChange={(value: string) => {
-                        documentOnchange(value, obj.ID, "documentLink");
-                      }}
-                      value={obj.documentLink}
-                      placeholder="Enter here"
-                      withLabel
-                      labelText="Document Link"
-                      topLabel
-                    />
+              !obj.isDeleted && (
+                <div
+                  key={index}
+                  className={styles.SelectedDocumentsSec}
+                  style={{ backgroundColor: obj.isNew ? "#593ABB10" : "" }}
+                >
+                  {obj.isNew ? (
+                    <div className={styles.documentInputSec}>
+                      <CustomInput
+                        onChange={(value: string) => {
+                          documentOnchange(value, obj.ID, "documentName");
+                        }}
+                        value={obj.documentName}
+                        placeholder="Enter here"
+                        withLabel
+                        labelText="Document Name"
+                        topLabel
+                      />
+                      <CustomInput
+                        onChange={(value: string) => {
+                          documentOnchange(value, obj.ID, "documentLink");
+                        }}
+                        value={obj.documentLink}
+                        placeholder="Enter here"
+                        withLabel
+                        labelText="Document Link"
+                        topLabel
+                      />
+                    </div>
+                  ) : (
+                    <div style={{ width: "90%" }}>
+                      <p className={styles.documentName}>{obj.documentName}</p>
+                      <a
+                        href={obj.documentLink}
+                        // target="_blank"
+                        className={styles.documentLink}
+                      >
+                        {obj.documentLink}
+                      </a>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    {obj.isNew && (
+                      <button className={styles.closeBtn}>
+                        <img
+                          src={checkBtn}
+                          alt={"Add Document"}
+                          onClick={() => checkinNewSupportingDocument(index)}
+                        />
+                      </button>
+                    )}
+                    <button className={styles.closeBtn}>
+                      <img
+                        src={closeBtn}
+                        alt={"Remove Document"}
+                        onClick={() => removeSupportingDocument(index)}
+                      />
+                    </button>
                   </div>
-                ) : (
-                  <div style={{ width: "90%" }}>
-                    <p className={styles.documentName}>{obj.documentName}</p>
-                    <a
-                      href={obj.documentLink}
-                      // target="_blank"
-                      className={styles.documentLink}
-                    >
-                      {obj.documentLink}
-                    </a>
-                  </div>
-                )}
-                <div>
-                  <button className={styles.closeBtn}>
-                    <img src={closeBtn} alt={"back to my tasks"} />
-                  </button>
                 </div>
-              </div>
+              )
             );
           })}
         </div>
-
-        {/* {popupController?.map((popupData: any, index: number) => (
-        <Popup
-          key={index}
-          isLoading={definitionsData?.isLoading}
-          PopupType={popupData.popupType}
-          onHide={() =>
-            togglePopupVisibility(setPopupController, index, "close")
-          }
-          popupTitle={
-            popupData.popupType !== "confimation" && popupData.popupTitle
-          }
-          popupActions={popupActions[index]}
-          visibility={popupData.open}
-          content={popupInputs[index]}
-          popupWidth={popupData.popupWidth}
-          defaultCloseBtn={popupData.defaultCloseBtn || false}
-          confirmationTitle={
-            popupData.popupType !== "custom" ? popupData.popupTitle : ""
-          }
-        />
-      ))} */}
       </div>
       <div
         style={{
@@ -377,7 +345,7 @@ const SupportingDocuments: React.FC<Props> = ({ ID }) => {
           text="Submit"
           btnType="primary"
           onClick={() => {
-            // _addData();
+            submitSupDocuments();
           }}
         />
       </div>
