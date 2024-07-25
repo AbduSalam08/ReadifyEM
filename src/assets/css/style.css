@@ -370,7 +370,7 @@ body {
   position: relative;
   height: calc(100vh - 110px);
   overflow: auto;
-  /* margin-top: 57px; */
+  margin-top: 57px;
   background-color: var(--body-bgcolor);
 }
 
@@ -786,4 +786,12 @@ body {
 }
 .sectionWrapper {
   height: 100%;
+}
+.helpButton {
+  background-color: transparent !important;
+  border: 0;
+  outline: 0;
+  color: #555;
+  font-size: 16px;
+  font-family: "interMedium", sans-serif !important;
 }

@@ -72,49 +72,59 @@ const AppendixContent = ({
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "flex-end",
+          justifyContent: "space-between",
           gap: "15px",
         }}
       >
-        <DefaultButton
-          text="Cancel"
-          btnType="darkGreyVariant"
-          onClick={() => {
-            navigate(-1);
+        <button className={"helpButton"}>Help?</button>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            gap: "15px",
           }}
-        />
-        {showActionBtns && (
-          <>
-            <DefaultButton
-              text="Reset content"
-              btnType="secondaryRed"
-              onClick={() => {
-                setSectionData((prev: any) => {
-                  const updatedSections = [...prev];
-                  updatedSections[activeIndex] = {
-                    ...updatedSections[activeIndex],
-                    contentType: "initial",
-                  };
-                  return updatedSections;
-                });
-              }}
-            />
-            <DefaultButton
-              text="Save and Close"
-              btnType="lightGreyVariant"
-              onClick={() => {
-                // _addData();
-              }}
-            />
-            <DefaultButton
-              text="Submit"
-              btnType="primary"
-              onClick={() => {
-                // _addData();
-              }}
-            />
-          </>
-        )}
+        >
+          <DefaultButton
+            text="Cancel"
+            btnType="darkGreyVariant"
+            onClick={() => {
+              navigate(-1);
+            }}
+          />
+          {showActionBtns && (
+            <>
+              <DefaultButton
+                text="Reset content"
+                btnType="secondaryRed"
+                onClick={() => {
+                  setSectionData((prev: any) => {
+                    const updatedSections = [...prev];
+                    updatedSections[activeIndex] = {
+                      ...updatedSections[activeIndex],
+                      contentType: "initial",
+                    };
+                    return updatedSections;
+                  });
+                }}
+              />
+              <DefaultButton
+                text="Save and Close"
+                btnType="lightGreyVariant"
+                onClick={() => {
+                  // _addData();
+                }}
+              />
+              <DefaultButton
+                text="Submit"
+                btnType="primary"
+                onClick={() => {
+                  // _addData();
+                }}
+              />
+            </>
+          )}
+        </div>
       </div>
     </>
   );

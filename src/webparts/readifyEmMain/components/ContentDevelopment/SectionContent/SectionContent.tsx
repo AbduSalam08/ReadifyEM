@@ -583,10 +583,11 @@ const SectionContent: React.FC<IProps> = ({
             width: "100%",
             display: "flex",
             alignItems: "center",
-            justifyContent: "flex-end",
+            justifyContent: "space-between",
             marginTop: "15px",
           }}
         >
+          <button className={"helpButton"}>Help?</button>
           <div style={{ display: "flex", gap: "15px" }}>
             <DefaultButton
               text="Cancel"
