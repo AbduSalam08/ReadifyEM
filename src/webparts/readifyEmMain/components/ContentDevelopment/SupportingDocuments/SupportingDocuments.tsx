@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { memo, useEffect, useState } from "react";
 import styles from "./SupportingDocuments.module.scss";
 import Checkbox from "@mui/material/Checkbox";
@@ -18,6 +19,7 @@ import {
   getApprovedDocuments,
   submitSupportingDocuments,
 } from "../../../../../services/ContentDevelopment/SupportingDocument/SupportingDocumentServices";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   documentId: number;
@@ -34,6 +36,7 @@ interface documentDetails {
 }
 
 const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
+  const navigate = useNavigate();
   // initial definitions data
   const [allDocumentsLink, setAllDocumentsLink] = useState<any[]>([]);
   const [filterDocuments, setFilterDocuments] = useState<any[]>([]);
@@ -188,6 +191,36 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
       <div className={styles.textPlayGround}>
         <div className={styles.definitionHeaderWrapper}>
           <span>Add supporting documents links</span>
+          {/* <DefaultButton
+            btnType="primary"
+            text={"New"}
+            size="medium"
+            onClick={() => {
+              // togglePopupVisibility(setPopupController, 0, "open");
+              //   setDefinitionsData(initialDefinitionsData);
+              AddNewDocument();
+            }}
+          /> */}
+        </div>
+        <div className={styles.filterMainWrapper}>
+          <div className={styles.inputmainSec}>
+            <CustomInput
+              value={searchValue}
+              placeholder="Search Documents"
+              onChange={(value: any) => {
+                handleSearchOnChange(value);
+              }}
+              secWidth="257px"
+              // clearBtn
+            />
+            <button className={styles.closeBtn}>
+              <img
+                src={closeBtn}
+                alt={"Add Document"}
+                onClick={() => setSearchValue("")}
+              />
+            </button>
+          </div>
           <DefaultButton
             btnType="primary"
             text={"New"}
@@ -197,17 +230,6 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
               //   setDefinitionsData(initialDefinitionsData);
               AddNewDocument();
             }}
-          />
-        </div>
-        <div className={styles.filterMainWrapper}>
-          <CustomInput
-            value={searchValue}
-            placeholder="Search Documents"
-            onChange={(value: any) => {
-              handleSearchOnChange(value);
-            }}
-            secWidth="257px"
-            clearBtn
           />
           {searchValue !== "" && (
             <div className={styles.filterSecWrapper}>
@@ -258,7 +280,12 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
           )}
         </div>
         <div style={{ padding: "10px 0px" }}>
-          {selectedDocuments.map((obj: any, index: number) => {
+          {!selectedDocuments.some((obj: any) => obj.isDeleted === false) && (
+            <div className={styles.noDataFound}>
+              <span>No Supporting Document Data Found</span>
+            </div>
+          )}
+          {selectedDocuments?.map((obj: any, index: number) => {
             return (
               !obj.isDeleted && (
                 <div
@@ -325,7 +352,7 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
           })}
         </div>
       </div>
-      <div
+      {/* <div
         style={{
           display: "flex",
           gap: "15px",
@@ -333,7 +360,13 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
           justifyContent: "end",
         }}
       >
-        <DefaultButton text="Close" btnType="lightGreyVariant" />
+        <DefaultButton
+          text="Close"
+          btnType="lightGreyVariant"
+          onClick={() => {
+            navigate(-1);
+          }}
+        />
         <DefaultButton
           text="Reject"
           btnType="lightGreyVariant"
@@ -348,6 +381,51 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
             submitSupDocuments();
           }}
         />
+      </div> */}
+
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "15px",
+          margin: "10px 0px",
+        }}
+      >
+        <button className={"helpButton"}>Help?</button>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "15px",
+            // margin: "10px 0px",
+            justifyContent: "flex-end",
+          }}
+        >
+          <DefaultButton
+            text="Close"
+            btnType="lightGreyVariant"
+            onClick={() => {
+              navigate(-1);
+            }}
+          />
+          {/* <DefaultButton
+          text="Reject"
+          btnType="lightGreyVariant"
+          onClick={() => {
+            // _addData();
+          }}
+        /> */}
+          <DefaultButton
+            text="Submit"
+            btnType="primary"
+            onClick={() => {
+              submitSupDocuments();
+            }}
+          />
+        </div>
       </div>
     </div>
   );

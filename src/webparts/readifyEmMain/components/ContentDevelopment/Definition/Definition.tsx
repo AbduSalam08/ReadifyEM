@@ -21,6 +21,7 @@ import {
   AddSectionDefinition,
   addNewDefinition,
 } from "../../../../../services/ContentDevelopment/SectionDefinition/SectionDefinitionServices";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   documentId: number;
@@ -54,6 +55,7 @@ const initialPopupController = [
 ];
 
 const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
+  const navigate = useNavigate();
   // initial definitions data
   const initialDefinitionsData = {
     ID: null,
@@ -384,14 +386,23 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
         </div>
         <div className={styles.filterMainWrapper}>
           <div className={styles.TopFilters}>
-            <CustomInput
-              value={searchValue}
-              secWidth="257px"
-              placeholder="Search definitions"
-              onChange={(value: any) => {
-                handleSearchOnChange(value);
-              }}
-            />
+            <div className={styles.inputmainSec}>
+              <CustomInput
+                value={searchValue}
+                secWidth="257px"
+                placeholder="Search definitions"
+                onChange={(value: any) => {
+                  handleSearchOnChange(value);
+                }}
+              />
+              <button className={styles.closeBtn}>
+                <img
+                  src={closeBtn}
+                  alt={"Add Document"}
+                  onClick={() => setSearchValue("")}
+                />
+              </button>
+            </div>
             <DefaultButton
               btnType="primary"
               text={"New"}
@@ -449,6 +460,11 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
           )}
         </div>
         <div style={{ padding: "10px 0px" }}>
+          {!selectedDefinitions.some((obj: any) => obj.isDeleted === false) && (
+            <div className={styles.noDataFound}>
+              <span>No Document Definition Data Found</span>
+            </div>
+          )}
           {selectedDefinitions.map((obj: any, index: number) => {
             return (
               !obj.isDeleted && (
@@ -497,7 +513,7 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
         ))}
       </div>
 
-      <div
+      {/* <div
         style={{
           display: "flex",
           gap: "15px",
@@ -505,7 +521,13 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
           justifyContent: "end",
         }}
       >
-        <DefaultButton text="Close" btnType="lightGreyVariant" />
+        <DefaultButton
+          text="Close"
+          btnType="lightGreyVariant"
+          onClick={() => {
+            navigate(-1);
+          }}
+        />
         <DefaultButton
           text="Reject"
           btnType="lightGreyVariant"
@@ -520,6 +542,49 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
             submitSectionDefinition();
           }}
         />
+      </div> */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "15px",
+          margin: "10px 0px",
+          justifyContent: "space-between",
+        }}
+      >
+        <button className={"helpButton"}>Help?</button>
+
+        <div
+          style={{
+            display: "flex",
+            gap: "15px",
+            // margin: "10px 0px",
+            justifyContent: "flex-end",
+            alignItems: "center",
+          }}
+        >
+          <DefaultButton
+            text="Close"
+            btnType="lightGreyVariant"
+            onClick={() => {
+              navigate(-1);
+            }}
+          />
+          {/* <DefaultButton
+          text="Reject"
+          btnType="lightGreyVariant"
+          onClick={() => {
+            // _addData();
+          }}
+        /> */}
+          <DefaultButton
+            text="Submit"
+            btnType="primary"
+            onClick={() => {
+              submitSectionDefinition();
+            }}
+          />
+        </div>
       </div>
     </div>
   );
