@@ -20,6 +20,13 @@
 
 .filterMainWrapper {
   position: relative;
+  display: flex;
+justify-content: space-between;
+.inputmainSec{
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
 }
 
 .filterSecWrapper {
@@ -36,6 +43,7 @@
   flex-direction: column;
   align-items: flex-start;
   border-radius: 4px;
+  top:40px;
 }
 
 .filterDefinitionSec,
@@ -123,8 +131,8 @@
 }
 
 .closeBtn {
-  width: 20px;
-  height: 20px;
+  width: 27px;
+  height: 27px;
   display: grid;
   place-items: center;
   border: 1px solid rgba(0, 0, 0, 0.06);
@@ -132,8 +140,8 @@
   background-color: #fff;
 
   img {
-    width: 15px;
-    height: 12px;
+    width: 25px;
+    height: 16px;
   }
 }
 
@@ -226,4 +234,17 @@
   width: 100%;
   gap: 10px;
   flex-direction: column;
+}
+
+.noDataFound{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  height: 100px;
+  align-items: center;
+  span {
+    color: #adadad;
+    font-size: 14px;
+    font-family: interRegular, sans-serif !important;
+  }
 }

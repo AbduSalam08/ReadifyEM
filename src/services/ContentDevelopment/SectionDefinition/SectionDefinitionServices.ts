@@ -1,6 +1,7 @@
 /* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { LISTNAMES } from "../../../config/config";
 import SpServices from "../../SPServices/SpServices";
 
@@ -185,10 +186,10 @@ const AddSectionDefinition = (
   sectionId: number
 ) => {
   let renderCondition: boolean = false;
-  let tempArray: any[] = [...selectedDefinitions];
-  let tempAddArray = tempArray.filter((obj: any) => obj.status);
-  let tempDelArray = tempArray.filter((obj: any) => obj.isDeleted);
-  let tempDelUpdateArray = tempArray.filter(
+  const tempArray: any[] = [...selectedDefinitions];
+  const tempAddArray = tempArray.filter((obj: any) => obj.status);
+  const tempDelArray = tempArray.filter((obj: any) => obj.isDeleted);
+  const tempDelUpdateArray = tempArray.filter(
     (obj: any) => !obj.isDeleted && !obj.status
   );
   console.log(tempAddArray, tempDelArray, tempDelUpdateArray);
