@@ -100,52 +100,66 @@ const RichText = ({
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "flex-end",
+            justifyContent: "space-between",
+            width: "100%",
             gap: "15px",
           }}
         >
-          <DefaultButton
-            text="Reset content"
-            btnType="secondaryRed"
-            onClick={() => {
-              setSectionData((prev: any) => {
-                const updatedSections = [...prev];
-                updatedSections[activeIndex] = {
-                  ...updatedSections[activeIndex],
-                  contentType: "initial",
-                };
-                return updatedSections;
-              });
+          <button className={"helpButton"}>Help?</button>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              gap: "15px",
             }}
-          />
-          <DefaultButton
-            text="Cancel"
-            btnType="darkGreyVariant"
-            onClick={() => {
-              setSectionData((prev: any) => {
-                const updatedSections = [...prev];
-                updatedSections[activeIndex] = {
-                  ...updatedSections[activeIndex],
-                  contentType: "list",
-                };
-                return updatedSections;
-              });
-            }}
-          />
-          <DefaultButton
-            text="Save and Close"
-            btnType="lightGreyVariant"
-            onClick={() => {
-              // _addData();
-            }}
-          />
-          <DefaultButton
-            text="Submit"
-            btnType="primary"
-            onClick={() => {
-              // _addData();
-            }}
-          />
+          >
+            <DefaultButton
+              text="Cancel"
+              btnType="darkGreyVariant"
+              onClick={() => {
+                setSectionData((prev: any) => {
+                  const updatedSections = [...prev];
+                  updatedSections[activeIndex] = {
+                    ...updatedSections[activeIndex],
+                    contentType: "list",
+                  };
+                  return updatedSections;
+                });
+              }}
+            />
+
+            <DefaultButton
+              text="Reset content"
+              btnType="secondaryRed"
+              onClick={() => {
+                setSectionData((prev: any) => {
+                  const updatedSections = [...prev];
+                  updatedSections[activeIndex] = {
+                    ...updatedSections[activeIndex],
+                    contentType: "initial",
+                  };
+                  return updatedSections;
+                });
+              }}
+            />
+
+            <DefaultButton
+              text="Save and Close"
+              btnType="lightGreyVariant"
+              onClick={() => {
+                // _addData();
+              }}
+            />
+            <DefaultButton
+              text="Submit"
+              btnType="primary"
+              onClick={() => {
+                // _addData();
+              }}
+            />
+            {/* </> */}
+          </div>
         </div>
       )}
     </div>

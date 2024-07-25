@@ -14,7 +14,7 @@ const TableOfContents = lazy(
 import SDDTemplates from "../pages/SDDTemplates/SDDTemplates";
 import MyTasks from "../pages/MyTasks/MyTasks";
 import ConfigureSections from "../pages/ConfigureSections/ConfigureSections";
-import Definitions from "../pages/Definitions/Definitions";
+// import Definitions from "../pages/Definitions/Definitions";
 import ContentDevelopment from "../pages/ContentDevelopment/ContentDevelopment";
 
 const RoleAuthorizationHOC = lazy(() => import("../HOC/RoleAuthHOC"));
@@ -53,8 +53,8 @@ const App = (props: any): JSX.Element => {
                 path="my_tasks/:docName/configure"
                 Component={ConfigureSections}
               />
-              <Route path="definitions" Component={Definitions} />
-              {/* <Route path="definitions" element={<h1>Definitions</h1>} /> */}
+              {/* <Route path="definitions" Component={Definitions} /> */}
+              <Route path="definitions" element={<h1>Definitions</h1>} />
               <Route
                 path="my_tasks/:docName/content_developer"
                 Component={ContentDevelopment}
