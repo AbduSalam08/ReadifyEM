@@ -20,6 +20,7 @@ import {
   submitSupportingDocuments,
 } from "../../../../../services/ContentDevelopment/SupportingDocument/SupportingDocumentServices";
 import { useNavigate } from "react-router-dom";
+import { isEmpty } from "@microsoft/sp-lodash-subset";
 
 interface Props {
   documentId: number;
@@ -231,6 +232,11 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
           />
           {searchValue !== "" && (
             <div className={styles.filterSecWrapper}>
+              {isEmpty(allDocumentsLink) && isEmpty(filterDocuments) && (
+                <div className={styles.noDataFound}>
+                  <span>No data found</span>
+                </div>
+              )}
               {filterDocuments.map((obj: any, index: number) => {
                 return (
                   <div

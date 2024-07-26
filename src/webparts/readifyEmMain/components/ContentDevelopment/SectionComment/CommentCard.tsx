@@ -13,7 +13,7 @@ const CommentCard = ({ item, index }: ICommentCardProps): JSX.Element => {
     <div className={styles.commentCardWrapper}>
       <div className={styles.comments} key={index}>
         <div className={styles.commentAuthor}>
-          <span>{item.commentAuthor.name}</span>
+          <span>{item.commentAuthor[0].name}</span>
           <span className={styles.role}>{item.role}</span>
         </div>
         <p>{item.comment}</p>

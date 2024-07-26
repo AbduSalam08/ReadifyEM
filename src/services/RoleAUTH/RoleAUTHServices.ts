@@ -28,12 +28,14 @@ export const RoleAuth = async (
           userName: currentUser?.userName,
           email: currentUser?.Email,
           role: "User",
+          id: defineUserIsAdmin[0]?.Id,
         };
       } else {
         currentUserDetails = {
           userName: defineUserIsAdmin[0]?.Title,
           email: defineUserIsAdmin[0]?.UserPrincipalName,
           role: "Admin",
+          id: defineUserIsAdmin[0]?.Id,
         };
       }
 

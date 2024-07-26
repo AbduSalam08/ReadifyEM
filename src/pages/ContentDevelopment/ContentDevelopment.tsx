@@ -28,9 +28,13 @@ import RichText from "../../webparts/readifyEmMain/components/ContentDevelopment
 // import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
 import AppendixContent from "../../webparts/readifyEmMain/components/ContentDevelopment/AppendixContent/AppendixContent";
 import ContentTypeConfirmation from "../../webparts/readifyEmMain/components/ContentDevelopment/ContentTypeConfirmation/ContentTypeConfirmation";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CircularSpinner from "../../webparts/readifyEmMain/components/common/AppLoader/CircularSpinner";
 // import ErrorElement from "../../webparts/readifyEmMain/components/common/ErrorElement/ErrorElement";
+
+// import Services
+
+import { getSectionComments } from "../../services/ContentDevelopment/SectionComments/SectionComments";
 
 const Details = {
   sectionName: "Introduction",
@@ -98,6 +102,9 @@ const Details = {
 };
 
 const ContentDevelopment = (): JSX.Element => {
+  // dispatch
+  const dispatch = useDispatch();
+
   const initialPopupController = [
     {
       open: false,
@@ -141,7 +148,6 @@ const ContentDevelopment = (): JSX.Element => {
   const [sectionDetails, setSectionDetails] = useState<any>(Details);
   const [AllSectionsData, setAllSectionsData] =
     useState<any>(AllSectionsDataMain);
-
   const [toggleCommentSection, setToggleCommentSection] = useState(false);
 
   // Active Section Index
@@ -341,6 +347,8 @@ const ContentDevelopment = (): JSX.Element => {
   ) => {
     if (condition) {
       setActiveSection(value);
+      let Comments = getSectionComments(AllSectionsData[value].ID, dispatch);
+      console.log(Comments);
     } else {
       togglePopupVisibility(setPopupController, value, "open", popupTitle);
     }
@@ -360,6 +368,11 @@ const ContentDevelopment = (): JSX.Element => {
   useEffect(() => {
     if (AllSectionsDataMain?.length !== 0) {
       setAllSectionsData(AllSectionsDataMain);
+      let Comments = getSectionComments(
+        AllSectionsDataMain[activeItemsFirstIndex].ID,
+        dispatch
+      );
+      console.log(Comments);
     }
   }, [AllSectionsDataMain?.length]);
 
@@ -491,7 +504,7 @@ const ContentDevelopment = (): JSX.Element => {
                           activeIndex={activeSection}
                           setSectionData={setAllSectionsData}
                           sectionNumber={1}
-                          ID={55}
+                          ID={AllSectionsData[activeSection]?.ID}
                           noActionBtns={!showActionBtns}
                         />
                       ) : (
@@ -499,6 +512,8 @@ const ContentDevelopment = (): JSX.Element => {
                           activeIndex={activeSection}
                           setSectionData={setAllSectionsData}
                           noActionBtns={!showActionBtns}
+                          ID={AllSectionsData[activeSection]?.ID}
+                          currentSectionData={AllSectionsData[activeSection]}
                         />
                       )}
                     </div>
@@ -531,6 +546,13 @@ const ContentDevelopment = (): JSX.Element => {
                         isHeader={true}
                         setToggleCommentSection={setToggleCommentSection}
                         toggleCommentSection={toggleCommentSection}
+                        sectionId={AllSectionsData[activeSection]?.ID}
+                        documentId={
+                          AllSectionsData[activeSection]?.documentOfId
+                        }
+                        onClick={() => {
+                          // setToggleCommentSection(true);
+                        }}
                       />
                     </div>
                   </div>
