@@ -43,8 +43,6 @@ const getAllSectionDefinitions = async (
     ],
   })
     .then((res: any[]) => {
-      console.log(res);
-
       res?.forEach((item: any) => {
         tempArray.push({
           ID: item.ID,
@@ -56,14 +54,6 @@ const getAllSectionDefinitions = async (
                 Email: item?.referenceAuthor?.EMail,
               }
             : null,
-          // referenceAuthor: item?.referenceAuthor
-          //   ? [
-          //       {
-          //         Id: item?.referenceAuthor?.ID,
-          //         Email: item?.referenceAuthor?.EMail,
-          //       },
-          //     ]
-          //   : [],
           referenceLink: item.referenceLink,
           referenceTitle: item.referenceTitle,
           definitionDetailsId: item.definitionDetails.ID,
@@ -73,10 +63,6 @@ const getAllSectionDefinitions = async (
           isDeleted: item.isDeleted ? true : false,
         });
       });
-      // setSectionDefinitions([...tempArray]);
-      // setSelectedDefinitions([...tempArray]);
-      // getMasterDefinition([...tempArray]);
-      console.log(tempArray);
     })
     .catch((err) => console.log(err));
   return tempArray;
@@ -192,10 +178,9 @@ const AddSectionDefinition = (
   const tempDelUpdateArray = tempArray.filter(
     (obj: any) => !obj.isDeleted && !obj.status
   );
-  console.log(tempAddArray, tempDelArray, tempDelUpdateArray);
   if (tempAddArray.length > 0) {
     tempAddArray.forEach(async (obj: any) => {
-      let jsonObject = {
+      const jsonObject = {
         Title: obj.definitionTitle,
         description: obj.definitionDescription,
         referenceAuthorId: obj.referenceAuthor.Id,
@@ -210,7 +195,6 @@ const AddSectionDefinition = (
         RequestJSON: jsonObject,
       })
         .then((res: any) => {
-          console.log(res);
           renderCondition = true;
         })
         .catch((err) => console.log(err));
@@ -219,7 +203,7 @@ const AddSectionDefinition = (
   if (tempDelArray.length > 0) {
     // toast.error("Please select atleast one document to add");
     tempDelArray.forEach((obj: any, index: number) => {
-      let jsonObject = {
+      const jsonObject = {
         isDeleted: true,
       };
       SpServices.SPUpdateItem({
@@ -228,7 +212,6 @@ const AddSectionDefinition = (
         RequestJSON: jsonObject,
       })
         .then((res: any) => {
-          console.log(res);
           renderCondition = true;
           // if (tempDelArray.length - 1 === index) {
           //   getAllSectionDefinitions(documentId, sectionId);
@@ -241,7 +224,7 @@ const AddSectionDefinition = (
   }
   if (tempDelUpdateArray.length > 0) {
     tempDelUpdateArray.forEach((obj: any) => {
-      let jsonObject = {
+      const jsonObject = {
         isDeleted: false,
       };
       SpServices.SPUpdateItem({
@@ -250,7 +233,6 @@ const AddSectionDefinition = (
         RequestJSON: jsonObject,
       })
         .then((res: any) => {
-          console.log(res);
           renderCondition = true;
         })
         .catch((err) => {
@@ -281,8 +263,7 @@ const addNewDefinition = async (
     RequestJSON: payloadJSON,
   })
     .then(async (res: any) => {
-      console.log(res);
-      let jsonObject = {
+      const jsonObject = {
         Title: definitionsData.definitionName,
         description: definitionsData.definitionDescription,
         referenceAuthorId: definitionsData.referenceAuthor[0].Id,
@@ -297,7 +278,6 @@ const addNewDefinition = async (
         RequestJSON: jsonObject,
       })
         .then((res: any) => {
-          console.log(res);
           renderCondition = true;
           // getAllSecDefinitions();
         })

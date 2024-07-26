@@ -49,10 +49,11 @@ const ConfigureSections = (): JSX.Element => {
     (state: any) => state.SectionConfiguration?.ConfigurePageDetails
   );
 
-  const AllSectionsDataConfiguration: any = useSelector(
-    (state: any) => state.SectionConfiguration?.AllSectionsData
-  );
-  console.log("AllSectionsDataConfiguration: ", AllSectionsDataConfiguration);
+  // const AllSectionsDataConfiguration: any = useSelector(
+  //   (state: any) => state.SectionConfiguration?.AllSectionsData
+  // );
+
+  // console.log("AllSectionsDataConfiguration: ", AllSectionsDataConfiguration);
 
   const [popupLoaders, setPopupLoaders] =
     useState<IPopupLoaders>(initialPopupLoaders);

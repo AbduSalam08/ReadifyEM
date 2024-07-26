@@ -260,8 +260,6 @@ const CustomPeoplePicker: React.FC<Props> = ({
     return [selectedItem];
   })();
 
-  console.log("selectedItem: ", selectedItem);
-
   return (
     <div className={styles.inputMainWrapper}>
       <div

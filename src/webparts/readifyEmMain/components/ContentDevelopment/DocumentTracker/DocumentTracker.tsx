@@ -13,7 +13,6 @@ interface Props {
 }
 
 const DocumentTracker: React.FC<Props> = ({ sectionData }) => {
-  console.log("sectionData: ", sectionData);
   const events = [
     {
       status: "Ordered",

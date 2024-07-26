@@ -71,7 +71,6 @@ const RichText = ({
   ];
 
   const [description, setDescription] = useState<string>("");
-  console.log("description: ", description);
 
   const _handleOnChange = (newText: string): string => {
     setDescription(newText === "<p><br></p>" ? "" : newText);

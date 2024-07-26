@@ -82,12 +82,10 @@ const CustomMutiplePeoplePersona: React.FC<Props> = ({
   positionLeft,
   positionTop,
 }) => {
-  console.log("data: ", data);
   return (
     <div className={styles.personaSection}>
       <AvatarGroup>
         {data?.map((person: any, index: number) => {
-          console.log("person: ", person);
           return (
             <Avatar
               key={index}

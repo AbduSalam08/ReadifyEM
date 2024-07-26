@@ -22,34 +22,42 @@ const SectionHeader: React.FC<Props> = ({
   activeSectionData,
 }) => {
   const handleOnChangeFunction = (value: any): any => {
-    console.log(value);
+    console.log("value");
   };
-  console.log(
-    "activeSectionData?.assignedToUser: ",
-    activeSectionData?.assignedToUser
-  );
 
   const currentUserDetails: any = useSelector(
     (state: any) => state?.MainSPContext?.currentUserDetails
   );
-  console.log("currentUserDetails: ", currentUserDetails);
 
   return (
     <>
       <div className={styles.headerContainer}>
-        <span className={styles.sectionName}>{documentName}</span>
+        <span className={styles.sectionName}>
+          {`${
+            documentName?.toLowerCase() === "header"
+              ? documentName
+              : `${activeSectionData?.sectionOrder + ". " + documentName}`
+          }`}
+          {activeSectionData?.sectionType?.toLowerCase() ===
+          "appendix section" ? (
+            <span className={styles.appendixPill}>Appendix</span>
+          ) : (
+            ""
+          )}
+        </span>
+
         <div style={{ display: "flex", gap: "10px" }}>
           <div className={styles.authors}>
             <span className={styles.label}>
               {!isPrimaryAuthor
                 ? `Section Author ${
-                    activeSectionData?.sectionAuthor?.email ===
+                    activeSectionData?.sectionAuthor[0]?.email ===
                     currentUserDetails?.email
                       ? "(you)"
                       : ""
                   }`
                 : `Primary Author ${
-                    activeSectionData?.sectionAuthor?.email ===
+                    activeSectionData?.sectionAuthor[0]?.email ===
                     currentUserDetails?.email
                       ? "(you)"
                       : ""

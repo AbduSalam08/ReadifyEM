@@ -1,21 +1,19 @@
 /* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import dayjs from "dayjs";
-import { LISTNAMES } from "../../config/config";
-import { calculateDueDateByRole } from "../../utils/validations";
-import SpServices from "../SPServices/SpServices";
+import SpServices from "../../SPServices/SpServices";
+import { LISTNAMES } from "../../../config/config";
+import { calculateDueDateByRole } from "../../../utils/validations";
+import { getParsedDocData } from "../../../utils/EMManualUtils";
 import {
   setCDDocDetails,
   setCDSectionData,
-} from "../../redux/features/ContentDevloperSlice";
-import { getParsedDocData } from "../../utils/EMManualUtils";
-
+} from "../../../redux/features/ContentDevloperSlice";
 export const getSectionsDetails = async (
   taskDetails: any,
   currentUserDetails: any,
   dispatcher: any
 ): Promise<any> => {
-  console.log("taskDetails: ", taskDetails);
   const documentDetailsID: number = taskDetails?.documentDetailsId;
 
   const userDocumentRole: string = taskDetails?.role?.toLowerCase();
@@ -39,8 +37,6 @@ export const getSectionsDetails = async (
         },
       ],
     });
-
-    console.log("sectionsResponse: ", sectionsResponse);
 
     const sectionData: any[] = await Promise.all(
       sectionsResponse.map(async (item: any) => {
@@ -186,11 +182,6 @@ export const getSectionsDetails = async (
         (elem1: any, elem2: any) => elem1?.sectionOrder - elem2?.sectionOrder
       );
 
-    console.log("sortByOrderNo: ", [
-      sortDefaultSectionsByOrderNo,
-      sortAppendixSectionsByOrderNo,
-    ]);
-
     dispatcher(
       setCDDocDetails({
         isLoading: true,
@@ -211,11 +202,12 @@ export const getSectionsDetails = async (
       ],
     });
     const DocDetailsResponseData: any = DocDetailsResponse[0];
-    console.log("DocDetailsResponse: ", DocDetailsResponse);
 
     const docDetailsForCD: any = {
       documentName: DocDetailsResponseData?.Title,
       documentStatus: DocDetailsResponseData?.status,
+      documentType: DocDetailsResponseData?.documentType,
+      version: DocDetailsResponseData?.documentVersion,
       primaryAuthor: {
         ID: DocDetailsResponseData?.primaryAuthor?.ID,
         name: DocDetailsResponseData?.primaryAuthor?.Title,
@@ -248,4 +240,37 @@ export const getSectionsDetails = async (
     console.log("Error fetching section details: ", error);
     return null;
   }
+};
+
+export const AddAttachment = async (
+  itemID: number,
+  _file: any
+): Promise<any> => {
+  await SpServices.SPAddAttachment({
+    ListName: "SectionDetails",
+    ListID: itemID,
+    FileName: "Sample.txt",
+    Attachments: _file,
+  })
+    .then((res: any) => {
+      console.log("res: ");
+      // _getData();
+    })
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
+};
+
+export const UpdateAttachment = async (
+  itemID: number,
+  _file: any
+): Promise<any> => {
+  await SpServices.SPDeleteAttachments({
+    ListName: "SectionDetails",
+    ListID: itemID,
+    AttachmentName: "Sample.txt",
+  })
+    .then((res) => console.log("removed"))
+    .catch((err) => console.log(err));
+  await AddAttachment(itemID, _file);
 };
