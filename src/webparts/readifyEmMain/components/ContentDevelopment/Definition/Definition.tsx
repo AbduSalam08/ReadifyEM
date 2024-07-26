@@ -72,7 +72,6 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
   };
   const [sectionDefinitions, setSectionDefinitions] = useState<any[]>([]);
   const [filterDefinitions, setFilterDefinitions] = useState<any[]>([]);
-  console.log("setFilterDefinitions: ", setFilterDefinitions);
   const [selectedDefinitions, setSelectedDefinitions] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState("");
 
@@ -94,12 +93,6 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
     isApproved: true,
     isLoading: false,
   });
-  console.log(
-    selectedDefinitions,
-    filterDefinitions,
-    sectionDefinitions,
-    definitionsData
-  );
 
   // util for closing popup
   const handleClosePopup = (index?: any): void => {
@@ -108,7 +101,6 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
 
   const handleOnChange = (value: string | any, key: string): void => {
     if (key === "referenceAuthor") {
-      console.log(value);
       setDefinitionsData((prev: any) => ({
         ...prev,
         referenceAuthor:
@@ -125,8 +117,8 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
     }
   };
 
-  const addNewSectionDefinition = async () => {
-    let reRender = await addNewDefinition(
+  const addNewSectionDefinition = async (): Promise<any> => {
+    const reRender = await addNewDefinition(
       definitionsData,
       documentId,
       sectionId
@@ -272,7 +264,6 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
   ];
 
   const handleSearchOnChange = (value: string): void => {
-    console.log(value);
     setSearchValue(value);
     const filterValues = sectionDefinitions?.filter((obj: any) => {
       if (
@@ -284,13 +275,16 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
     setFilterDefinitions(filterValues);
   };
 
-  const getMainDefinition = async (Data: any) => {
-    let tempArray: any = await getMasterDefinition(Data);
+  const getMainDefinition = async (Data: any): Promise<any> => {
+    const tempArray: any = await getMasterDefinition(Data);
     setSectionDefinitions(await tempArray);
   };
 
   const getAllSecDefinitions = async (): Promise<any> => {
-    let tempArray: any = await getAllSectionDefinitions(documentId, sectionId);
+    const tempArray: any = await getAllSectionDefinitions(
+      documentId,
+      sectionId
+    );
     setSelectedDefinitions(await tempArray);
     getMainDefinition(tempArray);
   };
@@ -299,7 +293,6 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
     const tempArray = filterDefinitions;
     let tempSelectedDocuments = [...selectedDefinitions];
     const index = tempArray.findIndex((obj: any) => obj.ID === id);
-    console.log(index);
     const definitionObject = tempArray[index];
     definitionObject.isSelected = !definitionObject.isSelected;
     tempArray[index] = definitionObject;
@@ -357,8 +350,8 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
     setFilterDefinitions([...tempArray]);
   };
 
-  const submitSectionDefinition = async () => {
-    let reRender = await AddSectionDefinition(
+  const submitSectionDefinition = async (): Promise<any> => {
+    const reRender = await AddSectionDefinition(
       [...selectedDefinitions],
       documentId,
       sectionId
@@ -368,8 +361,8 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
     }
   };
 
-  const removeDefinition = (index: number) => {
-    let tempSelectedDocuments = [...selectedDefinitions];
+  const removeDefinition = (index: number): any => {
+    const tempSelectedDocuments = [...selectedDefinitions];
     tempSelectedDocuments[index].isDeleted = true;
     setSelectedDefinitions([...tempSelectedDocuments]);
   };

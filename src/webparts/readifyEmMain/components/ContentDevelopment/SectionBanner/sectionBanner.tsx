@@ -3,19 +3,17 @@
 import styles from "./SectionBanner.module.scss";
 const sampleDocHeaderImg: any = require("../../../../../assets/images/svg/sampleDocHeaderImg.svg");
 interface Props {
-  version: string;
-  type: string;
-  createDate: string;
-  lastReviewDate: string;
-  nextReviewDate: string;
+  sectionID: string;
+  currentDocDetails: any;
+  appendixHeader: any;
+  secondaryTitle?: any;
 }
 
 const SectionBanner: React.FC<Props> = ({
-  version,
-  type,
-  createDate,
-  lastReviewDate,
-  nextReviewDate,
+  sectionID,
+  currentDocDetails,
+  appendixHeader,
+  secondaryTitle,
 }) => {
   return (
     <>
@@ -24,25 +22,39 @@ const SectionBanner: React.FC<Props> = ({
           <img src={sampleDocHeaderImg} alt="doc header logo" />
         </div>
         <div className={styles.headerText}>
-          <p>Document Header!</p>
-          <span>Version : {version}</span>
+          <p>{currentDocDetails?.documentName || "-"}</p>
+          <span>
+            {`${
+              !appendixHeader
+                ? `Version: ${currentDocDetails.version || "-"}`
+                : secondaryTitle
+            }`}
+          </span>
         </div>
         <div className={styles.bannerSecWrapper}>
           <div className={styles.bannerSec}>
             <span className={styles.docDetailsSpan1}>Type</span>
-            <span className={styles.docDetailsSpan2}>{type}</span>
+            <span className={styles.docDetailsSpan2}>
+              {currentDocDetails?.documentType || "-"}
+            </span>
           </div>
           <div className={styles.bannerSec}>
             <span className={styles.docDetailsSpan1}>Created on</span>
-            <span className={styles.docDetailsSpan2}>{createDate}</span>
+            <span className={styles.docDetailsSpan2}>
+              {currentDocDetails?.createdDate || "-"}
+            </span>
           </div>
           <div className={styles.bannerSec}>
             <span className={styles.docDetailsSpan1}>Last review</span>
-            <span className={styles.docDetailsSpan2}>{lastReviewDate}</span>
+            <span className={styles.docDetailsSpan2}>
+              {currentDocDetails?.lastReviewDate || "-"}
+            </span>
           </div>
           <div className={styles.bannerSec}>
             <span className={styles.docDetailsSpan1}>Next review</span>
-            <span className={styles.docDetailsSpan2}>{nextReviewDate}</span>
+            <span className={styles.docDetailsSpan2}>
+              {currentDocDetails?.nextReviewDate || "-"}
+            </span>
           </div>
         </div>
       </div>

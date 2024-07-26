@@ -11,11 +11,14 @@ import "./SetupHeader.css";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
+  sectionID?: any;
   version: string;
   type: string;
   headerTitle: string;
+  appendixName?: string;
   primaryAuthorDefaultHeader?: boolean;
   noActionBtns?: boolean;
+  appendixSection?: boolean;
 }
 
 const SetupHeader: React.FC<Props> = ({
@@ -24,22 +27,20 @@ const SetupHeader: React.FC<Props> = ({
   headerTitle,
   primaryAuthorDefaultHeader,
   noActionBtns,
+  appendixSection,
+  appendixName,
+  sectionID,
 }) => {
   const fileUploadRef = useRef<any>(null);
   const initialHeaderDetails = {
     version: version,
     type: type,
     headerTitle: headerTitle,
+    appendixName: appendixName,
   };
-  const [headerDetails, setHeaderDetails] = useState(initialHeaderDetails);
   const [totalSize, setTotalSize] = useState(0);
 
   const navigate = useNavigate();
-
-  const handleOnChange = (value: string, key: string): void => {
-    console.log(value, key);
-    setHeaderDetails({ ...headerDetails, [key]: value });
-  };
 
   const onTemplateUpload = (e: any): void => {
     let _totalSize = 0;
@@ -94,7 +95,7 @@ const SetupHeader: React.FC<Props> = ({
             height={"100%"}
           />
           <span className={styles.selectedFileName}>
-            {file.name}
+            <p>{file.name}</p>
             <Button
               type="button"
               icon="pi pi-times"
@@ -124,7 +125,6 @@ const SetupHeader: React.FC<Props> = ({
   };
 
   const headerTemplate = (options: any): any => {
-    console.log("options: ", options);
     const { className, chooseButton } = options;
 
     return (
@@ -187,34 +187,38 @@ const SetupHeader: React.FC<Props> = ({
         </div>
         <div className={styles.headerDetailsWrapper}>
           <CustomInput
-            value={headerDetails.headerTitle}
+            value={initialHeaderDetails.headerTitle}
             labelText="Header Title"
-            onChange={(value: any) => {
-              handleOnChange(value, "headerTitle");
-            }}
             withLabel
             topLabel
             secWidth="307px"
+            readOnly={true}
           />
+          {appendixSection && (
+            <CustomInput
+              value={initialHeaderDetails.appendixName}
+              labelText="Appendix Name"
+              withLabel
+              topLabel
+              secWidth="307px"
+              readOnly={true}
+            />
+          )}
           <CustomInput
-            value={headerDetails.type}
+            value={initialHeaderDetails.type}
             labelText="Document Type"
-            onChange={(value: any) => {
-              handleOnChange(value, "type");
-            }}
             withLabel
             topLabel
             secWidth="307px"
+            readOnly={true}
           />
           <CustomInput
-            value={headerDetails.version}
+            value={initialHeaderDetails.version}
             labelText="Current Version"
-            onChange={(value: any) => {
-              handleOnChange(value, "version");
-            }}
             withLabel
             topLabel
             secWidth="307px"
+            readOnly={true}
           />
           {!noActionBtns && (
             <div

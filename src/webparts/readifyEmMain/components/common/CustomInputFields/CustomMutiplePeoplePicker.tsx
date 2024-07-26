@@ -42,8 +42,6 @@ const CustomMultiplePeoplePicker: React.FC<Props> = ({
   mandatory,
   hideErrMsg,
 }) => {
-  console.log(selectedItem);
-
   const multiPeoplePickerStyle = {
     root: {
       // minWidth: minWidth ? minWidth : 200,

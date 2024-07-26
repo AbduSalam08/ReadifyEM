@@ -164,7 +164,6 @@ const Definitions = (): JSX.Element => {
   // fn for onchange of definition name
   const handleOnChange = (value: string | any, key: string): void => {
     if (key === "referenceAuthor") {
-      console.log(value);
       setDefinitionsData((prev: any) => ({
         ...prev,
         referenceAuthor:

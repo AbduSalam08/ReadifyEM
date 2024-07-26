@@ -32,8 +32,6 @@ const Header: React.FC<Props> = ({
   onChange,
   currentDocDetailsData,
 }) => {
-  console.log("currentDocDetailsData: ", currentDocDetailsData);
-  console.log("role: ", role);
   // route navigator
   const navigate = useNavigate();
   const dispatch = useDispatch();

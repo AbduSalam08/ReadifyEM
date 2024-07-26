@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { useCallback } from "react";
@@ -10,7 +11,7 @@ import styles from "./Inputs.module.scss";
 
 interface Props {
   value: string | number | any;
-  onChange: (value: string | any) => void;
+  onChange?: (value: string | any) => void;
   type?: "text" | "number";
   placeholder?: string;
   icon?: unknown;
@@ -65,7 +66,7 @@ const CustomInput: React.FC<Props> = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue =
         type === "number" ? parseFloat(e.target.value) : e.target.value;
-      onChange(newValue);
+      onChange && onChange(newValue);
     },
     [onChange, type]
   );

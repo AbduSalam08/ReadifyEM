@@ -145,9 +145,6 @@ export const getUniqueTaskData = async (
   taskID: any,
   dispatch: any
 ): Promise<any> => {
-  console.log("dispatch: ", dispatch);
-  console.log("taskID: ", taskID);
-  // debugger;
   const TASK_ID: any =
     typeof taskID === "object" && taskID?.length !== 0 ? taskID[0] : taskID;
 

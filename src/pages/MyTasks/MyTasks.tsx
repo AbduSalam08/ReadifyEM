@@ -24,12 +24,12 @@ import { DocRoles } from "../../constants/DocStatus";
 import { Close } from "@mui/icons-material";
 import CustomDateInput from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomDateInput";
 import * as dayjs from "dayjs";
-import { getSectionsDetails } from "../../services/ContentDeveloper/ContentDeveloperServices";
 import {
   setCDDocDetails,
   setCDSectionData,
 } from "../../redux/features/ContentDevloperSlice";
 import { setConfigurePageDetails } from "../../redux/features/SectionConfigurationSlice";
+import { getSectionsDetails } from "../../services/ContentDevelopment/CommonServices/CommonServices";
 
 const MyTasks = (): JSX.Element => {
   // router navigate
