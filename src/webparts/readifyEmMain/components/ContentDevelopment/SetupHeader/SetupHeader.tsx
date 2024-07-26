@@ -240,7 +240,7 @@ const SetupHeader: React.FC<Props> = ({
                 text="Submit"
                 btnType="primary"
                 onClick={() => {
-                  // _addData();
+                  // addData();
                 }}
               />
             </div>

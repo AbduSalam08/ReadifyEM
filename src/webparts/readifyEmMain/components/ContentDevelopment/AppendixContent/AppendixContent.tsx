@@ -57,14 +57,16 @@ const AppendixContent = ({
               activeIndex={activeIndex}
               setSectionData={setSectionData}
               sectionNumber={1}
-              ID={55}
+              ID={sectionDetails?.ID}
               noActionBtns={true}
             />
           ) : (
             <RichText
               activeIndex={activeIndex}
               setSectionData={setSectionData}
+              currentSectionData={sectionDetails}
               noActionBtns={true}
+              ID={sectionDetails?.ID}
             />
           )}
         </div>
@@ -113,14 +115,14 @@ const AppendixContent = ({
                 text="Save and Close"
                 btnType="lightGreyVariant"
                 onClick={() => {
-                  // _addData();
+                  // addData();
                 }}
               />
               <DefaultButton
                 text="Submit"
                 btnType="primary"
                 onClick={() => {
-                  // _addData();
+                  // addData();
                 }}
               />
             </>

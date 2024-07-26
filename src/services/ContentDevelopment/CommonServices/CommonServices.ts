@@ -244,8 +244,11 @@ export const getSectionsDetails = async (
 
 export const AddAttachment = async (
   itemID: number,
-  _file: any
+  _file: any,
+  contentType: any,
+  saveAndClose: boolean
 ): Promise<any> => {
+  debugger;
   await SpServices.SPAddAttachment({
     ListName: "SectionDetails",
     ListID: itemID,
@@ -253,8 +256,23 @@ export const AddAttachment = async (
     Attachments: _file,
   })
     .then((res: any) => {
-      console.log("res: ");
+      console.log("res: ", res);
       // _getData();
+    })
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
+
+  await SpServices.SPUpdateItem({
+    ID: itemID,
+    Listname: LISTNAMES.SectionDetails,
+    RequestJSON: {
+      typeOfContent: contentType,
+      sectionSubmitted: saveAndClose ? saveAndClose : false,
+    },
+  })
+    .then((res: any) => {
+      console.log("res: ", res);
     })
     .catch((err: any) => {
       console.log("err: ", err);
@@ -263,14 +281,16 @@ export const AddAttachment = async (
 
 export const UpdateAttachment = async (
   itemID: number,
-  _file: any
+  _file: any,
+  contentType: any,
+  saveAndClose?: boolean | any
 ): Promise<any> => {
   await SpServices.SPDeleteAttachments({
     ListName: "SectionDetails",
     ListID: itemID,
     AttachmentName: "Sample.txt",
   })
-    .then((res) => console.log("removed"))
+    .then((res) => console.log("res:", res))
     .catch((err) => console.log(err));
-  await AddAttachment(itemID, _file);
+  await AddAttachment(itemID, _file, contentType, saveAndClose);
 };
