@@ -6,6 +6,7 @@ import MyTasksSlice from "../features/MyTasksSlice";
 import DefinitionSlice from "../features/DefinitionSlice";
 import ContentDevloperSlice from "../features/ContentDevloperSlice";
 import SectionConfigurationSlice from "../features/SectionConfigurationSlice";
+import SectionCommentsSlice from "../features/SectionCommentsSlice";
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     DefinitionsData: DefinitionSlice,
     ContentDeveloperData: ContentDevloperSlice,
     SectionConfiguration: SectionConfigurationSlice,
+    SectionCommentsData: SectionCommentsSlice,
   },
 });
 

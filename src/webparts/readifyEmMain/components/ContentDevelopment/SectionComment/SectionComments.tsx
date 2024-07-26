@@ -5,8 +5,14 @@ import styles from "./SectionComments.module.scss";
 import CustomInput from "../../common/CustomInputFields/CustomInput";
 import CommentCard from "./CommentCard";
 import { ChevronRight } from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
 // const commentIcon = require("../../../../../assets/images/svg/violetCommentIcon.svg");
 const sendBtn = require("../../../../../assets/images/png/Send.png");
+
+import { addSectionComment } from "../../../../../services/ContentDevelopment/SectionComments/SectionComments";
+import { initialPopupLoaders } from "../../../../../config/config";
+import { IPopupLoaders } from "../../../../../interface/MainInterface";
+import AlertPopup from "../../common/Popups/AlertPopup/AlertPopup";
 
 interface Props {
   commentsData: any[];
@@ -15,6 +21,9 @@ interface Props {
   viewOnly?: boolean;
   toggleCommentSection?: boolean;
   setToggleCommentSection?: any;
+  documentId?: number;
+  sectionId?: number;
+  onClick?: any;
 }
 
 const SectionComments: React.FC<Props> = ({
@@ -24,12 +33,61 @@ const SectionComments: React.FC<Props> = ({
   viewOnly,
   toggleCommentSection,
   setToggleCommentSection,
+  documentId,
+  sectionId,
+  onClick,
 }) => {
+  const dispatch = useDispatch();
+
+  // popup loaders and messages
+  const [popupLoaders, setPopupLoaders] =
+    useState<IPopupLoaders>(initialPopupLoaders);
+
+  // selectors
+  const AllSectionsComments: any = useSelector(
+    (state: any) => state.SectionCommentsData.SectionComments
+  );
+  const currentUserDetails: any = useSelector(
+    (state: any) => state?.MainSPContext?.currentUserDetails
+  );
+  const currentDocDetailsData: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDDocDetails
+  );
+  console.log(
+    documentId,
+    sectionId,
+    AllSectionsComments,
+    currentUserDetails,
+    currentDocDetailsData
+  );
+
   // initial States
   const [inputComment, setInputComment] = useState<string>("");
 
   const onChangeFunction = (value: string): any => {
     setInputComment(value);
+  };
+
+  const sendSectionComment = async () => {
+    if (inputComment !== "") {
+      console.log("clicked");
+      let json = {
+        comments: inputComment,
+        sectionDetailsId: sectionId,
+        createdById: currentUserDetails.id,
+        role: currentDocDetailsData.taskRole,
+      };
+      let clearInput = await addSectionComment(
+        json,
+        AllSectionsComments,
+        dispatch,
+        currentUserDetails,
+        setPopupLoaders
+      );
+      if (clearInput) {
+        setInputComment("");
+      }
+    }
   };
 
   return (
@@ -69,7 +127,7 @@ const SectionComments: React.FC<Props> = ({
         )}
         <div className={styles.commentBoxWrapper}>
           <div className={styles.commentsWrapper}>
-            {commentsData?.map((item: any, index: number) => {
+            {AllSectionsComments?.map((item: any, index: number) => {
               return <CommentCard index={index} item={item} key={index} />;
             })}
           </div>
@@ -85,13 +143,30 @@ const SectionComments: React.FC<Props> = ({
                 inputWrapperClassName={styles.commentBoxInput}
                 // submitBtn={true}
               />
-              <button className={styles.sendBtn}>
+              <button
+                className={styles.sendBtn}
+                onClick={() => sendSectionComment()}
+              >
                 <img src={sendBtn} />
               </button>
             </div>
           )}
         </div>
       </div>
+      <AlertPopup
+        secondaryText={popupLoaders.secondaryText}
+        isLoading={popupLoaders.isLoading}
+        onClick={() => {
+          setPopupLoaders(initialPopupLoaders);
+          // setMainData();
+        }}
+        onHide={() => {
+          setPopupLoaders(initialPopupLoaders);
+        }}
+        popupTitle={popupLoaders.text}
+        visibility={popupLoaders.visibility}
+        popupWidth={"30vw"}
+      />
     </>
   );
 };

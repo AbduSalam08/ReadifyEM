@@ -143,6 +143,7 @@ interface Props {
   maxHeight?: any;
   noRemoveBtn?: boolean;
   multiUsers?: boolean;
+  mandatory?: boolean;
 }
 
 const CustomPeoplePicker: React.FC<Props> = ({
@@ -164,6 +165,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
   noRemoveBtn,
   minHeight,
   maxHeight,
+  mandatory,
   multiUsers = false,
 }) => {
   const multiPeoplePickerStyle = {
@@ -271,7 +273,15 @@ const CustomPeoplePicker: React.FC<Props> = ({
             : styles.p_pickerInputWrapper
         } ${disabled ? styles.disabledInput : ""}`}
       >
-        {withLabel && <p className={styles.inputLabel}>{labelText}</p>}
+        {withLabel && (
+          <p
+            className={`${styles.inputLabel} ${
+              mandatory ? styles.mandatoryField : ""
+            }`}
+          >
+            {labelText}
+          </p>
+        )}
         <PeoplePicker
           context={mainContext}
           webAbsoluteUrl={CONFIG.webURL}

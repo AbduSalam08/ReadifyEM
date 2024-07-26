@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { LISTNAMES } from "../../../config/config";
+import { setAllDefinitions } from "../../../redux/features/DefinitionSlice";
 import SpServices from "../../SPServices/SpServices";
 
 interface definitionDetails {
@@ -183,9 +184,9 @@ const getMasterDefinition = async (Data: any) => {
 const AddSectionDefinition = (
   selectedDefinitions: any[],
   documentId: number,
-  sectionId: number
+  sectionId: number,
+  setLoaderState: any
 ) => {
-  let renderCondition: boolean = false;
   const tempArray: any[] = [...selectedDefinitions];
   const tempAddArray = tempArray.filter((obj: any) => obj.status);
   const tempDelArray = tempArray.filter((obj: any) => obj.isDeleted);
@@ -194,7 +195,7 @@ const AddSectionDefinition = (
   );
   console.log(tempAddArray, tempDelArray, tempDelUpdateArray);
   if (tempAddArray.length > 0) {
-    tempAddArray.forEach(async (obj: any) => {
+    tempAddArray.forEach(async (obj: any, index: number) => {
       let jsonObject = {
         Title: obj.definitionTitle,
         description: obj.definitionDescription,
@@ -211,7 +212,23 @@ const AddSectionDefinition = (
       })
         .then((res: any) => {
           console.log(res);
-          renderCondition = true;
+
+          if (
+            tempDelArray.length === 0 &&
+            tempDelUpdateArray.length === 0 &&
+            tempAddArray.length - 1 === index
+          ) {
+            setLoaderState({
+              isLoading: {
+                inprogress: false,
+                success: true,
+                error: false,
+              },
+              visibility: true,
+              text: `Changes updated successfully!`,
+              secondaryText: `Definitions add/remove updated successfully! `,
+            });
+          }
         })
         .catch((err) => console.log(err));
     });
@@ -229,10 +246,21 @@ const AddSectionDefinition = (
       })
         .then((res: any) => {
           console.log(res);
-          renderCondition = true;
-          // if (tempDelArray.length - 1 === index) {
-          //   getAllSectionDefinitions(documentId, sectionId);
-          // }
+          if (
+            tempDelUpdateArray.length === 0 &&
+            tempDelArray.length - 1 === index
+          ) {
+            setLoaderState({
+              isLoading: {
+                inprogress: false,
+                success: true,
+                error: false,
+              },
+              visibility: true,
+              text: `Changes updated successfully!`,
+              secondaryText: `Definitions add/remove updated successfully! `,
+            });
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -240,7 +268,7 @@ const AddSectionDefinition = (
     });
   }
   if (tempDelUpdateArray.length > 0) {
-    tempDelUpdateArray.forEach((obj: any) => {
+    tempDelUpdateArray.forEach((obj: any, index: number) => {
       let jsonObject = {
         isDeleted: false,
       };
@@ -251,83 +279,153 @@ const AddSectionDefinition = (
       })
         .then((res: any) => {
           console.log(res);
-          renderCondition = true;
+          if (tempDelUpdateArray.length - 1 === index) {
+            setLoaderState({
+              isLoading: {
+                inprogress: false,
+                success: true,
+                error: false,
+              },
+              visibility: true,
+              text: `Changes updated successfully!`,
+              secondaryText: `Definitions add/remove updated successfully! `,
+            });
+          }
         })
         .catch((err) => {
           console.log(err);
         });
     });
   }
-  return renderCondition;
 };
 
 const addNewDefinition = async (
   definitionsData: any,
   documentId: number,
-  sectionId: number
+  sectionId: number,
+  setLoaderState: any
 ) => {
-  let renderCondition: boolean = false;
-  const payloadJSON = {
-    Title: definitionsData?.definitionName,
-    description: definitionsData?.definitionDescription,
-    referenceTitle: definitionsData.referenceTitle,
-    referenceLink: definitionsData.referenceLink,
-    referenceAuthorId: definitionsData.referenceAuthor[0].Id,
-    isApproved: false,
-  };
+  try {
+    const payloadJSON = {
+      Title: definitionsData?.definitionName,
+      description: definitionsData?.definitionDescription,
+      referenceTitle: definitionsData.referenceTitle,
+      referenceLink: definitionsData.referenceLink,
+      referenceAuthorId: definitionsData.referenceAuthor[0].Id,
+      isApproved: false,
+    };
 
-  await SpServices.SPAddItem({
-    Listname: LISTNAMES.Definition,
-    RequestJSON: payloadJSON,
-  })
-    .then(async (res: any) => {
-      console.log(res);
-      let jsonObject = {
-        Title: definitionsData.definitionName,
-        description: definitionsData.definitionDescription,
-        referenceAuthorId: definitionsData.referenceAuthor[0].Id,
-        referenceTitle: definitionsData.referenceTitle,
-        referenceLink: definitionsData.referenceLink,
-        definitionDetailsId: res?.data?.ID,
-        sectionDetailsId: sectionId,
-        docDetailsId: documentId,
-      };
-      await SpServices.SPAddItem({
-        Listname: "SectionDefinition",
-        RequestJSON: jsonObject,
-      })
-        .then((res: any) => {
-          console.log(res);
-          renderCondition = true;
-          // getAllSecDefinitions();
-        })
-        .catch((err) => console.log(err));
-
-      // setLoaderState({
-      //   isLoading: {
-      //     inprogress: false,
-      //     success: true,
-      //     error: false,
-      //   },
-      //   visibility: true,
-      //   text: `Definition created successfully!`,
-      //   secondaryText: `The Standardized definition template "${templateTitle}" has been created successfully! `,
-      // });
+    await SpServices.SPAddItem({
+      Listname: LISTNAMES.Definition,
+      RequestJSON: payloadJSON,
     })
-    .catch((err) => {
-      // setLoaderState({
-      //   isLoading: {
-      //     inprogress: false,
-      //     success: false,
-      //     error: true,
-      //   },
-      //   visibility: true,
-      //   text: "Unable to create the definition.",
-      //   secondaryText:
-      //     "An unexpected error occurred while create the definition, please try again later.",
-      // });
+      .then(async (res: any) => {
+        console.log(res);
+        let jsonObject = {
+          Title: definitionsData.definitionName,
+          description: definitionsData.definitionDescription,
+          referenceAuthorId: definitionsData.referenceAuthor[0].Id,
+          referenceTitle: definitionsData.referenceTitle,
+          referenceLink: definitionsData.referenceLink,
+          definitionDetailsId: res?.data?.ID,
+          sectionDetailsId: sectionId,
+          docDetailsId: documentId,
+        };
+        await SpServices.SPAddItem({
+          Listname: "SectionDefinition",
+          RequestJSON: jsonObject,
+        })
+          .then((res: any) => {
+            console.log(res);
+            setLoaderState({
+              isLoading: {
+                inprogress: false,
+                success: true,
+                error: false,
+              },
+              visibility: true,
+              text: `Definition created successfully!`,
+              secondaryText: `The Standardized definition template "${definitionsData?.definitionName}" has been created successfully! `,
+            });
+            // getAllSecDefinitions();
+          })
+          .catch((err) => {
+            console.log(err);
+            setLoaderState({
+              isLoading: {
+                inprogress: false,
+                success: false,
+                error: true,
+              },
+              visibility: true,
+              text: "Unable to create the definition.",
+              secondaryText:
+                "An unexpected error occurred while create the definition, please try again later.",
+            });
+          });
+      })
+      .catch((err) => {
+        setLoaderState({
+          isLoading: {
+            inprogress: false,
+            success: false,
+            error: true,
+          },
+          visibility: true,
+          text: "Unable to create the definition.",
+          secondaryText:
+            "An unexpected error occurred while create the definition, please try again later.",
+        });
+      });
+  } catch (err) {
+    setLoaderState({
+      isLoading: {
+        inprogress: false,
+        success: false,
+        error: true,
+      },
+      visibility: true,
+      text: "Unable to create the definition.",
+      secondaryText:
+        "An unexpected error occurred while create the definition, please try again later.",
     });
-  return renderCondition;
+  }
+};
+
+// Main function to get all main Definitions
+const fetchTemplates = async (): Promise<{
+  allMainTemplateData: any[];
+}> => {
+  try {
+    const mainListResponse: any = await SpServices.SPReadItems({
+      Listname: LISTNAMES.Definition,
+      Filter: [
+        {
+          FilterKey: "isDeleted",
+          Operator: "eq",
+          FilterValue: "0",
+        },
+      ],
+    });
+
+    const allMainTemplateData: any[] = mainListResponse?.map((value: any) => ({
+      ID: value?.ID || null,
+      definitionName: value.Title,
+      definitionDescription: value.description || "",
+      isApproved: value.isApproved ? true : false,
+    }));
+
+    return { allMainTemplateData };
+  } catch (error) {
+    console.log("error: ", error);
+    return { allMainTemplateData: [] };
+  }
+};
+
+const LoadDefinitionTableData = async (dispatch: any): Promise<void> => {
+  const data = await fetchTemplates();
+  const { allMainTemplateData } = data;
+  dispatch(setAllDefinitions(allMainTemplateData));
 };
 
 export {
@@ -335,4 +433,5 @@ export {
   getMasterDefinition,
   AddSectionDefinition,
   addNewDefinition,
+  LoadDefinitionTableData,
 };
