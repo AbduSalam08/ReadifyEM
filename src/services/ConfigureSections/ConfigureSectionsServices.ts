@@ -14,8 +14,6 @@ export const AddSections = async (
   setLoaderState: any,
   docDetails: any
 ): Promise<any> => {
-  console.log("formData: ", formData);
-  console.log("docDetails: ", docDetails);
   const isPATaskisNotConfigured: boolean =
     docDetails?.role?.toLowerCase() === "primary author" &&
     docDetails?.taskStatus?.toLowerCase() === "not started";
@@ -222,131 +220,11 @@ export const AddSections = async (
   }
 };
 
-// export const updateSections = async (
-//   formData: any,
-//   setLoaderState: any,
-//   docDetails: any
-// ): Promise<any> => {
-//   console.log("formData: ", formData);
-//   console.log("docDetails: ", docDetails);
-
-//   try {
-//     const sectionsToUpdate: any[] = [];
-
-//     const defaultSectionsData: any[] = formData.defaultSections
-//       ?.filter((item: any) => {
-//         return item?.sectionSelected;
-//       })
-//       ?.sort((a: any, b: any) => {
-//         return a?.sectionOrderNo - b?.sectionOrderNo;
-//       })
-//       ?.map((item: any, index: number) => {
-//         return { ...item, sectionOrderNo: String(index + 1) };
-//       });
-
-//     const appendixSectionsData: any[] = formData.appendixSections
-//       ?.filter((item: any) => {
-//         return item?.sectionSelected;
-//       })
-//       ?.sort((a: any, b: any) => {
-//         return a?.sectionOrderNo - b?.sectionOrderNo;
-//       })
-//       ?.map((item: any, index: number) => {
-//         return { ...item, sectionOrderNo: String(index + 1) };
-//       });
-
-//     [...defaultSectionsData, ...appendixSectionsData]?.forEach(
-//       (element: any) => {
-//         if (element?.sectionSelected) {
-//           const sectionPayload = {
-//             ID: element?.ID,
-//             Title: element?.sectionName?.value,
-//             templateTitle: formData?.templateDetails?.templateName,
-//             sectionOrder: element.sectionOrderNo,
-//             sectionAuthorId: element?.sectionAuthor?.value?.[0]?.id,
-//             consultantsId: {
-//               results: element?.consultants?.value?.map((el: any) => el?.id),
-//             },
-//             sectionType:
-//               element?.sectionType === "defaultSection" ||
-//               element?.sectionType === "normalSections"
-//                 ? "default section"
-//                 : "appendix section",
-//             documentOfId: docDetails?.documentDetailsId,
-//             status: "content in progress",
-//             isActive: element?.sectionSelected && !element?.removed,
-//           };
-
-//           if (element?.templateSectionID || element?.ID) {
-//             sectionsToUpdate.push(sectionPayload);
-//           }
-//         }
-//       }
-//     );
-
-//     if (sectionsToUpdate.length > 0) {
-//       setLoaderState({
-//         isLoading: { inprogress: true, success: false, error: false },
-//         visibility: true,
-//         text: "Updating sections, please wait...",
-//         secondaryText: "",
-//       });
-
-//       try {
-//         await Promise.all(
-//           sectionsToUpdate.map(async (section: any) => {
-//             await SpServices.SPUpdateItem({
-//               Listname: LISTNAMES.SectionDetails,
-//               ID: section.ID,
-//               RequestJSON: section,
-//             });
-//           })
-//         );
-
-//         setLoaderState({
-//           isLoading: { inprogress: false, success: true, error: false },
-//           visibility: true,
-//           text: "Sections updated successfully!",
-//           secondaryText: `The document "${docDetails?.docName}'s" sections have been updated successfully!`,
-//         });
-//       } catch (err) {
-//         setLoaderState({
-//           isLoading: { inprogress: false, success: false, error: true },
-//           visibility: true,
-//           text: "Unable to update the sections.",
-//           secondaryText:
-//             "An unexpected error occurred while updating the sections, please try again later.",
-//         });
-//       }
-//     } else {
-//       setLoaderState({
-//         isLoading: { inprogress: false, success: false, error: true },
-//         visibility: true,
-//         text: "No sections to update.",
-//         secondaryText:
-//           "No sections are selected for update. Please select at least one section to update.",
-//       });
-//     }
-//   } catch (err) {
-//     setLoaderState({
-//       isLoading: { inprogress: false, success: false, error: true },
-//       visibility: true,
-//       text: "Unable to update the sections.",
-//       secondaryText:
-//         "An unexpected error occurred while updating the sections, please try again later.",
-//     });
-//   }
-// };
-
 export const updateSections = async (
   formData: any,
   setLoaderState: any,
   docDetails: any
 ): Promise<any> => {
-  debugger;
-  console.log("formData: ", formData);
-  console.log("docDetails: ", docDetails);
-
   try {
     const sectionsToUpdate: any[] = [];
     const sectionsToAdd: any[] = [];
@@ -768,8 +646,6 @@ export const getUniqueSectionsDetails = async (
         })
       ),
     };
-
-    console.log("currentTemplateDetails: ", currentTemplateDetails);
 
     // Set updated section data
     setSectionsData((prev: any) => ({

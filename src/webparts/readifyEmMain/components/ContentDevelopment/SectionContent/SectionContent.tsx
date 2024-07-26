@@ -224,7 +224,7 @@
 //     await addAttchment(itemID, _file);
 //   };
 
-//   const _addData = async () => {
+//   const addData = async () => {
 //     const _file: any = await convertToTxtFile();
 //     if (newAttachment) {
 //       await addAttchment(ID, _file);
@@ -278,14 +278,14 @@
 //             text="Save and Close"
 //             btnType="lightGreyVariant"
 //             onClick={() => {
-//               _addData();
+//               addData();
 //             }}
 //           />
 //           <DefaultButton
 //             text="Submit"
 //             btnType="primary"
 //             onClick={() => {
-//               _addData();
+//               addData();
 //             }}
 //           />
 //         </div>
@@ -300,11 +300,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./SectionContent.module.scss";
 
 import DefaultButton from "../../common/Buttons/DefaultButton";
 import ContentEditor from "./ContentEditor/ContentEditor";
+// import SpServices from "../../../../../services/SPServices/SpServices";
+import { useNavigate } from "react-router-dom";
+import SpServices from "../../../../../services/SPServices/SpServices";
+import {
+  AddAttachment,
+  UpdateAttachment,
+} from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
+import { LISTNAMES } from "../../../../../config/config";
 
 interface IProps {
   sectionNumber: number;
@@ -312,6 +320,7 @@ interface IProps {
   noActionBtns?: boolean;
   activeIndex?: any;
   setSectionData?: any;
+  currentSectionDetails?: any;
 }
 
 interface IPoint {
@@ -319,11 +328,9 @@ interface IPoint {
   value: string;
 }
 
-// import SpServices from "../../../../../services/SPServices/SpServices";
-import { useNavigate } from "react-router-dom";
-
 const SectionContent: React.FC<IProps> = ({
   sectionNumber,
+  currentSectionDetails,
   ID,
   noActionBtns,
   activeIndex,
@@ -338,7 +345,7 @@ const SectionContent: React.FC<IProps> = ({
     [key: string]: number;
   }>({});
 
-  // const [newAttachment, setNewAttachment] = useState<boolean>(true);
+  const [newAttachment, setNewAttachment] = useState<boolean>(true);
 
   const getNextPoint = (lastPoint: IPoint): IPoint => {
     const parts = lastPoint?.text.split(".");
@@ -477,8 +484,8 @@ const SectionContent: React.FC<IProps> = ({
   };
 
   const sortedPoints = points.sort((a, b) => {
-    const pointA = a.text.split(".").map(parseFloat);
-    const pointB = b.text.split(".").map(parseFloat);
+    const pointA = a?.text?.split(".")?.map(parseFloat);
+    const pointB = b?.text?.split(".")?.map(parseFloat);
 
     for (let i = 0; i < Math.min(pointA.length, pointB.length); i++) {
       if (pointA[i] !== pointB[i]) {
@@ -488,70 +495,62 @@ const SectionContent: React.FC<IProps> = ({
     return pointA.length - pointB.length;
   });
 
-  // const readTextFileFromTXT = (data: any): void => {
-  //   SpServices.SPReadAttachments({
-  //     ListName: "SectionDetails",
-  //     ListID: ID,
-  //     AttachmentName: data?.FileName,
-  //   })
-  //     .then((res: any) => {
-  //       const parsedValue: any = JSON.parse(res);
-  //       setPoints([...parsedValue]);
-  //     })
-  //     .catch((err: any) => {
-  //       console.log("err: ", err);
-  //     });
-  // };
+  const readTextFileFromTXT = (data: any): void => {
+    SpServices.SPReadAttachments({
+      ListName: "SectionDetails",
+      ListID: ID,
+      AttachmentName: data?.FileName,
+    })
+      .then((res: any) => {
+        const parsedValue: any = JSON.parse(res);
+        setPoints([...parsedValue]);
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+  };
 
-  // const getSectionData = (): void => {
-  //   SpServices.SPGetAttachments({ Listname: "SectionDetails", ID: ID })
-  //     .then((res: any) => {
-  //       if (res.length > 0) {
-  //         readTextFileFromTXT(res[0]);
-  //         // setNewAttachment(false);
-  //       }
-  //     })
-  //     .catch((err) => console.log(err));
-  // };
+  const getSectionData = async (): Promise<any> => {
+    await SpServices.SPGetAttachments({
+      Listname: LISTNAMES.SectionDetails,
+      ID: ID,
+    })
+      .then((res: any) => {
+        console.log("res: ", res);
+        const filteredItem: any = res?.filter(
+          (item: any) => item?.FileName === "Sample.txt"
+        );
+        if (
+          filteredItem.length > 0 &&
+          currentSectionDetails?.contentType === "list"
+        ) {
+          readTextFileFromTXT(filteredItem[0]);
+          setNewAttachment(false);
+        }
+      })
+      .catch((err) => console.log(err));
+  };
 
-  // const convertToTxtFile = (): any => {
-  //   const blob = new Blob([JSON.stringify(points)], { type: "text/plain" });
-  //   const file: any = new File([blob], "Sample.txt", { type: "text/plain" });
-  //   return file;
-  // };
+  const convertToTxtFile = (): any => {
+    const blob = new Blob([JSON.stringify(points)], { type: "text/plain" });
+    const file: any = new File([blob], "Sample.txt", { type: "text/plain" });
+    return file;
+  };
 
-  // const addAttachment = async (itemID: number, _file: any) => {
-  //   await SpServices.SPAddAttachment({
-  //     ListName: "SectionDetails",
-  //     ListID: itemID,
-  //     FileName: "Sample.txt",
-  //     Attachments: _file,
-  //   }).catch((err: any) => {
-  //     console.log("err: ", err);
-  //   });
-  // };
+  const addData = async (submissionType?: any): Promise<any> => {
+    const _file: any = await convertToTxtFile();
+    if (newAttachment) {
+      await AddAttachment(ID, _file, "list", submissionType === "submit");
+    } else {
+      await UpdateAttachment(ID, _file, "list", submissionType === "submit");
+    }
+  };
 
-  // const updateAttachment = async (itemID: number, _file: any) => {
-  //   await SpServices.SPDeleteAttachments({
-  //     ListName: "SectionDetails",
-  //     ListID: itemID,
-  //     AttachmentName: "Sample.txt",
-  //   }).catch((err) => console.log(err));
-  //   await addAttachment(itemID, _file);
-  // };
-
-  // const _addData = async () => {
-  //   const _file: any = await convertToTxtFile();
-  //   if (newAttachment) {
-  //     await addAttachment(ID, _file);
-  //   } else {
-  //     await updateAttachment(ID, _file);
-  //   }
-  // };
-
-  // React.useEffect(() => {
-  //   getSectionData();
-  // }, []);
+  useEffect(() => {
+    if (currentSectionDetails?.contentType === "list") {
+      getSectionData();
+    }
+  }, []);
 
   return (
     <div className="sectionWrapper">
@@ -570,8 +569,8 @@ const SectionContent: React.FC<IProps> = ({
           onClick={handleAddPoint}
         />
         {sortedPoints.length > 1 ? (
-          sortedPoints.map((item: any, idx: number) =>
-            item.text !== String(sectionNumber) ? renderPoint(item, idx) : ""
+          sortedPoints?.map((item: any, idx: number) =>
+            item?.text !== String(sectionNumber) ? renderPoint(item, idx) : ""
           )
         ) : (
           <p className={styles.placeholder}>Content goes here as points...</p>
@@ -614,14 +613,14 @@ const SectionContent: React.FC<IProps> = ({
               text="Save and Close"
               btnType="lightGreyVariant"
               onClick={() => {
-                // _addData();
+                addData();
               }}
             />
             <DefaultButton
               text="Submit"
               btnType="primary"
               onClick={() => {
-                // _addData();
+                addData("submit");
               }}
             />
           </div>

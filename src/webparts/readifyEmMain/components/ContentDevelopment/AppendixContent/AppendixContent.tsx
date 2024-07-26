@@ -24,7 +24,6 @@ const AppendixContent = ({
   currentDocDetailsData,
 }: IAppendixSectionProps): JSX.Element => {
   const navigate = useNavigate();
-  console.log("sectionDetails: ", sectionDetails);
 
   const showActionBtns: boolean =
     currentDocDetailsData?.taskRole?.toLowerCase() !== "consultant" &&
@@ -36,9 +35,11 @@ const AppendixContent = ({
     <>
       <div className={styles.scrollableApxSection}>
         <SetupHeader
-          version={sectionDetails.version}
-          type={sectionDetails.type}
-          headerTitle={sectionDetails.headerTitle}
+          type={currentDocDetailsData.documentType}
+          headerTitle={currentDocDetailsData.documentName}
+          appendixName={sectionDetails?.sectionName}
+          version={currentDocDetailsData.version}
+          appendixSection={true}
           primaryAuthorDefaultHeader={false}
           noActionBtns={true}
         />
@@ -56,14 +57,16 @@ const AppendixContent = ({
               activeIndex={activeIndex}
               setSectionData={setSectionData}
               sectionNumber={1}
-              ID={55}
+              ID={sectionDetails?.ID}
               noActionBtns={true}
             />
           ) : (
             <RichText
               activeIndex={activeIndex}
               setSectionData={setSectionData}
+              currentSectionData={sectionDetails}
               noActionBtns={true}
+              ID={sectionDetails?.ID}
             />
           )}
         </div>
@@ -112,14 +115,14 @@ const AppendixContent = ({
                 text="Save and Close"
                 btnType="lightGreyVariant"
                 onClick={() => {
-                  // _addData();
+                  // addData();
                 }}
               />
               <DefaultButton
                 text="Submit"
                 btnType="primary"
                 onClick={() => {
-                  // _addData();
+                  // addData();
                 }}
               />
             </>

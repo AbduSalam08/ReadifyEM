@@ -21,7 +21,6 @@ export const RoleAuth = async (
       const defineUserIsAdmin: any[] = res?.filter((item: any) => {
         return currentUser?.Email === item?.UserPrincipalName;
       });
-      console.log("defineUserIsAdmin: ", defineUserIsAdmin);
 
       // setting the current user details
       if (defineUserIsAdmin?.length === 0) {

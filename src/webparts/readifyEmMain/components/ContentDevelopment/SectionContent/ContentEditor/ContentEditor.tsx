@@ -41,7 +41,6 @@ const ContentEditor: React.FC<EditorProps> = ({
     if (html) {
       setEditorHtml(html);
     }
-    console.log(html);
   };
   const modules = {
     toolbar: [

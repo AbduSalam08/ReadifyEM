@@ -45,10 +45,8 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
     []
   );
   const [searchValue, setSearchValue] = useState("");
-  console.log(allDocumentsLink, selectedDocuments, filterDocuments);
 
   const handleSearchOnChange = (value: string): any => {
-    console.log(value);
     setSearchValue(value);
     const filterValues = allDocumentsLink?.filter((obj: any) => {
       if (obj.FileRef.toLowerCase().includes(value.toLowerCase().trim())) {
@@ -59,17 +57,17 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
   };
 
   const getApprovedDocumentsLinks = async (documents: any) => {
-    let approvedDocuments: any = await getApprovedDocuments(documents);
+    const approvedDocuments: any = await getApprovedDocuments(documents);
     setAllDocumentsLink(approvedDocuments);
   };
 
   const getMainDocumentDeatails = async (Data: any[]) => {
-    let tempDocumentsDetails: any = await getDocumentDeatils(Data);
+    const tempDocumentsDetails: any = await getDocumentDeatils(Data);
     getApprovedDocumentsLinks(tempDocumentsDetails);
   };
 
   const getAllSelectedDocuments = async () => {
-    let tempSelectedDocumentsArray: any = await getAllDocuments(
+    const tempSelectedDocumentsArray: any = await getAllDocuments(
       sectionId,
       documentId
     );
@@ -148,12 +146,12 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
   };
 
   const checkinNewSupportingDocument = (index: number) => {
-    let tempSelectedDocuments = [...selectedDocuments];
+    const tempSelectedDocuments = [...selectedDocuments];
     tempSelectedDocuments[index].isNew = false;
     setSelectedDocuments([...tempSelectedDocuments]);
   };
   const removeSupportingDocument = (index: number) => {
-    let tempSelectedDocuments = [...selectedDocuments];
+    const tempSelectedDocuments = [...selectedDocuments];
     tempSelectedDocuments[index].isDeleted = true;
     setSelectedDocuments([...tempSelectedDocuments]);
   };
@@ -177,7 +175,7 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
   }, []);
 
   const submitSupDocuments = async () => {
-    let reRender: boolean = await submitSupportingDocuments(
+    const reRender: boolean = await submitSupportingDocuments(
       [...selectedDocuments],
       documentId,
       sectionId

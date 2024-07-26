@@ -148,16 +148,7 @@ const ContentDevelopment = (): JSX.Element => {
   const [sectionDetails, setSectionDetails] = useState<any>(Details);
   const [AllSectionsData, setAllSectionsData] =
     useState<any>(AllSectionsDataMain);
-
-  console.log(
-    "AllSectionsData: rendered ",
-    AllSectionsData,
-    currentDocDetailsData
-  );
-
   const [toggleCommentSection, setToggleCommentSection] = useState(false);
-
-  // const [contentType, setContentType] = useState("initial");
 
   // Active Section Index
   const [activeSection, setActiveSection] = useState<number>(0);
@@ -354,8 +345,6 @@ const ContentDevelopment = (): JSX.Element => {
     condition: boolean,
     popupTitle: string
   ) => {
-    console.log(value, condition);
-
     if (condition) {
       setActiveSection(value);
       let Comments = getSectionComments(AllSectionsData[value].ID, dispatch);
@@ -385,7 +374,6 @@ const ContentDevelopment = (): JSX.Element => {
       );
       console.log(Comments);
     }
-    console.log("AllSectionsDataMain: ", AllSectionsDataMain);
   }, [AllSectionsDataMain?.length]);
 
   return (
@@ -427,41 +415,43 @@ const ContentDevelopment = (): JSX.Element => {
                 AllSectionsData[activeSection]?.sectionName?.toLowerCase() ===
                   "header" ? (
                   <SectionHeader
-                    activeSectionData={AllSectionsData}
+                    activeSectionData={AllSectionsData[activeSection]}
                     documentName={AllSectionsData[activeSection]?.sectionName}
                     sectionAuthor={
                       AllSectionsData[activeSection]?.sectionAuthor[0]
                     }
                     consultants={AllSectionsData[activeSection]?.consultants}
-                    PrimaryAuthor={sectionDetails.primaryAuthor[0]}
+                    PrimaryAuthor={
+                      AllSectionsData[activeSection]?.sectionAuthor[0]
+                    }
                     isPrimaryAuthor={true}
                   />
                 ) : (
                   <SectionHeader
-                    activeSectionData={AllSectionsData}
+                    activeSectionData={AllSectionsData[activeSection]}
                     documentName={AllSectionsData[activeSection]?.sectionName}
                     sectionAuthor={
                       AllSectionsData[activeSection]?.sectionAuthor[0]
                     }
                     consultants={AllSectionsData[activeSection]?.consultants}
-                    PrimaryAuthor={sectionDetails.primaryAuthor[0]}
+                    PrimaryAuthor={
+                      AllSectionsData[activeSection]?.sectionAuthor[0]
+                    }
                     isPrimaryAuthor={false}
                   />
                 )}
                 <SectionBanner
-                  version={sectionDetails.version}
-                  type={sectionDetails.type}
-                  createDate={currentDocDetailsData?.createdDate}
-                  lastReviewDate={currentDocDetailsData?.lastReviewDate || "-"}
-                  nextReviewDate={currentDocDetailsData?.nextReviewDate}
+                  sectionID={AllSectionsData[activeSection]?.ID}
+                  currentDocDetails={currentDocDetailsData}
+                  appendixHeader={false}
                 />
                 {AllSectionsData[activeSection]?.sectionType?.toLowerCase() ===
                 "header section" ? (
                   <div style={{ width: "100%" }}>
                     <SetupHeader
-                      version={sectionDetails.version}
-                      type={sectionDetails.type}
-                      headerTitle={sectionDetails.headerTitle}
+                      version={currentDocDetailsData?.version}
+                      type={currentDocDetailsData?.documentType}
+                      headerTitle={currentDocDetailsData?.documentName}
                       primaryAuthorDefaultHeader={true}
                     />
                   </div>
@@ -489,7 +479,7 @@ const ContentDevelopment = (): JSX.Element => {
                           activeSection
                         ]?.sectionType?.toLowerCase() === "appendix section" ? (
                         <AppendixContent
-                          sectionDetails={sectionDetails}
+                          sectionDetails={AllSectionsData[activeSection]}
                           contentType={
                             AllSectionsData[activeSection]?.contentType
                           }
@@ -584,7 +574,7 @@ const ContentDevelopment = (): JSX.Element => {
       {popupController?.map((popupData: any, index: number) => (
         <Popup
           key={index}
-          isLoading={sectionDetails?.isLoading}
+          isLoading={AllSectionsData[activeSection]?.isLoading}
           PopupType={popupData.popupType}
           onHide={() =>
             togglePopupVisibility(setPopupController, index, "close")

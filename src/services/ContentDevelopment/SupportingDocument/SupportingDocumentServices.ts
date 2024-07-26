@@ -6,7 +6,7 @@ import { LISTNAMES } from "../../../config/config";
 import SpServices from "../../SPServices/SpServices";
 
 const getAllDocuments = async (sectionId: number, documentId: number) => {
-  let tempSelectedDocumentsArray: any = [];
+  const tempSelectedDocumentsArray: any = [];
   await SpServices.SPReadItems({
     Listname: LISTNAMES.sectionSupportingDoc,
     Select: "*,sectionDetail/ID,documentDetail/ID",
@@ -25,7 +25,6 @@ const getAllDocuments = async (sectionId: number, documentId: number) => {
     ],
   })
     .then((res: any) => {
-      console.log(res);
       res?.forEach((obj: any) => {
         tempSelectedDocumentsArray.push({
           ID: obj?.ID,
@@ -61,7 +60,6 @@ const getDocumentDeatils = async (Data: any[]) => {
     ],
   })
     .then((res: any[]) => {
-      console.log(res);
       res?.forEach((item: any) => {
         const index = Data.findIndex(
           (obj: any) => obj.documentName === item.Title
@@ -98,7 +96,7 @@ const getDocumentDeatils = async (Data: any[]) => {
 };
 
 const getApprovedDocuments = (documents: any) => {
-  let approvedDocuments: any = [];
+  const approvedDocuments: any = [];
   documents.forEach(async (document: any) => {
     await SpServices.SPReadItemUsingId({
       Listname: LISTNAMES.AllDocuments,
@@ -108,9 +106,8 @@ const getApprovedDocuments = (documents: any) => {
       Expand: "File, Author",
     })
       .then((res: any) => {
-        console.log(res);
         if (res?.File?.ServerRelativeUrl) {
-          let tempDocumentDetails = {
+          const tempDocumentDetails = {
             ...document,
             ...res,
           };
@@ -143,11 +140,10 @@ const submitSupportingDocuments = (
   const tempDelUpdateArray = tempArray.filter(
     (obj: any) => !obj.isDeleted && !obj.status
   );
-  console.log(tempAddArray, tempDelArray, tempDelUpdateArray);
 
   if (tempAddArray.length > 0) {
     tempAddArray.forEach((obj: any) => {
-      let jsonObject = {
+      const jsonObject = {
         Title: obj.documentName,
         documentLink: obj.documentLink,
         sectionDetailId: sectionId,
@@ -167,7 +163,7 @@ const submitSupportingDocuments = (
   if (tempDelArray.length > 0) {
     // toast.error("Please select atleast one document to add");
     tempDelArray.forEach((obj: any, index: number) => {
-      let jsonObject = {
+      const jsonObject = {
         isDeleted: true,
       };
       SpServices.SPUpdateItem({
@@ -176,7 +172,6 @@ const submitSupportingDocuments = (
         RequestJSON: jsonObject,
       })
         .then((res: any) => {
-          console.log(res);
           renderCondition = true;
         })
         .catch((err) => {
@@ -186,7 +181,7 @@ const submitSupportingDocuments = (
   }
   if (tempDelUpdateArray.length > 0) {
     tempDelUpdateArray.forEach((obj: any) => {
-      let jsonObject = {
+      const jsonObject = {
         isDeleted: false,
       };
       SpServices.SPUpdateItem({
@@ -195,7 +190,6 @@ const submitSupportingDocuments = (
         RequestJSON: jsonObject,
       })
         .then((res: any) => {
-          console.log(res);
           renderCondition = true;
         })
         .catch((err) => {

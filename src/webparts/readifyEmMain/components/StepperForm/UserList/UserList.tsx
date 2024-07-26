@@ -114,6 +114,8 @@ const UserList = ({
                       ? {
                           ...item,
                           userData: value,
+                          status: item?.status || "pending",
+                          // ALl status for reviewers and approvers - pending, completed, rework, inprogress
                           isValid: !validateUserData(users[i].userData),
                         }
                       : item

@@ -38,7 +38,7 @@ import { togglePopupVisibility } from "../../utils/togglePopup";
 import { filterDataByURL } from "../../utils/NewDocumentUtils";
 import { CurrentUserIsAdmin } from "../../constants/DefineUser";
 import { useNavigate } from "react-router-dom";
-import { getSectionsDetails } from "../../services/ContentDeveloper/ContentDeveloperServices";
+import { getSectionsDetails } from "../../services/ContentDevelopment/CommonServices/CommonServices";
 // import * as dayjs from "dayjs";
 // utils
 // images
@@ -186,7 +186,6 @@ const TableOfContents = (): JSX.Element => {
       },
     ],
   });
-  console.log(tableData);
 
   // input changing handlers for filter & popup data's
   const handleInputChange = (value: any, inputName: string): void => {
@@ -606,7 +605,6 @@ const TableOfContents = (): JSX.Element => {
   // lifecycle hooks
   useEffect(() => {
     setMainData();
-    // console.log("s");
   }, [dispatch]);
 
   // template for future use
@@ -767,16 +765,6 @@ const TableOfContents = (): JSX.Element => {
                             };
                             getSectionsDetails(taskDetails, null, dispatch);
                           }
-                          // else {
-                          //   navigate(
-                          //     `/user/my_tasks/${item?.docName}/content_developer`
-                          //   );
-                          //   const taskDetails = {
-                          //     documentDetailsId: item?.ID,
-                          //     role: "admin",
-                          //   };
-                          //   getSectionsDetails(taskDetails, null, dispatch);
-                          // }
                         }}
                       />
                       <DefaultButton

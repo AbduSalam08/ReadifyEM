@@ -35,7 +35,6 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
   setSections,
   handleDrag,
 }) => {
-  console.log("sections: ", sections);
   const filteredSection = sections[objKey]?.filter(
     (item: any) => !item?.removed
   );
@@ -190,7 +189,6 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
   const hasDuplicates = checkDuplicatesForSDD(sections[objKey]);
 
   const SectionRow = (section: any): JSX.Element => {
-    console.log("section: ", section);
     const sectionName = section?.sectionName?.value;
     const sectionSelected = section?.sectionSelected;
     const sectionAuthorPlaceholder = "Section author";

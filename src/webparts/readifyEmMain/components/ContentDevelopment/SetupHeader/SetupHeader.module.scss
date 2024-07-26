@@ -67,11 +67,21 @@
   width: 100%;
   align-items: center;
   justify-content: space-between;
-  font-family: "interRegular", sans-serif;
   background: #eee;
   padding: 5px 15px;
-  border-radius: 4px;
   height: 35px;
+  border-radius: 4px;
+  p {
+    font-family: "interRegular", sans-serif;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    /* display: -webkit-box; */
+    // -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-width: 90%;
+    height: 16px;
+  }
 }
 /*
     justify-content: flex-start;
