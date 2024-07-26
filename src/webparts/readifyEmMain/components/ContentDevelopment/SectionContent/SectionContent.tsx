@@ -224,7 +224,7 @@
 //     await addAttchment(itemID, _file);
 //   };
 
-//   const _addData = async () => {
+//   const addData = async () => {
 //     const _file: any = await convertToTxtFile();
 //     if (newAttachment) {
 //       await addAttchment(ID, _file);
@@ -278,14 +278,14 @@
 //             text="Save and Close"
 //             btnType="lightGreyVariant"
 //             onClick={() => {
-//               _addData();
+//               addData();
 //             }}
 //           />
 //           <DefaultButton
 //             text="Submit"
 //             btnType="primary"
 //             onClick={() => {
-//               _addData();
+//               addData();
 //             }}
 //           />
 //         </div>
@@ -300,25 +300,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./SectionContent.module.scss";
 
 import DefaultButton from "../../common/Buttons/DefaultButton";
 import ContentEditor from "./ContentEditor/ContentEditor";
-
-interface IProps {
-  sectionNumber: number;
-  ID: number;
-  noActionBtns?: boolean;
-  activeIndex?: any;
-  setSectionData?: any;
-}
-
-interface IPoint {
-  text: string;
-  value: string;
-}
-
 // import SpServices from "../../../../../services/SPServices/SpServices";
 import { useNavigate } from "react-router-dom";
 import SpServices from "../../../../../services/SPServices/SpServices";
@@ -328,8 +314,23 @@ import {
 } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { LISTNAMES } from "../../../../../config/config";
 
+interface IProps {
+  sectionNumber: number;
+  ID: number;
+  noActionBtns?: boolean;
+  activeIndex?: any;
+  setSectionData?: any;
+  currentSectionDetails?: any;
+}
+
+interface IPoint {
+  text: string;
+  value: string;
+}
+
 const SectionContent: React.FC<IProps> = ({
   sectionNumber,
+  currentSectionDetails,
   ID,
   noActionBtns,
   activeIndex,
@@ -483,8 +484,8 @@ const SectionContent: React.FC<IProps> = ({
   };
 
   const sortedPoints = points.sort((a, b) => {
-    const pointA = a.text.split(".").map(parseFloat);
-    const pointB = b.text.split(".").map(parseFloat);
+    const pointA = a?.text?.split(".")?.map(parseFloat);
+    const pointB = b?.text?.split(".")?.map(parseFloat);
 
     for (let i = 0; i < Math.min(pointA.length, pointB.length); i++) {
       if (pointA[i] !== pointB[i]) {
@@ -509,14 +510,20 @@ const SectionContent: React.FC<IProps> = ({
       });
   };
 
-  const getSectionData = (): void => {
-    SpServices.SPGetAttachments({ Listname: LISTNAMES.SectionDetails, ID: ID })
+  const getSectionData = async (): Promise<any> => {
+    await SpServices.SPGetAttachments({
+      Listname: LISTNAMES.SectionDetails,
+      ID: ID,
+    })
       .then((res: any) => {
         console.log("res: ", res);
         const filteredItem: any = res?.filter(
           (item: any) => item?.FileName === "Sample.txt"
         );
-        if (filteredItem.length > 0) {
+        if (
+          filteredItem.length > 0 &&
+          currentSectionDetails?.contentType === "list"
+        ) {
           readTextFileFromTXT(filteredItem[0]);
           setNewAttachment(false);
         }
@@ -530,17 +537,19 @@ const SectionContent: React.FC<IProps> = ({
     return file;
   };
 
-  const _addData = async () => {
+  const addData = async (submissionType?: any): Promise<any> => {
     const _file: any = await convertToTxtFile();
     if (newAttachment) {
-      await AddAttachment(ID, _file);
+      await AddAttachment(ID, _file, "list", submissionType === "submit");
     } else {
-      await UpdateAttachment(ID, _file);
+      await UpdateAttachment(ID, _file, "list", submissionType === "submit");
     }
   };
 
-  React.useEffect(() => {
-    getSectionData();
+  useEffect(() => {
+    if (currentSectionDetails?.contentType === "list") {
+      getSectionData();
+    }
   }, []);
 
   return (
@@ -560,8 +569,8 @@ const SectionContent: React.FC<IProps> = ({
           onClick={handleAddPoint}
         />
         {sortedPoints.length > 1 ? (
-          sortedPoints.map((item: any, idx: number) =>
-            item.text !== String(sectionNumber) ? renderPoint(item, idx) : ""
+          sortedPoints?.map((item: any, idx: number) =>
+            item?.text !== String(sectionNumber) ? renderPoint(item, idx) : ""
           )
         ) : (
           <p className={styles.placeholder}>Content goes here as points...</p>
@@ -604,14 +613,14 @@ const SectionContent: React.FC<IProps> = ({
               text="Save and Close"
               btnType="lightGreyVariant"
               onClick={() => {
-                _addData();
+                addData();
               }}
             />
             <DefaultButton
               text="Submit"
               btnType="primary"
               onClick={() => {
-                _addData();
+                addData("submit");
               }}
             />
           </div>

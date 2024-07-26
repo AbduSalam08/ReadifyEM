@@ -1,23 +1,35 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 // css
 import "./RichText.css";
 import DefaultButton from "../../common/Buttons/DefaultButton";
+import {
+  AddAttachment,
+  UpdateAttachment,
+} from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
+import SpServices from "../../../../../services/SPServices/SpServices";
+import { LISTNAMES } from "../../../../../config/config";
 
 interface IRichTextProps {
   noActionBtns?: boolean;
+  currentSectionData?: any;
   activeIndex?: any;
   setSectionData?: any;
+  ID?: any;
 }
 
 const RichText = ({
+  currentSectionData,
   noActionBtns,
   activeIndex,
   setSectionData,
+  ID,
 }: IRichTextProps): JSX.Element => {
+  console.log("ID: ", ID);
   const modules: any = {
     toolbar: [
       [
@@ -69,6 +81,7 @@ const RichText = ({
     "background",
     "color",
   ];
+  const [newAttachment, setNewAttachment] = useState<boolean>(true);
 
   const [description, setDescription] = useState<string>("");
 
@@ -76,6 +89,70 @@ const RichText = ({
     setDescription(newText === "<p><br></p>" ? "" : newText);
     return newText;
   };
+
+  const readTextFileFromTXT = (data: any): void => {
+    SpServices.SPReadAttachments({
+      ListName: "SectionDetails",
+      ListID: ID,
+      AttachmentName: data?.FileName,
+    })
+      .then((res: any) => {
+        const parsedValue: any = JSON.parse(res);
+        setDescription(parsedValue);
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+  };
+
+  const getSectionData = async (): Promise<any> => {
+    await SpServices.SPGetAttachments({
+      Listname: LISTNAMES.SectionDetails,
+      ID: ID,
+    })
+      .then((res: any) => {
+        console.log("res: ", res);
+        const filteredItem: any = res?.filter(
+          (item: any) => item?.FileName === "Sample.txt"
+        );
+        if (
+          filteredItem?.length !== 0 &&
+          currentSectionData?.contentType === "paragraph"
+        ) {
+          readTextFileFromTXT(filteredItem[0]);
+          setNewAttachment(false);
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const convertToTxtFile = (): any => {
+    const blob = new Blob([JSON.stringify(description)], {
+      type: "text/plain",
+    });
+    const file: any = new File([blob], "Sample.txt", { type: "text/plain" });
+    return file;
+  };
+
+  const addData = async (submissionType?: any): Promise<any> => {
+    const _file: any = await convertToTxtFile();
+    if (newAttachment) {
+      await AddAttachment(ID, _file, "paragraph", submissionType === "submit");
+    } else {
+      await UpdateAttachment(
+        ID,
+        _file,
+        "paragraph",
+        submissionType === "submit"
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (currentSectionData?.contentType === "paragraph") {
+      getSectionData();
+    }
+  }, []);
 
   return (
     <div
@@ -146,15 +223,15 @@ const RichText = ({
             <DefaultButton
               text="Save and Close"
               btnType="lightGreyVariant"
-              onClick={() => {
-                // _addData();
+              onClick={async () => {
+                await addData();
               }}
             />
             <DefaultButton
               text="Submit"
               btnType="primary"
-              onClick={() => {
-                // _addData();
+              onClick={async () => {
+                await addData("submit");
               }}
             />
             {/* </> */}
