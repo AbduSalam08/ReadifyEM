@@ -13,6 +13,7 @@ import {
 } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import SpServices from "../../../../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../../../../config/config";
+import { useNavigate } from "react-router-dom";
 
 interface IRichTextProps {
   noActionBtns?: boolean;
@@ -20,6 +21,7 @@ interface IRichTextProps {
   activeIndex?: any;
   setSectionData?: any;
   ID?: any;
+  onChange?: any;
 }
 
 const RichText = ({
@@ -28,7 +30,9 @@ const RichText = ({
   activeIndex,
   setSectionData,
   ID,
+  onChange,
 }: IRichTextProps): JSX.Element => {
+  console.log("currentSectionData: ", currentSectionData);
   console.log("ID: ", ID);
   const modules: any = {
     toolbar: [
@@ -64,7 +68,7 @@ const RichText = ({
       ["clean"],
     ],
   };
-
+  const navigate = useNavigate();
   const formats: string[] = [
     "header",
     "bold",
@@ -87,6 +91,7 @@ const RichText = ({
 
   const _handleOnChange = (newText: string): string => {
     setDescription(newText === "<p><br></p>" ? "" : newText);
+    onChange(newText === "<p><br></p>" ? "" : newText);
     return newText;
   };
 
@@ -97,8 +102,12 @@ const RichText = ({
       AttachmentName: data?.FileName,
     })
       .then((res: any) => {
-        const parsedValue: any = JSON.parse(res);
-        setDescription(parsedValue);
+        console.log("res: ", res);
+        const parsedValue: any = res ? JSON.parse(res) : "";
+        if (typeof parsedValue === "string") {
+          setDescription(parsedValue);
+          onChange && onChange(parsedValue);
+        }
       })
       .catch((err: any) => {
         console.log("err: ", err);
@@ -117,7 +126,7 @@ const RichText = ({
         );
         if (
           filteredItem?.length !== 0 &&
-          currentSectionData?.contentType === "paragraph"
+          currentSectionData?.contentType !== "list"
         ) {
           readTextFileFromTXT(filteredItem[0]);
           setNewAttachment(false);
@@ -143,7 +152,8 @@ const RichText = ({
         ID,
         _file,
         "paragraph",
-        submissionType === "submit"
+        submissionType === "submit",
+        "Sample.txt"
       );
     }
   };
@@ -194,14 +204,7 @@ const RichText = ({
               text="Cancel"
               btnType="darkGreyVariant"
               onClick={() => {
-                setSectionData((prev: any) => {
-                  const updatedSections = [...prev];
-                  updatedSections[activeIndex] = {
-                    ...updatedSections[activeIndex],
-                    contentType: "list",
-                  };
-                  return updatedSections;
-                });
+                navigate(-1);
               }}
             />
 
