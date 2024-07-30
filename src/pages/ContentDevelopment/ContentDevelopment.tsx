@@ -347,7 +347,7 @@ const ContentDevelopment = (): JSX.Element => {
   ) => {
     if (condition) {
       setActiveSection(value);
-      let Comments = getSectionComments(AllSectionsData[value].ID, dispatch);
+      const Comments = getSectionComments(AllSectionsData[value].ID, dispatch);
       console.log(Comments);
     } else {
       togglePopupVisibility(setPopupController, value, "open", popupTitle);
@@ -368,13 +368,17 @@ const ContentDevelopment = (): JSX.Element => {
   useEffect(() => {
     if (AllSectionsDataMain?.length !== 0) {
       setAllSectionsData(AllSectionsDataMain);
-      let Comments = getSectionComments(
+      const Comments = getSectionComments(
         AllSectionsDataMain[activeItemsFirstIndex].ID,
         dispatch
       );
       console.log(Comments);
     }
   }, [AllSectionsDataMain?.length]);
+
+  useEffect(() => {
+    setAllSectionsData(AllSectionsDataMain);
+  }, [AllSectionsDataMain]);
 
   return (
     <>
@@ -441,7 +445,7 @@ const ContentDevelopment = (): JSX.Element => {
                   />
                 )}
                 <SectionBanner
-                  sectionID={AllSectionsData[activeSection]?.ID}
+                  sectionDetails={AllSectionsData[activeSection]}
                   currentDocDetails={currentDocDetailsData}
                   appendixHeader={false}
                 />
@@ -452,6 +456,7 @@ const ContentDevelopment = (): JSX.Element => {
                       version={currentDocDetailsData?.version}
                       type={currentDocDetailsData?.documentType}
                       headerTitle={currentDocDetailsData?.documentName}
+                      sectionDetails={AllSectionsData[activeSection]}
                       primaryAuthorDefaultHeader={true}
                     />
                   </div>
@@ -503,7 +508,10 @@ const ContentDevelopment = (): JSX.Element => {
                         <SectionContent
                           activeIndex={activeSection}
                           setSectionData={setAllSectionsData}
-                          sectionNumber={1}
+                          currentSectionDetails={AllSectionsData[activeSection]}
+                          sectionNumber={
+                            AllSectionsData[activeSection]?.sectionOrder
+                          }
                           ID={AllSectionsData[activeSection]?.ID}
                           noActionBtns={!showActionBtns}
                         />

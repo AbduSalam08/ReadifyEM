@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 // import { memo, useEffect, useState } from "react";
@@ -5,13 +7,20 @@ import styles from "./SetupHeader.module.scss";
 import CustomInput from "../../common/CustomInputFields/CustomInput";
 import DefaultButton from "../../common/Buttons/DefaultButton";
 import { FileUpload } from "primereact/fileupload";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "primereact/button";
 import "./SetupHeader.css";
 import { useNavigate } from "react-router-dom";
+import { CONFIG } from "../../../../../config/config";
+import {
+  addAppendixHeaderAttachmentData,
+  addHeaderAttachmentData,
+  getSectionData,
+  getSectionDataFromAppendixList,
+} from "../../../../../utils/contentDevelopementUtils";
 
 interface Props {
-  sectionID?: any;
+  sectionDetails: any;
   version: string;
   type: string;
   headerTitle: string;
@@ -19,6 +28,7 @@ interface Props {
   primaryAuthorDefaultHeader?: boolean;
   noActionBtns?: boolean;
   appendixSection?: boolean;
+  onChange?: any;
 }
 
 const SetupHeader: React.FC<Props> = ({
@@ -29,47 +39,67 @@ const SetupHeader: React.FC<Props> = ({
   noActionBtns,
   appendixSection,
   appendixName,
-  sectionID,
+  sectionDetails,
+  onChange,
 }) => {
   const fileUploadRef = useRef<any>(null);
+
   const initialHeaderDetails = {
     version: version,
     type: type,
     headerTitle: headerTitle,
     appendixName: appendixName,
   };
+
   const [totalSize, setTotalSize] = useState(0);
 
+  const [file, setFile] = useState<{
+    fileData: any;
+    fileName: string;
+  }>({
+    fileData: [],
+    fileName: "",
+  });
+
   const navigate = useNavigate();
-
-  const onTemplateUpload = (e: any): void => {
-    let _totalSize = 0;
-    e.files.forEach((file: any) => {
-      _totalSize += file.size || 0;
-    });
-
-    setTotalSize(_totalSize);
-  };
 
   const onTemplateSelect = (e: any): void => {
     let _totalSize = totalSize;
     const files = e.files;
+    console.log("files: ", files);
 
     Object.keys(files).forEach((key) => {
       _totalSize += files[key].size || 0;
     });
     setTotalSize(_totalSize);
+    setFile({
+      fileData: files[0],
+      fileName: `headerImg.${files[0]?.name?.split(".").slice(-1)[0]}`,
+    });
+    onChange({
+      fileData: files[0],
+      fileName: `headerImg.${files[0]?.name?.split(".").slice(-1)[0]}`,
+    });
   };
 
   const onTemplateClear = (): void => {
     setTotalSize(0);
+    setFile({
+      fileData: [],
+      fileName: "",
+    });
   };
+
   const onTemplateRemove = (file: any, callback: any): void => {
     setTotalSize(totalSize - file.size);
+    setFile({
+      fileData: [],
+      fileName: "",
+    });
     callback();
   };
 
-  const itemTemplate = (file: any, props: any): any => {
+  const itemTemplate = (fileData: any, props: any): any => {
     return (
       <div
         style={{
@@ -88,19 +118,31 @@ const SetupHeader: React.FC<Props> = ({
           }}
         >
           <img
-            alt={file.name}
+            alt={fileData.name}
             role="presentation"
-            src={file.objectURL}
+            src={
+              fileData.objectURL ||
+              `${CONFIG.tenantURL}${file.fileData?.ServerRelativeUrl}`
+            }
             width={"100%"}
-            height={"100%"}
+            style={{
+              height: "150px",
+            }}
           />
           <span className={styles.selectedFileName}>
-            <p>{file.name}</p>
+            <p>{fileData.name || file.fileData?.FileName}</p>
             <Button
               type="button"
               icon="pi pi-times"
               className="p-button-outlined p-button-rounded p-button-danger ml-auto imageDeleteBtn"
-              onClick={() => onTemplateRemove(file, props.onRemove)}
+              onClick={() => {
+                !props?.onRemove
+                  ? setFile((prev: any) => ({
+                      ...prev,
+                      fileData: [],
+                    }))
+                  : onTemplateRemove(file, props.onRemove);
+              }}
             />
           </span>
         </div>
@@ -154,6 +196,29 @@ const SetupHeader: React.FC<Props> = ({
     );
   };
 
+  const setFileDataInitial = (data: any): any => {
+    console.log("data: ", data);
+    setFile(data);
+    if (onChange) {
+      onChange(data);
+    }
+  };
+
+  useEffect(() => {
+    if (!appendixSection) {
+      getSectionData(sectionDetails, setFileDataInitial);
+    } else {
+      getSectionDataFromAppendixList(sectionDetails, setFileDataInitial);
+    }
+    console.log("load");
+  }, []);
+
+  useEffect(() => {
+    if (onChange) {
+      onChange(file);
+    }
+  }, [file]);
+
   return (
     <div className={styles.textPlayGround}>
       <div
@@ -171,16 +236,17 @@ const SetupHeader: React.FC<Props> = ({
             ref={fileUploadRef}
             // name="demo[]"
             // url="/api/upload"
-            multiple
+            multiple={false}
             accept="image/*"
             maxFileSize={1000000}
-            onUpload={onTemplateUpload}
             onSelect={onTemplateSelect}
             // onError={onTemplateClear}
             onClear={onTemplateClear}
             headerTemplate={headerTemplate}
             itemTemplate={itemTemplate}
-            emptyTemplate={emptyTemplate}
+            emptyTemplate={
+              file.fileData?.ServerRelativeUrl ? itemTemplate : emptyTemplate
+            }
             // uploadLabel="Browse"
             chooseLabel="Browse"
           />
@@ -239,8 +305,20 @@ const SetupHeader: React.FC<Props> = ({
               <DefaultButton
                 text="Submit"
                 btnType="primary"
-                onClick={() => {
-                  // addData();
+                onClick={async () => {
+                  if (appendixSection) {
+                    await addAppendixHeaderAttachmentData(
+                      "submit",
+                      sectionDetails,
+                      file
+                    );
+                  } else {
+                    await addHeaderAttachmentData(
+                      "submit",
+                      sectionDetails,
+                      file
+                    );
+                  }
                 }}
               />
             </div>

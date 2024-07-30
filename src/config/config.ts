@@ -1,5 +1,6 @@
 const CONFIG = {
   webURL: "https://chandrudemo.sharepoint.com/sites/ReadifyEM",
+  tenantURL: "https://chandrudemo.sharepoint.com/",
 };
 
 const LISTNAMES = {
@@ -12,6 +13,7 @@ const LISTNAMES = {
   Definition: "Definition",
   sectionDefinition: "SectionDefinition",
   sectionSupportingDoc: "SupportingDocuments",
+  AppendixHeader: "AppendixHeader",
   AllDocuments: "AllDocuments",
 };
 const LIBNAMES = {

@@ -9,6 +9,7 @@ import {
   setCDDocDetails,
   setCDSectionData,
 } from "../../../redux/features/ContentDevloperSlice";
+
 export const getSectionsDetails = async (
   taskDetails: any,
   currentUserDetails: any,
@@ -84,7 +85,7 @@ export const getSectionsDetails = async (
             ID: item?.ID,
             commentsCount: commentsResponse.length,
             sectionComments: commentsResponse,
-            contentType: item?.contentType || "initial",
+            contentType: item?.typeOfContent || "initial",
           };
 
           let sectionPermission = false;
@@ -221,6 +222,7 @@ export const getSectionsDetails = async (
         "document"
       ),
       nextReviewDate: DocDetailsResponseData?.nextReviewDate,
+      contentType: DocDetailsResponseData?.typeOfContent || "initial",
       isLoading: false,
       taskRole: taskDetails?.role,
       taskID: taskDetails?.taskID ? taskDetails?.taskID[0] : null,
@@ -246,18 +248,234 @@ export const AddAttachment = async (
   itemID: number,
   _file: any,
   contentType: any,
-  saveAndClose: boolean
+  saveAndClose: boolean,
+  fileName?: string,
+  listType?: "appendix",
+  documentID?: any,
+  sectionID?: any
 ): Promise<any> => {
   debugger;
+
+  if (listType === "appendix" && !itemID && sectionID) {
+    await SpServices.SPAddItem({
+      Listname: LISTNAMES.AppendixHeader,
+      RequestJSON: {
+        sectionDetailId: sectionID,
+        documentDetailId: documentID,
+      },
+    })
+      .then(async (res: any) => {
+        console.log("res: ", res);
+        await SpServices.SPAddAttachment({
+          ListName:
+            listType === "appendix"
+              ? LISTNAMES.AppendixHeader
+              : LISTNAMES.SectionDetails,
+          ListID: res?.data?.ID,
+          FileName: fileName,
+          Attachments: _file,
+        })
+          .then((res: any) => {
+            console.log("res: ", res);
+            // _getData();
+          })
+          .catch((err: any) => {
+            console.log("err: ", err);
+          });
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+  } else if (listType === "appendix") {
+    await SpServices.SPAddAttachment({
+      ListName: LISTNAMES.AppendixHeader,
+      ListID: itemID,
+      FileName: fileName,
+      Attachments: _file,
+    })
+      .then((res: any) => {
+        console.log("res: ", res);
+        // _getData();
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+  } else {
+    await SpServices.SPAddAttachment({
+      ListName: LISTNAMES.SectionDetails,
+      ListID: itemID,
+      FileName: fileName,
+      Attachments: _file,
+    })
+      .then((res: any) => {
+        console.log("res: ", res);
+        // _getData();
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+  }
+
+  if (listType !== "appendix") {
+    await SpServices.SPUpdateItem({
+      ID: itemID,
+      Listname: LISTNAMES.SectionDetails,
+      RequestJSON: {
+        typeOfContent: contentType,
+        sectionSubmitted: saveAndClose ? saveAndClose : false,
+      },
+    })
+      .then((res: any) => {
+        console.log("res: ", res);
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+  }
+};
+
+export const UpdateAttachment = async (
+  itemID: number,
+  _file: any,
+  contentType: any,
+  saveAndClose?: boolean | any,
+  fileName?: string,
+  deleteAttachment?: any,
+  listType?: "appendix",
+  documentID?: any,
+  sectionID?: any
+): Promise<any> => {
+  if (deleteAttachment) {
+    await SpServices.SPDeleteAttachments({
+      ListName:
+        listType === "appendix"
+          ? LISTNAMES.AppendixHeader
+          : LISTNAMES.SectionDetails,
+      ListID: itemID,
+      AttachmentName: fileName,
+    })
+      .then((res) => console.log("res:", res))
+      .catch((err) => console.log(err));
+  } else {
+    await SpServices.SPDeleteAttachments({
+      ListName:
+        listType === "appendix"
+          ? LISTNAMES.AppendixHeader
+          : LISTNAMES.SectionDetails,
+      ListID: itemID,
+      AttachmentName: fileName,
+    })
+      .then((res) => console.log("res:", res))
+      .catch((err) => console.log(err));
+
+    await AddAttachment(
+      itemID,
+      _file,
+      contentType,
+      saveAndClose,
+      fileName,
+      listType,
+      documentID,
+      sectionID
+    );
+  }
+};
+
+export const AddAppendixAttachment = async (
+  itemID: number,
+  _file: any,
+  documentID: any,
+  sectionID: any,
+  fileName?: string
+): Promise<any> => {
+  debugger;
+
+  if (!itemID && sectionID) {
+    await SpServices.SPAddItem({
+      Listname: LISTNAMES.AppendixHeader,
+      RequestJSON: {
+        sectionDetailId: sectionID,
+        documentDetailId: documentID,
+      },
+    })
+      .then(async (res: any) => {
+        console.log("res: ", res);
+        await SpServices.SPAddAttachment({
+          ListName: LISTNAMES.AppendixHeader,
+          ListID: res?.data?.ID,
+          FileName: fileName,
+          Attachments: _file,
+        })
+          .then((res: any) => {
+            console.log("res: ", res);
+          })
+          .catch((err: any) => {
+            console.log("err: ", err);
+          });
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+  } else {
+    await SpServices.SPAddAttachment({
+      ListName: LISTNAMES.AppendixHeader,
+      ListID: itemID,
+      FileName: fileName,
+      Attachments: _file,
+    })
+      .then((res: any) => {
+        console.log("res: ", res);
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+  }
+};
+
+export const UpdateAppendixAttachment = async (
+  itemID: number,
+  _file: any,
+  fileName?: string,
+  deleteAttachment?: any,
+  documentID?: any,
+  sectionID?: any
+): Promise<any> => {
+  if (deleteAttachment) {
+    await SpServices.SPDeleteAttachments({
+      ListName: LISTNAMES.AppendixHeader,
+      ListID: itemID,
+      AttachmentName: fileName,
+    })
+      .then((res) => console.log("res:", res))
+      .catch((err) => console.log(err));
+  } else {
+    await SpServices.SPDeleteAttachments({
+      ListName: LISTNAMES.AppendixHeader,
+      ListID: itemID,
+      AttachmentName: fileName,
+    })
+      .then((res) => console.log("res:", res))
+      .catch((err) => console.log(err));
+
+    await AddAppendixAttachment(itemID, _file, documentID, sectionID, fileName);
+  }
+};
+
+export const AddSectionAttachment = async (
+  itemID: number,
+  _file: any,
+  contentType: any,
+  saveAndClose: boolean,
+  fileName?: string
+): Promise<any> => {
   await SpServices.SPAddAttachment({
-    ListName: "SectionDetails",
+    ListName: LISTNAMES.SectionDetails,
     ListID: itemID,
-    FileName: "Sample.txt",
+    FileName: fileName,
     Attachments: _file,
   })
     .then((res: any) => {
       console.log("res: ", res);
-      // _getData();
     })
     .catch((err: any) => {
       console.log("err: ", err);
@@ -279,18 +497,37 @@ export const AddAttachment = async (
     });
 };
 
-export const UpdateAttachment = async (
+export const UpdateSectionAttachment = async (
   itemID: number,
   _file: any,
   contentType: any,
-  saveAndClose?: boolean | any
+  saveAndClose?: boolean | any,
+  fileName?: string,
+  deleteAttachment?: any
 ): Promise<any> => {
-  await SpServices.SPDeleteAttachments({
-    ListName: "SectionDetails",
-    ListID: itemID,
-    AttachmentName: "Sample.txt",
-  })
-    .then((res) => console.log("res:", res))
-    .catch((err) => console.log(err));
-  await AddAttachment(itemID, _file, contentType, saveAndClose);
+  if (deleteAttachment) {
+    await SpServices.SPDeleteAttachments({
+      ListName: LISTNAMES.SectionDetails,
+      ListID: itemID,
+      AttachmentName: fileName,
+    })
+      .then((res) => console.log("res:", res))
+      .catch((err) => console.log(err));
+  } else {
+    await SpServices.SPDeleteAttachments({
+      ListName: LISTNAMES.SectionDetails,
+      ListID: itemID,
+      AttachmentName: fileName,
+    })
+      .then((res) => console.log("res:", res))
+      .catch((err) => console.log(err));
+
+    await AddSectionAttachment(
+      itemID,
+      _file,
+      contentType,
+      saveAndClose,
+      fileName
+    );
+  }
 };
