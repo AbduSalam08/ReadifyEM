@@ -4,8 +4,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { LISTNAMES } from "../../../config/config";
 import SpServices from "../../SPServices/SpServices";
-
 import { setSectionComments } from "../../../redux/features/SectionCommentsSlice";
+import { setCDSectionData } from "../../../redux/features/ContentDevloperSlice";
 
 // interface definitionDetails {
 //   ID: number;
@@ -63,9 +63,13 @@ const addSectionComment = async (
   sectionComments: any[],
   dispatcher: any,
   currentUser: any,
-  setLoaderState: any
+  setLoaderState: any,
+  setToastState: any,
+  sectionId: any,
+  AllSectionsDataMain: any
 ): Promise<boolean> => {
-  console.log(jsonObject);
+  debugger;
+  console.log(jsonObject, sectionId, AllSectionsDataMain);
   let clearInput: boolean = false;
   let tempArray: any[] = [...sectionComments];
   try {
@@ -93,15 +97,32 @@ const addSectionComment = async (
             role: jsonObject.role,
             isRejectedComment: res?.data?.isRejectedComment ? true : false,
           });
-          setLoaderState({
-            isLoading: {
-              inprogress: false,
-              success: true,
-              error: false,
-            },
-            visibility: true,
-            text: `Comment sended successfully!`,
-            secondaryText: `Comment sended successfully`,
+          //   setLoaderState({
+          //     isLoading: {
+          //       inprogress: false,
+          //       success: true,
+          //       error: false,
+          //     },
+          //     visibility: true,
+          //     text: `Comment sended successfully!`,
+          //     secondaryText: `Comment sended successfully`,
+          //   });
+
+          let updateArray = AllSectionsDataMain.map((obj: any) => {
+            if (obj.ID === sectionId) {
+              return { ...obj, commentsCount: obj.commentsCount + 1 };
+            } else {
+              return obj;
+            }
+          });
+          console.log(updateArray);
+          dispatcher(setCDSectionData([...updateArray]));
+          setToastState({
+            isShow: true,
+            severity: "success",
+            title: "Comment Submit",
+            message: "Your comment added successfully",
+            duration: 3000,
           });
         }
         dispatcher(setSectionComments(tempArray));

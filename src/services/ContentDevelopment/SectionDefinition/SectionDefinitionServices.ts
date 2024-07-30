@@ -285,7 +285,8 @@ const addNewDefinition = async (
   definitionsData: any,
   documentId: number,
   sectionId: number,
-  setLoaderState: any
+  setLoaderState: any,
+  setSelectedDefinitions: any
 ) => {
   try {
     const payloadJSON = {
@@ -328,6 +329,21 @@ const addNewDefinition = async (
               text: `Definition created successfully!`,
               secondaryText: `The Standardized definition template "${definitionsData?.definitionName}" has been created successfully! `,
             });
+            setSelectedDefinitions((prev: any) => [
+              ...prev,
+              {
+                ID: res.data.ID,
+                definitionTitle: definitionsData.definitionName,
+                definitionDescription: definitionsData.definitionDescription,
+                referenceAuthor: definitionsData.referenceAuthor,
+                referenceLink: definitionsData.referenceLink,
+                referenceTitle: definitionsData.referenceTitle,
+                isDeleted: false,
+                isNew: false,
+                isSelected: false,
+                status: false,
+              },
+            ]);
             // getAllSecDefinitions();
           })
           .catch((err) => {
