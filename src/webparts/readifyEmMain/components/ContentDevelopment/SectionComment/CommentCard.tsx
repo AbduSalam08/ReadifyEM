@@ -2,6 +2,7 @@
 import { memo } from "react";
 import styles from "./SectionComments.module.scss";
 import MultiplePeoplePersona from "../../common/CustomInputFields/MultiplePeoplePersona";
+import dayjs from "dayjs";
 
 interface ICommentCardProps {
   item: any;
@@ -17,7 +18,12 @@ const CommentCard = ({ item, index }: ICommentCardProps): JSX.Element => {
           <span className={styles.role}>{item.role}</span>
         </div>
         <p>{item.comment}</p>
-        <span className={styles.date}>{item.commentDateAndTime}</span>
+        <span className={styles.date}>
+          {new Date(new Date()).getDate() !==
+          new Date(item.commentDateAndTime).getDate()
+            ? dayjs(item.commentDateAndTime).format("DD-MMM-YYYY hh:mm A")
+            : dayjs(item.commentDateAndTime).format("hh:mm A")}
+        </span>
       </div>
       <div className={styles.commentAuthorPersona}>
         <MultiplePeoplePersona data={[item?.commentAuthor]} />

@@ -16,6 +16,8 @@ interface Props {
 }
 
 const AllSections: React.FC<Props> = ({ activeSection, data, onChange }) => {
+  console.log(data);
+
   const selectSection = (index: number, type: string): any => {
     if (type === "View comments") {
       onChange(index, false, "Promoted Comments");

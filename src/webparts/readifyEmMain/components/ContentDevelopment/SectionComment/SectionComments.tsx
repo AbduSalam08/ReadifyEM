@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { useState } from "react";
 import styles from "./SectionComments.module.scss";
 import CustomInput from "../../common/CustomInputFields/CustomInput";
@@ -13,6 +14,7 @@ import { addSectionComment } from "../../../../../services/ContentDevelopment/Se
 import { initialPopupLoaders } from "../../../../../config/config";
 import { IPopupLoaders } from "../../../../../interface/MainInterface";
 import AlertPopup from "../../common/Popups/AlertPopup/AlertPopup";
+import ToastMessage from "../../common/Toast/ToastMessage";
 
 interface Props {
   commentsData: any[];
@@ -53,22 +55,43 @@ const SectionComments: React.FC<Props> = ({
   const currentDocDetailsData: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDDocDetails
   );
+
+  const AllSectionsDataMain: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDSectionsData
+  );
+
+  // initial States
+  const [inputComment, setInputComment] = useState<string>("");
+  const [toastMessage, setToastMessage] = useState<any>({
+    isShow: false,
+    severity: "",
+    title: "",
+    message: "",
+    duration: "",
+  });
+
   console.log(
     documentId,
     sectionId,
     AllSectionsComments,
     currentUserDetails,
-    currentDocDetailsData
+    currentDocDetailsData,
+    toastMessage
   );
 
-  // initial States
-  const [inputComment, setInputComment] = useState<string>("");
-
   const onChangeFunction = (value: string): any => {
+    setToastMessage({
+      isShow: false,
+      severity: "info",
+      title: "Comment Submit",
+      message: "Your comment added successfully",
+      duration: 3000,
+    });
     setInputComment(value);
   };
 
   const sendSectionComment = async () => {
+    debugger;
     if (inputComment !== "") {
       console.log("clicked");
       let json = {
@@ -82,11 +105,22 @@ const SectionComments: React.FC<Props> = ({
         AllSectionsComments,
         dispatch,
         currentUserDetails,
-        setPopupLoaders
+        setPopupLoaders,
+        setToastMessage,
+        sectionId,
+        AllSectionsDataMain
       );
       if (clearInput) {
         setInputComment("");
       }
+    } else {
+      setToastMessage({
+        isShow: true,
+        severity: "warn",
+        title: "Warning",
+        message: "Please enter your comments",
+        duration: 3000,
+      });
     }
   };
 
@@ -142,10 +176,15 @@ const SectionComments: React.FC<Props> = ({
                 noBorderInput={true}
                 inputWrapperClassName={styles.commentBoxInput}
                 // submitBtn={true}
+                onKeyDown={(ev: any) => {
+                  if (ev.key === "Enter") {
+                    sendSectionComment();
+                  }
+                }}
               />
               <button
                 className={styles.sendBtn}
-                onClick={() => sendSectionComment()}
+                onClick={(ev: any) => sendSectionComment()}
               >
                 <img src={sendBtn} />
               </button>
@@ -153,6 +192,13 @@ const SectionComments: React.FC<Props> = ({
           )}
         </div>
       </div>
+      <ToastMessage
+        severity={toastMessage.severity}
+        title={toastMessage.title}
+        message={toastMessage.message}
+        duration={toastMessage.duration}
+        isShow={toastMessage.isShow}
+      />
       <AlertPopup
         secondaryText={popupLoaders.secondaryText}
         isLoading={popupLoaders.isLoading}

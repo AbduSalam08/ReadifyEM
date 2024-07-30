@@ -113,6 +113,8 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
     isLoading: false,
   });
 
+  console.log(selectedDefinitions);
+
   // util for closing popup
   const handleClosePopup = (index?: any): void => {
     togglePopupVisibility(setPopupController, index, "close");
@@ -181,7 +183,8 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
         definitionsData,
         documentId,
         sectionId,
-        setPopupLoaders
+        setPopupLoaders,
+        setSelectedDefinitions
       );
       togglePopupVisibility(setPopupController, 0, "close");
     } else {
@@ -630,7 +633,7 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
             isLoading={popupLoaders.isLoading}
             onClick={() => {
               setPopupLoaders(initialPopupLoaders);
-              getAllSecDefinitions();
+              // getAllSecDefinitions();
             }}
             onHide={() => {
               setPopupLoaders(initialPopupLoaders);
