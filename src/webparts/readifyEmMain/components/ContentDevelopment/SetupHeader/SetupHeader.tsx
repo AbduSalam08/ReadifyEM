@@ -98,7 +98,6 @@ const SetupHeader: React.FC<Props> = ({
   // };
 
   const onTemplateClear = (): void => {
-    debugger;
     setTotalSize(0);
     setFile({
       fileData: [],

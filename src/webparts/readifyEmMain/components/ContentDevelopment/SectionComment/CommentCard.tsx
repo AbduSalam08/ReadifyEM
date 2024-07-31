@@ -10,9 +10,15 @@ interface ICommentCardProps {
 }
 
 const CommentCard = ({ item, index }: ICommentCardProps): JSX.Element => {
+  console.log(item);
   return (
     <div className={styles.commentCardWrapper}>
-      <div className={styles.comments} key={index}>
+      <div
+        className={
+          !item.isRejectedComment ? styles.comments : styles.rejectedComments
+        }
+        key={index}
+      >
         <div className={styles.commentAuthor}>
           <span>{item.commentAuthor[0].name}</span>
           <span className={styles.role}>{item.role}</span>

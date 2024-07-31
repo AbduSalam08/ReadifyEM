@@ -258,8 +258,6 @@ export const AddAttachment = async (
   documentID?: any,
   sectionID?: any
 ): Promise<any> => {
-  debugger;
-
   if (listType === "appendix" && !itemID && sectionID) {
     await SpServices.SPAddItem({
       Listname: LISTNAMES.AppendixHeader,
@@ -392,8 +390,6 @@ export const AddAppendixAttachment = async (
   sectionID: any,
   fileName?: string
 ): Promise<any> => {
-  debugger;
-
   if (!itemID && sectionID) {
     await SpServices.SPAddItem({
       Listname: LISTNAMES.AppendixHeader,
@@ -524,8 +520,6 @@ export const UpdateSectionAttachment = async (
   fileName?: string,
   deleteAttachments?: boolean
 ): Promise<any> => {
-  debugger;
-
   try {
     // Retrieve all attachments for the given item
     if (deleteAttachments) {
@@ -584,7 +578,6 @@ export const getHeaderSectionDetails = async (
   dispatcher?: any,
   headerDescription?: any
 ): Promise<any> => {
-  debugger;
   let HeaderID: any = "";
   await SpServices.SPReadItems({
     Listname: LISTNAMES.SectionDetails,
@@ -639,7 +632,6 @@ export const getAppendixHeaderSectionDetails = async (
   dispatcher?: any,
   headerDescription?: any
 ): Promise<any> => {
-  debugger;
   let HeaderID: any = "";
   await SpServices.SPReadItems({
     Listname: LISTNAMES.AppendixHeader,

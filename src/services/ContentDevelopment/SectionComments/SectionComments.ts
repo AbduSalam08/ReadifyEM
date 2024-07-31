@@ -68,7 +68,6 @@ const addSectionComment = async (
   sectionId: any,
   AllSectionsDataMain: any
 ): Promise<boolean> => {
-  debugger;
   console.log(jsonObject, sectionId, AllSectionsDataMain);
   let clearInput: boolean = false;
   let tempArray: any[] = [...sectionComments];
