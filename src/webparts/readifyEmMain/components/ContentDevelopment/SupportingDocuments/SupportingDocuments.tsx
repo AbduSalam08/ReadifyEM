@@ -13,6 +13,8 @@ import DefaultButton from "../../common/Buttons/DefaultButton";
 const closeBtn = require("../../../../../assets/images/png/close.png");
 const checkBtn = require("../../../../../assets/images/png/checkmark.png");
 
+import CircularSpinner from "../../common/AppLoader/CircularSpinner";
+
 import {
   getAllDocuments,
   getDocumentDeatils,
@@ -21,6 +23,7 @@ import {
 } from "../../../../../services/ContentDevelopment/SupportingDocument/SupportingDocumentServices";
 import { useNavigate } from "react-router-dom";
 import { isEmpty } from "@microsoft/sp-lodash-subset";
+import ToastMessage from "../../common/Toast/ToastMessage";
 
 interface Props {
   documentId: number;
@@ -41,10 +44,19 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
   // initial definitions data
   const [allDocumentsLink, setAllDocumentsLink] = useState<any[]>([]);
   const [filterDocuments, setFilterDocuments] = useState<any[]>([]);
+  const [loader, setLoader] = useState<boolean>(false);
   const [selectedDocuments, setSelectedDocuments] = useState<documentDetails[]>(
     []
   );
   const [searchValue, setSearchValue] = useState("");
+  const [toastMessage, setToastMessage] = useState<any>({
+    isShow: false,
+    severity: "",
+    title: "",
+    message: "",
+    duration: "",
+  });
+  console.log(selectedDocuments);
 
   const handleSearchOnChange = (value: string): any => {
     setSearchValue(value);
@@ -64,9 +76,11 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
   const getMainDocumentDeatails = async (Data: any[]) => {
     const tempDocumentsDetails: any = await getDocumentDeatils(Data);
     getApprovedDocumentsLinks(tempDocumentsDetails);
+    setLoader(false);
   };
 
   const getAllSelectedDocuments = async () => {
+    setLoader(true);
     const tempSelectedDocumentsArray: any = await getAllDocuments(
       sectionId,
       documentId
@@ -135,8 +149,8 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
     const tempArray = selectedDocuments;
     tempArray.unshift({
       ID: selectedDocuments.length + 1,
-      documentName: "Document six",
-      documentLink: "Document six Link",
+      documentName: "",
+      documentLink: "",
       isSelected: false,
       isNew: true,
       status: true,
@@ -178,7 +192,9 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
     const reRender: boolean = await submitSupportingDocuments(
       [...selectedDocuments],
       documentId,
-      sectionId
+      sectionId,
+      setToastMessage,
+      getAllSelectedDocuments
     );
     if (reRender) {
       getAllSelectedDocuments();
@@ -221,6 +237,7 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
             </button>
           </div>
           <DefaultButton
+            disabled={loader}
             btnType="primary"
             text={"New"}
             size="medium"
@@ -282,79 +299,85 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
               })}
             </div>
           )}
-        </div>
-        <div style={{ padding: "10px 0px" }}>
-          {!selectedDocuments.some((obj: any) => obj.isDeleted === false) && (
-            <div className={styles.noDataFound}>
-              <span>No Supporting Document Data Found</span>
-            </div>
-          )}
-          {selectedDocuments?.map((obj: any, index: number) => {
-            return (
-              !obj.isDeleted && (
-                <div
-                  key={index}
-                  className={styles.SelectedDocumentsSec}
-                  style={{ backgroundColor: obj.isNew ? "#593ABB10" : "" }}
-                >
-                  {obj.isNew ? (
-                    <div className={styles.documentInputSec}>
-                      <CustomInput
-                        onChange={(value: string) => {
-                          documentOnchange(value, obj.ID, "documentName");
-                        }}
-                        value={obj.documentName}
-                        placeholder="Enter here"
-                        withLabel
-                        labelText="Document Name"
-                        topLabel
-                      />
-                      <CustomInput
-                        onChange={(value: string) => {
-                          documentOnchange(value, obj.ID, "documentLink");
-                        }}
-                        value={obj.documentLink}
-                        placeholder="Enter here"
-                        withLabel
-                        labelText="Document Link"
-                        topLabel
-                      />
-                    </div>
-                  ) : (
-                    <div style={{ width: "90%" }}>
-                      <p className={styles.documentName}>{obj.documentName}</p>
-                      <a
-                        href={obj.documentLink}
-                        // target="_blank"
-                        className={styles.documentLink}
-                      >
-                        {obj.documentLink}
-                      </a>
-                    </div>
-                  )}
-                  <div style={{ display: "flex", gap: "10px" }}>
-                    {obj.isNew && (
+        </div>{" "}
+        {loader ? (
+          <CircularSpinner />
+        ) : (
+          <div style={{ padding: "10px 0px" }}>
+            {!selectedDocuments.some((obj: any) => obj.isDeleted === false) && (
+              <div className={styles.noDataFound}>
+                <span>No Supporting Document Data Found</span>
+              </div>
+            )}
+            {selectedDocuments?.map((obj: any, index: number) => {
+              return (
+                !obj.isDeleted && (
+                  <div
+                    key={index}
+                    className={styles.SelectedDocumentsSec}
+                    style={{ backgroundColor: obj.isNew ? "#593ABB10" : "" }}
+                  >
+                    {obj.isNew ? (
+                      <div className={styles.documentInputSec}>
+                        <CustomInput
+                          onChange={(value: string) => {
+                            documentOnchange(value, obj.ID, "documentName");
+                          }}
+                          value={obj.documentName}
+                          placeholder="Enter here"
+                          withLabel
+                          labelText="Document Name"
+                          topLabel
+                        />
+                        <CustomInput
+                          onChange={(value: string) => {
+                            documentOnchange(value, obj.ID, "documentLink");
+                          }}
+                          value={obj.documentLink}
+                          placeholder="Enter here"
+                          withLabel
+                          labelText="Document Link"
+                          topLabel
+                        />
+                      </div>
+                    ) : (
+                      <div style={{ width: "90%" }}>
+                        <p className={styles.documentName}>
+                          {obj.documentName}
+                        </p>
+                        <a
+                          href={obj.documentLink}
+                          // target="_blank"
+                          className={styles.documentLink}
+                        >
+                          {obj.documentLink}
+                        </a>
+                      </div>
+                    )}
+                    <div style={{ display: "flex", gap: "10px" }}>
+                      {obj.isNew && (
+                        <button className={styles.closeBtn}>
+                          <img
+                            src={checkBtn}
+                            alt={"Add Document"}
+                            onClick={() => checkinNewSupportingDocument(index)}
+                          />
+                        </button>
+                      )}
                       <button className={styles.closeBtn}>
                         <img
-                          src={checkBtn}
-                          alt={"Add Document"}
-                          onClick={() => checkinNewSupportingDocument(index)}
+                          src={closeBtn}
+                          alt={"Remove Document"}
+                          onClick={() => removeSupportingDocument(index)}
                         />
                       </button>
-                    )}
-                    <button className={styles.closeBtn}>
-                      <img
-                        src={closeBtn}
-                        alt={"Remove Document"}
-                        onClick={() => removeSupportingDocument(index)}
-                      />
-                    </button>
+                    </div>
                   </div>
-                </div>
-              )
-            );
-          })}
-        </div>
+                )
+              );
+            })}
+          </div>
+        )}
       </div>
       {/* <div
         style={{
@@ -386,6 +409,15 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
           }}
         />
       </div> */}
+
+      <ToastMessage
+        severity={toastMessage.severity}
+        title={toastMessage.title}
+        message={toastMessage.message}
+        duration={toastMessage.duration}
+        isShow={toastMessage.isShow}
+        setToastMessage={setToastMessage}
+      />
 
       <div
         style={{
@@ -423,6 +455,7 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
           }}
         /> */}
           <DefaultButton
+            disabled={loader}
             text="Submit"
             btnType="primary"
             onClick={() => {

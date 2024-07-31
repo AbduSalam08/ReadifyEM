@@ -130,8 +130,10 @@ const getApprovedDocuments = (documents: any) => {
 
 const submitSupportingDocuments = (
   selectedDocuments: any,
+  documentId: number,
   sectionId: number,
-  documentId: number
+  setToastState: any,
+  getSelectedFun: any
 ) => {
   let renderCondition: boolean = false;
   const tempArray: any[] = [...selectedDocuments];
@@ -142,7 +144,7 @@ const submitSupportingDocuments = (
   );
 
   if (tempAddArray.length > 0) {
-    tempAddArray.forEach((obj: any) => {
+    tempAddArray.forEach((obj: any, index: number) => {
       const jsonObject = {
         Title: obj.documentName,
         documentLink: obj.documentLink,
@@ -156,6 +158,20 @@ const submitSupportingDocuments = (
         .then((res: any) => {
           console.log(res);
           renderCondition = true;
+          if (
+            tempAddArray.length - 1 === index &&
+            tempDelArray.length === 0 &&
+            tempDelUpdateArray.length === 0
+          ) {
+            setToastState({
+              isShow: true,
+              severity: "success",
+              title: "Updated Supporting Documents",
+              message: "Successfully adding/deleting supporting documents",
+              duration: 3000,
+            });
+            getSelectedFun();
+          }
         })
         .catch((err) => console.log(err));
     });
@@ -173,6 +189,19 @@ const submitSupportingDocuments = (
       })
         .then((res: any) => {
           renderCondition = true;
+          if (
+            tempDelArray.length - 1 === index &&
+            tempDelUpdateArray.length === 0
+          ) {
+            setToastState({
+              isShow: true,
+              severity: "success",
+              title: "Updated Supporting Documents",
+              message: "Successfully adding/deleting supporting documents",
+              duration: 3000,
+            });
+            getSelectedFun();
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -180,7 +209,7 @@ const submitSupportingDocuments = (
     });
   }
   if (tempDelUpdateArray.length > 0) {
-    tempDelUpdateArray.forEach((obj: any) => {
+    tempDelUpdateArray.forEach((obj: any, index: number) => {
       const jsonObject = {
         isDeleted: false,
       };
@@ -191,6 +220,16 @@ const submitSupportingDocuments = (
       })
         .then((res: any) => {
           renderCondition = true;
+          if (tempDelUpdateArray.length - 1 === index) {
+            setToastState({
+              isShow: true,
+              severity: "success",
+              title: "Updated Supporting Documents",
+              message: "Successfully adding/deleting supporting documents",
+              duration: 3000,
+            });
+            getSelectedFun();
+          }
         })
         .catch((err) => {
           console.log(err);

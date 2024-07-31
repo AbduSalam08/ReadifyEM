@@ -113,7 +113,12 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
     isLoading: false,
   });
 
-  console.log(selectedDefinitions);
+  console.log(
+    selectedDefinitions,
+    sectionDefinitions,
+    filterDefinitions,
+    definitionsData
+  );
 
   // util for closing popup
   const handleClosePopup = (index?: any): void => {
@@ -152,19 +157,37 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
       }));
       return false;
     } else {
-      if (
-        definitionsData.definitionName === "" ||
-        definitionsData.definitionDescription === "" ||
-        definitionsData.referenceTitle === "" ||
-        definitionsData.referenceLink === "" ||
-        definitionsData.referenceAuthor.length === 0
-      ) {
+      if (definitionsData.definitionName === "") {
         setDefinitionsData((prev: any) => ({
           ...prev,
           IsValid: false,
-          ErrorMsg: "Please enter all the fields",
+          ErrorMsg: "definitionName",
         }));
         return false;
+      } else if (definitionsData.definitionDescription === "") {
+        setDefinitionsData((prev: any) => ({
+          ...prev,
+          IsValid: false,
+          ErrorMsg: "definitionDescription",
+        }));
+      } else if (definitionsData.referenceTitle === "") {
+        setDefinitionsData((prev: any) => ({
+          ...prev,
+          IsValid: false,
+          ErrorMsg: "referenceTitle",
+        }));
+      } else if (definitionsData.referenceAuthor.length === 0) {
+        setDefinitionsData((prev: any) => ({
+          ...prev,
+          IsValid: false,
+          ErrorMsg: "referenceAuthor",
+        }));
+      } else if (definitionsData.referenceLink === "") {
+        setDefinitionsData((prev: any) => ({
+          ...prev,
+          IsValid: false,
+          ErrorMsg: "referenceLink",
+        }));
       } else {
         setDefinitionsData((prev: any) => ({
           ...prev,
@@ -205,7 +228,9 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
           secWidth="100%"
           value={definitionsData.definitionName}
           isValid={
-            definitionsData.definitionName === "" && !definitionsData.IsValid
+            definitionsData.definitionName === "" &&
+            !definitionsData.IsValid &&
+            definitionsData.ErrorMsg === "definitionName"
               ? true
               : definitionsData.definitionName !== "" &&
                 definitionsData.IsDuplicate
@@ -237,7 +262,8 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
           placeholder="Enter Description"
           isValid={
             definitionsData.definitionDescription === "" &&
-            !definitionsData.IsValid
+            !definitionsData.IsValid &&
+            definitionsData.ErrorMsg === "definitionDescription"
           }
           errorMsg={"The description field is required"}
           key={2}
@@ -258,7 +284,9 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
             inputWrapperClassName={styles.referenceInput}
             placeholder="Enter here"
             isValid={
-              definitionsData.referenceTitle === "" && !definitionsData.IsValid
+              definitionsData.referenceTitle === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceTitle"
             }
             errorMsg={"The references title field is required"}
             key={3}
@@ -276,7 +304,8 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
             placeholder="Add people"
             isValid={
               definitionsData.referenceAuthor.length === 0 &&
-              !definitionsData.IsValid
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceAuthor"
             }
             errorMsg={"The reference author field is required"}
             key={4}
@@ -294,7 +323,9 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
             }}
             placeholder="Enter here"
             isValid={
-              definitionsData.referenceLink === "" && !definitionsData.IsValid
+              definitionsData.referenceLink === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceLink"
             }
             errorMsg={"The references Link field is required"}
             key={5}
@@ -429,6 +460,16 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
   const removeDefinition = (index: number): any => {
     const tempSelectedDocuments = [...selectedDefinitions];
     tempSelectedDocuments[index].isDeleted = true;
+    let filterSelectionDefinitions = sectionDefinitions.map((obj: any) => {
+      if (
+        obj.definitionTitle === tempSelectedDocuments[index].definitionTitle
+      ) {
+        return { ...obj, isDeleted: true, isSelected: false };
+      } else {
+        return obj;
+      }
+    });
+    setSectionDefinitions([...filterSelectionDefinitions]);
     setSelectedDefinitions([...tempSelectedDocuments]);
   };
 
@@ -439,87 +480,88 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
 
   return (
     <>
-      {!initialLoader ? (
-        <div className={"sectionWrapper"}>
-          <div className={styles.textPlayGround}>
-            <div className={styles.definitionHeaderWrapper}>
-              <span>Setup Header</span>
-            </div>
-            <div className={styles.filterMainWrapper}>
-              <div className={styles.TopFilters}>
-                <div className={styles.inputmainSec}>
-                  <CustomInput
-                    value={searchValue}
-                    secWidth="257px"
-                    placeholder="Search definitions"
-                    onChange={(value: any) => {
-                      handleSearchOnChange(value);
-                    }}
-                  />
-                  <button className={styles.closeBtn}>
-                    <img
-                      src={closeBtn}
-                      alt={"Add Document"}
-                      onClick={() => setSearchValue("")}
-                    />
-                  </button>
-                </div>
-                <DefaultButton
-                  btnType="primary"
-                  text={"New"}
-                  size="medium"
-                  onClick={() => {
-                    togglePopupVisibility(setPopupController, 0, "open");
-                    setDefinitionsData(initialDefinitionsData);
+      <div className={"sectionWrapper"}>
+        <div className={styles.textPlayGround}>
+          <div className={styles.definitionHeaderWrapper}>
+            <span>Setup Header</span>
+          </div>
+          <div className={styles.filterMainWrapper}>
+            <div className={styles.TopFilters}>
+              <div className={styles.inputmainSec}>
+                <CustomInput
+                  value={searchValue}
+                  secWidth="257px"
+                  placeholder="Search definitions"
+                  onChange={(value: any) => {
+                    handleSearchOnChange(value);
                   }}
                 />
+                <button className={styles.closeBtn}>
+                  <img
+                    src={closeBtn}
+                    alt={"Add Document"}
+                    onClick={() => setSearchValue("")}
+                  />
+                </button>
               </div>
-              {searchValue !== "" && (
-                <div className={styles.filterSecWrapper}>
-                  {filterDefinitions.map((obj: any, index: number) => {
-                    return (
-                      <div
-                        key={index}
-                        className={
-                          obj.isSelected
-                            ? styles.filterDefinitionSecSelected
-                            : styles.filterDefinitionSec
-                        }
-                      >
-                        <div style={{ width: "10%" }}>
-                          <Checkbox
-                            checkedIcon={<RadioButtonCheckedIcon />}
-                            icon={<RadioButtonUncheckedIcon />}
-                            key={index}
-                            checked={obj.isSelected}
-                            onClick={(ev) => {
-                              onSelectDefinition(obj.ID);
-                              ev.preventDefault();
-                            }}
-                          />
-                        </div>
-                        <div
-                          className={styles.title}
-                          style={{ width: "30%" }}
+              <DefaultButton
+                disabled={initialLoader}
+                btnType="primary"
+                text={"New"}
+                size="medium"
+                onClick={() => {
+                  togglePopupVisibility(setPopupController, 0, "open");
+                  setDefinitionsData(initialDefinitionsData);
+                }}
+              />
+            </div>
+            {searchValue !== "" && (
+              <div className={styles.filterSecWrapper}>
+                {filterDefinitions.map((obj: any, index: number) => {
+                  return (
+                    <div
+                      key={index}
+                      className={
+                        obj.isSelected
+                          ? styles.filterDefinitionSecSelected
+                          : styles.filterDefinitionSec
+                      }
+                    >
+                      <div style={{ width: "10%" }}>
+                        <Checkbox
+                          checkedIcon={<RadioButtonCheckedIcon />}
+                          icon={<RadioButtonUncheckedIcon />}
+                          key={index}
+                          checked={obj.isSelected}
                           onClick={(ev) => {
                             onSelectDefinition(obj.ID);
                             ev.preventDefault();
                           }}
-                        >
-                          <span>{obj.definitionTitle}</span>
-                        </div>
-                        <div
-                          className={styles.description}
-                          style={{ width: "60%" }}
-                        >
-                          <span>{obj.definitionDescription}</span>
-                        </div>
+                        />
                       </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                      <div
+                        className={styles.title}
+                        style={{ width: "30%" }}
+                        onClick={(ev) => {
+                          onSelectDefinition(obj.ID);
+                          ev.preventDefault();
+                        }}
+                      >
+                        <span>{obj.definitionTitle}</span>
+                      </div>
+                      <div
+                        className={styles.description}
+                        style={{ width: "60%" }}
+                      >
+                        <span>{obj.definitionDescription}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          {!initialLoader ? (
             <div style={{ padding: "10px 0px" }}>
               {!selectedDefinitions.some(
                 (obj: any) => obj.isDeleted === false
@@ -553,9 +595,12 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
                 );
               })}
             </div>
-          </div>
+          ) : (
+            <CircularSpinner />
+          )}
+        </div>
 
-          {/* <div
+        {/* <div
         style={{
           display: "flex",
           gap: "15px",
@@ -585,88 +630,86 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
           }}
         />
       </div> */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "15px",
+            margin: "10px 0px",
+            justifyContent: "space-between",
+          }}
+        >
+          <button className={"helpButton"}>Help?</button>
+
           <div
             style={{
               display: "flex",
-              alignItems: "center",
               gap: "15px",
-              margin: "10px 0px",
-              justifyContent: "space-between",
+              // margin: "10px 0px",
+              justifyContent: "flex-end",
+              alignItems: "center",
             }}
           >
-            <button className={"helpButton"}>Help?</button>
-
-            <div
-              style={{
-                display: "flex",
-                gap: "15px",
-                // margin: "10px 0px",
-                justifyContent: "flex-end",
-                alignItems: "center",
+            <DefaultButton
+              text="Close"
+              btnType="lightGreyVariant"
+              onClick={() => {
+                navigate(-1);
               }}
-            >
-              <DefaultButton
-                text="Close"
-                btnType="lightGreyVariant"
-                onClick={() => {
-                  navigate(-1);
-                }}
-              />
-              {/* <DefaultButton
+            />
+            {/* <DefaultButton
           text="Reject"
           btnType="lightGreyVariant"
           onClick={() => {
             // _addData();
           }}
         /> */}
-              <DefaultButton
-                text="Submit"
-                btnType="primary"
-                onClick={() => {
-                  submitSectionDefinition();
-                }}
-              />
-            </div>
-          </div>
-          <AlertPopup
-            secondaryText={popupLoaders.secondaryText}
-            isLoading={popupLoaders.isLoading}
-            onClick={() => {
-              setPopupLoaders(initialPopupLoaders);
-              // getAllSecDefinitions();
-            }}
-            onHide={() => {
-              setPopupLoaders(initialPopupLoaders);
-            }}
-            popupTitle={popupLoaders.text}
-            visibility={popupLoaders.visibility}
-            popupWidth={"30vw"}
-          />
-          {popupController?.map((popupData: any, index: number) => (
-            <Popup
-              key={index}
-              isLoading={definitionsData?.isLoading}
-              PopupType={popupData.popupType}
-              onHide={() =>
-                togglePopupVisibility(setPopupController, index, "close")
-              }
-              popupTitle={
-                popupData.popupType !== "confimation" && popupData.popupTitle
-              }
-              popupActions={popupActions[index]}
-              visibility={popupData.open}
-              content={popupInputs[index]}
-              popupWidth={popupData.popupWidth}
-              defaultCloseBtn={popupData.defaultCloseBtn || false}
-              confirmationTitle={
-                popupData.popupType !== "custom" ? popupData.popupTitle : ""
-              }
+            <DefaultButton
+              disabled={initialLoader}
+              text="Submit"
+              btnType="primary"
+              onClick={() => {
+                submitSectionDefinition();
+              }}
             />
-          ))}
+          </div>
         </div>
-      ) : (
-        <CircularSpinner />
-      )}
+        <AlertPopup
+          secondaryText={popupLoaders.secondaryText}
+          isLoading={popupLoaders.isLoading}
+          onClick={() => {
+            setPopupLoaders(initialPopupLoaders);
+            // getAllSecDefinitions();
+          }}
+          onHide={() => {
+            setPopupLoaders(initialPopupLoaders);
+          }}
+          popupTitle={popupLoaders.text}
+          visibility={popupLoaders.visibility}
+          popupWidth={"30vw"}
+        />
+        {popupController?.map((popupData: any, index: number) => (
+          <Popup
+            key={index}
+            isLoading={definitionsData?.isLoading}
+            PopupType={popupData.popupType}
+            onHide={() =>
+              togglePopupVisibility(setPopupController, index, "close")
+            }
+            popupTitle={
+              popupData.popupType !== "confimation" && popupData.popupTitle
+            }
+            popupActions={popupActions[index]}
+            visibility={popupData.open}
+            content={popupInputs[index]}
+            popupWidth={popupData.popupWidth}
+            defaultCloseBtn={popupData.defaultCloseBtn || false}
+            confirmationTitle={
+              popupData.popupType !== "custom" ? popupData.popupTitle : ""
+            }
+          />
+        ))}
+      </div>
     </>
   );
 };

@@ -15,6 +15,7 @@ const LISTNAMES = {
   sectionSupportingDoc: "SupportingDocuments",
   AppendixHeader: "AppendixHeader",
   AllDocuments: "AllDocuments",
+  PromotedComments: "PromotedComments",
 };
 const LIBNAMES = {
   AllDocuments: "AllDocuments",
