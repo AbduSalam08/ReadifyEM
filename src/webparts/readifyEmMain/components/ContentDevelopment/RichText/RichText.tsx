@@ -111,6 +111,8 @@ const RichText = ({
           setDescription(parsedValue);
           onChange && onChange(parsedValue);
           setSectionLoader(false);
+        } else {
+          setSectionLoader(false);
         }
       })
       .catch((err: any) => {
@@ -187,7 +189,7 @@ const RichText = ({
     if (currentSectionData?.contentType === "paragraph") {
       getSectionData();
     }
-  }, []);
+  }, [ID]);
 
   return (
     <div

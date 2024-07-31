@@ -835,6 +835,8 @@ const SectionContent: React.FC<IProps> = ({
           setPoints([...parsedValue]);
           onChange && onChange([...parsedValue]);
           setSectionLoader(false);
+        } else {
+          setSectionLoader(false);
         }
       })
       .catch((err: any) => {
@@ -905,7 +907,7 @@ const SectionContent: React.FC<IProps> = ({
     // if (sortedPoints) {
     //   setSectionLoader(false);
     // }
-  }, []);
+  }, [ID]);
 
   return (
     <div className="sectionWrapper">
