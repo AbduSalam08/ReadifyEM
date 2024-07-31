@@ -5,6 +5,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const mainData: any = {
   CDSectionsData: [],
   CDDocDetails: [],
+  CDHeaderDetails: [],
 };
 
 const ContentDeveloperData = createSlice({
@@ -17,9 +18,12 @@ const ContentDeveloperData = createSlice({
     setCDDocDetails: (state, action) => {
       state.CDDocDetails = action.payload;
     },
+    setCDHeaderDetails: (state, action) => {
+      state.CDHeaderDetails = action.payload;
+    },
   },
 });
 
-export const { setCDSectionData, setCDDocDetails } =
+export const { setCDSectionData, setCDDocDetails, setCDHeaderDetails } =
   ContentDeveloperData.actions;
 export default ContentDeveloperData.reducer;

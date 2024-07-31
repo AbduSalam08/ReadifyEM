@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -13,11 +14,14 @@ import "./SetupHeader.css";
 import { useNavigate } from "react-router-dom";
 import { CONFIG } from "../../../../../config/config";
 import {
-  addAppendixHeaderAttachmentData,
+  // addAppendixHeaderAttachmentData,
   addHeaderAttachmentData,
   getSectionData,
   getSectionDataFromAppendixList,
 } from "../../../../../utils/contentDevelopementUtils";
+import { getHeaderSectionDetails } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
+import { useDispatch, useSelector } from "react-redux";
+import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 
 interface Props {
   sectionDetails: any;
@@ -43,16 +47,19 @@ const SetupHeader: React.FC<Props> = ({
   onChange,
 }) => {
   const fileUploadRef = useRef<any>(null);
-
+  const dispatch = useDispatch();
   const initialHeaderDetails = {
     version: version,
     type: type,
     headerTitle: headerTitle,
     appendixName: appendixName,
   };
-
+  const CDHeaderDetails = useSelector(
+    (state: any) => state.ContentDeveloperData.CDHeaderDetails
+  );
+  console.log("CDHeaderDetails: ", CDHeaderDetails);
   const [totalSize, setTotalSize] = useState(0);
-
+  const [sectionLoader, setSectionLoader] = useState(true);
   const [file, setFile] = useState<{
     fileData: any;
     fileName: string;
@@ -82,9 +89,26 @@ const SetupHeader: React.FC<Props> = ({
     });
   };
 
+  // const onTemplateClear = (): void => {
+  //   setTotalSize(0);
+  //   setFile({
+  //     fileData: [],
+  //     fileName: "",
+  //   });
+  // };
+
   const onTemplateClear = (): void => {
+    debugger;
     setTotalSize(0);
     setFile({
+      fileData: [],
+      fileName: "",
+    });
+    // Clear the file upload component as well
+    if (fileUploadRef.current) {
+      fileUploadRef.current.clear(); // This clears the uploaded file from the UI
+    }
+    onChange({
       fileData: [],
       fileName: "",
     });
@@ -118,11 +142,16 @@ const SetupHeader: React.FC<Props> = ({
           }}
         >
           <img
-            alt={fileData.name}
+            alt={file?.fileName ? file?.fileName : fileData.name}
             role="presentation"
             src={
-              fileData.objectURL ||
-              `${CONFIG.tenantURL}${file.fileData?.ServerRelativeUrl}`
+              file.fileData.ServerRelativeUrl
+                ? file.fileData.ServerRelativeUrl
+                : fileData.objectURL
+                ? fileData.objectURL
+                : CDHeaderDetails?.imgURL
+                ? CDHeaderDetails?.imgURL
+                : `${CONFIG.tenantURL}/${file.fileData?.ServerRelativeUrl}`
             }
             width={"100%"}
             style={{
@@ -130,7 +159,11 @@ const SetupHeader: React.FC<Props> = ({
             }}
           />
           <span className={styles.selectedFileName}>
-            <p>{fileData.name || file.fileData?.FileName}</p>
+            <p>
+              {file?.fileName
+                ? file?.fileName
+                : fileData.name || file.fileData?.FileName}
+            </p>
             <Button
               type="button"
               icon="pi pi-times"
@@ -206,11 +239,21 @@ const SetupHeader: React.FC<Props> = ({
 
   useEffect(() => {
     if (!appendixSection) {
-      getSectionData(sectionDetails, setFileDataInitial);
+      setSectionLoader(true);
+      const getDataPromise: Promise<any> = getSectionData(
+        sectionDetails,
+        setFileDataInitial
+      );
+      Promise.all([getDataPromise])
+        .then(() => {
+          setSectionLoader(false);
+        })
+        .catch(() => {
+          setSectionLoader(false);
+        });
     } else {
       getSectionDataFromAppendixList(sectionDetails, setFileDataInitial);
     }
-    console.log("load");
   }, []);
 
   useEffect(() => {
@@ -218,6 +261,17 @@ const SetupHeader: React.FC<Props> = ({
       onChange(file);
     }
   }, [file]);
+
+  useEffect(() => {
+    setFile((prev: any) => ({
+      fileData: {
+        ServerRelativeUrl: CDHeaderDetails?.imgURL,
+        fileName: CDHeaderDetails?.fileName,
+      },
+      fileName: CDHeaderDetails?.fileName,
+    }));
+    console.log("file: ", file);
+  }, []);
 
   return (
     <div className={styles.textPlayGround}>
@@ -230,101 +284,145 @@ const SetupHeader: React.FC<Props> = ({
       >
         <span>Setup Header</span>
       </div>
-      <div className={styles.setupHeaderWrapper}>
-        <div className={styles.logoUploadWrapper}>
-          <FileUpload
-            ref={fileUploadRef}
-            // name="demo[]"
-            // url="/api/upload"
-            multiple={false}
-            accept="image/*"
-            maxFileSize={1000000}
-            onSelect={onTemplateSelect}
-            // onError={onTemplateClear}
-            onClear={onTemplateClear}
-            headerTemplate={headerTemplate}
-            itemTemplate={itemTemplate}
-            emptyTemplate={
-              file.fileData?.ServerRelativeUrl ? itemTemplate : emptyTemplate
-            }
-            // uploadLabel="Browse"
-            chooseLabel="Browse"
-          />
+      {sectionLoader && !appendixSection ? (
+        <div className="contentDevLoaderWrapper">
+          <CircularSpinner />
         </div>
-        <div className={styles.headerDetailsWrapper}>
-          <CustomInput
-            value={initialHeaderDetails.headerTitle}
-            labelText="Header Title"
-            withLabel
-            topLabel
-            secWidth="307px"
-            readOnly={true}
-          />
-          {appendixSection && (
+      ) : (
+        <div className={styles.setupHeaderWrapper}>
+          <div className={styles.logoUploadWrapper}>
+            {/* <FileUpload
+              ref={fileUploadRef}
+              // name="demo[]"
+              // url="/api/upload"
+              multiple={false}
+              accept="image/*"
+              maxFileSize={1000000}
+              onSelect={onTemplateSelect}
+              // onError={onTemplateClear}
+              onClear={onTemplateClear}
+              headerTemplate={headerTemplate}
+              itemTemplate={itemTemplate}
+              emptyTemplate={
+                file.fileData?.ServerRelativeUrl || CDHeaderDetails?.imgURL
+                  ? itemTemplate
+                  : emptyTemplate
+              }
+              // uploadLabel="Browse"
+              chooseLabel="Browse"
+            /> */}
+
+            <FileUpload
+              ref={fileUploadRef}
+              multiple={false}
+              accept="image/*"
+              maxFileSize={1000000}
+              onSelect={onTemplateSelect}
+              onClear={onTemplateClear}
+              headerTemplate={headerTemplate}
+              itemTemplate={itemTemplate}
+              emptyTemplate={
+                file.fileData?.ServerRelativeUrl ||
+                (CDHeaderDetails?.imgURL && file.fileData?.length !== 0)
+                  ? itemTemplate
+                  : emptyTemplate
+              }
+              chooseLabel="Browse"
+            />
+          </div>
+          <div className={styles.headerDetailsWrapper}>
             <CustomInput
-              value={initialHeaderDetails.appendixName}
-              labelText="Appendix Name"
+              value={initialHeaderDetails.headerTitle}
+              labelText="Header Title"
               withLabel
               topLabel
               secWidth="307px"
               readOnly={true}
             />
-          )}
-          <CustomInput
-            value={initialHeaderDetails.type}
-            labelText="Document Type"
-            withLabel
-            topLabel
-            secWidth="307px"
-            readOnly={true}
-          />
-          <CustomInput
-            value={initialHeaderDetails.version}
-            labelText="Current Version"
-            withLabel
-            topLabel
-            secWidth="307px"
-            readOnly={true}
-          />
-          {!noActionBtns && (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "end",
-                gap: "10px",
-                marginTop: "30px",
-              }}
-            >
-              <DefaultButton
-                text="Cancel"
-                btnType="darkGreyVariant"
-                onClick={() => {
-                  navigate(-1);
-                }}
+            {appendixSection && (
+              <CustomInput
+                value={initialHeaderDetails.appendixName}
+                labelText="Appendix Name"
+                withLabel
+                topLabel
+                secWidth="307px"
+                readOnly={true}
               />
-              <DefaultButton
-                text="Submit"
-                btnType="primary"
-                onClick={async () => {
-                  if (appendixSection) {
-                    await addAppendixHeaderAttachmentData(
-                      "submit",
-                      sectionDetails,
-                      file
-                    );
-                  } else {
-                    await addHeaderAttachmentData(
-                      "submit",
-                      sectionDetails,
-                      file
-                    );
-                  }
+            )}
+            <CustomInput
+              value={initialHeaderDetails.type}
+              labelText="Document Type"
+              withLabel
+              topLabel
+              secWidth="307px"
+              readOnly={true}
+            />
+            <CustomInput
+              value={initialHeaderDetails.version}
+              labelText="Current Version"
+              withLabel
+              topLabel
+              secWidth="307px"
+              readOnly={true}
+            />
+            {!noActionBtns && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "end",
+                  gap: "10px",
+                  marginTop: "30px",
                 }}
-              />
-            </div>
-          )}
+              >
+                <DefaultButton
+                  text="Cancel"
+                  btnType="darkGreyVariant"
+                  onClick={() => {
+                    navigate(-1);
+                  }}
+                />
+                <DefaultButton
+                  text="Submit"
+                  btnType="primary"
+                  onClick={async () => {
+                    // if (appendixSection) {
+                    //   await updatea(
+                    //     "submit",
+                    //     sectionDetails,
+                    //     file
+                    //   );
+                    // } else {
+
+                    setSectionLoader(true);
+
+                    const dataAdded: Promise<any> =
+                      await addHeaderAttachmentData(
+                        "submit",
+                        sectionDetails,
+                        file
+                      );
+
+                    Promise.all([dataAdded])
+                      .then(async () => {
+                        await getHeaderSectionDetails(sectionDetails, dispatch);
+                        setSectionLoader(false);
+                      })
+                      .catch((error) => {
+                        console.error(
+                          "Error adding header attachment data: ",
+                          error
+                        );
+                        setSectionLoader(false);
+                      });
+
+                    // }
+                  }}
+                />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -582,6 +582,9 @@ const ContentDevelopment = (): JSX.Element => {
                         ]?.sectionType?.toLowerCase() === "appendix section" ? (
                         <AppendixContent
                           sectionDetails={AllSectionsData[activeSection]}
+                          isLoading={
+                            AllSectionsData[activeSection]?.length === 0
+                          }
                           contentType={
                             AllSectionsData[activeSection]?.contentType
                           }

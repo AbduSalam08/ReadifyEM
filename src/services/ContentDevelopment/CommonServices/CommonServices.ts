@@ -1,14 +1,17 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import dayjs from "dayjs";
 import SpServices from "../../SPServices/SpServices";
-import { LISTNAMES } from "../../../config/config";
+import { CONFIG, LISTNAMES } from "../../../config/config";
 import { calculateDueDateByRole } from "../../../utils/validations";
 import { getParsedDocData } from "../../../utils/EMManualUtils";
 import {
   setCDDocDetails,
+  setCDHeaderDetails,
   setCDSectionData,
 } from "../../../redux/features/ContentDevloperSlice";
+import { sp } from "@pnp/sp/presets/all";
 
 export const getSectionsDetails = async (
   taskDetails: any,
@@ -437,28 +440,43 @@ export const UpdateAppendixAttachment = async (
   itemID: number,
   _file: any,
   fileName?: string,
-  deleteAttachment?: any,
   documentID?: any,
-  sectionID?: any
+  sectionID?: any,
+  deleteAttachment?: any
 ): Promise<any> => {
-  if (deleteAttachment) {
-    await SpServices.SPDeleteAttachments({
-      ListName: LISTNAMES.AppendixHeader,
-      ListID: itemID,
-      AttachmentName: fileName,
-    })
-      .then((res) => console.log("res:", res))
-      .catch((err) => console.log(err));
-  } else {
-    await SpServices.SPDeleteAttachments({
-      ListName: LISTNAMES.AppendixHeader,
-      ListID: itemID,
-      AttachmentName: fileName,
-    })
-      .then((res) => console.log("res:", res))
-      .catch((err) => console.log(err));
+  try {
+    // Retrieve all attachments using sp.web
+    const attachments = await sp.web.lists
+      .getByTitle(LISTNAMES.AppendixHeader)
+      .items.getById(itemID)
+      .attachmentFiles();
 
-    await AddAppendixAttachment(itemID, _file, documentID, sectionID, fileName);
+    console.log("Attachments: ", attachments);
+
+    // Delete all attachments using SpServices
+    for (const attachment of attachments) {
+      await SpServices.SPDeleteAttachments({
+        ListName: LISTNAMES.AppendixHeader,
+        ListID: itemID,
+        AttachmentName: attachment.FileName,
+      });
+    }
+
+    console.log("All attachments deleted.");
+
+    // If there's a new file to add, add it as an attachment using SpServices
+    if (_file && fileName) {
+      await SpServices.SPAddAttachment({
+        ListName: LISTNAMES.AppendixHeader,
+        ListID: itemID,
+        FileName: fileName,
+        Attachments: _file,
+      });
+
+      console.log("New attachment added.");
+    }
+  } catch (err) {
+    console.log("Error: ", err);
   }
 };
 
@@ -504,32 +522,165 @@ export const UpdateSectionAttachment = async (
   contentType: any,
   saveAndClose?: boolean | any,
   fileName?: string,
-  deleteAttachment?: any
+  deleteAttachments?: boolean
 ): Promise<any> => {
-  if (deleteAttachment) {
-    await SpServices.SPDeleteAttachments({
-      ListName: LISTNAMES.SectionDetails,
-      ListID: itemID,
-      AttachmentName: fileName,
-    })
-      .then((res) => console.log("res:", res))
-      .catch((err) => console.log(err));
-  } else {
-    await SpServices.SPDeleteAttachments({
-      ListName: LISTNAMES.SectionDetails,
-      ListID: itemID,
-      AttachmentName: fileName,
-    })
-      .then((res) => console.log("res:", res))
-      .catch((err) => console.log(err));
+  debugger;
 
-    await AddSectionAttachment(
-      itemID,
-      _file,
-      contentType,
-      saveAndClose,
-      fileName
-    );
+  try {
+    // Retrieve all attachments for the given item
+    if (deleteAttachments) {
+      const attachments = await sp.web.lists
+        .getByTitle(LISTNAMES.SectionDetails)
+        .items.getById(itemID)
+        .attachmentFiles();
+
+      // Delete all retrieved attachments
+      if (attachments && attachments.length > 0) {
+        for (const attachment of attachments) {
+          await SpServices.SPDeleteAttachments({
+            ListName: LISTNAMES.SectionDetails,
+            ListID: itemID,
+            AttachmentName: attachment.FileName,
+          });
+        }
+        console.log("All existing attachments deleted.");
+      }
+    } else {
+      const attachments = await sp.web.lists
+        .getByTitle(LISTNAMES.SectionDetails)
+        .items.getById(itemID)
+        .attachmentFiles();
+
+      // Delete all retrieved attachments
+      if (attachments && attachments.length > 0) {
+        for (const attachment of attachments) {
+          await SpServices.SPDeleteAttachments({
+            ListName: LISTNAMES.SectionDetails,
+            ListID: itemID,
+            AttachmentName: attachment.FileName,
+          });
+        }
+        console.log("All existing attachments deleted.");
+      }
+      // Add new attachment
+      await AddSectionAttachment(
+        itemID,
+        _file,
+        contentType,
+        saveAndClose,
+        fileName
+      );
+
+      console.log("New attachment added successfully.");
+    }
+  } catch (err) {
+    console.error("Error while updating section attachments: ", err);
+  }
+};
+
+// fn to load the section banner image
+export const getHeaderSectionDetails = async (
+  sectionDetails?: any,
+  dispatcher?: any,
+  headerDescription?: any
+): Promise<any> => {
+  debugger;
+  let HeaderID: any = "";
+  await SpServices.SPReadItems({
+    Listname: LISTNAMES.SectionDetails,
+    Select: "*",
+    Filter: [
+      {
+        FilterKey: "documentOf",
+        Operator: "eq",
+        FilterValue: sectionDetails?.documentOfId,
+      },
+      {
+        FilterKey: "sectionType",
+        Operator: "eq",
+        FilterValue: "header section",
+      },
+    ],
+  })
+    .then((res: any) => {
+      console.log("res: ", res);
+      HeaderID = res[0]?.ID;
+    })
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
+
+  await SpServices.SPGetAttachments({
+    Listname: LISTNAMES.SectionDetails,
+    ID: HeaderID,
+  })
+    .then((res: any) => {
+      console.log("res2: ", res);
+      if (res[0]?.ServerRelativeUrl) {
+        // setImgURL(`${CONFIG.tenantURL}${res[0]?.ServerRelativeUrl}`);
+        const data: any = {
+          imgURL: `${CONFIG.tenantURL}${res[0]?.ServerRelativeUrl}`,
+          fileName: res[0]?.FileName,
+          headerDescription: headerDescription || null,
+        };
+        dispatcher && dispatcher(setCDHeaderDetails(data));
+      } else {
+        // setImgURL("");
+        dispatcher && dispatcher(setCDHeaderDetails([]));
+      }
+    })
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
+};
+
+export const getAppendixHeaderSectionDetails = async (
+  sectionID?: any,
+  dispatcher?: any,
+  headerDescription?: any
+): Promise<any> => {
+  debugger;
+  let HeaderID: any = "";
+  await SpServices.SPReadItems({
+    Listname: LISTNAMES.AppendixHeader,
+    Select: "*",
+    Filter: [
+      {
+        FilterKey: "sectionDetail",
+        Operator: "eq",
+        FilterValue: sectionID,
+      },
+    ],
+  })
+    .then((res: any) => {
+      console.log("res: ", res);
+      HeaderID = res[0]?.ID;
+    })
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
+
+  if (HeaderID) {
+    await SpServices.SPGetAttachments({
+      ID: HeaderID,
+      Listname: LISTNAMES.AppendixHeader,
+    })
+      .then((res: any) => {
+        console.log("res2: ", res);
+        if (res[0]?.ServerRelativeUrl) {
+          const data: any = {
+            imgURL: `${CONFIG.tenantURL}${res[0]?.ServerRelativeUrl}`,
+            fileName: res[0]?.FileName,
+            headerDescription: headerDescription || null,
+          };
+          dispatcher && dispatcher(setCDHeaderDetails(data));
+        } else {
+          dispatcher && dispatcher(setCDHeaderDetails([]));
+        }
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
   }
 };
 
