@@ -645,6 +645,7 @@ import { useNavigate } from "react-router-dom";
 import SpServices from "../../../../../services/SPServices/SpServices";
 import { UpdateAttachment } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { LISTNAMES } from "../../../../../config/config";
+import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 
 interface IProps {
   sectionNumber: any;
@@ -670,11 +671,11 @@ const SectionContent: React.FC<IProps> = ({
   setSectionData,
   onChange,
 }) => {
-  console.log("sectionNumber: ", sectionNumber);
-  console.log("currentSectionDetails: ", currentSectionDetails);
+  const [sectionLoader, setSectionLoader] = useState(true);
   const [points, setPoints] = useState<IPoint[]>([
     { text: String(sectionNumber), value: "" },
   ]);
+  console.log("points: ", points);
   const navigate = useNavigate();
   const [subPointSequences, setSubPointSequences] = useState<{
     [key: string]: number;
@@ -821,6 +822,7 @@ const SectionContent: React.FC<IProps> = ({
   });
 
   const readTextFileFromTXT = (data: any): void => {
+    setSectionLoader(true);
     SpServices.SPReadAttachments({
       ListName: "SectionDetails",
       ListID: ID,
@@ -832,14 +834,17 @@ const SectionContent: React.FC<IProps> = ({
         if (typeof parsedValue === "object") {
           setPoints([...parsedValue]);
           onChange && onChange([...parsedValue]);
+          setSectionLoader(false);
         }
       })
       .catch((err: any) => {
         console.log("err: ", err);
+        setSectionLoader(false);
       });
   };
 
   const getSectionData = async (): Promise<any> => {
+    setSectionLoader(true);
     await SpServices.SPGetAttachments({
       Listname: LISTNAMES.SectionDetails,
       ID: ID,
@@ -855,9 +860,14 @@ const SectionContent: React.FC<IProps> = ({
         ) {
           readTextFileFromTXT(filteredItem[0]);
           // setNewAttachment(false);
+        } else {
+          setSectionLoader(false);
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        setSectionLoader(false);
+      });
   };
 
   const convertToTxtFile = (): any => {
@@ -867,46 +877,66 @@ const SectionContent: React.FC<IProps> = ({
   };
 
   const addData = async (submissionType?: any): Promise<any> => {
+    setSectionLoader(true);
     const _file: any = await convertToTxtFile();
-    await UpdateAttachment(
+    const updateAttachmentPromise: Promise<any> = await UpdateAttachment(
       ID,
       _file,
       "list",
       submissionType === "submit",
       "Sample.txt"
     );
+
+    Promise.all([updateAttachmentPromise])
+      .then((res: any) => {
+        setSectionLoader(false);
+      })
+      .catch((err: any) => {
+        setSectionLoader(false);
+      });
   };
 
   useEffect(() => {
+    setSectionLoader(true);
     if (currentSectionDetails?.contentType === "list") {
       getSectionData();
     }
+
+    // if (sortedPoints) {
+    //   setSectionLoader(false);
+    // }
   }, []);
 
   return (
     <div className="sectionWrapper">
-      <div className={styles.textPlayGround}>
-        <DefaultButton
-          btnType="primary"
-          startIcon={
-            <i
-              className="pi pi-plus-circle"
-              style={{
-                fontSize: "12px",
-              }}
-            />
-          }
-          text={"Add new point"}
-          onClick={handleAddPoint}
-        />
-        {sortedPoints.length > 1 ? (
-          sortedPoints?.map((item: any, idx: number) =>
-            item?.text !== String(sectionNumber) ? renderPoint(item, idx) : ""
-          )
-        ) : (
-          <p className={styles.placeholder}>Content goes here as points...</p>
-        )}
-      </div>
+      {sectionLoader && !noActionBtns ? (
+        <div className="contentDevLoaderWrapper">
+          <CircularSpinner />
+        </div>
+      ) : (
+        <div className={styles.textPlayGround}>
+          <DefaultButton
+            btnType="primary"
+            startIcon={
+              <i
+                className="pi pi-plus-circle"
+                style={{
+                  fontSize: "12px",
+                }}
+              />
+            }
+            text={"Add new point"}
+            onClick={handleAddPoint}
+          />
+          {sortedPoints.length > 1 ? (
+            sortedPoints?.map((item: any, idx: number) =>
+              item?.text !== String(sectionNumber) ? renderPoint(item, idx) : ""
+            )
+          ) : (
+            <p className={styles.placeholder}>Content goes here as points...</p>
+          )}
+        </div>
+      )}
       {!noActionBtns && (
         <div
           style={{
@@ -928,6 +958,7 @@ const SectionContent: React.FC<IProps> = ({
             />
             <DefaultButton
               text="Reset content"
+              disabled={sectionLoader}
               btnType="secondaryRed"
               onClick={() => {
                 setSectionData((prev: any) => {
@@ -942,6 +973,7 @@ const SectionContent: React.FC<IProps> = ({
             />
             <DefaultButton
               text="Save and Close"
+              disabled={sectionLoader}
               btnType="lightGreyVariant"
               onClick={() => {
                 addData();
@@ -949,6 +981,7 @@ const SectionContent: React.FC<IProps> = ({
             />
             <DefaultButton
               text="Submit"
+              disabled={sectionLoader}
               btnType="primary"
               onClick={() => {
                 addData("submit");

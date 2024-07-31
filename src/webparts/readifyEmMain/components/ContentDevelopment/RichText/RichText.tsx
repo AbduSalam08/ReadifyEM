@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -8,12 +9,13 @@ import "react-quill/dist/quill.snow.css";
 import "./RichText.css";
 import DefaultButton from "../../common/Buttons/DefaultButton";
 import {
-  AddAttachment,
+  // AddAttachment,
   UpdateAttachment,
 } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import SpServices from "../../../../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../../../../config/config";
 import { useNavigate } from "react-router-dom";
+import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 
 interface IRichTextProps {
   noActionBtns?: boolean;
@@ -32,8 +34,7 @@ const RichText = ({
   ID,
   onChange,
 }: IRichTextProps): JSX.Element => {
-  console.log("currentSectionData: ", currentSectionData);
-  console.log("ID: ", ID);
+  const [sectionLoader, setSectionLoader] = useState(true);
   const modules: any = {
     toolbar: [
       [
@@ -68,6 +69,7 @@ const RichText = ({
       ["clean"],
     ],
   };
+
   const navigate = useNavigate();
   const formats: string[] = [
     "header",
@@ -85,8 +87,8 @@ const RichText = ({
     "background",
     "color",
   ];
-  const [newAttachment, setNewAttachment] = useState<boolean>(true);
 
+  // const [newAttachment, setNewAttachment] = useState<boolean>(true);
   const [description, setDescription] = useState<string>("");
 
   const _handleOnChange = (newText: string): string => {
@@ -96,6 +98,7 @@ const RichText = ({
   };
 
   const readTextFileFromTXT = (data: any): void => {
+    setSectionLoader(true);
     SpServices.SPReadAttachments({
       ListName: "SectionDetails",
       ListID: ID,
@@ -107,6 +110,7 @@ const RichText = ({
         if (typeof parsedValue === "string") {
           setDescription(parsedValue);
           onChange && onChange(parsedValue);
+          setSectionLoader(false);
         }
       })
       .catch((err: any) => {
@@ -115,6 +119,7 @@ const RichText = ({
   };
 
   const getSectionData = async (): Promise<any> => {
+    setSectionLoader(true);
     await SpServices.SPGetAttachments({
       Listname: LISTNAMES.SectionDetails,
       ID: ID,
@@ -129,10 +134,15 @@ const RichText = ({
           currentSectionData?.contentType !== "list"
         ) {
           readTextFileFromTXT(filteredItem[0]);
-          setNewAttachment(false);
+          // setNewAttachment(false);
+        } else {
+          setSectionLoader(false);
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setSectionLoader(false);
+        console.log(err);
+      });
   };
 
   const convertToTxtFile = (): any => {
@@ -144,21 +154,36 @@ const RichText = ({
   };
 
   const addData = async (submissionType?: any): Promise<any> => {
+    setSectionLoader(true);
+    let addDataPromises: Promise<any>;
     const _file: any = await convertToTxtFile();
-    if (newAttachment) {
-      await AddAttachment(ID, _file, "paragraph", submissionType === "submit");
-    } else {
-      await UpdateAttachment(
-        ID,
-        _file,
-        "paragraph",
-        submissionType === "submit",
-        "Sample.txt"
-      );
-    }
+    // if (newAttachment) {
+    //   addDataPromises = await AddAttachment(
+    //     ID,
+    //     _file,
+    //     "paragraph",
+    //     submissionType === "submit"
+    //   );
+    // } else {
+    addDataPromises = await UpdateAttachment(
+      ID,
+      _file,
+      "paragraph",
+      submissionType === "submit",
+      "Sample.txt"
+    );
+    // }
+    Promise.all([addDataPromises])
+      .then((res: any) => {
+        setSectionLoader(false);
+      })
+      .catch((err: any) => {
+        setSectionLoader(false);
+      });
   };
 
   useEffect(() => {
+    setSectionLoader(true);
     if (currentSectionData?.contentType === "paragraph") {
       getSectionData();
     }
@@ -170,17 +195,23 @@ const RichText = ({
         height: "88%",
       }}
     >
-      <ReactQuill
-        theme="snow"
-        modules={modules}
-        formats={formats}
-        value={description}
-        placeholder="Content goes here"
-        className="customeRichText"
-        onChange={(text) => {
-          _handleOnChange(text);
-        }}
-      />
+      {sectionLoader && !noActionBtns ? (
+        <div className="contentDevLoaderWrapper">
+          <CircularSpinner />
+        </div>
+      ) : (
+        <ReactQuill
+          theme="snow"
+          modules={modules}
+          formats={formats}
+          value={description}
+          placeholder="Content goes here"
+          className="customeRichText"
+          onChange={(text) => {
+            _handleOnChange(text);
+          }}
+        />
+      )}
       {!noActionBtns && (
         <div
           style={{
@@ -210,6 +241,7 @@ const RichText = ({
 
             <DefaultButton
               text="Reset content"
+              disabled={sectionLoader}
               btnType="secondaryRed"
               onClick={() => {
                 setSectionData((prev: any) => {
@@ -225,6 +257,7 @@ const RichText = ({
 
             <DefaultButton
               text="Save and Close"
+              disabled={sectionLoader}
               btnType="lightGreyVariant"
               onClick={async () => {
                 await addData();
@@ -232,12 +265,12 @@ const RichText = ({
             />
             <DefaultButton
               text="Submit"
+              disabled={sectionLoader}
               btnType="primary"
               onClick={async () => {
                 await addData("submit");
               }}
             />
-            {/* </> */}
           </div>
         </div>
       )}

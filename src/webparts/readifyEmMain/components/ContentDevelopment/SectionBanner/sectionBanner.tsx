@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
+// import { CONFIG, LISTNAMES } from "../../../../../config/config";
+// import SpServices from "../../../../../services/SPServices/SpServices";
 import { useEffect, useState } from "react";
-import { CONFIG, LISTNAMES } from "../../../../../config/config";
-import SpServices from "../../../../../services/SPServices/SpServices";
 import styles from "./SectionBanner.module.scss";
+import {
+  getAppendixHeaderSectionDetails,
+  getHeaderSectionDetails,
+} from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
+import { useDispatch, useSelector } from "react-redux";
 const sampleDocHeaderImg: any = require("../../../../../assets/images/png/imagePlaceholder.png");
+
 interface Props {
   sectionDetails: any;
   currentDocDetails: any;
@@ -20,54 +26,23 @@ const SectionBanner: React.FC<Props> = ({
   secondaryTitle,
 }) => {
   const [imgURL, setImgURL] = useState<string>("");
-  console.log("imgURL: ", imgURL);
-
-  const getHeaderSectionDetails = async (): Promise<any> => {
-    let HeaderID: any = "";
-    await SpServices.SPReadItems({
-      Listname: LISTNAMES.SectionDetails,
-      Select: "*",
-      Filter: [
-        {
-          FilterKey: "documentOf",
-          Operator: "eq",
-          FilterValue: sectionDetails?.documentOfId,
-        },
-        {
-          FilterKey: "sectionType",
-          Operator: "eq",
-          FilterValue: "header section",
-        },
-      ],
-    })
-      .then((res: any) => {
-        console.log("res: ", res);
-        HeaderID = res[0]?.ID;
-      })
-      .catch((err: any) => {
-        console.log("err: ", err);
-      });
-
-    await SpServices.SPGetAttachments({
-      ID: HeaderID,
-      Listname: LISTNAMES.SectionDetails,
-    })
-      .then((res: any) => {
-        console.log("res2: ", res);
-        if (res[0]?.ServerRelativeUrl) {
-          setImgURL(`${CONFIG.tenantURL}${res[0]?.ServerRelativeUrl}`);
-        } else {
-          setImgURL("");
-        }
-      })
-      .catch((err: any) => {
-        console.log("err: ", err);
-      });
-  };
+  const dispatch = useDispatch();
+  const CDHeaderDetails = useSelector(
+    (state: any) => state.ContentDeveloperData.CDHeaderDetails
+  );
 
   useEffect(() => {
-    getHeaderSectionDetails();
-  }, []);
+    if (sectionDetails?.sectionType === "appendix section") {
+      getAppendixHeaderSectionDetails(sectionDetails, dispatch);
+    } else {
+      getHeaderSectionDetails(sectionDetails, dispatch);
+    }
+  }, [sectionDetails]);
+
+  useEffect(() => {
+    setImgURL(CDHeaderDetails?.imgURL);
+  }, [CDHeaderDetails, sectionDetails]);
+
   return (
     <>
       <div className={styles.headerContainer}>
@@ -78,9 +53,12 @@ const SectionBanner: React.FC<Props> = ({
           <p>{currentDocDetails?.documentName || "-"}</p>
           <span>
             {`${
-              !appendixHeader
-                ? `Version: ${currentDocDetails.version || "-"}`
-                : secondaryTitle
+              // !appendixHeader
+              //   ? `Version: ${currentDocDetails.version || "-"}`
+              //   : CDHeaderDetails?.headerDescription
+              CDHeaderDetails?.headerDescription
+                ? CDHeaderDetails?.headerDescription
+                : `Version: ${currentDocDetails.version || "-"}`
             }`}
           </span>
         </div>
