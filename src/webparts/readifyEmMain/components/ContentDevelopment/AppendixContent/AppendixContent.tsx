@@ -16,8 +16,8 @@ import {
 import { getAppendixHeaderSectionDetails } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { useDispatch } from "react-redux";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
-import SpServices from "../../../../../services/SPServices/SpServices";
-import { LISTNAMES } from "../../../../../config/config";
+// import SpServices from "../../../../../services/SPServices/SpServices";
+// import { LISTNAMES } from "../../../../../config/config";
 interface IAppendixSectionProps {
   sectionDetails: any;
   contentType?: any;
@@ -100,6 +100,29 @@ const AppendixContent = ({
       });
   };
 
+  // const getCurrentSectionType = async (): Promise<void> => {
+  //   await SpServices.SPReadItemUsingId({
+  //     Listname: LISTNAMES.SectionDetails,
+  //     SelectedId: sectionDetails?.ID,
+  //     Select: "*,documentOf/ID",
+  //     Expand: "documentOf",
+  //   })
+  //     .then((res: any) => {
+  //       console.log("res: ", res);
+  //       setSectionData((prev: any) => {
+  //         const updatedSections = [...prev];
+  //         updatedSections[activeIndex] = {
+  //           ...updatedSections[activeIndex],
+  //           contentType: res?.typeOfContent,
+  //         };
+  //         return updatedSections;
+  //       });
+  //     })
+  //     .catch((err: any) => {
+  //       console.log("err: ", err);
+  //     });
+  // };
+
   useEffect(() => {
     getAppendixHeaderSectionDetails(
       sectionDetails?.ID,
@@ -111,27 +134,6 @@ const AppendixContent = ({
     } else {
       setSectionLoader(true);
     }
-
-    SpServices.SPReadItemUsingId({
-      Listname: LISTNAMES.SectionDetails,
-      SelectedId: sectionDetails?.ID,
-      Select: "*,documentOf/ID",
-      Expand: "documentOf",
-    })
-      .then((res: any) => {
-        console.log("res: ", res);
-        setSectionData((prev: any) => {
-          const updatedSections = [...prev];
-          updatedSections[activeIndex] = {
-            ...updatedSections[activeIndex],
-            contentType: res?.typeOfContent,
-          };
-          return updatedSections;
-        });
-      })
-      .catch((err: any) => {
-        console.log("err: ", err);
-      });
   }, [inputValue, headerImgDetails]);
 
   return (
