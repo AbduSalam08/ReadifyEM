@@ -104,6 +104,57 @@
     font-family: "interRegular", sans-serif;
   }
 }
+    .rejectedComments {
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 10px 0px 10px 10px;
+      margin-bottom: 6px;
+      width: 94%;
+      background: linear-gradient(95.74deg,
+          #e22c4a -14.38%,
+          #be5e5e -7.97%,
+          #d92525 174.15%);
+          .commentAuthor {
+              border-bottom: 1px solid #ffffff21;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding-bottom: 5px;
+              margin-bottom: 5px;
+          
+              span {
+                font-size: 11px;
+                color: #ffffff;
+                font-family: "interMedium", sans-serif;
+              }
+          
+              .role {
+                text-align: center;
+                background: #d9d9d94d;
+                padding: 4px 7px;
+                border-radius: 3px;
+                color: #ffffff;
+                font-size: 11px;
+                font-family: "interRegular", sans-serif;
+              }
+            }
+          
+            p {
+              font-size: 12px;
+              font-weight: 400;
+              padding: 4px 0px 8px 0px;
+              line-height: 16px;
+              font-family: "interRegular", sans-serif;
+            }
+          
+            .date {
+              display: flex;
+              justify-content: end;
+              font-size: 10px;
+              color: #ebeaec;
+              font-family: "interRegular", sans-serif;
+            }
+    }
 
 .closeBtn {
   @extend .flexCenter;

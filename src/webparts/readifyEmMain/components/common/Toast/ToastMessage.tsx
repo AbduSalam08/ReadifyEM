@@ -23,6 +23,7 @@ const ToastMessage = ({
   setToastMessage,
 }: Iprops): JSX.Element => {
   const toast: any = useRef(null);
+  console.log(severity);
 
   const clear = () => {
     toast.current.clear();
@@ -52,7 +53,7 @@ const ToastMessage = ({
     });
     setToastMessage({
       isShow: false,
-      severity: "",
+      severity: severity,
       title: "",
       message: "",
       duration: 3000,

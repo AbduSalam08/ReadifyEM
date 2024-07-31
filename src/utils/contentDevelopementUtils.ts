@@ -235,8 +235,6 @@ export const UpdateAppendixAttachment = async (
   documentID?: any,
   sectionID?: any
 ): Promise<any> => {
-  debugger;
-
   // Retrieve all attachments using sp.web
   const attachments = await sp.web.lists
     .getByTitle(LISTNAMES.AppendixHeader)
@@ -269,8 +267,6 @@ export const AddSectionAttachment = async (
   saveAndClose: boolean,
   fileName?: string
 ): Promise<any> => {
-  debugger;
-
   await SpServices.SPAddAttachment({
     ListName: LISTNAMES.SectionDetails,
     ListID: itemID,
@@ -316,8 +312,6 @@ export const UpdateSectionAttachment = async (
   fileName?: string,
   deleteAttachments?: boolean
 ): Promise<any> => {
-  debugger;
-
   try {
     // Retrieve all attachments for the given item
     if (deleteAttachments) {
@@ -394,7 +388,6 @@ export const addAppendixHeaderAttachmentData = async (
   file?: any
 ): Promise<any> => {
   console.log("sectionDetails: ", sectionDetails);
-  debugger;
   if (!file.fileData?.ServerRelativeUrl && file.fileName !== "") {
     let appendixHeaderID: any = null;
     await SpServices.SPReadItems({

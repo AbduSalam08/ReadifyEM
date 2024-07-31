@@ -91,7 +91,6 @@ const SectionComments: React.FC<Props> = ({
   };
 
   const sendSectionComment = async () => {
-    debugger;
     if (inputComment !== "") {
       console.log("clicked");
       let json = {
