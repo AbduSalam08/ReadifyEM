@@ -80,13 +80,13 @@ const SectionComments: React.FC<Props> = ({
   );
 
   const onChangeFunction = (value: string): any => {
-    setToastMessage({
-      isShow: false,
-      severity: "info",
-      title: "Comment Submit",
-      message: "Your comment added successfully",
-      duration: 3000,
-    });
+    // setToastMessage({
+    //   isShow: false,
+    //   severity: "info",
+    //   title: "Comment Submit",
+    //   message: "Your comment added successfully",
+    //   duration: 3000,
+    // });
     setInputComment(value);
   };
 
@@ -198,6 +198,7 @@ const SectionComments: React.FC<Props> = ({
         message={toastMessage.message}
         duration={toastMessage.duration}
         isShow={toastMessage.isShow}
+        setToastMessage={setToastMessage}
       />
       <AlertPopup
         secondaryText={popupLoaders.secondaryText}

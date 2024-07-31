@@ -11,6 +11,7 @@ interface Iprops {
   duration: number;
   title: string;
   isShow: boolean;
+  setToastMessage: any;
 }
 
 const ToastMessage = ({
@@ -19,6 +20,7 @@ const ToastMessage = ({
   duration,
   title,
   isShow,
+  setToastMessage,
 }: Iprops): JSX.Element => {
   const toast: any = useRef(null);
 
@@ -47,6 +49,13 @@ const ToastMessage = ({
         </div>
       ),
       life: duration,
+    });
+    setToastMessage({
+      isShow: false,
+      severity: "",
+      title: "",
+      message: "",
+      duration: 3000,
     });
   };
 

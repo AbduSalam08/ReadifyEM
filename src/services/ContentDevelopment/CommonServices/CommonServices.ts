@@ -205,6 +205,7 @@ export const getSectionsDetails = async (
     const DocDetailsResponseData: any = DocDetailsResponse[0];
 
     const docDetailsForCD: any = {
+      documentDetailsID: documentDetailsID,
       documentName: DocDetailsResponseData?.Title,
       documentStatus: DocDetailsResponseData?.status,
       documentType: DocDetailsResponseData?.documentType,
@@ -530,4 +531,28 @@ export const UpdateSectionAttachment = async (
       fileName
     );
   }
+};
+
+export const addPromotedComment = async (
+  promoteComments: string,
+  documentDetails: any,
+  handleClosePopup: any
+): Promise<any> => {
+  console.log(promoteComments);
+  let jsonObject = {
+    comments: promoteComments,
+    role: documentDetails.taskRole,
+    documentDetailsId: documentDetails.documentDetailsID,
+  };
+  await SpServices.SPAddItem({
+    Listname: LISTNAMES.PromotedComments,
+    RequestJSON: jsonObject,
+  })
+    .then((res: any) => {
+      console.log(res);
+      handleClosePopup(3);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };

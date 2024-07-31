@@ -2,8 +2,10 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { memo, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Popup from "../../webparts/readifyEmMain/components/common/Popups/Popup";
 
+// import components
 import AllSections from "../../webparts/readifyEmMain/components/ContentDevelopment/AllSections/AllSections";
 import Header from "../../webparts/readifyEmMain/components/ContentDevelopment/ContentDevHeader/ContentDevHeader";
 import SectionHeader from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionHeader/SectionHeader";
@@ -15,26 +17,28 @@ import SetupHeader from "../../webparts/readifyEmMain/components/ContentDevelopm
 import CustomPeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomPeoplePicker";
 import SupportingDocuments from "../../webparts/readifyEmMain/components/ContentDevelopment/SupportingDocuments/SupportingDocuments";
 import Definition from "../../webparts/readifyEmMain/components/ContentDevelopment/Definition/Definition";
-// import CustomMutiplePeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomMutiplePeoplePicker";
-// import SpServices from "../../services/SPServices/SpServices";
-// import ViewDetails from "../../webparts/readifyEmMain/components/ContentDevelopment/ViewDetails/ViewDetails";
 import DocumentTracker from "../../webparts/readifyEmMain/components/ContentDevelopment/DocumentTracker/DocumentTracker";
+import RichText from "../../webparts/readifyEmMain/components/ContentDevelopment/RichText/RichText";
+import AppendixContent from "../../webparts/readifyEmMain/components/ContentDevelopment/AppendixContent/AppendixContent";
+import ContentTypeConfirmation from "../../webparts/readifyEmMain/components/ContentDevelopment/ContentTypeConfirmation/ContentTypeConfirmation";
+import { getSectionComments } from "../../services/ContentDevelopment/SectionComments/SectionComments";
+// import CustomMutiplePeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomMutiplePeoplePicker";
+// import ViewDetails from "../../webparts/readifyEmMain/components/ContentDevelopment/ViewDetails/ViewDetails";
+
+// toggle popup funtion
 import { togglePopupVisibility } from "../../utils/togglePopup";
 // images
 const commentIcon = require("../../assets/images/svg/violetCommentIcon.svg");
 // styles
 import styles from "./ContentDevelopment.module.scss";
-import RichText from "../../webparts/readifyEmMain/components/ContentDevelopment/RichText/RichText";
-// import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
-import AppendixContent from "../../webparts/readifyEmMain/components/ContentDevelopment/AppendixContent/AppendixContent";
-import ContentTypeConfirmation from "../../webparts/readifyEmMain/components/ContentDevelopment/ContentTypeConfirmation/ContentTypeConfirmation";
-import { useDispatch, useSelector } from "react-redux";
+// loader
 import CircularSpinner from "../../webparts/readifyEmMain/components/common/AppLoader/CircularSpinner";
-// import ErrorElement from "../../webparts/readifyEmMain/components/common/ErrorElement/ErrorElement";
 
-// import Services
-
-import { getSectionComments } from "../../services/ContentDevelopment/SectionComments/SectionComments";
+// import Services and buttons
+// import SpServices from "../../services/SPServices/SpServices";
+import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
+import CustomTextArea from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomTextArea";
+import { addPromotedComment } from "../../services/ContentDevelopment/CommonServices/CommonServices";
 
 const Details = {
   sectionName: "Introduction",
@@ -130,6 +134,14 @@ const ContentDevelopment = (): JSX.Element => {
       defaultCloseBtn: true,
       popupData: "",
     },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "513px",
+      popupType: "custom",
+      defaultCloseBtn: true,
+      popupData: "",
+    },
   ];
 
   const [initialLoader, setInitialLoader] = useState(true);
@@ -143,6 +155,8 @@ const ContentDevelopment = (): JSX.Element => {
     (state: any) => state.ContentDeveloperData.CDDocDetails
   );
 
+  console.log(currentDocDetailsData);
+
   // initial States
   // AllSections State
   const [sectionDetails, setSectionDetails] = useState<any>(Details);
@@ -152,6 +166,9 @@ const ContentDevelopment = (): JSX.Element => {
 
   // Active Section Index
   const [activeSection, setActiveSection] = useState<number>(0);
+
+  // Promoted comments state
+  const [promoteComments, setPromoteComments] = useState<string>("");
 
   const enabledSection = AllSectionsDataMain?.filter(
     (el: any) => el?.sectionPermission
@@ -166,6 +183,16 @@ const ContentDevelopment = (): JSX.Element => {
   // util for closing popup
   const handleClosePopup = (index?: any): void => {
     togglePopupVisibility(setPopupController, index, "close");
+  };
+  // add Promote Comments
+
+  const submitPromotedComment = async () => {
+    console.log(promoteComments);
+    await addPromotedComment(
+      promoteComments,
+      currentDocDetailsData,
+      handleClosePopup
+    );
   };
 
   const showActionBtns: boolean =
@@ -299,6 +326,27 @@ const ContentDevelopment = (): JSX.Element => {
         key={5}
       />,
     ],
+    [
+      <CustomTextArea
+        size="MD"
+        labelText="Comments"
+        withLabel
+        icon={false}
+        mandatory={true}
+        value={promoteComments}
+        onChange={(value: any) => {
+          setPromoteComments(value);
+        }}
+        placeholder="Enter Description"
+        // isValid={
+        //   definitionsData.definitionDescription === "" &&
+        //   !definitionsData.IsValid &&
+        //   definitionsData.ErrorMsg === "definitionDescription"
+        // }
+        errorMsg={"The description field is required"}
+        key={2}
+      />,
+    ],
   ];
 
   const popupActions: any[] = [
@@ -335,6 +383,29 @@ const ContentDevelopment = (): JSX.Element => {
         startIcon: false,
         onClick: () => {
           handleClosePopup(2);
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(3);
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          // handleClosePopup(2);
+          await submitPromotedComment();
         },
       },
     ],
@@ -402,17 +473,38 @@ const ContentDevelopment = (): JSX.Element => {
             </div>
             <div style={{ width: "100%", display: "flex" }}>
               <div className={styles.sectionWrapper}>
-                <AllSections
-                  activeSection={activeSection}
-                  data={AllSectionsData}
-                  onChange={(
-                    value: any,
-                    condition: boolean,
-                    popupTitle: string
-                  ) => popuphandleOnChanges(value, condition, popupTitle)}
-                  key={1}
-                  // primaryAuthor={true}
-                />
+                <div className={styles.allSectionWrapper}>
+                  <AllSections
+                    activeSection={activeSection}
+                    data={AllSectionsData}
+                    onChange={(
+                      value: any,
+                      condition: boolean,
+                      popupTitle: string
+                    ) => popuphandleOnChanges(value, condition, popupTitle)}
+                    key={1}
+                    // primaryAuthor={true}
+                  />
+                </div>
+                <div className={styles.promotedBtnWrapper}>
+                  <DefaultButton
+                    text="Mark as all approved"
+                    btnType="secondary"
+                    // onClick={() => selectSection(1, "Document Tracker")}
+                  />
+                  <DefaultButton
+                    text="Promote"
+                    btnType="primary"
+                    onClick={() =>
+                      togglePopupVisibility(
+                        setPopupController,
+                        3,
+                        "open",
+                        "Confirmation for completion"
+                      )
+                    }
+                  />
+                </div>
               </div>
               <div className={styles.contentWrapper}>
                 {AllSectionsData[activeSection]?.sectionName !== "" &&
@@ -479,7 +571,12 @@ const ContentDevelopment = (): JSX.Element => {
                       {AllSectionsData[
                         activeSection
                       ]?.sectionName?.toLowerCase() === "definitions" ? (
-                        <Definition documentId={572} sectionId={85} />
+                        <Definition
+                          sectionId={AllSectionsData[activeSection]?.ID}
+                          documentId={
+                            AllSectionsData[activeSection]?.documentOfId
+                          }
+                        />
                       ) : AllSectionsData[
                           activeSection
                         ]?.sectionType?.toLowerCase() === "appendix section" ? (
@@ -496,7 +593,12 @@ const ContentDevelopment = (): JSX.Element => {
                           activeSection
                         ]?.sectionName?.toLowerCase() ===
                         "supporting materials" ? (
-                        <SupportingDocuments documentId={572} sectionId={85} />
+                        <SupportingDocuments
+                          sectionId={AllSectionsData[activeSection]?.ID}
+                          documentId={
+                            AllSectionsData[activeSection]?.documentOfId
+                          }
+                        />
                       ) : AllSectionsData[activeSection]?.contentType ===
                         "initial" ? (
                         <ContentTypeConfirmation
