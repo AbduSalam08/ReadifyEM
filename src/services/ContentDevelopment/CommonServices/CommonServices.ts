@@ -684,7 +684,7 @@ export const addPromotedComment = async (
   currentUserDetails: any
 ): Promise<any> => {
   console.log(promoteComments);
-  let jsonObject = {
+  const jsonObject = {
     comments: promoteComments,
     role: documentDetails.taskRole,
     documentDetailsId: documentDetails.documentDetailsID,

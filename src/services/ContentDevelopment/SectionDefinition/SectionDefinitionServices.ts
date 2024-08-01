@@ -182,7 +182,7 @@ const AddSectionDefinition = (
   );
   if (tempAddArray.length > 0) {
     tempAddArray.forEach(async (obj: any, index: number) => {
-      let jsonObject = {
+      const jsonObject = {
         Title: obj.definitionTitle,
         description: obj.definitionDescription,
         referenceAuthorId: obj.referenceAuthor.Id,
@@ -267,7 +267,7 @@ const AddSectionDefinition = (
   }
   if (tempDelUpdateArray.length > 0) {
     tempDelUpdateArray.forEach((obj: any, index: number) => {
-      let jsonObject = {
+      const jsonObject = {
         isDeleted: false,
       };
       SpServices.SPUpdateItem({
@@ -326,7 +326,7 @@ const addNewDefinition = async (
     })
       .then(async (res: any) => {
         console.log(res);
-        let jsonObject = {
+        const jsonObject = {
           Title: definitionsData.definitionName,
           description: definitionsData.definitionDescription,
           referenceAuthorId: definitionsData.referenceAuthor[0].Id,

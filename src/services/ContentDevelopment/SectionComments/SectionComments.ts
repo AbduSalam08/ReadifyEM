@@ -114,7 +114,7 @@ const addSectionComment = async (
 ): Promise<boolean> => {
   console.log(jsonObject, sectionId, AllSectionsDataMain);
   let clearInput: boolean = false;
-  let tempArray: any[] = [...sectionComments];
+  const tempArray: any[] = [...sectionComments];
   try {
     await SpServices.SPAddItem({
       Listname: LISTNAMES.SectionComments,
@@ -151,7 +151,7 @@ const addSectionComment = async (
           //     secondaryText: `Comment sended successfully`,
           //   });
 
-          let updateArray = AllSectionsDataMain.map((obj: any) => {
+          const updateArray = AllSectionsDataMain.map((obj: any) => {
             if (obj.ID === sectionId) {
               return { ...obj, commentsCount: obj.commentsCount + 1 };
             } else {
