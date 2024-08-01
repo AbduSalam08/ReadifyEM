@@ -28,6 +28,9 @@ import { IPopupLoaders } from "../../../../../interface/MainInterface";
 import { initialPopupLoaders } from "../../../../../config/config";
 import AlertPopup from "../../common/Popups/AlertPopup/AlertPopup";
 import { useDispatch, useSelector } from "react-redux";
+import ToastMessage from "../../common/Toast/ToastMessage";
+import { updateSectionDetails } from "../../../../../services/ContentDevelopment/SupportingDocument/SupportingDocumentServices";
+import { isEmpty } from "@microsoft/sp-lodash-subset";
 
 interface Props {
   documentId: number;
@@ -111,6 +114,16 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
     referenceLink: "",
     isApproved: true,
     isLoading: false,
+  });
+
+  // toast message
+
+  const [toastMessage, setToastMessage] = useState<any>({
+    isShow: false,
+    severity: "",
+    title: "",
+    message: "",
+    duration: "",
   });
 
   console.log(
@@ -362,7 +375,7 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
   ];
 
   const handleSearchOnChange = (value: string): void => {
-    setSearchValue(value);
+    setSearchValue(value.trimStart());
     const filterValues = sectionDefinitions?.filter((obj: any) => {
       if (
         obj.definitionTitle.toLowerCase().includes(value.toLowerCase().trim())
@@ -380,12 +393,16 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
   };
 
   const getAllSecDefinitions = async (): Promise<any> => {
-    const tempArray: any = await getAllSectionDefinitions(
+    setInitialLoader(true);
+    const tempSelectedDefinitionArray: any = await getAllSectionDefinitions(
       documentId,
       sectionId
     );
-    setSelectedDefinitions(await tempArray);
-    getMainDefinition(tempArray);
+    const sortedArray = tempSelectedDefinitionArray.sort(
+      (a: any, b: any) => b.ID - a.ID
+    );
+    setSelectedDefinitions(await sortedArray);
+    getMainDefinition(sortedArray);
   };
 
   const onSelectDefinition = (id: number): void => {
@@ -448,13 +465,18 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
     }
     setFilterDefinitions([...tempArray]);
   };
-  const submitSectionDefinition = async () => {
+  const submitSectionDefinition = async (submitCondition: boolean) => {
     await AddSectionDefinition(
       [...selectedDefinitions],
       documentId,
       sectionId,
-      setPopupLoaders
+      setPopupLoaders,
+      setToastMessage
     );
+    if (submitCondition) {
+      // getAllSelectedDocuments();
+      await updateSectionDetails(sectionId);
+    }
   };
 
   const removeDefinition = (index: number): any => {
@@ -496,13 +518,15 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
                     handleSearchOnChange(value);
                   }}
                 />
-                <button className={styles.closeBtn}>
-                  <img
-                    src={closeBtn}
-                    alt={"Add Document"}
-                    onClick={() => setSearchValue("")}
-                  />
-                </button>
+                {searchValue !== "" && (
+                  <button className={styles.closeBtn}>
+                    <img
+                      src={closeBtn}
+                      alt={"Add Document"}
+                      onClick={() => setSearchValue("")}
+                    />
+                  </button>
+                )}
               </div>
               <DefaultButton
                 disabled={initialLoader}
@@ -517,6 +541,11 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
             </div>
             {searchValue !== "" && (
               <div className={styles.filterSecWrapper}>
+                {isEmpty(filterDefinitions) && (
+                  <div className={styles.noDataFound}>
+                    <span>No data found</span>
+                  </div>
+                )}
                 {filterDefinitions.map((obj: any, index: number) => {
                   return (
                     <div
@@ -657,23 +686,31 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
                 navigate(-1);
               }}
             />
-            {/* <DefaultButton
-          text="Reject"
-          btnType="lightGreyVariant"
-          onClick={() => {
-            // _addData();
-          }}
-        /> */}
+            <DefaultButton
+              text="Save and Close"
+              btnType="lightGreyVariant"
+              onClick={async () => {
+                await submitSectionDefinition(false);
+              }}
+            />
             <DefaultButton
               disabled={initialLoader}
               text="Submit"
               btnType="primary"
               onClick={() => {
-                submitSectionDefinition();
+                submitSectionDefinition(true);
               }}
             />
           </div>
         </div>
+        <ToastMessage
+          severity={toastMessage.severity}
+          title={toastMessage.title}
+          message={toastMessage.message}
+          duration={toastMessage.duration}
+          isShow={toastMessage.isShow}
+          setToastMessage={setToastMessage}
+        />
         <AlertPopup
           secondaryText={popupLoaders.secondaryText}
           isLoading={popupLoaders.isLoading}

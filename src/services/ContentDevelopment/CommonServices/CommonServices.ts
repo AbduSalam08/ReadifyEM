@@ -679,13 +679,16 @@ export const getAppendixHeaderSectionDetails = async (
 export const addPromotedComment = async (
   promoteComments: string,
   documentDetails: any,
-  handleClosePopup: any
+  handleClosePopup: any,
+  setToastState: any,
+  currentUserDetails: any
 ): Promise<any> => {
   console.log(promoteComments);
   let jsonObject = {
     comments: promoteComments,
     role: documentDetails.taskRole,
     documentDetailsId: documentDetails.documentDetailsID,
+    createdById: currentUserDetails.id,
   };
   await SpServices.SPAddItem({
     Listname: LISTNAMES.PromotedComments,
@@ -694,6 +697,13 @@ export const addPromotedComment = async (
     .then((res: any) => {
       console.log(res);
       handleClosePopup(3);
+      setToastState({
+        isShow: true,
+        severity: "success",
+        title: "Update promote comments",
+        message: "Successfully added promote comments",
+        duration: 3000,
+      });
     })
     .catch((err) => {
       console.log(err);

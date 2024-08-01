@@ -171,7 +171,8 @@ const AddSectionDefinition = (
   selectedDefinitions: any[],
   documentId: number,
   sectionId: number,
-  setLoaderState: any
+  setLoaderState: any,
+  setToastState: any
 ) => {
   const tempArray: any[] = [...selectedDefinitions];
   const tempAddArray = tempArray.filter((obj: any) => obj.status);
@@ -201,15 +202,23 @@ const AddSectionDefinition = (
             tempDelUpdateArray.length === 0 &&
             tempAddArray.length - 1 === index
           ) {
-            setLoaderState({
-              isLoading: {
-                inprogress: false,
-                success: true,
-                error: false,
-              },
-              visibility: true,
-              text: `Changes updated successfully!`,
-              secondaryText: `Definitions add/remove updated successfully! `,
+            // setLoaderState({
+            //   isLoading: {
+            //     inprogress: false,
+            //     success: true,
+            //     error: false,
+            //   },
+            //   visibility: true,
+            //   text: `Changes updated successfully!`,
+            //   secondaryText: `Definitions add/remove updated successfully! `,
+            // });
+
+            setToastState({
+              isShow: true,
+              severity: "success",
+              title: "Update section definition",
+              message: "Successfully adding/deleting section definition",
+              duration: 3000,
             });
           }
         })
@@ -232,15 +241,22 @@ const AddSectionDefinition = (
             tempDelUpdateArray.length === 0 &&
             tempDelArray.length - 1 === index
           ) {
-            setLoaderState({
-              isLoading: {
-                inprogress: false,
-                success: true,
-                error: false,
-              },
-              visibility: true,
-              text: `Changes updated successfully!`,
-              secondaryText: `Definitions add/remove updated successfully! `,
+            // setLoaderState({
+            //   isLoading: {
+            //     inprogress: false,
+            //     success: true,
+            //     error: false,
+            //   },
+            //   visibility: true,
+            //   text: `Changes updated successfully!`,
+            //   secondaryText: `Definitions add/remove updated successfully! `,
+            // });
+            setToastState({
+              isShow: true,
+              severity: "success",
+              title: "Update section definition",
+              message: "Successfully adding/deleting section definition",
+              duration: 3000,
             });
           }
         })
@@ -262,15 +278,22 @@ const AddSectionDefinition = (
         .then((res: any) => {
           console.log(res);
           if (tempDelUpdateArray.length - 1 === index) {
-            setLoaderState({
-              isLoading: {
-                inprogress: false,
-                success: true,
-                error: false,
-              },
-              visibility: true,
-              text: `Changes updated successfully!`,
-              secondaryText: `Definitions add/remove updated successfully! `,
+            // setLoaderState({
+            //   isLoading: {
+            //     inprogress: false,
+            //     success: true,
+            //     error: false,
+            //   },
+            //   visibility: true,
+            //   text: `Changes updated successfully!`,
+            //   secondaryText: `Definitions add/remove updated successfully! `,
+            // });
+            setToastState({
+              isShow: true,
+              severity: "success",
+              title: "Update section definition",
+              message: "Successfully adding/deleting section definition",
+              duration: 3000,
             });
           }
         })

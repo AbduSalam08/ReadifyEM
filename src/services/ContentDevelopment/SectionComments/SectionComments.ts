@@ -4,7 +4,10 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { LISTNAMES } from "../../../config/config";
 import SpServices from "../../SPServices/SpServices";
-import { setSectionComments } from "../../../redux/features/SectionCommentsSlice";
+import {
+  setPromatedComments,
+  setSectionComments,
+} from "../../../redux/features/SectionCommentsSlice";
 import { setCDSectionData } from "../../../redux/features/ContentDevloperSlice";
 
 // interface definitionDetails {
@@ -56,6 +59,47 @@ const getSectionComments = async (sectionId: number, dispatcher: any) => {
     .catch((err) => console.log(err));
   dispatcher(setSectionComments(tempArray));
   return tempArray;
+};
+
+const getPromotedComments = async (documentID: number, dispatcher: any) => {
+  console.log(documentID);
+  const tempArray: any[] = [];
+  await SpServices.SPReadItems({
+    Listname: LISTNAMES.PromotedComments,
+    Select: "*,createdBy/Title,createdBy/ID,createdBy/EMail,documentDetails/ID",
+    Expand: "createdBy,documentDetails",
+    Filter: [
+      {
+        FilterKey: "documentDetails",
+        Operator: "eq",
+        FilterValue: documentID,
+      },
+    ],
+  })
+    .then((res: any[]) => {
+      console.log(res);
+      res?.forEach((item: any) => {
+        tempArray.push({
+          ID: item.ID,
+          comment: item.comments,
+          commentAuthor: item?.createdBy
+            ? [
+                {
+                  id: item?.createdBy?.ID,
+                  name: item?.createdBy?.Title,
+                  email: item?.createdBy?.EMail,
+                },
+              ]
+            : [],
+          commentDateAndTime: item.Created,
+          role: item.role,
+          // isRejectedComment: item.isRejectedComment ? true : false,
+        });
+      });
+      console.log(tempArray);
+    })
+    .catch((err) => console.log(err));
+  dispatcher(setPromatedComments(tempArray));
 };
 
 const addSectionComment = async (
@@ -157,4 +201,4 @@ const addSectionComment = async (
   return clearInput;
 };
 
-export { getSectionComments, addSectionComment };
+export { getSectionComments, addSectionComment, getPromotedComments };

@@ -113,7 +113,7 @@ const CustomTextArea: React.FC<Props> = ({
                 : `1px solid #e5e5e5`
             }`,
             padding: "5px 10px",
-            width: "70%",
+            width: "100%",
             fontSize: "14px",
             fontFamily: `interMedium, sans-serif`,
           }}
@@ -121,7 +121,7 @@ const CustomTextArea: React.FC<Props> = ({
         {/* </IconField> */}
       </div>
 
-      {isValid ? (
+      {isValid && (
         <p
           className={styles.errorMsg}
           style={{
@@ -129,15 +129,6 @@ const CustomTextArea: React.FC<Props> = ({
           }}
         >
           {errorMsg}
-        </p>
-      ) : (
-        <p
-          className={styles.emptyMsg}
-          style={{
-            textAlign: isValid && !withLabel ? "left" : "right",
-          }}
-        >
-          {""}
         </p>
       )}
     </div>
