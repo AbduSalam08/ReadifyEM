@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const mainData: any = {
   SectionComments: [],
+  promatedComments: [],
 };
 
 const SectionCommentsData = createSlice({
@@ -12,8 +13,12 @@ const SectionCommentsData = createSlice({
     setSectionComments: (state, action) => {
       state.SectionComments = action.payload;
     },
+    setPromatedComments: (state, action) => {
+      state.promatedComments = action.payload;
+    },
   },
 });
 
-export const { setSectionComments } = SectionCommentsData.actions;
+export const { setSectionComments, setPromatedComments } =
+  SectionCommentsData.actions;
 export default SectionCommentsData.reducer;

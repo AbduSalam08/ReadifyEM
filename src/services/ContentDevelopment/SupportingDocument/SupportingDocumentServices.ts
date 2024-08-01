@@ -171,6 +171,7 @@ const submitSupportingDocuments = (
               duration: 3000,
             });
             getSelectedFun();
+            return renderCondition;
           }
         })
         .catch((err) => console.log(err));
@@ -201,6 +202,7 @@ const submitSupportingDocuments = (
               duration: 3000,
             });
             getSelectedFun();
+            return renderCondition;
           }
         })
         .catch((err) => {
@@ -229,6 +231,7 @@ const submitSupportingDocuments = (
               duration: 3000,
             });
             getSelectedFun();
+            return renderCondition;
           }
         })
         .catch((err) => {
@@ -236,7 +239,19 @@ const submitSupportingDocuments = (
         });
     });
   }
-  return renderCondition;
+  // return renderCondition;
+};
+
+const updateSectionDetails = (sectionID: number) => {
+  SpServices.SPUpdateItem({
+    Listname: LISTNAMES.SectionDetails,
+    ID: sectionID,
+    RequestJSON: { sectionSubmitted: true },
+  })
+    .then((res: any) => {
+      console.log(res);
+    })
+    .catch((err) => console.log(err));
 };
 
 export {
@@ -244,4 +259,5 @@ export {
   getDocumentDeatils,
   getApprovedDocuments,
   submitSupportingDocuments,
+  updateSectionDetails,
 };

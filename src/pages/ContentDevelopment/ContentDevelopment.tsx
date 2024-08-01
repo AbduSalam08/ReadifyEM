@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Popup from "../../webparts/readifyEmMain/components/common/Popups/Popup";
@@ -21,7 +22,10 @@ import DocumentTracker from "../../webparts/readifyEmMain/components/ContentDeve
 import RichText from "../../webparts/readifyEmMain/components/ContentDevelopment/RichText/RichText";
 import AppendixContent from "../../webparts/readifyEmMain/components/ContentDevelopment/AppendixContent/AppendixContent";
 import ContentTypeConfirmation from "../../webparts/readifyEmMain/components/ContentDevelopment/ContentTypeConfirmation/ContentTypeConfirmation";
-import { getSectionComments } from "../../services/ContentDevelopment/SectionComments/SectionComments";
+import {
+  getPromotedComments,
+  getSectionComments,
+} from "../../services/ContentDevelopment/SectionComments/SectionComments";
 // import CustomMutiplePeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomMutiplePeoplePicker";
 // import ViewDetails from "../../webparts/readifyEmMain/components/ContentDevelopment/ViewDetails/ViewDetails";
 
@@ -39,6 +43,7 @@ import CircularSpinner from "../../webparts/readifyEmMain/components/common/AppL
 import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
 import CustomTextArea from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomTextArea";
 import { addPromotedComment } from "../../services/ContentDevelopment/CommonServices/CommonServices";
+import ToastMessage from "../../webparts/readifyEmMain/components/common/Toast/ToastMessage";
 
 const Details = {
   sectionName: "Introduction",
@@ -151,6 +156,10 @@ const ContentDevelopment = (): JSX.Element => {
     (state: any) => state.ContentDeveloperData.CDSectionsData
   );
 
+  const currentUserDetails: any = useSelector(
+    (state: any) => state?.MainSPContext?.currentUserDetails
+  );
+
   const currentDocDetailsData: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDDocDetails
   );
@@ -168,7 +177,11 @@ const ContentDevelopment = (): JSX.Element => {
   const [activeSection, setActiveSection] = useState<number>(0);
 
   // Promoted comments state
-  const [promoteComments, setPromoteComments] = useState<string>("");
+  const [promoteComments, setPromoteComments] = useState<any>({
+    promoteComment: "",
+    IsValid: false,
+    ErrorMsg: "",
+  });
 
   const enabledSection = AllSectionsDataMain?.filter(
     (el: any) => el?.sectionPermission
@@ -179,6 +192,15 @@ const ContentDevelopment = (): JSX.Element => {
   const [popupController, setPopupController] = useState(
     initialPopupController
   );
+  // toast message state
+
+  const [toastMessage, setToastMessage] = useState<any>({
+    isShow: false,
+    severity: "",
+    title: "",
+    message: "",
+    duration: "",
+  });
 
   // util for closing popup
   const handleClosePopup = (index?: any): void => {
@@ -188,11 +210,26 @@ const ContentDevelopment = (): JSX.Element => {
 
   const submitPromotedComment = async () => {
     console.log(promoteComments);
-    await addPromotedComment(
-      promoteComments,
-      currentDocDetailsData,
-      handleClosePopup
-    );
+    if (promoteComments.promoteComment !== "") {
+      setPromoteComments({
+        ...promoteComments,
+        IsValid: false,
+        ErrorMsg: "",
+      });
+      await addPromotedComment(
+        promoteComments.promoteComment,
+        currentDocDetailsData,
+        handleClosePopup,
+        setToastMessage,
+        currentUserDetails
+      );
+    } else {
+      setPromoteComments({
+        ...promoteComments,
+        IsValid: true,
+        ErrorMsg: "Please enter comments",
+      });
+    }
   };
 
   const showActionBtns: boolean =
@@ -209,6 +246,7 @@ const ContentDevelopment = (): JSX.Element => {
         key={1}
         noCommentInput={true}
         viewOnly={true}
+        promoteComments={true}
       />,
     ],
     [<DocumentTracker sectionData={sectionDetails} key={1} />],
@@ -333,17 +371,17 @@ const ContentDevelopment = (): JSX.Element => {
         withLabel
         icon={false}
         mandatory={true}
-        value={promoteComments}
+        value={promoteComments.promoteComment}
         onChange={(value: any) => {
-          setPromoteComments(value);
+          setPromoteComments({
+            ...promoteComments,
+            promoteComment: value,
+            IsValid: false,
+          });
         }}
         placeholder="Enter Description"
-        // isValid={
-        //   definitionsData.definitionDescription === "" &&
-        //   !definitionsData.IsValid &&
-        //   definitionsData.ErrorMsg === "definitionDescription"
-        // }
-        errorMsg={"The description field is required"}
+        isValid={promoteComments.IsValid}
+        errorMsg={promoteComments.ErrorMsg}
         key={2}
       />,
     ],
@@ -421,6 +459,7 @@ const ContentDevelopment = (): JSX.Element => {
       const Comments = getSectionComments(AllSectionsData[value].ID, dispatch);
       console.log(Comments);
     } else {
+      getPromotedComments(currentDocDetailsData.documentDetailsID, dispatch);
       togglePopupVisibility(setPopupController, value, "open", popupTitle);
     }
   };
@@ -666,6 +705,7 @@ const ContentDevelopment = (): JSX.Element => {
                         onClick={() => {
                           // setToggleCommentSection(true);
                         }}
+                        promoteComments={false}
                       />
                     </div>
                   </div>
@@ -684,6 +724,14 @@ const ContentDevelopment = (): JSX.Element => {
         //   currentDocDetailsData === null && <ErrorElement />
         // )
       }
+      <ToastMessage
+        severity={toastMessage.severity}
+        title={toastMessage.title}
+        message={toastMessage.message}
+        duration={toastMessage.duration}
+        isShow={toastMessage.isShow}
+        setToastMessage={setToastMessage}
+      />
       {popupController?.map((popupData: any, index: number) => (
         <Popup
           key={index}

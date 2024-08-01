@@ -20,6 +20,7 @@ import {
   getDocumentDeatils,
   getApprovedDocuments,
   submitSupportingDocuments,
+  updateSectionDetails,
 } from "../../../../../services/ContentDevelopment/SupportingDocument/SupportingDocumentServices";
 import { useNavigate } from "react-router-dom";
 import { isEmpty } from "@microsoft/sp-lodash-subset";
@@ -37,6 +38,7 @@ interface documentDetails {
   isNew: boolean;
   status: boolean;
   isDeleted: boolean;
+  isValid: boolean;
 }
 
 const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
@@ -59,7 +61,7 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
   console.log(selectedDocuments);
 
   const handleSearchOnChange = (value: string): any => {
-    setSearchValue(value);
+    setSearchValue(value.trimStart());
     const filterValues = allDocumentsLink?.filter((obj: any) => {
       if (obj.FileRef.toLowerCase().includes(value.toLowerCase().trim())) {
         return obj;
@@ -85,8 +87,11 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
       sectionId,
       documentId
     );
-    setSelectedDocuments([...tempSelectedDocumentsArray]);
-    getMainDocumentDeatails([...tempSelectedDocumentsArray]);
+    const sortedArray = tempSelectedDocumentsArray.sort(
+      (a: any, b: any) => b.ID - a.ID
+    );
+    setSelectedDocuments([...sortedArray]);
+    getMainDocumentDeatails([...sortedArray]);
   };
 
   const onSelectDocument = (id: number): void => {
@@ -155,49 +160,87 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
       isNew: true,
       status: true,
       isDeleted: false,
+      isValid: false,
     });
     setSelectedDocuments([...tempArray]);
   };
 
   const checkinNewSupportingDocument = (index: number) => {
     const tempSelectedDocuments = [...selectedDocuments];
-    tempSelectedDocuments[index].isNew = false;
+    if (
+      tempSelectedDocuments[index].documentName !== "" &&
+      tempSelectedDocuments[index].documentLink !== ""
+    ) {
+      tempSelectedDocuments[index].isNew = false;
+    } else {
+      tempSelectedDocuments[index].isValid = true;
+    }
     setSelectedDocuments([...tempSelectedDocuments]);
   };
   const removeSupportingDocument = (index: number) => {
-    const tempSelectedDocuments = [...selectedDocuments];
-    tempSelectedDocuments[index].isDeleted = true;
+    let tempSelectedDocuments = [...selectedDocuments];
+    if (tempSelectedDocuments[index].status) {
+      tempSelectedDocuments = tempSelectedDocuments.filter(
+        (obj: any, ind: number) => {
+          return ind !== index;
+        }
+      );
+    } else {
+      tempSelectedDocuments[index].isDeleted = true;
+    }
     setSelectedDocuments([...tempSelectedDocuments]);
   };
 
-  const documentOnchange = (value: string, id: number, key: string): void => {
+  const documentOnchange = (
+    value: string,
+    id: number,
+    key: string,
+    ind: number
+  ): void => {
     // console.log(value, id);
     const tempArray: any[] = [...selectedDocuments];
-    const index = tempArray.map((obj: any) => {
+    const onChangeArray = tempArray.map((obj: any) => {
       if (obj.ID === id) {
         obj[key] = value;
+        if (key === "documentName" && value !== "") {
+          if (obj.documentLink !== "") {
+            obj.isValid = false;
+          } else {
+            obj.isValid = true;
+          }
+        } else if (key === "documentLink" && value !== "") {
+          if (obj.documentName !== "") {
+            obj.isValid = false;
+          } else {
+            obj.isValid = true;
+          }
+        } else {
+          obj["isValid"] = true;
+        }
         return obj;
       } else {
         return obj;
       }
     });
-    setSelectedDocuments([...index]);
+    setSelectedDocuments([...onChangeArray]);
   };
 
   useEffect(() => {
     getAllSelectedDocuments();
   }, []);
 
-  const submitSupDocuments = async () => {
-    const reRender: boolean = await submitSupportingDocuments(
+  const submitSupDocuments = async (submitCondition: boolean) => {
+    const reRender: boolean | any = await submitSupportingDocuments(
       [...selectedDocuments],
       documentId,
       sectionId,
       setToastMessage,
       getAllSelectedDocuments
     );
-    if (reRender) {
-      getAllSelectedDocuments();
+    console.log(reRender);
+    if (submitCondition) {
+      // getAllSelectedDocuments();
+      await updateSectionDetails(sectionId);
     }
   };
 
@@ -228,13 +271,15 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
               secWidth="257px"
               // clearBtn
             />
-            <button className={styles.closeBtn}>
-              <img
-                src={closeBtn}
-                alt={"Add Document"}
-                onClick={() => setSearchValue("")}
-              />
-            </button>
+            {searchValue !== "" && (
+              <button className={styles.closeBtn}>
+                <img
+                  src={closeBtn}
+                  alt={"Add Document"}
+                  onClick={() => setSearchValue("")}
+                />
+              </button>
+            )}
           </div>
           <DefaultButton
             disabled={loader}
@@ -321,22 +366,36 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
                       <div className={styles.documentInputSec}>
                         <CustomInput
                           onChange={(value: string) => {
-                            documentOnchange(value, obj.ID, "documentName");
+                            documentOnchange(
+                              value,
+                              obj.ID,
+                              "documentName",
+                              index
+                            );
                           }}
                           value={obj.documentName}
                           placeholder="Enter here"
                           withLabel
                           labelText="Document Name"
+                          isValid={obj.isValid && obj.documentName === ""}
+                          errorMsg="Please enter document name"
                           topLabel
                         />
                         <CustomInput
                           onChange={(value: string) => {
-                            documentOnchange(value, obj.ID, "documentLink");
+                            documentOnchange(
+                              value,
+                              obj.ID,
+                              "documentLink",
+                              index
+                            );
                           }}
                           value={obj.documentLink}
                           placeholder="Enter here"
                           withLabel
                           labelText="Document Link"
+                          isValid={obj.isValid && obj.documentLink === ""}
+                          errorMsg="Please enter document link"
                           topLabel
                         />
                       </div>
@@ -442,24 +501,24 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
         >
           <DefaultButton
             text="Close"
-            btnType="lightGreyVariant"
+            btnType="darkGreyVariant"
             onClick={() => {
               navigate(-1);
             }}
           />
-          {/* <DefaultButton
-          text="Reject"
-          btnType="lightGreyVariant"
-          onClick={() => {
-            // _addData();
-          }}
-        /> */}
+          <DefaultButton
+            text="Save and Close"
+            btnType="lightGreyVariant"
+            onClick={async () => {
+              await submitSupDocuments(false);
+            }}
+          />
           <DefaultButton
             disabled={loader}
             text="Submit"
             btnType="primary"
-            onClick={() => {
-              submitSupDocuments();
+            onClick={async () => {
+              await submitSupDocuments(true);
             }}
           />
         </div>

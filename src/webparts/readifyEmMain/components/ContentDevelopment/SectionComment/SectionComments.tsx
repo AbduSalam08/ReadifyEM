@@ -26,6 +26,7 @@ interface Props {
   documentId?: number;
   sectionId?: number;
   onClick?: any;
+  promoteComments: boolean;
 }
 
 const SectionComments: React.FC<Props> = ({
@@ -38,6 +39,7 @@ const SectionComments: React.FC<Props> = ({
   documentId,
   sectionId,
   onClick,
+  promoteComments,
 }) => {
   const dispatch = useDispatch();
 
@@ -48,6 +50,9 @@ const SectionComments: React.FC<Props> = ({
   // selectors
   const AllSectionsComments: any = useSelector(
     (state: any) => state.SectionCommentsData.SectionComments
+  );
+  const promotedComments: any = useSelector(
+    (state: any) => state.SectionCommentsData.promatedComments
   );
   const currentUserDetails: any = useSelector(
     (state: any) => state?.MainSPContext?.currentUserDetails
@@ -76,7 +81,8 @@ const SectionComments: React.FC<Props> = ({
     AllSectionsComments,
     currentUserDetails,
     currentDocDetailsData,
-    toastMessage
+    toastMessage,
+    promotedComments
   );
 
   const onChangeFunction = (value: string): any => {
@@ -160,9 +166,14 @@ const SectionComments: React.FC<Props> = ({
         )}
         <div className={styles.commentBoxWrapper}>
           <div className={styles.commentsWrapper}>
-            {AllSectionsComments?.map((item: any, index: number) => {
-              return <CommentCard index={index} item={item} key={index} />;
-            })}
+            {!promoteComments &&
+              AllSectionsComments?.map((item: any, index: number) => {
+                return <CommentCard index={index} item={item} key={index} />;
+              })}
+            {promoteComments &&
+              promotedComments?.map((item: any, index: number) => {
+                return <CommentCard index={index} item={item} key={index} />;
+              })}
           </div>
           {!noCommentInput && (
             <div className={styles.commentsBar}>
