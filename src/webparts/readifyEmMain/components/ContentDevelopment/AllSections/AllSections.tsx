@@ -48,10 +48,14 @@ const AllSections: React.FC<Props> = ({ activeSection, data, onChange }) => {
               onClick={() => selectSection(index, "Select section")}
             >
               <div className={styles.sectionList}>
-                <span className={styles.sectionsName}>{item.sectionName}</span>
+                <span className={styles.sectionsName} title={item.sectionName}>
+                  {item.sectionName}
+                </span>
                 {item.commentsCount !== 0 ? (
                   <span className={styles.commentCount}>
-                    {item.commentsCount}
+                    {item?.commentsCount && Number(item?.commentsCount) > 9
+                      ? "9+"
+                      : item.commentsCount}
                   </span>
                 ) : (
                   ""
@@ -89,7 +93,9 @@ const AllSections: React.FC<Props> = ({ activeSection, data, onChange }) => {
           ) : (
             <div className={styles.sectionDisabled} key={index}>
               <div className={styles.sectionList}>
-                <span className={styles.sectionsName}>{item.sectionName}</span>
+                <span className={styles.sectionsName} title={item.sectionName}>
+                  {item.sectionName}
+                </span>
                 <span className={styles.disableDateSec}>{item.dueDate}</span>
               </div>
             </div>

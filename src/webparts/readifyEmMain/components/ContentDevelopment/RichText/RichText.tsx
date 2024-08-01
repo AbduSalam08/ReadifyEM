@@ -16,6 +16,7 @@ import SpServices from "../../../../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../../../../config/config";
 import { useNavigate } from "react-router-dom";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
+import ToastMessage from "../../common/Toast/ToastMessage";
 
 interface IRichTextProps {
   noActionBtns?: boolean;
@@ -34,6 +35,13 @@ const RichText = ({
   ID,
   onChange,
 }: IRichTextProps): JSX.Element => {
+  const [toastMessage, setToastMessage] = useState<any>({
+    isShow: false,
+    severity: "",
+    title: "",
+    message: "",
+    duration: "",
+  });
   const [sectionLoader, setSectionLoader] = useState(true);
   const modules: any = {
     toolbar: [
@@ -93,7 +101,7 @@ const RichText = ({
 
   const _handleOnChange = (newText: string): string => {
     setDescription(newText === "<p><br></p>" ? "" : newText);
-    onChange(newText === "<p><br></p>" ? "" : newText);
+    onChange && onChange(newText === "<p><br></p>" ? "" : newText);
     return newText;
   };
 
@@ -174,13 +182,27 @@ const RichText = ({
       submissionType === "submit",
       "Sample.txt"
     );
-    // }
     Promise.all([addDataPromises])
       .then((res: any) => {
         setSectionLoader(false);
+        setToastMessage({
+          isShow: true,
+          severity: "success",
+          title: "Content updated!",
+          message: "The content has been updated successfully.",
+          duration: 3000,
+        });
       })
       .catch((err: any) => {
         setSectionLoader(false);
+        setToastMessage({
+          isShow: true,
+          severity: "error",
+          title: "Something went wrong!",
+          message:
+            "A unexpected error happened while updating! please try again later.",
+          duration: 3000,
+        });
       });
   };
 
@@ -276,6 +298,14 @@ const RichText = ({
           </div>
         </div>
       )}
+      <ToastMessage
+        severity={toastMessage.severity}
+        title={toastMessage.title}
+        message={toastMessage.message}
+        duration={toastMessage.duration}
+        isShow={toastMessage.isShow}
+        setToastMessage={setToastMessage}
+      />
     </div>
   );
 };

@@ -22,6 +22,7 @@ import {
 import { getHeaderSectionDetails } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { useDispatch, useSelector } from "react-redux";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
+import ToastMessage from "../../common/Toast/ToastMessage";
 
 interface Props {
   sectionDetails: any;
@@ -54,6 +55,13 @@ const SetupHeader: React.FC<Props> = ({
     headerTitle: headerTitle,
     appendixName: appendixName,
   };
+  const [toastMessage, setToastMessage] = useState<any>({
+    isShow: false,
+    severity: "",
+    title: "",
+    message: "",
+    duration: "",
+  });
   const CDHeaderDetails = useSelector(
     (state: any) => state.ContentDeveloperData.CDHeaderDetails
   );
@@ -88,14 +96,6 @@ const SetupHeader: React.FC<Props> = ({
       fileName: `headerImg.${files[0]?.name?.split(".").slice(-1)[0]}`,
     });
   };
-
-  // const onTemplateClear = (): void => {
-  //   setTotalSize(0);
-  //   setFile({
-  //     fileData: [],
-  //     fileName: "",
-  //   });
-  // };
 
   const onTemplateClear = (): void => {
     setTotalSize(0);
@@ -144,10 +144,10 @@ const SetupHeader: React.FC<Props> = ({
             alt={file?.fileName ? file?.fileName : fileData.name}
             role="presentation"
             src={
-              file.fileData.ServerRelativeUrl
-                ? file.fileData.ServerRelativeUrl
-                : fileData.objectURL
-                ? fileData.objectURL
+              file.fileData?.ServerRelativeUrl
+                ? file.fileData?.ServerRelativeUrl
+                : fileData?.objectURL
+                ? fileData?.objectURL
                 : CDHeaderDetails?.imgURL
                 ? CDHeaderDetails?.imgURL
                 : `${CONFIG.tenantURL}/${file.fileData?.ServerRelativeUrl}`
@@ -161,7 +161,9 @@ const SetupHeader: React.FC<Props> = ({
             <p>
               {file?.fileName
                 ? file?.fileName
-                : fileData.name || file.fileData?.FileName}
+                : fileData.name ||
+                  file.fileData?.FileName ||
+                  CDHeaderDetails?.fileName}
             </p>
             <Button
               type="button"
@@ -253,7 +255,7 @@ const SetupHeader: React.FC<Props> = ({
     } else {
       getSectionDataFromAppendixList(sectionDetails, setFileDataInitial);
     }
-  }, []);
+  }, [sectionDetails]);
 
   useEffect(() => {
     if (onChange) {
@@ -261,16 +263,17 @@ const SetupHeader: React.FC<Props> = ({
     }
   }, [file]);
 
-  useEffect(() => {
-    setFile((prev: any) => ({
-      fileData: {
-        ServerRelativeUrl: CDHeaderDetails?.imgURL,
-        fileName: CDHeaderDetails?.fileName,
-      },
-      fileName: CDHeaderDetails?.fileName,
-    }));
-    console.log("file: ", file);
-  }, []);
+  // useEffect(() => {
+  //   setFile((prev: any) => ({
+  //     fileData: {
+  //       ServerRelativeUrl: CDHeaderDetails?.imgURL,
+  //       fileName: CDHeaderDetails?.fileName,
+  //     },
+  //     fileName: CDHeaderDetails?.fileName,
+  //   }));
+  //   console.log("file: ", file);
+  //   console.log("CDHeaderDetails: ", CDHeaderDetails);
+  // }, [sectionDetails]);
 
   return (
     <div className={styles.textPlayGround}>
@@ -290,27 +293,6 @@ const SetupHeader: React.FC<Props> = ({
       ) : (
         <div className={styles.setupHeaderWrapper}>
           <div className={styles.logoUploadWrapper}>
-            {/* <FileUpload
-              ref={fileUploadRef}
-              // name="demo[]"
-              // url="/api/upload"
-              multiple={false}
-              accept="image/*"
-              maxFileSize={1000000}
-              onSelect={onTemplateSelect}
-              // onError={onTemplateClear}
-              onClear={onTemplateClear}
-              headerTemplate={headerTemplate}
-              itemTemplate={itemTemplate}
-              emptyTemplate={
-                file.fileData?.ServerRelativeUrl || CDHeaderDetails?.imgURL
-                  ? itemTemplate
-                  : emptyTemplate
-              }
-              // uploadLabel="Browse"
-              chooseLabel="Browse"
-            /> */}
-
             <FileUpload
               ref={fileUploadRef}
               multiple={false}
@@ -405,6 +387,14 @@ const SetupHeader: React.FC<Props> = ({
                       .then(async () => {
                         await getHeaderSectionDetails(sectionDetails, dispatch);
                         setSectionLoader(false);
+                        setToastMessage({
+                          isShow: true,
+                          severity: "success",
+                          title: "Document header updated!",
+                          message:
+                            "The document header has been updated successfully.",
+                          duration: 3000,
+                        });
                       })
                       .catch((error) => {
                         console.error(
@@ -412,6 +402,14 @@ const SetupHeader: React.FC<Props> = ({
                           error
                         );
                         setSectionLoader(false);
+                        setToastMessage({
+                          isShow: true,
+                          severity: "error",
+                          title: "Something went wrong!",
+                          message:
+                            "A unexpected error happened while updating! please try again later.",
+                          duration: 3000,
+                        });
                       });
 
                     // }
@@ -422,6 +420,14 @@ const SetupHeader: React.FC<Props> = ({
           </div>
         </div>
       )}
+      <ToastMessage
+        severity={toastMessage.severity}
+        title={toastMessage.title}
+        message={toastMessage.message}
+        duration={toastMessage.duration}
+        isShow={toastMessage.isShow}
+        setToastMessage={setToastMessage}
+      />
     </div>
   );
 };

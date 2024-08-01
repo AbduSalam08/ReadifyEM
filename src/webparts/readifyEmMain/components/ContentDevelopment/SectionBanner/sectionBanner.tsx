@@ -41,13 +41,21 @@ const SectionBanner: React.FC<Props> = ({
 
   useEffect(() => {
     setImgURL(CDHeaderDetails?.imgURL);
+    console.log("CDHeaderDetails?.imgURL: ", CDHeaderDetails?.imgURL);
   }, [CDHeaderDetails, sectionDetails]);
 
   return (
     <>
       <div className={styles.headerContainer}>
         <div className={styles.headerLogo}>
-          <img src={imgURL || sampleDocHeaderImg} alt="doc header logo" />
+          <img
+            src={
+              CDHeaderDetails?.imgURL
+                ? CDHeaderDetails?.imgURL
+                : imgURL || sampleDocHeaderImg
+            }
+            alt="doc header logo"
+          />
         </div>
         <div className={styles.headerText}>
           <p>{currentDocDetails?.documentName || "-"}</p>
