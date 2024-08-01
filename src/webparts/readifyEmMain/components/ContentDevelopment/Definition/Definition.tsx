@@ -482,7 +482,7 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
   const removeDefinition = (index: number): any => {
     const tempSelectedDocuments = [...selectedDefinitions];
     tempSelectedDocuments[index].isDeleted = true;
-    let filterSelectionDefinitions = sectionDefinitions.map((obj: any) => {
+    const filterSelectionDefinitions = sectionDefinitions.map((obj: any) => {
       if (
         obj.definitionTitle === tempSelectedDocuments[index].definitionTitle
       ) {

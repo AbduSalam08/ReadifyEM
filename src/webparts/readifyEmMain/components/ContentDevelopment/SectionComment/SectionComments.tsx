@@ -99,13 +99,13 @@ const SectionComments: React.FC<Props> = ({
   const sendSectionComment = async () => {
     if (inputComment !== "") {
       console.log("clicked");
-      let json = {
+      const json = {
         comments: inputComment,
         sectionDetailsId: sectionId,
         createdById: currentUserDetails.id,
         role: currentDocDetailsData.taskRole,
       };
-      let clearInput = await addSectionComment(
+      const clearInput = await addSectionComment(
         json,
         AllSectionsComments,
         dispatch,
