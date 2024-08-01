@@ -376,7 +376,7 @@ const getDefaultFields = (item: any): any => ({
 });
 
 const createTaskPayload = (taskItem: any): any => ({
-  Title: taskItem?.docName,
+  Title: taskItem?.Title,
   pathName: taskItem?.pathName,
   docCreatedDate: taskItem?.docCreatedDate,
   documentDetailsId: taskItem?.documentDetailsId,

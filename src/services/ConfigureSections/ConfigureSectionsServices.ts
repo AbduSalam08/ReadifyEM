@@ -14,6 +14,7 @@ export const AddSections = async (
   setLoaderState: any,
   docDetails: any
 ): Promise<any> => {
+  debugger;
   const isPATaskisNotConfigured: boolean =
     docDetails?.role?.toLowerCase() === "primary author" &&
     docDetails?.taskStatus?.toLowerCase() === "not started";
@@ -87,6 +88,7 @@ export const AddSections = async (
               taskAssignee: element?.sectionAuthor?.value?.[0]?.id,
               role: "Section Author",
               status: "content in progress",
+              Title: element?.sectionName?.value,
             });
           }
 
@@ -96,6 +98,7 @@ export const AddSections = async (
                 taskAssignee: el?.id,
                 role: "Consultant",
                 status: "content in progress",
+                Title: element?.sectionName?.value,
               });
             }
           });
@@ -168,10 +171,58 @@ export const AddSections = async (
       try {
         await Promise.all(
           payloadJSON.map(async (payload: any) => {
-            await SpServices.SPAddItem({
-              Listname: LISTNAMES.SectionDetails,
-              RequestJSON: payload,
-            });
+            try {
+              const mainRes: any = await SpServices.SPAddItem({
+                Listname: LISTNAMES.SectionDetails,
+                RequestJSON: payload,
+              });
+
+              console.log("SPAddItem response: ", mainRes);
+              if (mainRes?.data?.Title?.toLowerCase() !== "header") {
+                try {
+                  const res = await SpServices.SPReadItems({
+                    Listname: LISTNAMES.MyTasks,
+                    Select: "*,documentDetails/ID",
+                    Expand: "documentDetails",
+                    Filter: [
+                      {
+                        FilterValue: mainRes?.data?.Title,
+                        FilterKey: "Title",
+                        Operator: "eq",
+                      },
+                      {
+                        FilterValue: docDetails?.documentDetailsId,
+                        FilterKey: "documentDetails",
+                        Operator: "eq",
+                      },
+                    ],
+                  });
+
+                  console.log("SPReadItems response: ", res);
+
+                  await Promise.all(
+                    res.map(async (item: any) => {
+                      try {
+                        await SpServices.SPUpdateItem({
+                          Listname: LISTNAMES.MyTasks,
+                          ID: item?.ID,
+                          RequestJSON: {
+                            sectionDetailsId: mainRes?.data?.ID,
+                          },
+                        });
+                        console.log(`Item ${item?.ID} updated successfully.`);
+                      } catch (err) {
+                        console.error(`Error updating item ${item?.ID}: `, err);
+                      }
+                    })
+                  );
+                } catch (err) {
+                  console.error("Error reading items from MyTasks: ", err);
+                }
+              }
+            } catch (err) {
+              console.error("Error adding item to SectionDetails: ", err);
+            }
           })
         );
 

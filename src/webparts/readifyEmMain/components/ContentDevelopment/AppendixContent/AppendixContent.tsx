@@ -16,6 +16,7 @@ import {
 import { getAppendixHeaderSectionDetails } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { useDispatch } from "react-redux";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
+import ToastMessage from "../../common/Toast/ToastMessage";
 // import SpServices from "../../../../../services/SPServices/SpServices";
 // import { LISTNAMES } from "../../../../../config/config";
 interface IAppendixSectionProps {
@@ -39,7 +40,13 @@ const AppendixContent = ({
   console.log("sectionDetails: ", sectionDetails);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const [toastMessage, setToastMessage] = useState<any>({
+    isShow: false,
+    severity: "",
+    title: "",
+    message: "",
+    duration: "",
+  });
   const [sectionLoader, setSectionLoader] = useState(isLoading || false);
 
   const showActionBtns: boolean =
@@ -92,10 +99,25 @@ const AppendixContent = ({
           dispatch,
           sectionDetails?.sectionName
         );
+        setToastMessage({
+          isShow: true,
+          severity: "success",
+          title: "Content updated!",
+          message: "The content has been updated successfully.",
+          duration: 3000,
+        });
         setSectionLoader(false);
       })
       .catch((err: any) => {
         console.log("err: ", err);
+        setToastMessage({
+          isShow: true,
+          severity: "error",
+          title: "Something went wrong!",
+          message:
+            "A unexpected error happened while updating! please try again later.",
+          duration: 3000,
+        });
         setSectionLoader(false);
       });
   };
@@ -134,6 +156,7 @@ const AppendixContent = ({
     } else {
       setSectionLoader(true);
     }
+    // getCurrentSectionType();
   }, [inputValue, headerImgDetails]);
 
   return (
@@ -254,6 +277,14 @@ const AppendixContent = ({
           )}
         </div>
       </div>
+      <ToastMessage
+        severity={toastMessage.severity}
+        title={toastMessage.title}
+        message={toastMessage.message}
+        duration={toastMessage.duration}
+        isShow={toastMessage.isShow}
+        setToastMessage={setToastMessage}
+      />
     </>
   );
 };

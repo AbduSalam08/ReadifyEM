@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { LISTNAMES } from "../config/config";
@@ -146,6 +147,7 @@
 import { sp } from "@pnp/sp/presets/all";
 import { LISTNAMES } from "../config/config";
 import SpServices from "../services/SPServices/SpServices";
+import { setCDHeaderDetails } from "../redux/features/ContentDevloperSlice";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const AddAppendixAttachment = async (
@@ -155,6 +157,7 @@ export const AddAppendixAttachment = async (
   sectionID: any,
   fileName?: string
 ): Promise<any> => {
+  debugger;
   if (!itemID && sectionID) {
     await SpServices.SPAddItem({
       Listname: LISTNAMES.AppendixHeader,
@@ -235,26 +238,37 @@ export const UpdateAppendixAttachment = async (
   documentID?: any,
   sectionID?: any
 ): Promise<any> => {
+  debugger;
   // Retrieve all attachments using sp.web
-  const attachments = await sp.web.lists
-    .getByTitle(LISTNAMES.AppendixHeader)
-    .items.getById(itemID)
-    .attachmentFiles();
+  if (itemID) {
+    const attachments = await sp.web.lists
+      .getByTitle(LISTNAMES.AppendixHeader)
+      .items.getById(itemID)
+      .attachmentFiles();
 
-  console.log("Attachments: ", attachments);
+    console.log("Attachments: ", attachments);
 
-  // Delete all attachments using SpServices
-  for (const attachment of attachments) {
-    await SpServices.SPDeleteAttachments({
-      ListName: LISTNAMES.AppendixHeader,
-      ListID: itemID,
-      AttachmentName: attachment.FileName,
-    })
-      .then((res) => console.log("Deleted attachment: ", res))
-      .catch((err) => console.log("Error deleting attachment: ", err));
-  }
+    // Delete all attachments using SpServices
+    for (const attachment of attachments) {
+      await SpServices.SPDeleteAttachments({
+        ListName: LISTNAMES.AppendixHeader,
+        ListID: itemID,
+        AttachmentName: attachment.FileName,
+      })
+        .then((res) => console.log("Deleted attachment: ", res))
+        .catch((err) => console.log("Error deleting attachment: ", err));
+    }
 
-  if (!deleteAttachment) {
+    if (!deleteAttachment) {
+      await AddAppendixAttachment(
+        itemID,
+        _file,
+        documentID,
+        sectionID,
+        fileName
+      );
+    }
+  } else {
     await AddAppendixAttachment(itemID, _file, documentID, sectionID, fileName);
   }
 };
@@ -312,6 +326,7 @@ export const UpdateSectionAttachment = async (
   fileName?: string,
   deleteAttachments?: boolean
 ): Promise<any> => {
+  debugger;
   try {
     // Retrieve all attachments for the given item
     if (deleteAttachments) {
@@ -387,6 +402,7 @@ export const addAppendixHeaderAttachmentData = async (
   sectionDetails?: any,
   file?: any
 ): Promise<any> => {
+  debugger;
   console.log("sectionDetails: ", sectionDetails);
   if (!file.fileData?.ServerRelativeUrl && file.fileName !== "") {
     let appendixHeaderID: any = null;
@@ -416,14 +432,15 @@ export const addAppendixHeaderAttachmentData = async (
       file.fileName,
       file.fileData?.length === 0,
       sectionDetails?.documentOfId,
-      !appendixHeaderID ? sectionDetails?.ID : null
+      sectionDetails?.ID
     );
   }
 };
 
 export const getSectionData = async (
   sectionDetails?: any,
-  setFile?: any
+  setFile?: any,
+  dispatcher?: any
 ): Promise<any> => {
   const resp = await SpServices.SPReadItems({
     Listname: LISTNAMES.SectionDetails,
@@ -449,19 +466,25 @@ export const getSectionData = async (
       );
       console.log("filteredItem: ", filteredItem);
       if (filteredItem.length > 0) {
-        setFile({
+        const data = {
           fileData: filteredItem[0],
           fileName: filteredItem[0]?.FileName,
-        });
+        };
+        setFile([data]);
+        dispatcher && dispatcher(setCDHeaderDetails(data));
         // setNewAttachment(false);
       }
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      dispatcher && dispatcher(setCDHeaderDetails([]));
+    });
 };
 
 export const getSectionDataFromAppendixList = async (
   sectionDetails?: any,
-  setFile?: any
+  setFile?: any,
+  dispatcher?: any
 ): Promise<any> => {
   const resp = await SpServices.SPReadItems({
     Listname: LISTNAMES.AppendixHeader,
@@ -489,12 +512,16 @@ export const getSectionDataFromAppendixList = async (
       );
       console.log("filteredItem: ", filteredItem);
       if (filteredItem.length > 0) {
-        setFile({
+        const data = {
           fileData: filteredItem[0],
           fileName: filteredItem[0]?.FileName,
-        });
-        // setNewAttachment(false);
+        };
+        setFile([data]);
+        dispatcher && dispatcher(setCDHeaderDetails(data));
       }
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      dispatcher && dispatcher(setCDHeaderDetails([]));
+    });
 };

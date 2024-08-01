@@ -26,6 +26,7 @@ import CustomDateInput from "../../webparts/readifyEmMain/components/common/Cust
 import * as dayjs from "dayjs";
 import {
   setCDDocDetails,
+  setCDHeaderDetails,
   setCDSectionData,
 } from "../../redux/features/ContentDevloperSlice";
 import { setConfigurePageDetails } from "../../redux/features/SectionConfigurationSlice";
@@ -115,6 +116,7 @@ const MyTasks = (): JSX.Element => {
   useEffect(() => {
     dispatch(setCDDocDetails(null));
     dispatch(setCDSectionData([]));
+    dispatch(setCDHeaderDetails([]));
     dispatch(
       setConfigurePageDetails({
         pageKey: "add",

@@ -10,6 +10,7 @@ interface ICommentCardProps {
 }
 
 const CommentCard = ({ item, index }: ICommentCardProps): JSX.Element => {
+  console.log("item: ", item);
   console.log(item);
   return (
     <div className={styles.commentCardWrapper}>
@@ -20,7 +21,7 @@ const CommentCard = ({ item, index }: ICommentCardProps): JSX.Element => {
         key={index}
       >
         <div className={styles.commentAuthor}>
-          <span>{item.commentAuthor[0].name}</span>
+          <span>{item.commentAuthor[0]?.name}</span>
           <span className={styles.role}>{item.role}</span>
         </div>
         <p>{item.comment}</p>
@@ -29,6 +30,16 @@ const CommentCard = ({ item, index }: ICommentCardProps): JSX.Element => {
           new Date(item.commentDateAndTime).getDate()
             ? dayjs(item.commentDateAndTime).format("DD-MMM-YYYY hh:mm A")
             : dayjs(item.commentDateAndTime).format("hh:mm A")}
+          <input
+            type="text"
+            autoFocus={true}
+            readOnly={true}
+            style={{
+              height: 0,
+              width: 0,
+              opacity: 0,
+            }}
+          />
         </span>
       </div>
       <div className={styles.commentAuthorPersona}>

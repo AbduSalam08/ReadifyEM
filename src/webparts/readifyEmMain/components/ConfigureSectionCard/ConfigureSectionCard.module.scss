@@ -54,6 +54,14 @@
       border: 1px solid #2068a850;
       box-shadow: 0 0 4px 5px rgba(0, 0, 0, 0.03) !important;
       .sectionName {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        // -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        /* display: -webkit-box; */
+        max-width: 150px;
+        height: 16px;
         color: #013747;
       }
       .dragHandle {
@@ -91,7 +99,7 @@
       width: 27%;
     }
     .enableSectionSwitch {
-      width: 5%;
+      width: 8%;
       height: 20px;
     }
   }
