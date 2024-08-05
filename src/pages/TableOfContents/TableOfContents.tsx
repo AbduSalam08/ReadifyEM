@@ -39,6 +39,9 @@ import { filterDataByURL } from "../../utils/NewDocumentUtils";
 import { CurrentUserIsAdmin } from "../../constants/DefineUser";
 import { useNavigate } from "react-router-dom";
 import { getSectionsDetails } from "../../services/ContentDevelopment/CommonServices/CommonServices";
+import { getDocumentRelatedSections } from "../../services/PDFServices/PDFServices";
+import SpServices from "../../services/SPServices/SpServices";
+import PDFServiceTemplate from "../../webparts/readifyEmMain/components/Table/PDFServiceTemplate/PDFServiceTemplate";
 // import * as dayjs from "dayjs";
 // utils
 // images
@@ -98,6 +101,10 @@ const TableOfContents = (): JSX.Element => {
   const DocumentPathOptions: any = useSelector(
     (state: any) => state.EMMTableOfContents.foldersData
   );
+  const AllSectionsAttachments: any = useSelector(
+    (state: any) => state.PDFServiceData.sectionsAttachments
+  );
+  console.log(AllSectionsAttachments);
 
   // main table data state
   const [tableData, setTableData] = useState({
@@ -126,6 +133,8 @@ const TableOfContents = (): JSX.Element => {
     editDocumentData: [],
   });
 
+  const [parsedJSON, setParsedJSON] = useState<any[]>([]);
+
   // state to manage all popup data
   const [popupData, setPopupData] = useState<any>(popupInitialData);
 
@@ -135,6 +144,7 @@ const TableOfContents = (): JSX.Element => {
   const [popupController, setPopupController] = useState(
     initialPopupController
   );
+  console.log(tableData.data);
 
   // current popupItem
   const currentPopupItem: any = popupController?.filter((e: any) => e?.open)[0];
@@ -260,7 +270,8 @@ const TableOfContents = (): JSX.Element => {
     ],
     [
       <div className={styles.DOCemptyMsg} key={3}>
-        <span>Document is empty.</span>
+        {/* <span>Document is empty.</span> */}
+        <PDFServiceTemplate parsedJSON={parsedJSON} />
       </div>,
     ],
   ];
@@ -602,10 +613,64 @@ const TableOfContents = (): JSX.Element => {
     await LoadTableData(dispatch, setTableData, isAdmin);
   };
 
+  const readTextFileFromTXT = (data: any): void => {
+    // setSectionLoader(true);
+    SpServices.SPReadAttachments({
+      ListName: "SectionDetails",
+      ListID: data.ID,
+      AttachmentName: data?.FileName,
+    })
+      .then((res: any) => {
+        const parsedValue: any = JSON.parse(res);
+        console.log("res: ", res, parsedValue);
+        let sectionDetails = {
+          text: data.sectionName,
+          sectionOrder: data.sectionOrder,
+          value: parsedValue,
+        };
+        // if (typeof parsedValue === "object") {
+        setParsedJSON((prev: any) => {
+          return [...prev, sectionDetails];
+        });
+        //   onChange && onChange([...parsedValue]);
+        //   setSectionLoader(false);
+        // } else {
+        //   setSectionLoader(false);
+        // }
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+        // setSectionLoader(false);
+      });
+  };
+
+  // read attachments functions
+
+  const readSectionAttachments = () => {
+    if (AllSectionsAttachments.length !== 0) {
+      AllSectionsAttachments.forEach((item: any, index: number) => {
+        const filteredItem: any = item?.filter(
+          (item: any) => item?.FileName === "Sample.txt"
+        );
+        if (filteredItem.length > 0) {
+          readTextFileFromTXT(filteredItem[0]);
+          // setNewAttachment(false);
+        } else {
+          // setSectionLoader(false);
+        }
+      });
+    }
+  };
+
   // lifecycle hooks
+
   useEffect(() => {
     setMainData();
   }, [dispatch]);
+
+  useEffect(() => {
+    readSectionAttachments();
+  }, [AllSectionsAttachments]);
 
   // template for future use
   // const PDFView = (
@@ -803,6 +868,7 @@ const TableOfContents = (): JSX.Element => {
                         "open",
                         `View Document - ${item.name}`
                       );
+                      getDocumentRelatedSections(item.ID, dispatch);
                     }}
                   />
                 </>

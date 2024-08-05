@@ -7,6 +7,7 @@ import DefinitionSlice from "../features/DefinitionSlice";
 import ContentDevloperSlice from "../features/ContentDevloperSlice";
 import SectionConfigurationSlice from "../features/SectionConfigurationSlice";
 import SectionCommentsSlice from "../features/SectionCommentsSlice";
+import PDFServicceSlice from "../features/PDFServicceSlice";
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     ContentDeveloperData: ContentDevloperSlice,
     SectionConfiguration: SectionConfigurationSlice,
     SectionCommentsData: SectionCommentsSlice,
+    PDFServiceData: PDFServicceSlice,
   },
 });
 

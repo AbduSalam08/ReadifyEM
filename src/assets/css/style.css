@@ -587,6 +587,9 @@ body {
   margin: 20px !important;
   border: 1px solid #55555550;
 }
+.p-dialog-content{
+  overflow-y: visible;
+}
 
 /* MUI Customisation */
 .MuiMenu-paper {

@@ -25,8 +25,8 @@ const ToastMessage = ({
   const toast: any = useRef(null);
   console.log(severity);
 
-  const clear = () => {
-    toast.current.clear();
+  const clear = (): Promise<void> => {
+    return toast.current.clear();
   };
 
   const show = () => {
