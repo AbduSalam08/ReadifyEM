@@ -179,6 +179,7 @@ export const getUniqueTaskData = async (
     taskAssignee: responseData?.taskAssignee,
     taskDueDate: responseData?.taskDueDate,
     taskStatus: responseData?.taskStatus,
+    docStatus: responseData?.docStatus,
   };
 
   dispatch && dispatch(setUniqueTasksData(uniqueTaskData));
@@ -376,7 +377,8 @@ const getDefaultFields = (item: any): any => ({
 });
 
 const createTaskPayload = (taskItem: any): any => ({
-  Title: taskItem?.Title,
+  Title: taskItem?.docName,
+  sectionName: taskItem?.sectionName,
   pathName: taskItem?.pathName,
   docCreatedDate: taskItem?.docCreatedDate,
   documentDetailsId: taskItem?.documentDetailsId,
@@ -395,8 +397,12 @@ const createTaskPayload = (taskItem: any): any => ({
 export const AddTask = async (
   fileID: any,
   formData?: any,
-  docStatusProp?: any
+  docStatusProp?: any,
+  updateDueDate?: any,
+  sectionID?: any
 ): Promise<any> => {
+  debugger;
+  console.log("formData: ", formData);
   try {
     const AllDocResponse: any = await SpServices.SPReadItems({
       Listname: LISTNAMES.DocumentDetails,
@@ -412,20 +418,23 @@ export const AddTask = async (
     const taskData: any[] = AllDocResponse?.map((item: any) => ({
       ...getDefaultFields(item),
       role: formData?.role,
+      sectionName: formData?.sectionName,
       taskAssignedBy: item?.primaryAuthor?.ID,
       taskAssignee: formData?.taskAssignee,
-      taskDueDate: calculateDueDateByRole(
-        dayjs(new Date()).format("DD/MM/YYYY"),
-        formData?.role?.toLowerCase() === "section author"
-          ? "content developer"
-          : formData?.role?.toLowerCase() === "consultant"
-          ? "consultant"
-          : formData?.role?.toLowerCase() === "approver"
-          ? "approver"
-          : formData?.role?.toLowerCase() === "reviewer"
-          ? "reviewer"
-          : "content developer"
-      ),
+      taskDueDate: updateDueDate
+        ? updateDueDate
+        : calculateDueDateByRole(
+            dayjs(new Date()).format("DD/MM/YYYY"),
+            formData?.role?.toLowerCase() === "section author"
+              ? "content developer"
+              : formData?.role?.toLowerCase() === "consultant"
+              ? "consultant"
+              : formData?.role?.toLowerCase() === "approver"
+              ? "approver"
+              : formData?.role?.toLowerCase() === "reviewer"
+              ? "reviewer"
+              : "content developer"
+          ),
       taskStatus:
         docStatusProp?.toLowerCase() === "in development"
           ? "In Development"
@@ -440,10 +449,26 @@ export const AddTask = async (
       await SpServices.SPAddItem({
         Listname: LISTNAMES.MyTasks,
         RequestJSON: createTaskPayload(taskItem),
-      });
+      })
+        .then(async (res: any) => {
+          console.log("res: ", res);
+
+          if (sectionID) {
+            await SpServices.SPUpdateItem({
+              Listname: LISTNAMES.MyTasks,
+              ID: res?.data?.ID,
+              RequestJSON: {
+                sectionDetailsId: sectionID,
+              },
+            });
+          }
+        })
+        .catch((err: any) => {
+          console.log("err: ", err);
+        });
     });
   } catch (err: any) {
-    console.error("Error adding task: ", err);
+    console.error("Error adding task:", err);
   }
 };
 

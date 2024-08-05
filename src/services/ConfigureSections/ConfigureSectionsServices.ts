@@ -1,10 +1,11 @@
 /* eslint-disable no-dupe-else-if */
 /* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import dayjs from "dayjs";
 import { LISTNAMES } from "../../config/config";
 import { defaultTemplates } from "../../constants/DefaultTemplates";
 import { setSDDTemplateDetails } from "../../redux/features/SDDTemplatesSlice";
-import { emptyCheck } from "../../utils/validations";
+import { calculateDueDateByRole, emptyCheck } from "../../utils/validations";
 import { AddTask } from "../MyTasks/MyTasksServices";
 import SpServices from "../SPServices/SpServices";
 
@@ -12,9 +13,10 @@ import SpServices from "../SPServices/SpServices";
 export const AddSections = async (
   formData: any,
   setLoaderState: any,
-  docDetails: any
+  docDetails: any,
+  noHeader?: boolean,
+  addNewSectionFromUpdate?: boolean
 ): Promise<any> => {
-  debugger;
   const isPATaskisNotConfigured: boolean =
     docDetails?.role?.toLowerCase() === "primary author" &&
     docDetails?.taskStatus?.toLowerCase() === "not started";
@@ -22,24 +24,26 @@ export const AddSections = async (
   const templateTitle = formData?.templateDetails?.templateName;
   try {
     // const sectionKeys = ["defaultSections", "appendixSections"];
-    const payloadJSON: any[] = [
-      {
-        Title: "Header",
-        templateTitle: "",
-        sectionOrder: "0",
-        sectionType: "header section",
-        sectionAuthorId: docDetails?.taskAssignedBy?.ID,
-        documentOfId: docDetails?.documentDetailsId,
-        status: "content in progress",
-        isActive: true,
-      },
-    ];
+    const payloadJSON: any[] = noHeader
+      ? []
+      : [
+          {
+            Title: "Header",
+            templateTitle: "",
+            sectionOrder: "0",
+            sectionType: "header section",
+            sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+            documentOfId: docDetails?.documentDetailsId,
+            status: "content in progress",
+            isActive: true,
+          },
+        ];
     const SATasks: any[] = [];
     const CONSULTANTSTasks: any[] = [];
 
     const defaultSectionsData: any[] = formData.defaultSections
       ?.filter((item: any) => {
-        return item?.sectionSelected && !item?.removed;
+        return item?.sectionSelected && !item?.removed && !item?.ID;
       })
       ?.sort((a: any, b: any) => {
         return a?.sectionOrderNo - b?.sectionOrderNo;
@@ -50,7 +54,7 @@ export const AddSections = async (
 
     const appendixSectionsData: any[] = formData.appendixSections
       ?.filter((item: any) => {
-        return item?.sectionSelected && !item?.removed;
+        return item?.sectionSelected && !item?.removed && !item?.ID;
       })
       ?.sort((a: any, b: any) => {
         return a?.sectionOrderNo - b?.sectionOrderNo;
@@ -88,7 +92,7 @@ export const AddSections = async (
               taskAssignee: element?.sectionAuthor?.value?.[0]?.id,
               role: "Section Author",
               status: "content in progress",
-              Title: element?.sectionName?.value,
+              sectionName: element?.sectionName?.value,
             });
           }
 
@@ -98,7 +102,7 @@ export const AddSections = async (
                 taskAssignee: el?.id,
                 role: "Consultant",
                 status: "content in progress",
-                Title: element?.sectionName?.value,
+                sectionName: element?.sectionName?.value,
               });
             }
           });
@@ -154,30 +158,31 @@ export const AddSections = async (
       );
     });
 
-    const CONSULTANTSTasksResponses = CONSULTANTSTasks.map(
-      async (taskItem: any) => {
-        await AddTask(
-          docDetails?.documentDetailsId,
-          taskItem,
-          updateDocDetails !== null ? updateDocDetails?.status : null
-        );
-      }
-    );
+    if (!addNewSectionFromUpdate) {
+      const CONSULTANTSTasksResponses = CONSULTANTSTasks.map(
+        async (taskItem: any) => {
+          await AddTask(
+            docDetails?.documentDetailsId,
+            taskItem,
+            updateDocDetails !== null ? updateDocDetails?.status : null
+          );
+        }
+      );
+      await Promise.all(CONSULTANTSTasksResponses);
+    }
 
     await Promise.all(SATasksResponses);
-    await Promise.all(CONSULTANTSTasksResponses);
 
-    if (payloadJSON.length > 0) {
+    if (payloadJSON?.length > 0) {
       try {
         await Promise.all(
-          payloadJSON.map(async (payload: any) => {
+          payloadJSON?.map(async (payload: any) => {
             try {
               const mainRes: any = await SpServices.SPAddItem({
                 Listname: LISTNAMES.SectionDetails,
                 RequestJSON: payload,
               });
 
-              console.log("SPAddItem response: ", mainRes);
               if (mainRes?.data?.Title?.toLowerCase() !== "header") {
                 try {
                   const res = await SpServices.SPReadItems({
@@ -187,7 +192,7 @@ export const AddSections = async (
                     Filter: [
                       {
                         FilterValue: mainRes?.data?.Title,
-                        FilterKey: "Title",
+                        FilterKey: "sectionName",
                         Operator: "eq",
                       },
                       {
@@ -271,14 +276,679 @@ export const AddSections = async (
   }
 };
 
+// export const updateSections = async (
+//   formData: any,
+//   setLoaderState: any,
+//   docDetails: any
+// ): Promise<any> => {
+//   debugger;
+//   try {
+//     const sectionsToUpdate: any[] = [];
+//     console.log("sectionsToUpdate: ", sectionsToUpdate);
+//     const sectionsToAdd: any[] = [];
+//     const allPayload: any[] = [];
+
+//     const defaultSectionsData: any[] = formData.defaultSections
+//       ?.filter((item: any) => {
+//         return (
+//           item?.sectionSelected || (item?.ID !== null && !item?.sectionSelected)
+//         );
+//       })
+//       ?.sort((a: any, b: any) => {
+//         return a?.sectionOrderNo - b?.sectionOrderNo;
+//       })
+//       ?.map((item: any, index: number) => {
+//         return { ...item, sectionOrderNo: String(index + 1) };
+//       });
+
+//     const appendixSectionsData: any[] = formData.appendixSections
+//       ?.filter((item: any) => {
+//         return (
+//           item?.sectionSelected || (item?.ID !== null && !item?.sectionSelected)
+//         );
+//       })
+//       ?.sort((a: any, b: any) => {
+//         return a?.sectionOrderNo - b?.sectionOrderNo;
+//       })
+//       ?.map((item: any, index: number) => {
+//         return { ...item, sectionOrderNo: String(index + 1) };
+//       });
+//     console.log("allPayload: ", allPayload);
+//     [...defaultSectionsData, ...appendixSectionsData]?.forEach(
+//       (element: any) => {
+//         const sectionPayload = {
+//           Title: element?.sectionName?.value,
+//           templateTitle: formData?.templateDetails?.templateName,
+//           sectionOrder: element.sectionOrderNo,
+//           sectionAuthorId: element?.sectionAuthor?.value?.[0]?.id,
+//           consultantsId: {
+//             results: element?.consultants?.value?.map((el: any) => el?.id),
+//           },
+//           sectionType:
+//             element?.sectionType === "defaultSection" ||
+//             element?.sectionType === "normalSections"
+//               ? "default section"
+//               : "appendix section",
+//           documentOfId: docDetails?.documentDetailsId,
+//           status: "content in progress",
+//           isActive: element?.sectionSelected && !element?.removed,
+//           ID: element?.ID,
+//         };
+
+//         // if (element?.ID || element?.templateSectionID) {
+//         //   // If section has an ID or templateSectionID, add to update list
+//         //   sectionsToUpdate.push({
+//         //     ...sectionPayload,
+//         //     ID: element?.ID,
+//         //   });
+//         // } else if (!element?.removed) {
+//         //   // If section does not have an ID and is not marked as removed, add to add list
+//         //   sectionsToAdd.push(sectionPayload);
+//         // }
+
+//         allPayload.push(sectionPayload);
+//         if (element?.templateSectionID || element?.ID) {
+//           sectionsToUpdate.push(sectionPayload);
+//         } else {
+//           sectionsToAdd.push(element);
+//         }
+//       }
+//     );
+
+//     // Handle update sections
+//     // if (allPayload?.length > 0) {
+//     setLoaderState({
+//       isLoading: { inprogress: true, success: false, error: false },
+//       visibility: true,
+//       text: "Updating sections, please wait...",
+//       secondaryText: "",
+//     });
+
+//     try {
+//       if (sectionsToUpdate.length === 0 && sectionsToAdd.length === 0) {
+//         setLoaderState({
+//           isLoading: { inprogress: false, success: false, error: true },
+//           visibility: true,
+//           text: "No sections to update or add.",
+//           secondaryText:
+//             "No sections are selected for update or add. Please select at least one section.",
+//         });
+//       }
+
+//       // Handle add sections
+//       if (sectionsToAdd.length > 0) {
+//         setLoaderState({
+//           isLoading: { inprogress: true, success: false, error: false },
+//           visibility: true,
+//           text: "Section configuration in progress, please wait...",
+//           secondaryText: "",
+//         });
+
+//         try {
+//           // await Promise.all(
+//           //   sectionsToAdd.map(async (payload: any) => {
+//           //     await SpServices.SPAddItem({
+//           //       Listname: LISTNAMES.SectionDetails,
+//           //       RequestJSON: payload,
+//           //     });
+//           //   })
+//           // );
+
+//           await Promise.all([
+//             await AddSections(formData, setLoaderState, docDetails, true, true),
+//           ]);
+
+//           // setLoaderState({
+//           //   isLoading: { inprogress: false, success: true, error: false },
+//           //   visibility: true,
+//           //   text: "Sections Up successfully!",
+//           //   secondaryText: `The document "${docDetails?.docName}'s" sections have been added successfully!`,
+//           // });
+//         } catch (err) {
+//           setLoaderState({
+//             isLoading: { inprogress: false, success: false, error: true },
+//             visibility: true,
+//             text: "Unable to add the sections.",
+//             secondaryText:
+//               "An unexpected error occurred while adding the sections, please try again later.",
+//           });
+//         }
+//       }
+//       console.log(
+//         "allPayload",
+//         allPayload?.filter((item?: any) => {
+//           return !item?.isActive;
+//         })
+//       );
+//       await Promise.all([
+//         allPayload?.map(async (section: any) => {
+//           console.log("section: ", section);
+//           console.log("consultantsId: ", section?.consultantsId?.results);
+
+//           const uniqueTaskByResponse = await SpServices.SPReadItems({
+//             Listname: LISTNAMES.MyTasks,
+//             Select: "*,documentDetails/ID,sectionDetails/ID",
+//             Expand: "documentDetails,sectionDetails",
+//             Filter: [
+//               {
+//                 FilterKey: "sectionDetails",
+//                 FilterValue: section?.ID,
+//                 Operator: "eq",
+//               },
+//             ],
+//           });
+
+//           console.log("uniqueTaskByResponse: ", uniqueTaskByResponse);
+//           console.log("section?.ID: ", section?.ID);
+
+//           let currentSectionDetails: any;
+
+//           if (section?.ID) {
+//             currentSectionDetails = await SpServices.SPReadItemUsingId({
+//               Listname: LISTNAMES.SectionDetails,
+//               SelectedId: section?.ID,
+//               Select: "*,documentOf/ID",
+//               Expand: "documentOf",
+//             });
+//             console.log("currentSectionDetails: ", currentSectionDetails);
+
+//             // Update the section
+//             await SpServices.SPUpdateItem({
+//               Listname: LISTNAMES.SectionDetails,
+//               ID: section?.ID,
+//               RequestJSON: section,
+//             });
+//           }
+
+//           if (section?.isActive) {
+//             // Handle tasks associated with the section
+//             await Promise.all(
+//               uniqueTaskByResponse.map(async (item: any) => {
+//                 console.log("item: ", item);
+//                 // if (item?.role?.toLowerCase() === "section author") {
+//                 if (
+//                   section?.sectionAuthorId &&
+//                   item?.role?.toLowerCase() === "section author"
+//                 ) {
+//                   await SpServices.SPUpdateItem({
+//                     Listname: LISTNAMES.MyTasks,
+//                     ID: item?.ID,
+//                     RequestJSON: {
+//                       sectionName: section?.Title,
+//                       taskAssigneeId: section?.sectionAuthorId,
+//                     },
+//                   });
+//                   // } else if (item?.role?.toLowerCase() === "consultant") {
+//                 }
+//                 if (
+//                   section?.consultantsId?.results?.length > 0 &&
+//                   item?.role?.toLowerCase() === "consultant"
+//                 ) {
+//                   console.log(
+//                     "Deleting existing consultant task with ID: ",
+//                     item?.ID
+//                   );
+
+//                   if (item?.role?.toLowerCase() === "consultant") {
+//                     await SpServices.SPDeleteItem({
+//                       Listname: LISTNAMES.MyTasks,
+//                       ID: item?.ID,
+//                     });
+//                   }
+//                 }
+//               })
+//             );
+
+//             const sectionCreatedDate = calculateDueDateByRole(
+//               dayjs(currentSectionDetails?.Created).format("DD/MM/YYYY"),
+//               "consultant"
+//             );
+
+//             const newConsultantTasks = section?.consultantsId?.results?.map(
+//               (el: any) => {
+//                 return {
+//                   taskAssignee: el,
+//                   role: "Consultant",
+//                   status: "content in progress",
+//                   sectionName: section?.Title,
+//                 };
+//               }
+//             );
+
+//             console.log("newConsultantTasks: ", newConsultantTasks);
+
+//             // Add new tasks for consultants
+//             await Promise.all(
+//               newConsultantTasks.map(async (taskItem: any) => {
+//                 if (section?.ID) {
+//                   await Promise.all([
+//                     await AddTask(
+//                       docDetails?.documentDetailsId,
+//                       taskItem,
+//                       null,
+//                       sectionCreatedDate,
+//                       section?.ID
+//                     ),
+//                   ]);
+//                 } else {
+//                   const mainRes: any = await SpServices.SPReadItems({
+//                     Listname: LISTNAMES.SectionDetails,
+//                     Select: "*,documentOf/ID",
+//                     Expand: "documentOf",
+//                     Filter: [
+//                       {
+//                         FilterKey: "Title",
+//                         FilterValue: taskItem?.sectionName,
+//                         Operator: "eq",
+//                       },
+//                       {
+//                         FilterKey: "documentOf",
+//                         FilterValue: docDetails?.documentDetailsId,
+//                         Operator: "eq",
+//                       },
+//                     ],
+//                   });
+//                   console.log("mainRes: ", mainRes);
+//                   await Promise.all([
+//                     await AddTask(
+//                       docDetails?.documentDetailsId,
+//                       taskItem,
+//                       null,
+//                       sectionCreatedDate,
+//                       mainRes[0]?.ID
+//                     ),
+//                   ]);
+//                 }
+//                 console.log("section?.ID: ", section?.ID);
+//               })
+//             );
+//           }
+//           // else {
+//           //   // If section is not active, delete the section and related tasks
+//           //   await SpServices.SPDeleteItem({
+//           //     Listname: LISTNAMES.SectionDetails,
+//           //     ID: section?.ID,
+//           //   });
+
+//           //   // Delete associated tasks
+//           //   await Promise.all(
+//           //     uniqueTaskByResponse.map(async (item: any) => {
+//           //       console.log("Deleting task with ID: ", item?.ID);
+//           //       await SpServices.SPDeleteItem({
+//           //         Listname: LISTNAMES.MyTasks,
+//           //         ID: item?.ID,
+//           //       });
+//           //     })
+//           //   );
+//           // }
+//         }),
+//         allPayload
+//           ?.filter((item?: any) => {
+//             return !item?.isActive;
+//           })
+//           ?.forEach(async (section: any) => {
+//             const uniqueTaskByResponse = await SpServices.SPReadItems({
+//               Listname: LISTNAMES.MyTasks,
+//               Select: "*,documentDetails/ID,sectionDetails/ID",
+//               Expand: "documentDetails,sectionDetails",
+//               Filter: [
+//                 {
+//                   FilterKey: "sectionDetails",
+//                   FilterValue: section?.ID,
+//                   Operator: "eq",
+//                 },
+//               ],
+//             });
+
+//             // If section is not active, delete the section and related tasks
+//             await Promise.all(
+//               await SpServices.SPDeleteItem({
+//                 Listname: LISTNAMES.SectionDetails,
+//                 ID: section?.ID,
+//               })
+//             );
+
+//             // Delete associated tasks
+//             await Promise.all(
+//               uniqueTaskByResponse.map(async (item: any) => {
+//                 console.log("Deleting task with ID: ", item?.ID);
+//                 await SpServices.SPDeleteItem({
+//                   Listname: LISTNAMES.MyTasks,
+//                   ID: item?.ID,
+//                 });
+//               })
+//             );
+//           }),
+//       ])
+//         .then(async () => {
+//           setLoaderState({
+//             isLoading: { inprogress: false, success: true, error: false },
+//             visibility: true,
+//             text: "Sections updated successfully!",
+//             secondaryText: `The document "${docDetails?.docName}'s" sections have been updated successfully!`,
+//           });
+//         })
+//         .catch((err) => {
+//           console.log("err: ", err);
+//           setLoaderState({
+//             isLoading: { inprogress: false, success: false, error: true },
+//             visibility: true,
+//             text: "Unable to update the sections.",
+//             secondaryText:
+//               "An unexpected error occurred while updating the sections, please try again later.",
+//           });
+//         });
+//     } catch (err) {
+//       setLoaderState({
+//         isLoading: { inprogress: false, success: false, error: true },
+//         visibility: true,
+//         text: "Unable to update the sections.",
+//         secondaryText:
+//           "An unexpected error occurred while updating the sections, please try again later.",
+//       });
+//     }
+//     // }
+//   } catch (err) {
+//     setLoaderState({
+//       isLoading: { inprogress: false, success: false, error: true },
+//       visibility: true,
+//       text: "Unable to process the sections.",
+//       secondaryText:
+//         "An unexpected error occurred while processing the sections, please try again later.",
+//     });
+//   }
+// };
+
+// export const updateSections = async (
+//   formData: any,
+//   setLoaderState: any,
+//   docDetails: any
+// ): Promise<any> => {
+//   console.log("docDetails: ", docDetails);
+//   try {
+//     const sectionsToUpdate: any[] = [];
+//     const sectionsToAdd: any[] = [];
+//     const allPayload: any[] = [];
+
+//     const defaultSectionsData: any[] = formData.defaultSections
+//       ?.filter((item: any) => {
+//         return (
+//           item?.sectionSelected || (item?.ID !== null && !item?.sectionSelected)
+//         );
+//       })
+//       ?.sort((a: any, b: any) => {
+//         return a?.sectionOrderNo - b?.sectionOrderNo;
+//       })
+//       ?.map((item: any, index: number) => {
+//         return { ...item, sectionOrderNo: String(index + 1) };
+//       });
+
+//     const appendixSectionsData: any[] = formData.appendixSections
+//       ?.filter((item: any) => {
+//         return (
+//           item?.sectionSelected || (item?.ID !== null && !item?.sectionSelected)
+//         );
+//       })
+//       ?.sort((a: any, b: any) => {
+//         return a?.sectionOrderNo - b?.sectionOrderNo;
+//       })
+//       ?.map((item: any, index: number) => {
+//         return { ...item, sectionOrderNo: String(index + 1) };
+//       });
+
+//     [...defaultSectionsData, ...appendixSectionsData]?.forEach(
+//       (element: any) => {
+//         const sectionPayload = {
+//           Title: element?.sectionName?.value,
+//           templateTitle: formData?.templateDetails?.templateName,
+//           sectionOrder: element.sectionOrderNo,
+//           sectionAuthorId: element?.sectionAuthor?.value?.[0]?.id,
+//           consultantsId: {
+//             results: element?.consultants?.value?.map((el: any) => el?.id),
+//           },
+//           sectionType:
+//             element?.sectionType === "defaultSection" ||
+//             element?.sectionType === "normalSections"
+//               ? "default section"
+//               : "appendix section",
+//           documentOfId: docDetails?.documentDetailsId,
+//           status: "content in progress",
+//           isActive: element?.sectionSelected && !element?.removed,
+//           ID: element?.ID,
+//         };
+
+//         allPayload.push(sectionPayload);
+//         if (element?.templateSectionID || element?.ID) {
+//           sectionsToUpdate.push(sectionPayload);
+//         } else {
+//           sectionsToAdd.push(element);
+//         }
+//       }
+//     );
+
+//     setLoaderState({
+//       isLoading: { inprogress: true, success: false, error: false },
+//       visibility: true,
+//       text: "Updating sections, please wait...",
+//       secondaryText: "",
+//     });
+
+//     if (sectionsToUpdate.length === 0 && sectionsToAdd.length === 0) {
+//       setLoaderState({
+//         isLoading: { inprogress: false, success: false, error: true },
+//         visibility: true,
+//         text: "No sections to update or add.",
+//         secondaryText:
+//           "No sections are selected for update or add. Please select at least one section.",
+//       });
+//       return;
+//     }
+
+//     if (sectionsToAdd.length > 0) {
+//       await AddSections(formData, setLoaderState, docDetails, true, true);
+//     }
+
+//     const updateSectionsPromise = allPayload.map(async (section: any) => {
+//       const uniqueTaskByResponse = await SpServices.SPReadItems({
+//         Listname: LISTNAMES.MyTasks,
+//         Select: "*,documentDetails/ID,sectionDetails/ID",
+//         Expand: "documentDetails,sectionDetails",
+//         Filter: [
+//           {
+//             FilterKey: "sectionDetails",
+//             FilterValue: section?.ID,
+//             Operator: "eq",
+//           },
+//         ],
+//       });
+
+//       let currentSectionDetails: any;
+//       if (section?.ID) {
+//         currentSectionDetails = await SpServices.SPReadItemUsingId({
+//           Listname: LISTNAMES.SectionDetails,
+//           SelectedId: section?.ID,
+//           Select: "*,documentOf/ID",
+//           Expand: "documentOf",
+//         });
+
+//         await SpServices.SPUpdateItem({
+//           Listname: LISTNAMES.SectionDetails,
+//           ID: section?.ID,
+//           RequestJSON: section,
+//         });
+//       }
+
+//       if (section?.isActive) {
+//         await Promise.all(
+//           uniqueTaskByResponse.map(async (item: any) => {
+//             if (
+//               section?.sectionAuthorId &&
+//               item?.role?.toLowerCase() === "section author"
+//             ) {
+//               await SpServices.SPUpdateItem({
+//                 Listname: LISTNAMES.MyTasks,
+//                 ID: item?.ID,
+//                 RequestJSON: {
+//                   sectionName: section?.Title,
+//                   taskAssigneeId: section?.sectionAuthorId,
+//                 },
+//               });
+//             }
+//             if (
+//               section?.consultantsId?.results?.length > 0 &&
+//               item?.role?.toLowerCase() === "consultant"
+//             ) {
+//               await SpServices.SPDeleteItem({
+//                 Listname: LISTNAMES.MyTasks,
+//                 ID: item?.ID,
+//               });
+//             }
+//           })
+//         );
+
+//         const sectionCreatedDate = calculateDueDateByRole(
+//           dayjs(currentSectionDetails?.Created).format("DD/MM/YYYY"),
+//           "consultant"
+//         );
+
+//         const newConsultantTasks = section?.consultantsId?.results?.map(
+//           (el: any) => ({
+//             taskAssignee: el,
+//             role: "Consultant",
+//             status: "content in progress",
+//             sectionName: section?.Title,
+//           })
+//         );
+
+//         await Promise.all(
+//           newConsultantTasks.map(async (taskItem: any) => {
+//             if (section?.ID) {
+//               await SpServices.SPAddItem({
+//                 Listname: LISTNAMES.MyTasks,
+//                 RequestJSON: {
+//                   Title: docDetails?.docName,
+//                   taskAssigneeId: taskItem.taskAssignee,
+//                   role: taskItem.role,
+//                   taskStatus: taskItem.taskStatus,
+//                   docVersion: docDetails?.docVersion,
+//                   docCreatedDate: docDetails?.docCreatedDate,
+//                   taskDueDate: sectionCreatedDate,
+//                   sectionDetailsId: section?.ID,
+//                   pathName: docDetails?.pathName,
+//                   documentDetailsId: docDetails?.documentDetailsId,
+//                   sectionName: taskItem.sectionName,
+//                   docStatus: taskItem.docStatus,
+//                   taskAssignedById: docDetails?.taskAssignee?.ID,
+//                 },
+//               });
+//             } else {
+//               const mainRes: any = await SpServices.SPReadItems({
+//                 Listname: LISTNAMES.SectionDetails,
+//                 Select: "*,documentOf/ID",
+//                 Expand: "documentOf",
+//                 Filter: [
+//                   {
+//                     FilterKey: "Title",
+//                     FilterValue: taskItem?.sectionName,
+//                     Operator: "eq",
+//                   },
+//                   {
+//                     FilterKey: "documentOf",
+//                     FilterValue: docDetails?.documentDetailsId,
+//                     Operator: "eq",
+//                   },
+//                 ],
+//               });
+//               await SpServices.SPAddItem({
+//                 Listname: LISTNAMES.MyTasks,
+//                 RequestJSON: {
+//                   // Title: taskItem.sectionName,
+//                   // taskAssigneeId: taskItem.taskAssignee,
+//                   // role: taskItem.role,
+//                   // taskStatus: taskItem.status,
+//                   // taskDueDate: sectionCreatedDate,
+//                   // documentDetailsId: docDetails?.documentDetailsId,
+
+//                   Title: docDetails?.docName,
+//                   taskAssigneeId: taskItem.taskAssignee,
+//                   role: taskItem.role,
+//                   taskStatus: taskItem.taskStatus,
+//                   docVersion: docDetails?.docVersion,
+//                   docCreatedDate: docDetails?.docCreatedDate,
+//                   taskDueDate: sectionCreatedDate,
+//                   pathName: docDetails?.pathName,
+//                   sectionDetailsId: mainRes[0]?.ID,
+//                   documentDetailsId: docDetails?.documentDetailsId,
+//                   sectionName: taskItem.sectionName,
+//                   docStatus: taskItem.docStatus,
+//                   taskAssignedById: docDetails?.taskAssignee?.ID,
+//                 },
+//               });
+//             }
+//           })
+//         );
+//       } else {
+//         await SpServices.SPDeleteItem({
+//           Listname: LISTNAMES.SectionDetails,
+//           ID: section?.ID,
+//         });
+
+//         await Promise.all(
+//           uniqueTaskByResponse.map(async (item: any) => {
+//             await SpServices.SPDeleteItem({
+//               Listname: LISTNAMES.MyTasks,
+//               ID: item?.ID,
+//             });
+//           })
+//         );
+//       }
+//     });
+
+//     await Promise.all([...updateSectionsPromise])
+//       .then(() => {
+//         setLoaderState({
+//           isLoading: { inprogress: false, success: true, error: false },
+//           visibility: true,
+//           text: "Sections updated successfully!",
+//           secondaryText: `The document "${docDetails?.docName}'s" sections have been updated successfully!`,
+//         });
+//       })
+//       .catch((err) => {
+//         console.error("Error updating sections:", err);
+//         // setLoaderState({
+//         //   isLoading: { inprogress: false, success: false, error: true },
+//         //   visibility: true,
+//         //   text: "Unable to update the sections.",
+//         //   secondaryText:
+//         //     "An unexpected error occurred while updating the sections, please try again later.",
+//         // });
+//       });
+//   } catch (err) {
+//     if (
+//       err?.message?.value !==
+//       "Item does not exist. It may have been deleted by another user."
+//     ) {
+//       setLoaderState({
+//         isLoading: { inprogress: false, success: false, error: true },
+//         visibility: true,
+//         text: "Unable to process the sections.",
+//         secondaryText:
+//           "An unexpected error occurred while processing the sections, please try again later.",
+//       });
+//     }
+//   }
+// };
+
 export const updateSections = async (
   formData: any,
   setLoaderState: any,
   docDetails: any
 ): Promise<any> => {
+  console.log("docDetails: ", docDetails);
   try {
     const sectionsToUpdate: any[] = [];
     const sectionsToAdd: any[] = [];
+    const allPayload: any[] = [];
 
     const defaultSectionsData: any[] = formData.defaultSections
       ?.filter((item: any) => {
@@ -327,96 +997,21 @@ export const updateSections = async (
           ID: element?.ID,
         };
 
-        // if (element?.ID || element?.templateSectionID) {
-        //   // If section has an ID or templateSectionID, add to update list
-        //   sectionsToUpdate.push({
-        //     ...sectionPayload,
-        //     ID: element?.ID,
-        //   });
-        // } else if (!element?.removed) {
-        //   // If section does not have an ID and is not marked as removed, add to add list
-        //   sectionsToAdd.push(sectionPayload);
-        // }
+        allPayload.push(sectionPayload);
         if (element?.templateSectionID || element?.ID) {
           sectionsToUpdate.push(sectionPayload);
         } else {
-          sectionsToAdd.push(sectionPayload);
+          sectionsToAdd.push(element);
         }
       }
     );
 
-    // Handle update sections
-    if (sectionsToUpdate.length > 0) {
-      setLoaderState({
-        isLoading: { inprogress: true, success: false, error: false },
-        visibility: true,
-        text: "Updating sections, please wait...",
-        secondaryText: "",
-      });
-
-      try {
-        await Promise.all(
-          sectionsToUpdate.map(async (section: any) => {
-            await SpServices.SPUpdateItem({
-              Listname: LISTNAMES.SectionDetails,
-              ID: section.ID,
-              RequestJSON: section,
-            });
-          })
-        );
-
-        setLoaderState({
-          isLoading: { inprogress: false, success: true, error: false },
-          visibility: true,
-          text: "Sections updated successfully!",
-          secondaryText: `The document "${docDetails?.docName}'s" sections have been updated successfully!`,
-        });
-      } catch (err) {
-        setLoaderState({
-          isLoading: { inprogress: false, success: false, error: true },
-          visibility: true,
-          text: "Unable to update the sections.",
-          secondaryText:
-            "An unexpected error occurred while updating the sections, please try again later.",
-        });
-      }
-    }
-
-    // Handle add sections
-    if (sectionsToAdd.length > 0) {
-      setLoaderState({
-        isLoading: { inprogress: true, success: false, error: false },
-        visibility: true,
-        text: "Adding new sections, please wait...",
-        secondaryText: "",
-      });
-
-      try {
-        await Promise.all(
-          sectionsToAdd.map(async (payload: any) => {
-            await SpServices.SPAddItem({
-              Listname: LISTNAMES.SectionDetails,
-              RequestJSON: payload,
-            });
-          })
-        );
-
-        setLoaderState({
-          isLoading: { inprogress: false, success: true, error: false },
-          visibility: true,
-          text: "Sections added successfully!",
-          secondaryText: `The document "${docDetails?.docName}'s" sections have been added successfully!`,
-        });
-      } catch (err) {
-        setLoaderState({
-          isLoading: { inprogress: false, success: false, error: true },
-          visibility: true,
-          text: "Unable to add the sections.",
-          secondaryText:
-            "An unexpected error occurred while adding the sections, please try again later.",
-        });
-      }
-    }
+    setLoaderState({
+      isLoading: { inprogress: true, success: false, error: false },
+      visibility: true,
+      text: "Updating sections, please wait...",
+      secondaryText: "",
+    });
 
     if (sectionsToUpdate.length === 0 && sectionsToAdd.length === 0) {
       setLoaderState({
@@ -426,15 +1021,217 @@ export const updateSections = async (
         secondaryText:
           "No sections are selected for update or add. Please select at least one section.",
       });
+      return;
     }
-  } catch (err) {
-    setLoaderState({
-      isLoading: { inprogress: false, success: false, error: true },
-      visibility: true,
-      text: "Unable to process the sections.",
-      secondaryText:
-        "An unexpected error occurred while processing the sections, please try again later.",
+
+    if (sectionsToAdd.length > 0) {
+      await AddSections(formData, setLoaderState, docDetails, true, true);
+    }
+
+    const updateSectionsPromise = allPayload.map(async (section: any) => {
+      const uniqueTaskByResponse = await SpServices.SPReadItems({
+        Listname: LISTNAMES.MyTasks,
+        Select: "*,documentDetails/ID,sectionDetails/ID",
+        Expand: "documentDetails,sectionDetails",
+        Filter: [
+          {
+            FilterKey: "sectionDetails",
+            FilterValue: section?.ID,
+            Operator: "eq",
+          },
+        ],
+      });
+
+      let currentSectionDetails: any;
+      if (section?.ID) {
+        currentSectionDetails = await SpServices.SPReadItemUsingId({
+          Listname: LISTNAMES.SectionDetails,
+          SelectedId: section?.ID,
+          Select: "*,documentOf/ID",
+          Expand: "documentOf",
+        });
+
+        await SpServices.SPUpdateItem({
+          Listname: LISTNAMES.SectionDetails,
+          ID: section?.ID,
+          RequestJSON: section,
+        });
+      }
+
+      if (section?.isActive) {
+        await Promise.all(
+          uniqueTaskByResponse.map(async (item: any) => {
+            if (
+              section?.sectionAuthorId &&
+              item?.role?.toLowerCase() === "section author"
+            ) {
+              await SpServices.SPUpdateItem({
+                Listname: LISTNAMES.MyTasks,
+                ID: item?.ID,
+                RequestJSON: {
+                  sectionName: section?.Title,
+                  taskAssigneeId: section?.sectionAuthorId,
+                },
+              });
+            }
+            if (
+              section?.consultantsId?.results?.length > 0 &&
+              item?.role?.toLowerCase() === "consultant"
+            ) {
+              await SpServices.SPDeleteItem({
+                Listname: LISTNAMES.MyTasks,
+                ID: item?.ID,
+              });
+            }
+          })
+        );
+
+        const sectionCreatedDate = calculateDueDateByRole(
+          dayjs(currentSectionDetails?.Created).format("DD/MM/YYYY"),
+          "consultant"
+        );
+
+        const newConsultantTasks = section?.consultantsId?.results?.map(
+          (el: any) => ({
+            taskAssignee: el,
+            role: "Consultant",
+            status: "content in progress",
+            sectionName: section?.Title,
+          })
+        );
+
+        await Promise.all(
+          newConsultantTasks.map(async (taskItem: any) => {
+            if (section?.ID) {
+              await SpServices.SPAddItem({
+                Listname: LISTNAMES.MyTasks,
+                RequestJSON: {
+                  Title: docDetails?.docName,
+                  taskAssigneeId: taskItem.taskAssignee,
+                  role: taskItem.role,
+                  taskStatus: taskItem.taskStatus || "content in progress",
+                  docVersion: docDetails?.docVersion,
+                  docCreatedDate: docDetails?.docCreatedDate,
+                  taskDueDate: sectionCreatedDate,
+                  sectionDetailsId: section?.ID,
+                  pathName: docDetails?.pathName,
+                  documentDetailsId: docDetails?.documentDetailsId,
+                  sectionName: taskItem.sectionName,
+                  docStatus: taskItem.docStatus,
+                  taskAssignedById: docDetails?.taskAssignee?.ID,
+                },
+              });
+            } else {
+              const mainRes: any = await SpServices.SPReadItems({
+                Listname: LISTNAMES.SectionDetails,
+                Select: "*,documentOf/ID",
+                Expand: "documentOf",
+                Filter: [
+                  {
+                    FilterKey: "Title",
+                    FilterValue: taskItem?.sectionName,
+                    Operator: "eq",
+                  },
+                  {
+                    FilterKey: "documentOf",
+                    FilterValue: docDetails?.documentDetailsId,
+                    Operator: "eq",
+                  },
+                ],
+              });
+              await SpServices.SPAddItem({
+                Listname: LISTNAMES.MyTasks,
+                RequestJSON: {
+                  Title: docDetails?.docName,
+                  taskAssigneeId: taskItem.taskAssignee,
+                  role: taskItem.role,
+                  taskStatus: taskItem.status,
+                  docVersion: docDetails?.docVersion,
+                  docCreatedDate: docDetails?.docCreatedDate,
+                  taskDueDate: sectionCreatedDate,
+                  pathName: docDetails?.pathName,
+                  sectionDetailsId: mainRes[0]?.ID,
+                  documentDetailsId: docDetails?.documentDetailsId,
+                  sectionName: taskItem.sectionName,
+                  docStatus: taskItem.docStatus,
+                  taskAssignedById: docDetails?.taskAssignee?.ID,
+                },
+              });
+            }
+          })
+        );
+      } else {
+        await SpServices.SPDeleteItem({
+          Listname: LISTNAMES.SectionDetails,
+          ID: section?.ID,
+        });
+
+        // await Promise.all(
+        uniqueTaskByResponse.map(async (item: any) => {
+          await SpServices.SPDeleteItem({
+            Listname: LISTNAMES.MyTasks,
+            ID: item?.ID,
+          });
+        });
+        // )
+        // .then((res: any) => {
+        //   console.log("res: ", res);
+        // })
+        // .catch((err: any) => {
+        //   console.log("err: ", err);
+        //   if (
+        //     err?.message?.value !==
+        //     "Item does not exist. It may have been deleted by another user."
+        //   ) {
+        //     setLoaderState({
+        //       isLoading: { inprogress: false, success: false, error: true },
+        //       visibility: true,
+        //       text: "Unable to process the sections.",
+        //       secondaryText:
+        //         "An unexpected error occurred while processing the sections, please try again later.",
+        //     });
+        //   }
+        // });
+      }
     });
+
+    await Promise.all([...updateSectionsPromise])
+      .then(() => {
+        setLoaderState({
+          isLoading: { inprogress: false, success: true, error: false },
+          visibility: true,
+          text: "Sections updated successfully!",
+          secondaryText: `The document "${docDetails?.docName}'s" sections have been updated successfully!`,
+        });
+      })
+      .catch((err) => {
+        console.error("Error updating sections:", err);
+        if (
+          err?.message?.value !==
+          "Item does not exist. It may have been deleted by another user."
+        ) {
+          setLoaderState({
+            isLoading: { inprogress: false, success: false, error: true },
+            visibility: true,
+            text: "Unable to process the sections.",
+            secondaryText:
+              "An unexpected error occurred while processing the sections, please try again later.",
+          });
+        }
+      });
+  } catch (err) {
+    if (
+      err?.message?.value !==
+      "Item does not exist. It may have been deleted by another user."
+    ) {
+      setLoaderState({
+        isLoading: { inprogress: false, success: false, error: true },
+        visibility: true,
+        text: "Unable to process the sections.",
+        secondaryText:
+          "An unexpected error occurred while processing the sections, please try again later.",
+      });
+    }
   }
 };
 
