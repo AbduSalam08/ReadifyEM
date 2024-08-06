@@ -39,6 +39,7 @@ interface documentDetails {
   status: boolean;
   isDeleted: boolean;
   isValid: boolean;
+  emptyField?: string;
 }
 
 const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
@@ -152,30 +153,55 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
 
   const AddNewDocument = (): any => {
     const tempArray = selectedDocuments;
-    tempArray.unshift({
-      ID: selectedDocuments.length + 1,
-      documentName: "",
-      documentLink: "",
-      isSelected: false,
-      isNew: true,
-      status: true,
-      isDeleted: false,
-      isValid: false,
-    });
-    setSelectedDocuments([...tempArray]);
+    const checkCondition = selectedDocuments.some((obj: any) => obj.isNew);
+    if (!checkCondition) {
+      tempArray.unshift({
+        ID: selectedDocuments.length + 1,
+        documentName: "",
+        documentLink: "",
+        isSelected: false,
+        isNew: true,
+        status: true,
+        isDeleted: false,
+        isValid: false,
+        emptyField: "",
+      });
+      setSelectedDocuments([...tempArray]);
+    } else {
+      setToastMessage({
+        isShow: true,
+        severity: "warning",
+        title: "Pending add supporting link",
+        message: "Please add new supporting link before submit",
+        duration: 3000,
+      });
+    }
+  };
+
+  const validation = (index: number) => {
+    const tempSelectedDocuments = [...selectedDocuments];
+    if (tempSelectedDocuments[index].documentName === "") {
+      tempSelectedDocuments[index].emptyField = "documentName";
+      tempSelectedDocuments[index].isValid = true;
+      setSelectedDocuments([...tempSelectedDocuments]);
+      return false;
+    } else if (tempSelectedDocuments[index].documentLink === "") {
+      tempSelectedDocuments[index].emptyField = "documentLink";
+      tempSelectedDocuments[index].isValid = true;
+      setSelectedDocuments([...tempSelectedDocuments]);
+      return false;
+    } else {
+      return true;
+    }
   };
 
   const checkinNewSupportingDocument = (index: number) => {
+    let validate = validation(index);
     const tempSelectedDocuments = [...selectedDocuments];
-    if (
-      tempSelectedDocuments[index].documentName !== "" &&
-      tempSelectedDocuments[index].documentLink !== ""
-    ) {
+    if (validate) {
       tempSelectedDocuments[index].isNew = false;
-    } else {
-      tempSelectedDocuments[index].isValid = true;
+      setSelectedDocuments([...tempSelectedDocuments]);
     }
-    setSelectedDocuments([...tempSelectedDocuments]);
   };
   const removeSupportingDocument = (index: number) => {
     let tempSelectedDocuments = [...selectedDocuments];
@@ -201,21 +227,11 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
     const tempArray: any[] = [...selectedDocuments];
     const onChangeArray = tempArray.map((obj: any) => {
       if (obj.ID === id) {
-        obj[key] = value;
-        if (key === "documentName" && value !== "") {
-          if (obj.documentLink !== "") {
-            obj.isValid = false;
-          } else {
-            obj.isValid = true;
-          }
-        } else if (key === "documentLink" && value !== "") {
-          if (obj.documentName !== "") {
-            obj.isValid = false;
-          } else {
-            obj.isValid = true;
-          }
-        } else {
-          obj["isValid"] = true;
+        obj[key] = value.trimStart();
+        if (key === "documentName" && value.trimStart() !== "") {
+          obj.isValid = false;
+        } else if (key === "documentLink" && value.trimStart() !== "") {
+          obj.isValid = false;
         }
         return obj;
       } else {
@@ -230,17 +246,29 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
   }, []);
 
   const submitSupDocuments = async (submitCondition: boolean) => {
-    const reRender: boolean | any = await submitSupportingDocuments(
-      [...selectedDocuments],
-      documentId,
-      sectionId,
-      setToastMessage,
-      getAllSelectedDocuments
-    );
-    console.log(reRender);
-    if (submitCondition) {
-      // getAllSelectedDocuments();
-      await updateSectionDetails(sectionId);
+    const checkCondition = selectedDocuments.some((obj: any) => obj.isNew);
+    debugger;
+    if (!checkCondition) {
+      const reRender: boolean | any = await submitSupportingDocuments(
+        [...selectedDocuments],
+        documentId,
+        sectionId,
+        setToastMessage,
+        getAllSelectedDocuments
+      );
+      console.log(reRender);
+      if (submitCondition) {
+        // getAllSelectedDocuments();
+        await updateSectionDetails(sectionId);
+      }
+    } else {
+      setToastMessage({
+        isShow: true,
+        severity: "warning",
+        title: "Pending add supporting link",
+        message: "Please add new supporting link before submit",
+        duration: 3000,
+      });
     }
   };
 
@@ -264,7 +292,7 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
           <div className={styles.inputmainSec}>
             <CustomInput
               value={searchValue}
-              placeholder="Search Documents"
+              placeholder="Search documents by name"
               onChange={(value: any) => {
                 handleSearchOnChange(value);
               }}
@@ -294,11 +322,12 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
           />
           {searchValue !== "" && (
             <div className={styles.filterSecWrapper}>
-              {isEmpty(allDocumentsLink) && isEmpty(filterDocuments) && (
-                <div className={styles.noDataFound}>
-                  <span>No data found</span>
-                </div>
-              )}
+              {isEmpty(allDocumentsLink) ||
+                (isEmpty(filterDocuments) && (
+                  <div className={styles.noDataFound}>
+                    <span>No data found</span>
+                  </div>
+                ))}
               {filterDocuments.map((obj: any, index: number) => {
                 return (
                   <div
@@ -377,7 +406,11 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
                           placeholder="Enter here"
                           withLabel
                           labelText="Document Name"
-                          isValid={obj.isValid && obj.documentName === ""}
+                          isValid={
+                            obj.isValid &&
+                            obj.emptyField === "documentName" &&
+                            obj.documentName === ""
+                          }
                           errorMsg="Please enter document name"
                           topLabel
                         />
@@ -394,13 +427,26 @@ const SupportingDocuments: React.FC<Props> = ({ documentId, sectionId }) => {
                           placeholder="Enter here"
                           withLabel
                           labelText="Document Link"
-                          isValid={obj.isValid && obj.documentLink === ""}
+                          isValid={
+                            obj.isValid &&
+                            obj.emptyField === "documentLink" &&
+                            obj.documentLink === ""
+                          }
                           errorMsg="Please enter document link"
                           topLabel
                         />
                       </div>
                     ) : (
-                      <div style={{ width: "90%" }}>
+                      <div
+                        style={{
+                          width: "90%",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "flex-start",
+                          justifyContent: "center",
+                          gap: "6px",
+                        }}
+                      >
                         <p className={styles.documentName}>
                           {obj.documentName}
                         </p>
