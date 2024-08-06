@@ -21,6 +21,7 @@ interface IProps {
   setSectionData?: any;
   currentSectionDetails?: any;
   onChange?: any;
+  currentDocRole?: any;
 }
 
 interface IPoint {
@@ -36,7 +37,9 @@ const SectionContent: React.FC<IProps> = ({
   activeIndex,
   setSectionData,
   onChange,
+  currentDocRole,
 }) => {
+  console.log("currentSectionDetails: ", currentSectionDetails);
   const [toastMessage, setToastMessage] = useState<any>({
     isShow: false,
     severity: "",
@@ -328,7 +331,7 @@ const SectionContent: React.FC<IProps> = ({
           )}
         </div>
       )}
-      {!noActionBtns && (
+      {!noActionBtns ? (
         <div
           style={{
             width: "100%",
@@ -341,45 +344,88 @@ const SectionContent: React.FC<IProps> = ({
           <button className={"helpButton"}>Help?</button>
           <div style={{ display: "flex", gap: "15px" }}>
             <DefaultButton
-              text="Cancel"
+              text="Close"
               btnType="darkGreyVariant"
               onClick={() => {
                 navigate(-1);
               }}
             />
-            <DefaultButton
-              text="Reset content"
-              disabled={sectionLoader}
-              btnType="secondaryRed"
-              onClick={() => {
-                setSectionData((prev: any) => {
-                  const updatedSections = [...prev];
-                  updatedSections[activeIndex] = {
-                    ...updatedSections[activeIndex],
-                    contentType: "initial",
-                  };
-                  return updatedSections;
-                });
-              }}
-            />
-            <DefaultButton
-              text="Save and Close"
-              disabled={sectionLoader}
-              btnType="lightGreyVariant"
-              onClick={() => {
-                addData();
-              }}
-            />
-            <DefaultButton
-              text="Submit"
-              disabled={sectionLoader}
-              btnType="primary"
-              onClick={() => {
-                addData("submit");
-              }}
-            />
+            {currentDocRole?.primaryAuthor || currentDocRole?.sectionAuthor ? (
+              <>
+                {currentDocRole?.primaryAuthor ? (
+                  <DefaultButton
+                    text="Reject"
+                    disabled={sectionLoader}
+                    btnType="secondaryRed"
+                    onClick={() => {
+                      console.log("rejected");
+                    }}
+                  />
+                ) : (
+                  ""
+                )}
+                {!currentSectionDetails?.sectionSubmitted ? (
+                  <>
+                    <DefaultButton
+                      text="Reset content"
+                      disabled={sectionLoader}
+                      btnType="secondaryRed"
+                      onClick={() => {
+                        setSectionData((prev: any) => {
+                          const updatedSections = [...prev];
+                          updatedSections[activeIndex] = {
+                            ...updatedSections[activeIndex],
+                            contentType: "initial",
+                          };
+                          return updatedSections;
+                        });
+                      }}
+                    />
+
+                    <DefaultButton
+                      text="Save and Close"
+                      disabled={sectionLoader}
+                      btnType="lightGreyVariant"
+                      onClick={() => {
+                        addData();
+                      }}
+                    />
+                    {currentDocRole?.sectionAuthor ? (
+                      <DefaultButton
+                        text="Submit"
+                        disabled={sectionLoader}
+                        btnType="primary"
+                        onClick={() => {
+                          addData("submit");
+                        }}
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </>
+                ) : (
+                  ""
+                )}
+              </>
+            ) : (
+              ""
+            )}
           </div>
         </div>
+      ) : currentSectionDetails?.sectionType?.toLowerCase() !==
+        "appendix section" ? (
+        <DefaultButton
+          text="Close"
+          btnType="darkGreyVariant"
+          onClick={() => {
+            navigate(-1);
+          }}
+          style={{
+            marginTop: "10px",
+          }}
+        />
+      ) : (
+        ""
       )}
       <ToastMessage
         severity={toastMessage.severity}

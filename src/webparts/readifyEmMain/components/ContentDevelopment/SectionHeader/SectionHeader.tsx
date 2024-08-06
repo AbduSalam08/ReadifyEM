@@ -11,6 +11,7 @@ interface Props {
   isPrimaryAuthor?: boolean;
   consultants: any[];
   activeSectionData: any;
+  currentDocRole?: any;
 }
 
 const SectionHeader: React.FC<Props> = ({
@@ -20,7 +21,10 @@ const SectionHeader: React.FC<Props> = ({
   PrimaryAuthor,
   isPrimaryAuthor,
   activeSectionData,
+  currentDocRole,
 }) => {
+  console.log("consultants: ", consultants);
+  console.log("currentDocRole: ", currentDocRole);
   const handleOnChangeFunction = (value: any): any => {
     console.log("value");
   };
@@ -87,7 +91,9 @@ const SectionHeader: React.FC<Props> = ({
                 size="SM"
                 maxWidth={"200px"}
                 minWidth={"200px"}
-                personSelectionLimit={5}
+                personSelectionLimit={
+                  currentDocRole.sectionAuthor ? 5 : consultants?.length
+                }
                 selectedItem={consultants}
                 onChange={(value: any) => {
                   handleOnChangeFunction(value);
@@ -96,6 +102,8 @@ const SectionHeader: React.FC<Props> = ({
                 placeholder="Add Reference Author"
                 // readOnly
                 hideErrMsg
+                readOnly={!currentDocRole.sectionAuthor}
+                noRemoveBtn={!currentDocRole.sectionAuthor}
                 multiUsers={true}
               />
             </div>

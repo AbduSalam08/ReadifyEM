@@ -14,6 +14,7 @@ import { getUniqueTaskData } from "../../../../services/MyTasks/MyTasksServices"
 import { useDispatch } from "react-redux";
 // import { getUniqueSectionsDetails } from "../../../../services/ConfigureSections/ConfigureSectionsServices";
 import { setConfigurePageDetails } from "../../../../redux/features/SectionConfigurationSlice";
+import DueDatePill from "../common/DueDatePill/DueDatePill";
 
 interface CardProps {
   title: string;
@@ -112,9 +113,13 @@ const TaskCard: React.FC<CardProps> = ({
         >
           {btnText}
         </button>
-        <div className={styles.dueDate}>
-          <img src={dueDataImg} alt="due date" />
-          <span className={styles.dueDateText}>Due on: {dueDate}</span>
+        <div className={styles.dueDateIndicators}>
+          <DueDatePill dueDate={dueDate} />
+          <div className={styles.dueDate}>
+            <img src={dueDataImg} alt="due date" />
+
+            <span className={styles.dueDateText}>Due on: {dueDate}</span>
+          </div>
         </div>
       </div>
     </div>

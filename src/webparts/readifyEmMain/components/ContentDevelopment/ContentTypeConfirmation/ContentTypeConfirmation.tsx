@@ -1,104 +1,209 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
 import DefaultButton from "../../common/Buttons/DefaultButton";
 import styles from "./ContentTypeConfirmation.module.scss";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CircularSpinner from "../../common/AppLoader/CircularSpinner";
+import SpServices from "../../../../../services/SPServices/SpServices";
+import { LISTNAMES } from "../../../../../config/config";
+import { useNavigate } from "react-router-dom";
+import ToastMessage from "../../common/Toast/ToastMessage";
 
 interface IContentTypeConfirmationProps {
   setSectionData?: any;
   customWrapperClassName?: any;
   activeIndex?: any;
+  currentDocRole?: any;
+  noActionBtns?: any;
+  sectionID?: any;
+  currentSectionData?: any;
 }
 
 const ContentTypeConfirmation = ({
   setSectionData,
   customWrapperClassName,
   activeIndex,
+  currentDocRole,
+  noActionBtns,
+  sectionID,
+  currentSectionData,
 }: IContentTypeConfirmationProps): JSX.Element => {
+  console.log("currentSectionData: ", currentSectionData);
+  const navigate = useNavigate();
+  const [sectionLoader, setSectionLoader] = useState(false);
+  const [toastMessage, setToastMessage] = useState<any>([]);
+
+  const addData = async (submissionType?: any): Promise<any> => {
+    setSectionLoader(true);
+
+    let currentItemsAttachments: any;
+
+    await SpServices.SPGetAttachments({
+      Listname: LISTNAMES.SectionDetails,
+      ID: sectionID,
+    })
+      .then((res: any) => {
+        currentItemsAttachments = res;
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+
+    console.log("currentItemsAttachments: ", currentItemsAttachments);
+
+    let updateAttachmentPromise: any;
+
+    if (currentItemsAttachments?.length > 0) {
+      updateAttachmentPromise = await SpServices.SPDeleteAttachments({
+        ListID: sectionID,
+        ListName: LISTNAMES.SectionDetails,
+        AttachmentName: "Sample.txt",
+      });
+    }
+
+    const updateSectionsContentType: any = await SpServices.SPUpdateItem({
+      ID: sectionID,
+      Listname: LISTNAMES.SectionDetails,
+      RequestJSON: {
+        typeOfContent: "initial",
+      },
+    });
+
+    Promise.all([updateAttachmentPromise, updateSectionsContentType])
+      .then((res: any) => {
+        setSectionLoader(false);
+        setToastMessage({
+          isShow: true,
+          severity: "success",
+          title: "Content updated!",
+          message: "The content has been updated successfully.",
+          duration: 3000,
+        });
+      })
+      .catch((err: any) => {
+        setToastMessage({
+          isShow: true,
+          severity: "error",
+          title: "Something went wrong!",
+          message:
+            "A unexpected error happened while updating! please try again later.",
+          duration: 3000,
+        });
+        setSectionLoader(false);
+      });
+  };
+
   return (
     <div className={`${styles.initialContent} ${customWrapperClassName}`}>
-      <div className={styles.contentTypeBox}>
-        <span>Please select the content type</span>
-        <div className={styles.actionsBtns}>
-          <DefaultButton
-            btnType="primary"
-            text={"List"}
-            onClick={() => {
-              setSectionData((prev: any) => {
-                const updatedSections = [...prev];
-                updatedSections[activeIndex] = {
-                  ...updatedSections[activeIndex],
-                  contentType: "list",
-                };
-                return updatedSections;
-              });
-            }}
-          />
-          <DefaultButton
-            btnType="primary"
-            text={"Paragraph"}
-            onClick={() => {
-              setSectionData((prev: any) => {
-                const updatedSections = [...prev];
-                updatedSections[activeIndex] = {
-                  ...updatedSections[activeIndex],
-                  contentType: "paragraph",
-                };
-                return updatedSections;
-              });
-            }}
-          />
+      {!sectionLoader ? (
+        <div
+          style={{
+            height: "90%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {currentDocRole?.primaryAuthor || currentDocRole?.sectionAuthor ? (
+            <div className={styles.contentTypeBox}>
+              <>
+                <span>Please select the content type</span>
+                <div className={styles.actionsBtns}>
+                  <DefaultButton
+                    btnType="primary"
+                    text={"List"}
+                    onClick={() => {
+                      setSectionData((prev: any) => {
+                        const updatedSections = [...prev];
+                        updatedSections[activeIndex] = {
+                          ...updatedSections[activeIndex],
+                          contentType: "list",
+                        };
+                        return updatedSections;
+                      });
+                    }}
+                  />
+                  <DefaultButton
+                    btnType="primary"
+                    text={"Paragraph"}
+                    onClick={() => {
+                      setSectionData((prev: any) => {
+                        const updatedSections = [...prev];
+                        updatedSections[activeIndex] = {
+                          ...updatedSections[activeIndex],
+                          contentType: "paragraph",
+                        };
+                        return updatedSections;
+                      });
+                    }}
+                  />
+                </div>
+              </>
+            </div>
+          ) : (
+            <p className={styles.emptyMsg}>
+              <AccessTimeIcon
+                style={{
+                  width: "18px",
+                }}
+              />
+              No content has been developed at this time.
+            </p>
+          )}
         </div>
-      </div>
-
-      {/* {!noActionBtns && (
+      ) : (
+        <div
+          style={{
+            height: "90%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CircularSpinner />
+        </div>
+      )}
+      {!noActionBtns && (
         <div
           style={{
             width: "100%",
+            height: "10%",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             marginTop: "15px",
+            padding: "0 10px",
           }}
         >
           <button className={"helpButton"}>Help?</button>
           <div style={{ display: "flex", gap: "15px" }}>
             <DefaultButton
-              text="Cancel"
+              text="Close"
               btnType="darkGreyVariant"
               onClick={() => {
                 navigate(-1);
               }}
             />
             <DefaultButton
-              text="Reset content"
-              btnType="secondaryRed"
-              onClick={() => {
-                setSectionData((prev: any) => {
-                  const updatedSections = [...prev];
-                  updatedSections[activeIndex] = {
-                    ...updatedSections[activeIndex],
-                    contentType: "initial",
-                  };
-                  return updatedSections;
-                });
-              }}
-            />
-            <DefaultButton
               text="Save and Close"
+              // disabled={currentSectionData?.contentType}
               btnType="lightGreyVariant"
-              onClick={() => {
-                addData();
+              onClick={async () => {
+                await addData();
               }}
             />
-            <DefaultButton
-              text="Submit"
-              btnType="primary"
-              onClick={() => {
-                addData("submit");
-              }}
-            />
+            <DefaultButton text="Submit" btnType="primary" disabled />
           </div>
         </div>
-      )} */}
+      )}
+      <ToastMessage
+        severity={toastMessage.severity}
+        title={toastMessage.title}
+        message={toastMessage.message}
+        duration={toastMessage.duration}
+        isShow={toastMessage.isShow}
+        setToastMessage={setToastMessage}
+      />
     </div>
   );
 };

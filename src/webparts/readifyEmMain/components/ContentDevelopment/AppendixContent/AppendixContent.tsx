@@ -26,6 +26,7 @@ interface IAppendixSectionProps {
   activeIndex?: any;
   currentDocDetailsData?: any;
   isLoading?: boolean;
+  currentDocRole?: any;
 }
 
 const AppendixContent = ({
@@ -35,6 +36,7 @@ const AppendixContent = ({
   activeIndex,
   currentDocDetailsData,
   isLoading,
+  currentDocRole,
 }: IAppendixSectionProps): JSX.Element => {
   console.log("contentType: ", contentType);
   console.log("sectionDetails: ", sectionDetails);
@@ -164,6 +166,7 @@ const AppendixContent = ({
       {!sectionLoader ? (
         <div className={styles.scrollableApxSection}>
           <SetupHeader
+            currentDocRole={currentDocRole}
             type={currentDocDetailsData.documentType}
             headerTitle={currentDocDetailsData.documentName}
             appendixName={sectionDetails?.sectionName}
@@ -181,12 +184,16 @@ const AppendixContent = ({
 
             {contentType === "initial" ? (
               <ContentTypeConfirmation
+                currentDocRole={currentDocRole}
                 customWrapperClassName={styles.customInitialContent}
                 activeIndex={activeIndex}
+                noActionBtns={true}
                 setSectionData={setSectionData}
+                currentSectionData={sectionDetails}
               />
             ) : contentType === "list" ? (
               <SectionContent
+                currentDocRole={currentDocRole}
                 activeIndex={activeIndex}
                 setSectionData={setSectionData}
                 sectionNumber={sectionDetails?.sectionOrder}
@@ -199,6 +206,7 @@ const AppendixContent = ({
               />
             ) : (
               <RichText
+                currentDocRole={currentDocRole}
                 activeIndex={activeIndex}
                 setSectionData={setSectionData}
                 currentSectionData={sectionDetails}
@@ -231,17 +239,31 @@ const AppendixContent = ({
             alignItems: "center",
             justifyContent: "flex-end",
             gap: "15px",
+            paddingTop: "10px",
           }}
         >
           <DefaultButton
-            text="Cancel"
+            text="Close"
             btnType="darkGreyVariant"
             onClick={() => {
               navigate(-1);
             }}
           />
-          {showActionBtns && (
+          {(showActionBtns && currentDocRole?.primaryAuthor) ||
+          currentDocRole?.sectionAuthor ? (
             <>
+              {currentDocRole?.primaryAuthor ? (
+                <DefaultButton
+                  disabled={sectionLoader}
+                  text="Reject"
+                  btnType="secondaryRed"
+                  onClick={() => {
+                    console.log("rejected");
+                  }}
+                />
+              ) : (
+                ""
+              )}
               <DefaultButton
                 disabled={sectionLoader}
                 text="Reset content"
@@ -265,15 +287,21 @@ const AppendixContent = ({
                   await addData();
                 }}
               />
-              <DefaultButton
-                disabled={sectionLoader}
-                text="Submit"
-                btnType="primary"
-                onClick={async () => {
-                  await addData("submit");
-                }}
-              />
+              {currentDocRole?.sectionAuthor ? (
+                <DefaultButton
+                  disabled={sectionLoader}
+                  text="Submit"
+                  btnType="primary"
+                  onClick={async () => {
+                    await addData("submit");
+                  }}
+                />
+              ) : (
+                ""
+              )}
             </>
+          ) : (
+            ""
           )}
         </div>
       </div>

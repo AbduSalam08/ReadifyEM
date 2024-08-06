@@ -62,6 +62,7 @@
   .cardBottomSection {
     @extend .flexcenter;
     justify-content: space-between;
+    align-items: flex-end;
     width: 100%;
     .actionBtn {
       font-size: 13px;
@@ -142,6 +143,7 @@
 .cardIndicator.approverBadge {
   background-color: #47b1ff;
 }
+
 .pillRHS {
   display: flex;
   align-items: center;
@@ -161,4 +163,13 @@
       height: 17.5px;
     }
   }
+}
+
+.dueDateIndicators {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 5px;
 }

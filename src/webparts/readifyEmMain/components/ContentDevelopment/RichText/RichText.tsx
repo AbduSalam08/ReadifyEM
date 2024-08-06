@@ -25,6 +25,7 @@ interface IRichTextProps {
   setSectionData?: any;
   ID?: any;
   onChange?: any;
+  currentDocRole?: any;
 }
 
 const RichText = ({
@@ -34,6 +35,7 @@ const RichText = ({
   setSectionData,
   ID,
   onChange,
+  currentDocRole,
 }: IRichTextProps): JSX.Element => {
   const [toastMessage, setToastMessage] = useState<any>({
     isShow: false,
@@ -236,7 +238,7 @@ const RichText = ({
           }}
         />
       )}
-      {!noActionBtns && (
+      {!noActionBtns ? (
         <div
           style={{
             display: "flex",
@@ -256,47 +258,83 @@ const RichText = ({
             }}
           >
             <DefaultButton
-              text="Cancel"
+              text="Close"
               btnType="darkGreyVariant"
               onClick={() => {
                 navigate(-1);
               }}
             />
 
-            <DefaultButton
-              text="Reset content"
-              disabled={sectionLoader}
-              btnType="secondaryRed"
-              onClick={() => {
-                setSectionData((prev: any) => {
-                  const updatedSections = [...prev];
-                  updatedSections[activeIndex] = {
-                    ...updatedSections[activeIndex],
-                    contentType: "initial",
-                  };
-                  return updatedSections;
-                });
-              }}
-            />
+            {currentDocRole?.primaryAuthor || currentDocRole?.sectionAuthor ? (
+              <>
+                {currentDocRole?.primaryAuthor ? (
+                  <DefaultButton
+                    text="Reject"
+                    disabled={sectionLoader}
+                    btnType="secondaryRed"
+                    onClick={() => {
+                      console.log("rejected");
+                    }}
+                  />
+                ) : (
+                  ""
+                )}
 
-            <DefaultButton
-              text="Save and Close"
-              disabled={sectionLoader}
-              btnType="lightGreyVariant"
-              onClick={async () => {
-                await addData();
-              }}
-            />
-            <DefaultButton
-              text="Submit"
-              disabled={sectionLoader}
-              btnType="primary"
-              onClick={async () => {
-                await addData("submit");
-              }}
-            />
+                <DefaultButton
+                  text="Reset content"
+                  disabled={sectionLoader}
+                  btnType="secondaryRed"
+                  onClick={() => {
+                    setSectionData((prev: any) => {
+                      const updatedSections = [...prev];
+                      updatedSections[activeIndex] = {
+                        ...updatedSections[activeIndex],
+                        contentType: "initial",
+                      };
+                      return updatedSections;
+                    });
+                  }}
+                />
+
+                <DefaultButton
+                  text="Save and Close"
+                  disabled={sectionLoader}
+                  btnType="lightGreyVariant"
+                  onClick={async () => {
+                    await addData();
+                  }}
+                />
+
+                {currentDocRole?.sectionAuthor && (
+                  <DefaultButton
+                    text="Submit"
+                    disabled={sectionLoader}
+                    btnType="primary"
+                    onClick={async () => {
+                      await addData("submit");
+                    }}
+                  />
+                )}
+              </>
+            ) : (
+              ""
+            )}
           </div>
         </div>
+      ) : currentSectionData?.sectionType?.toLowerCase() !==
+        "appendix section" ? (
+        <DefaultButton
+          text="Close"
+          btnType="darkGreyVariant"
+          onClick={() => {
+            navigate(-1);
+          }}
+          style={{
+            marginTop: "10px",
+          }}
+        />
+      ) : (
+        ""
       )}
       <ToastMessage
         severity={toastMessage.severity}
