@@ -161,7 +161,30 @@ const SetupHeader: React.FC<Props> = ({
               height: "150px",
             }}
           />
-          {currentDocRole?.primaryAuthor ? (
+          {currentDocRole?.primaryAuthor && !appendixSection ? (
+            <span className={styles.selectedFileName}>
+              <p>
+                {file?.fileName
+                  ? file?.fileName
+                  : fileData.name ||
+                    file.fileData?.FileName ||
+                    CDHeaderDetails?.fileName}
+              </p>
+              <Button
+                type="button"
+                icon="pi pi-times"
+                className="p-button-outlined p-button-rounded p-button-danger ml-auto imageDeleteBtn"
+                onClick={() => {
+                  !props?.onRemove
+                    ? setFile((prev: any) => ({
+                        ...prev,
+                        fileData: [],
+                      }))
+                    : onTemplateRemove(file, props.onRemove);
+                }}
+              />
+            </span>
+          ) : appendixSection ? (
             <span className={styles.selectedFileName}>
               <p>
                 {file?.fileName
@@ -192,32 +215,44 @@ const SetupHeader: React.FC<Props> = ({
     );
   };
 
-  const emptyTemplate = (): any => {
-    return currentDocRole.primaryAuthor ? (
-      <div className="flex align-items-center flex-column fileUploadSection">
-        <i
-          className="pi pi-plus mt-3 p-5"
-          style={{
-            fontSize: "5em",
-            borderRadius: "50%",
-            backgroundColor: "#e8e6e6",
-            color: "#c5c3c3",
-          }}
-        />
-      </div>
-    ) : (
-      <div className="flex align-items-center flex-column fileUploadSection">
-        <img src={sampleDocHeaderImg} alt="no header image found !" />
-        {/* <p
-          style={{
-            fontSize: "13px",
-            color: "#555",
-          }}
-        >
-          No header logo found!
-        </p> */}
-      </div>
-    );
+  const emptyTemplate = (): JSX.Element | null => {
+    if (!appendixSection) {
+      return (
+        <>
+          {currentDocRole.primaryAuthor ? (
+            <div className="flex align-items-center flex-column fileUploadSection">
+              <i
+                className="pi pi-plus mt-3 p-5"
+                style={{
+                  fontSize: "5em",
+                  borderRadius: "50%",
+                  backgroundColor: "#e8e6e6",
+                  color: "#c5c3c3",
+                }}
+              />
+            </div>
+          ) : (
+            <div className="flex align-items-center flex-column fileUploadSection">
+              <img src={sampleDocHeaderImg} alt="No header image found!" />
+            </div>
+          )}
+        </>
+      );
+    } else {
+      return (
+        <div className="flex align-items-center flex-column fileUploadSection">
+          <i
+            className="pi pi-plus mt-3 p-5"
+            style={{
+              fontSize: "5em",
+              borderRadius: "50%",
+              backgroundColor: "#e8e6e6",
+              color: "#c5c3c3",
+            }}
+          />
+        </div>
+      );
+    }
   };
 
   const headerTemplate = (options: any): any => {
@@ -283,18 +318,6 @@ const SetupHeader: React.FC<Props> = ({
     }
   }, [file]);
 
-  // useEffect(() => {
-  //   setFile((prev: any) => ({
-  //     fileData: {
-  //       ServerRelativeUrl: CDHeaderDetails?.imgURL,
-  //       fileName: CDHeaderDetails?.fileName,
-  //     },
-  //     fileName: CDHeaderDetails?.fileName,
-  //   }));
-  //   console.log("file: ", file);
-  //   console.log("CDHeaderDetails: ", CDHeaderDetails);
-  // }, [sectionDetails]);
-
   return (
     <div className={styles.textPlayGround}>
       <div
@@ -322,7 +345,10 @@ const SetupHeader: React.FC<Props> = ({
               maxFileSize={1000000}
               onSelect={onTemplateSelect}
               onClear={onTemplateClear}
-              headerTemplate={currentDocRole?.primaryAuthor && headerTemplate}
+              headerTemplate={
+                (currentDocRole?.primaryAuthor || appendixSection) &&
+                headerTemplate
+              }
               itemTemplate={itemTemplate}
               emptyTemplate={
                 file.fileData?.ServerRelativeUrl ||

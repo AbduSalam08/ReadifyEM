@@ -252,18 +252,19 @@ const AppendixContent = ({
           {(showActionBtns && currentDocRole?.primaryAuthor) ||
           currentDocRole?.sectionAuthor ? (
             <>
-              {currentDocRole?.primaryAuthor ? (
-                <DefaultButton
-                  disabled={sectionLoader}
-                  text="Reject"
-                  btnType="secondaryRed"
-                  onClick={() => {
-                    console.log("rejected");
-                  }}
-                />
-              ) : (
-                ""
-              )}
+              {(currentDocRole?.primaryAuthor ||
+                currentDocRole?.reviewer ||
+                currentDocRole?.approver) &&
+                sectionDetails?.sectionSubmitted && (
+                  <DefaultButton
+                    disabled={sectionLoader}
+                    text="Reject"
+                    btnType="secondaryRed"
+                    onClick={() => {
+                      console.log("rejected");
+                    }}
+                  />
+                )}
               <DefaultButton
                 disabled={sectionLoader}
                 text="Reset content"
@@ -287,7 +288,8 @@ const AppendixContent = ({
                   await addData();
                 }}
               />
-              {currentDocRole?.sectionAuthor ? (
+              {currentDocRole?.sectionAuthor ||
+              currentDocRole?.primaryAuthor ? (
                 <DefaultButton
                   disabled={sectionLoader}
                   text="Submit"

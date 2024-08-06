@@ -1,0 +1,17 @@
+.flexCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wrapper {
+  @extend .flexCenter;
+  width: auto;
+  .emptyMsg {
+    @extend .flexCenter;
+    gap: 5px;
+    font-size: 14px;
+    font-family: "interMedium", sans-serif;
+    color: #adadad;
+    font-style: italic;
+  }
+}

@@ -29,7 +29,7 @@ const ToastMessage = ({
     return toast.current.clear();
   };
 
-  const show = () => {
+  const show = (): any => {
     // toast.current.clear();
     toast.current.show({
       severity: severity,

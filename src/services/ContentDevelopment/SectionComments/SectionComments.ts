@@ -163,7 +163,7 @@ const addSectionComment = async (
           setToastState({
             isShow: true,
             severity: "success",
-            title: "Comment Submit",
+            title: "Comment Submittted",
             message: "Your comment added successfully",
             duration: 3000,
           });

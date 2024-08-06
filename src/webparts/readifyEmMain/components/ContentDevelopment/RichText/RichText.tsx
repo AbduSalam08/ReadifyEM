@@ -17,6 +17,8 @@ import { LISTNAMES } from "../../../../../config/config";
 import { useNavigate } from "react-router-dom";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import ToastMessage from "../../common/Toast/ToastMessage";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import SecondaryTextLabel from "../../common/SecondaryText/SecondaryText";
 
 interface IRichTextProps {
   noActionBtns?: boolean;
@@ -37,6 +39,7 @@ const RichText = ({
   onChange,
   currentDocRole,
 }: IRichTextProps): JSX.Element => {
+  console.log("currentSectionData: ", currentSectionData);
   const [toastMessage, setToastMessage] = useState<any>({
     isShow: false,
     severity: "",
@@ -231,6 +234,7 @@ const RichText = ({
           modules={modules}
           formats={formats}
           value={description}
+          readOnly={currentSectionData?.sectionSubmitted}
           placeholder="Content goes here"
           className="customeRichText"
           onChange={(text) => {
@@ -257,6 +261,19 @@ const RichText = ({
               gap: "15px",
             }}
           >
+            {currentSectionData?.sectionSubmitted && (
+              <SecondaryTextLabel
+                icon={
+                  <AccessTimeIcon
+                    style={{
+                      width: "17px",
+                    }}
+                  />
+                }
+                text="yet to be reviewed"
+              />
+            )}
+
             <DefaultButton
               text="Close"
               btnType="darkGreyVariant"
@@ -265,59 +282,62 @@ const RichText = ({
               }}
             />
 
-            {currentDocRole?.primaryAuthor || currentDocRole?.sectionAuthor ? (
+            {(currentDocRole?.primaryAuthor ||
+              currentDocRole?.sectionAuthor) && (
               <>
-                {currentDocRole?.primaryAuthor ? (
-                  <DefaultButton
-                    text="Reject"
-                    disabled={sectionLoader}
-                    btnType="secondaryRed"
-                    onClick={() => {
-                      console.log("rejected");
-                    }}
-                  />
-                ) : (
-                  ""
-                )}
+                {(currentDocRole?.primaryAuthor ||
+                  currentDocRole?.reviewer ||
+                  currentDocRole?.approver) &&
+                  currentSectionData?.sectionSubmitted && (
+                    <DefaultButton
+                      text="Reject"
+                      disabled={sectionLoader}
+                      btnType="secondaryRed"
+                      onClick={() => {
+                        console.log("rejected");
+                      }}
+                    />
+                  )}
 
-                <DefaultButton
-                  text="Reset content"
-                  disabled={sectionLoader}
-                  btnType="secondaryRed"
-                  onClick={() => {
-                    setSectionData((prev: any) => {
-                      const updatedSections = [...prev];
-                      updatedSections[activeIndex] = {
-                        ...updatedSections[activeIndex],
-                        contentType: "initial",
-                      };
-                      return updatedSections;
-                    });
-                  }}
-                />
-
-                <DefaultButton
-                  text="Save and Close"
-                  disabled={sectionLoader}
-                  btnType="lightGreyVariant"
-                  onClick={async () => {
-                    await addData();
-                  }}
-                />
-
-                {currentDocRole?.sectionAuthor && (
-                  <DefaultButton
-                    text="Submit"
-                    disabled={sectionLoader}
-                    btnType="primary"
-                    onClick={async () => {
-                      await addData("submit");
-                    }}
-                  />
+                {!currentSectionData?.sectionSubmitted && (
+                  <>
+                    <DefaultButton
+                      text="Reset content"
+                      disabled={sectionLoader}
+                      btnType="secondaryRed"
+                      onClick={() => {
+                        setSectionData((prev: any) => {
+                          const updatedSections = [...prev];
+                          updatedSections[activeIndex] = {
+                            ...updatedSections[activeIndex],
+                            contentType: "initial",
+                          };
+                          return updatedSections;
+                        });
+                      }}
+                    />
+                    <DefaultButton
+                      text="Save and Close"
+                      disabled={sectionLoader}
+                      btnType="lightGreyVariant"
+                      onClick={async () => {
+                        await addData();
+                      }}
+                    />
+                    {(currentDocRole?.sectionAuthor ||
+                      currentDocRole?.primaryAuthor) && (
+                      <DefaultButton
+                        text="Submit"
+                        disabled={sectionLoader}
+                        btnType="primary"
+                        onClick={async () => {
+                          await addData("submit");
+                        }}
+                      />
+                    )}
+                  </>
                 )}
               </>
-            ) : (
-              ""
             )}
           </div>
         </div>

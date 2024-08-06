@@ -43,7 +43,7 @@
   justify-content: space-between;
   flex-direction: column;
   gap: 6px;
-  overflow-y: auto
+  overflow-y: auto;
 }
 .promoteContentContainer {
   display: flex;
@@ -52,7 +52,7 @@
   flex-direction: column;
   gap: 6px;
   overflow-y: auto;
-  height: 60vh;
+  max-height: 60vh;
 }
 
 // alertpopup styles
