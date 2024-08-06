@@ -134,7 +134,9 @@ const SectionComments: React.FC<Props> = ({
       <div
         className={
           !toggleCommentSection
-            ? styles.commentSecMain
+            ? promoteComments
+              ? styles.promoteCommentSecMain
+              : styles.commentSecMain
             : styles.closedCommentSection
         }
         style={{
@@ -164,7 +166,13 @@ const SectionComments: React.FC<Props> = ({
             <span className={styles.commentsTitle}>Comments</span>
           </div>
         )}
-        <div className={styles.commentBoxWrapper}>
+        <div
+          className={
+            promoteComments
+              ? styles.promoteCommentBoxWrapper
+              : styles.commentBoxWrapper
+          }
+        >
           <div className={styles.commentsWrapper}>
             {!promoteComments &&
               AllSectionsComments?.map((item: any, index: number) => {
@@ -174,6 +182,18 @@ const SectionComments: React.FC<Props> = ({
               promotedComments?.map((item: any, index: number) => {
                 return <CommentCard index={index} item={item} key={index} />;
               })}
+            {promoteComments ? (
+              promotedComments.length === 0 ? (
+                <div className={styles.noDataFound}>
+                  <span>No comments found</span>
+                </div>
+              ) : null
+            ) : AllSectionsComments.length === 0 ? (
+              <div className={styles.noDataFound}>
+                <span>No comments found</span>
+              </div>
+            ) : null}
+            {/* {!promoteComments ? AllSectionsComments.length === 0 ?<div><span>No comments found</span></div>:null} */}
           </div>
           {!noCommentInput && (
             <div className={styles.commentsBar}>
