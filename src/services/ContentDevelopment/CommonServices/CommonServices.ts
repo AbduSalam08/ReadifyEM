@@ -674,6 +674,8 @@ export const getAppendixHeaderSectionDetails = async (
       .catch((err: any) => {
         console.log("err: ", err);
       });
+  } else {
+    dispatcher && dispatcher(setCDHeaderDetails([]));
   }
 };
 
@@ -729,7 +731,7 @@ export const addRejectedComment = async (
     comments: rejectedComment,
     role: documentDetails.taskRole,
     sectionDetailsId: sectionId,
-    createdById: null,
+    createdById: currentUserDetails?.id,
     isRejectedComment: true,
   };
   await SpServices.SPAddItem({

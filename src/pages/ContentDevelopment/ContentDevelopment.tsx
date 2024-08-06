@@ -649,6 +649,8 @@ const ContentDevelopment = (): JSX.Element => {
                         activeSection
                       ]?.sectionName?.toLowerCase() === "definitions" ? (
                         <Definition
+                          currentDocRole={currentDocRole}
+                          currentSectionDetails={AllSectionsData[activeSection]}
                           sectionId={AllSectionsData[activeSection]?.ID}
                           documentId={
                             AllSectionsData[activeSection]?.documentOfId

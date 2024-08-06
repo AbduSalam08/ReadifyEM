@@ -12,6 +12,8 @@ import { UpdateAttachment } from "../../../../../services/ContentDevelopment/Com
 import { LISTNAMES } from "../../../../../config/config";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import ToastMessage from "../../common/Toast/ToastMessage";
+import SecondaryTextLabel from "../../common/SecondaryText/SecondaryText";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 interface IProps {
   sectionNumber: any;
@@ -159,28 +161,33 @@ const SectionContent: React.FC<IProps> = ({
             {point.text}
           </span>
           <ContentEditor
+            readOnly={currentSectionDetails?.sectionSubmitted}
             editorHtmlValue={point.value}
             placeholder="Enter here"
             setEditorHtml={(html: any) => {
               handleInputChange(index, html);
             }}
           />
-          <button
-            onClick={() => handleInputClear(index)}
-            className="actionButtons"
-            style={{
-              background: "transparent",
-              padding: "0 5px 0 0",
-            }}
-          >
-            <i className="pi pi-times-circle" />
-          </button>
-          <button
-            onClick={() => handleAddSubPoint(index)}
-            className="actionButtons"
-          >
-            <i className="pi pi-angle-double-right" />
-          </button>
+          {!currentSectionDetails?.sectionSubmitted && (
+            <>
+              <button
+                onClick={() => handleInputClear(index)}
+                className="actionButtons"
+                style={{
+                  background: "transparent",
+                  padding: "0 5px 0 0",
+                }}
+              >
+                <i className="pi pi-times-circle" />
+              </button>
+              <button
+                onClick={() => handleAddSubPoint(index)}
+                className="actionButtons"
+              >
+                <i className="pi pi-angle-double-right" />
+              </button>
+            </>
+          )}
         </div>
       </div>
     );
@@ -309,19 +316,21 @@ const SectionContent: React.FC<IProps> = ({
         </div>
       ) : (
         <div className={styles.textPlayGround}>
-          <DefaultButton
-            btnType="primary"
-            startIcon={
-              <i
-                className="pi pi-plus-circle"
-                style={{
-                  fontSize: "12px",
-                }}
-              />
-            }
-            text={"Add new point"}
-            onClick={handleAddPoint}
-          />
+          {!currentSectionDetails?.sectionSubmitted && (
+            <DefaultButton
+              btnType="primary"
+              startIcon={
+                <i
+                  className="pi pi-plus-circle"
+                  style={{
+                    fontSize: "12px",
+                  }}
+                />
+              }
+              text={"Add new point"}
+              onClick={handleAddPoint}
+            />
+          )}
           {sortedPoints.length > 1 ? (
             sortedPoints?.map((item: any, idx: number) =>
               item?.text !== String(sectionNumber) ? renderPoint(item, idx) : ""
@@ -343,6 +352,18 @@ const SectionContent: React.FC<IProps> = ({
         >
           <button className={"helpButton"}>Help?</button>
           <div style={{ display: "flex", gap: "15px" }}>
+            {currentSectionDetails?.sectionSubmitted && (
+              <SecondaryTextLabel
+                icon={
+                  <AccessTimeIcon
+                    style={{
+                      width: "17px",
+                    }}
+                  />
+                }
+                text="yet to be reviewed"
+              />
+            )}
             <DefaultButton
               text="Close"
               btnType="darkGreyVariant"
@@ -352,19 +373,20 @@ const SectionContent: React.FC<IProps> = ({
             />
             {currentDocRole?.primaryAuthor || currentDocRole?.sectionAuthor ? (
               <>
-                {currentDocRole?.primaryAuthor ? (
-                  <DefaultButton
-                    text="Reject"
-                    disabled={sectionLoader}
-                    btnType="secondaryRed"
-                    onClick={() => {
-                      console.log("rejected");
-                    }}
-                  />
-                ) : (
-                  ""
-                )}
-                {!currentSectionDetails?.sectionSubmitted ? (
+                {(currentDocRole?.primaryAuthor ||
+                  currentDocRole?.reviewer ||
+                  currentDocRole?.approver) &&
+                  currentSectionDetails?.sectionSubmitted && (
+                    <DefaultButton
+                      text="Reject"
+                      disabled={sectionLoader}
+                      btnType="secondaryRed"
+                      onClick={() => {
+                        console.log("rejected");
+                      }}
+                    />
+                  )}
+                {!currentSectionDetails?.sectionSubmitted && (
                   <>
                     <DefaultButton
                       text="Reset content"
@@ -390,7 +412,8 @@ const SectionContent: React.FC<IProps> = ({
                         addData();
                       }}
                     />
-                    {currentDocRole?.sectionAuthor ? (
+                    {(currentDocRole?.sectionAuthor ||
+                      currentDocRole?.primaryAuthor) && (
                       <DefaultButton
                         text="Submit"
                         disabled={sectionLoader}
@@ -399,12 +422,8 @@ const SectionContent: React.FC<IProps> = ({
                           addData("submit");
                         }}
                       />
-                    ) : (
-                      ""
                     )}
                   </>
-                ) : (
-                  ""
                 )}
               </>
             ) : (

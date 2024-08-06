@@ -486,6 +486,7 @@ export const getSectionDataFromAppendixList = async (
   setFile?: any,
   dispatcher?: any
 ): Promise<any> => {
+  debugger;
   const resp = await SpServices.SPReadItems({
     Listname: LISTNAMES.AppendixHeader,
     Select: "*, sectionDetail/ID, documentDetail/ID",
@@ -498,30 +499,35 @@ export const getSectionDataFromAppendixList = async (
       },
     ],
   });
+  console.log("resp: ", resp);
 
   const appendixHeaderID: any = resp[0]?.ID;
 
-  await SpServices.SPGetAttachments({
-    Listname: LISTNAMES.AppendixHeader,
-    ID: appendixHeaderID,
-  })
-    .then((res: any) => {
-      console.log("res: ", res);
-      const filteredItem: any = res?.filter((item: any) =>
-        item?.FileName?.includes("headerImg")
-      );
-      console.log("filteredItem: ", filteredItem);
-      if (filteredItem.length > 0) {
-        const data = {
-          fileData: filteredItem[0],
-          fileName: filteredItem[0]?.FileName,
-        };
-        setFile([data]);
-        dispatcher && dispatcher(setCDHeaderDetails(data));
-      }
+  if (resp && resp?.length) {
+    await SpServices.SPGetAttachments({
+      Listname: LISTNAMES.AppendixHeader,
+      ID: appendixHeaderID,
     })
-    .catch((err) => {
-      console.log(err);
-      dispatcher && dispatcher(setCDHeaderDetails([]));
-    });
+      .then((res: any) => {
+        console.log("res: ", res);
+        const filteredItem: any = res?.filter((item: any) =>
+          item?.FileName?.includes("headerImg")
+        );
+        console.log("filteredItem: ", filteredItem);
+        if (filteredItem.length > 0) {
+          const data = {
+            fileData: filteredItem[0],
+            fileName: filteredItem[0]?.FileName,
+          };
+          setFile([data]);
+          dispatcher && dispatcher(setCDHeaderDetails(data));
+        }
+      })
+      .catch((err) => {
+        dispatcher && dispatcher(setCDHeaderDetails([]));
+        console.log(err);
+      });
+  } else {
+    dispatcher && dispatcher(setCDHeaderDetails([]));
+  }
 };

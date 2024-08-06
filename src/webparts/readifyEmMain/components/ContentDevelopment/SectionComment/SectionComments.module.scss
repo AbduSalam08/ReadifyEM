@@ -76,6 +76,7 @@
   max-height: 90%;
   width: 100%;
   overflow: auto;
+  min-height: 20px;
 }
 
 .comments {
@@ -84,10 +85,12 @@
   border-radius: 10px 0px 10px 10px;
   margin-bottom: 6px;
   width: 94%;
-  background: linear-gradient(95.74deg,
-      #9f80ff -14.38%,
-      #6b5cab -7.97%,
-      #27195e 174.15%);
+  background: linear-gradient(
+    95.74deg,
+    #9f80ff -14.38%,
+    #6b5cab -7.97%,
+    #27195e 174.15%
+  );
 
   .commentAuthor {
     border-bottom: 1px solid #ffffff21;
@@ -137,10 +140,12 @@
   border-radius: 10px 0px 10px 10px;
   margin-bottom: 6px;
   width: 94%;
-  background: linear-gradient(95.74deg,
-      #e22c4a -14.38%,
-      #be5e5e -7.97%,
-      #d92525 174.15%);
+  background: linear-gradient(
+    95.74deg,
+    #e22c4a -14.38%,
+    #be5e5e -7.97%,
+    #d92525 174.15%
+  );
 
   .commentAuthor {
     border-bottom: 1px solid #ffffff21;
@@ -264,11 +269,11 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  height: 100px;
+  height: 100%;
   align-items: center;
   span {
     color: #adadad;
     font-size: 14px;
-    font-family: interRegular, sans-serif !important;
+    font-family: "interRegular", sans-serif !important;
   }
 }

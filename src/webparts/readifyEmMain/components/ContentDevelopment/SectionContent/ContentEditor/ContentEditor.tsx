@@ -29,6 +29,7 @@ interface EditorProps {
   placeholder: string;
   setEditorHtml: any;
   editorHtmlValue: any;
+  readOnly?: boolean;
 }
 import "react-quill/dist/quill.bubble.css";
 
@@ -36,6 +37,7 @@ const ContentEditor: React.FC<EditorProps> = ({
   placeholder,
   setEditorHtml,
   editorHtmlValue,
+  readOnly,
 }) => {
   const handleChange = (html: string, b: any, c: any, d: any) => {
     if (html) {
@@ -80,6 +82,7 @@ const ContentEditor: React.FC<EditorProps> = ({
 
   return (
     <ReactQuill
+      readOnly={readOnly}
       theme="bubble"
       className="quillWrap"
       onChange={handleChange}

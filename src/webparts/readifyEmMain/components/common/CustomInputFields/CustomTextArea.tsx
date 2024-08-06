@@ -21,6 +21,7 @@ interface Props {
   inputClassName?: any;
   inputWrapperClassName?: any;
   readOnly?: any;
+  textAreaWidth?: any;
   noBorderInput?: boolean;
 }
 
@@ -41,20 +42,11 @@ const CustomTextArea: React.FC<Props> = ({
   readOnly,
   mandatory,
   noBorderInput,
+  textAreaWidth,
 }) => {
   const handleChange = (e: any): any => {
     onChange(e.target.value);
   };
-  // useCallback(
-  //   (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const newValue =
-  //       type === "number" ? parseFloat(e.target.value) : e.target.value;
-  //     onChange(newValue);
-  // },
-  // [onChange, type]
-  // );
-  // const MainSPContext = useSelector((state: any) => state.MainSPContext.value);
-
   return (
     <div className={styles.inputMainWrapper}>
       <div
@@ -78,21 +70,7 @@ const CustomTextArea: React.FC<Props> = ({
             {labelText}
           </p>
         )}
-        {/* <IconField
-          disabled={disabled}
-          iconPosition="left"
-          className={`${inputWrapperClassName} ${
-            styles[`customInput${size}`]
-          } ${isValid ? styles.errorInput : ""}`}
-        > */}
-        {/* {icon && (
-            <InputIcon
-              style={{
-                color: "var(--placeholder)",
-              }}
-              className={`pi pi-search`}
-            />
-          )} */}
+
         <InputTextarea
           v-model="value1"
           readOnly={readOnly}
@@ -113,12 +91,11 @@ const CustomTextArea: React.FC<Props> = ({
                 : `1px solid #e5e5e5`
             }`,
             padding: "5px 10px",
-            width: "100%",
+            width: textAreaWidth ? textAreaWidth : "100%",
             fontSize: "14px",
             fontFamily: `interMedium, sans-serif`,
           }}
         />
-        {/* </IconField> */}
       </div>
 
       {isValid && (
