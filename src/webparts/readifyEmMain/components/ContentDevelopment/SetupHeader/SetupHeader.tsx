@@ -23,6 +23,7 @@ import { getHeaderSectionDetails } from "../../../../../services/ContentDevelopm
 import { useDispatch, useSelector } from "react-redux";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import ToastMessage from "../../common/Toast/ToastMessage";
+const sampleDocHeaderImg: any = require("../../../../../assets/images/png/imagePlaceholder.png");
 
 interface Props {
   sectionDetails: any;
@@ -33,6 +34,7 @@ interface Props {
   primaryAuthorDefaultHeader?: boolean;
   noActionBtns?: boolean;
   appendixSection?: boolean;
+  currentDocRole?: any;
   onChange?: any;
 }
 
@@ -46,7 +48,9 @@ const SetupHeader: React.FC<Props> = ({
   appendixName,
   sectionDetails,
   onChange,
+  currentDocRole,
 }) => {
+  console.log("currentDocRole: ", currentDocRole);
   const fileUploadRef = useRef<any>(null);
   const dispatch = useDispatch();
   const initialHeaderDetails = {
@@ -157,35 +161,39 @@ const SetupHeader: React.FC<Props> = ({
               height: "150px",
             }}
           />
-          <span className={styles.selectedFileName}>
-            <p>
-              {file?.fileName
-                ? file?.fileName
-                : fileData.name ||
-                  file.fileData?.FileName ||
-                  CDHeaderDetails?.fileName}
-            </p>
-            <Button
-              type="button"
-              icon="pi pi-times"
-              className="p-button-outlined p-button-rounded p-button-danger ml-auto imageDeleteBtn"
-              onClick={() => {
-                !props?.onRemove
-                  ? setFile((prev: any) => ({
-                      ...prev,
-                      fileData: [],
-                    }))
-                  : onTemplateRemove(file, props.onRemove);
-              }}
-            />
-          </span>
+          {currentDocRole?.primaryAuthor ? (
+            <span className={styles.selectedFileName}>
+              <p>
+                {file?.fileName
+                  ? file?.fileName
+                  : fileData.name ||
+                    file.fileData?.FileName ||
+                    CDHeaderDetails?.fileName}
+              </p>
+              <Button
+                type="button"
+                icon="pi pi-times"
+                className="p-button-outlined p-button-rounded p-button-danger ml-auto imageDeleteBtn"
+                onClick={() => {
+                  !props?.onRemove
+                    ? setFile((prev: any) => ({
+                        ...prev,
+                        fileData: [],
+                      }))
+                    : onTemplateRemove(file, props.onRemove);
+                }}
+              />
+            </span>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     );
   };
 
   const emptyTemplate = (): any => {
-    return (
+    return currentDocRole.primaryAuthor ? (
       <div className="flex align-items-center flex-column fileUploadSection">
         <i
           className="pi pi-plus mt-3 p-5"
@@ -196,6 +204,18 @@ const SetupHeader: React.FC<Props> = ({
             color: "#c5c3c3",
           }}
         />
+      </div>
+    ) : (
+      <div className="flex align-items-center flex-column fileUploadSection">
+        <img src={sampleDocHeaderImg} alt="no header image found !" />
+        {/* <p
+          style={{
+            fontSize: "13px",
+            color: "#555",
+          }}
+        >
+          No header logo found!
+        </p> */}
       </div>
     );
   };
@@ -284,7 +304,9 @@ const SetupHeader: React.FC<Props> = ({
             : styles.headerWrapperAppendix
         }
       >
-        <span>Setup Header</span>
+        <span>
+          {currentDocRole?.primaryAuthor ? "Setup" : "Document"} Header
+        </span>
       </div>
       {sectionLoader && !appendixSection ? (
         <div className="contentDevLoaderWrapper">
@@ -300,7 +322,7 @@ const SetupHeader: React.FC<Props> = ({
               maxFileSize={1000000}
               onSelect={onTemplateSelect}
               onClear={onTemplateClear}
-              headerTemplate={headerTemplate}
+              headerTemplate={currentDocRole?.primaryAuthor && headerTemplate}
               itemTemplate={itemTemplate}
               emptyTemplate={
                 file.fileData?.ServerRelativeUrl ||
@@ -346,7 +368,7 @@ const SetupHeader: React.FC<Props> = ({
               secWidth="307px"
               readOnly={true}
             />
-            {!noActionBtns && (
+            {!noActionBtns && currentDocRole?.primaryAuthor && (
               <div
                 style={{
                   display: "flex",
@@ -356,7 +378,7 @@ const SetupHeader: React.FC<Props> = ({
                 }}
               >
                 <DefaultButton
-                  text="Cancel"
+                  text="Close"
                   btnType="darkGreyVariant"
                   onClick={() => {
                     navigate(-1);

@@ -163,6 +163,7 @@ const ContentDevelopment = (): JSX.Element => {
   const currentDocDetailsData: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDDocDetails
   );
+  console.log("currentDocDetailsData: ", currentDocDetailsData);
 
   console.log(currentDocDetailsData);
 
@@ -182,6 +183,18 @@ const ContentDevelopment = (): JSX.Element => {
     IsValid: false,
     ErrorMsg: "",
   });
+
+  const [currentDocRole, setCurrentDocRole] = useState({
+    primaryAuthor:
+      currentDocDetailsData?.taskRole?.toLowerCase() === "primary author",
+    reviewer: currentDocDetailsData?.taskRole?.toLowerCase() === "reviewer",
+    approver: currentDocDetailsData?.taskRole?.toLowerCase() === "approver",
+    sectionAuthor:
+      currentDocDetailsData?.taskRole?.toLowerCase() === "section author",
+    consultant: currentDocDetailsData?.taskRole?.toLowerCase() === "consultant",
+  });
+
+  console.log("currentDocRole: ", currentDocRole);
 
   const enabledSection = AllSectionsDataMain?.filter(
     (el: any) => el?.sectionPermission
@@ -490,6 +503,19 @@ const ContentDevelopment = (): JSX.Element => {
     setAllSectionsData(AllSectionsDataMain);
   }, [AllSectionsDataMain]);
 
+  useEffect(() => {
+    setCurrentDocRole({
+      primaryAuthor:
+        currentDocDetailsData?.taskRole?.toLowerCase() === "primary author",
+      reviewer: currentDocDetailsData?.taskRole?.toLowerCase() === "reviewer",
+      approver: currentDocDetailsData?.taskRole?.toLowerCase() === "approver",
+      sectionAuthor:
+        currentDocDetailsData?.taskRole?.toLowerCase() === "section author",
+      consultant:
+        currentDocDetailsData?.taskRole?.toLowerCase() === "consultant",
+    });
+  }, [currentDocDetailsData]);
+
   return (
     <>
       {
@@ -525,31 +551,41 @@ const ContentDevelopment = (): JSX.Element => {
                     // primaryAuthor={true}
                   />
                 </div>
-                <div className={styles.promotedBtnWrapper}>
-                  <DefaultButton
-                    text="Mark as all approved"
-                    btnType="secondary"
-                    // onClick={() => selectSection(1, "Document Tracker")}
-                  />
-                  <DefaultButton
-                    text="Promote"
-                    btnType="primary"
-                    onClick={() =>
-                      togglePopupVisibility(
-                        setPopupController,
-                        3,
-                        "open",
-                        "Confirmation for completion"
-                      )
-                    }
-                  />
-                </div>
+                {currentDocRole.reviewer ||
+                  (currentDocRole.approver && (
+                    <div className={styles.promotedBtnWrapper}>
+                      <DefaultButton
+                        text={`Mark as all ${
+                          currentDocRole.reviewer
+                            ? "reviewed"
+                            : currentDocRole.approver
+                            ? "approved"
+                            : "view"
+                        }`}
+                        btnType="secondary"
+                        // onClick={() => selectSection(1, "Document Tracker")}
+                      />
+                      <DefaultButton
+                        text="Promote"
+                        btnType="primary"
+                        onClick={() =>
+                          togglePopupVisibility(
+                            setPopupController,
+                            3,
+                            "open",
+                            "Confirmation for completion"
+                          )
+                        }
+                      />
+                    </div>
+                  ))}
               </div>
               <div className={styles.contentWrapper}>
                 {AllSectionsData[activeSection]?.sectionName !== "" &&
                 AllSectionsData[activeSection]?.sectionName?.toLowerCase() ===
                   "header" ? (
                   <SectionHeader
+                    currentDocRole={currentDocRole}
                     activeSectionData={AllSectionsData[activeSection]}
                     documentName={AllSectionsData[activeSection]?.sectionName}
                     sectionAuthor={
@@ -563,6 +599,7 @@ const ContentDevelopment = (): JSX.Element => {
                   />
                 ) : (
                   <SectionHeader
+                    currentDocRole={currentDocRole}
                     activeSectionData={AllSectionsData[activeSection]}
                     documentName={AllSectionsData[activeSection]?.sectionName}
                     sectionAuthor={
@@ -584,6 +621,7 @@ const ContentDevelopment = (): JSX.Element => {
                 "header section" ? (
                   <div style={{ width: "100%" }}>
                     <SetupHeader
+                      currentDocRole={currentDocRole}
                       version={currentDocDetailsData?.version}
                       type={currentDocDetailsData?.documentType}
                       headerTitle={currentDocDetailsData?.documentName}
@@ -620,6 +658,7 @@ const ContentDevelopment = (): JSX.Element => {
                           activeSection
                         ]?.sectionType?.toLowerCase() === "appendix section" ? (
                         <AppendixContent
+                          currentDocRole={currentDocRole}
                           sectionDetails={AllSectionsData[activeSection]}
                           isLoading={
                             AllSectionsData[activeSection]?.length === 0
@@ -644,12 +683,17 @@ const ContentDevelopment = (): JSX.Element => {
                       ) : AllSectionsData[activeSection]?.contentType ===
                         "initial" ? (
                         <ContentTypeConfirmation
+                          sectionID={AllSectionsData[activeSection]?.ID}
+                          currentSectionData={AllSectionsData[activeSection]}
+                          currentDocRole={currentDocRole}
                           activeIndex={activeSection}
+                          noActionBtns={!showActionBtns}
                           setSectionData={setAllSectionsData}
                         />
                       ) : AllSectionsData[activeSection]?.contentType ===
                         "list" ? (
                         <SectionContent
+                          currentDocRole={currentDocRole}
                           activeIndex={activeSection}
                           setSectionData={setAllSectionsData}
                           currentSectionDetails={AllSectionsData[activeSection]}
@@ -661,6 +705,7 @@ const ContentDevelopment = (): JSX.Element => {
                         />
                       ) : (
                         <RichText
+                          currentDocRole={currentDocRole}
                           activeIndex={activeSection}
                           setSectionData={setAllSectionsData}
                           noActionBtns={!showActionBtns}
@@ -751,6 +796,7 @@ const ContentDevelopment = (): JSX.Element => {
           confirmationTitle={
             popupData.popupType !== "custom" ? popupData.popupTitle : ""
           }
+          popupHeight={index === 0 ? true : false}
         />
       ))}
     </>

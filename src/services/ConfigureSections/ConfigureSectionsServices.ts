@@ -1145,7 +1145,7 @@ export const updateSections = async (
                   Title: docDetails?.docName,
                   taskAssigneeId: taskItem.taskAssignee,
                   role: taskItem.role,
-                  taskStatus: taskItem.status,
+                  taskStatus: taskItem.taskStatus || "content in progress",
                   docVersion: docDetails?.docVersion,
                   docCreatedDate: docDetails?.docCreatedDate,
                   taskDueDate: sectionCreatedDate,

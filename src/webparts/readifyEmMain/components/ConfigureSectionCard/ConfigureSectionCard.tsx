@@ -271,7 +271,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
                   sx={{
                     position: "absolute",
                     right: "0",
-                    top: "6px",
+                    // top: "6px",
                     color: "#0360a4",
                   }}
                 />

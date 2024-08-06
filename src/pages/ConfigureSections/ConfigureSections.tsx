@@ -380,7 +380,7 @@ const ConfigureSections = (): JSX.Element => {
         isLoading={popupLoaders.isLoading}
         onClick={() => {
           setPopupLoaders(initialPopupLoaders);
-          navigate(-1);
+          navigate(ConfigurePageDetails?.pageKey === "update" ? -2 : -1);
         }}
         onHide={() => {
           setPopupLoaders(initialPopupLoaders);

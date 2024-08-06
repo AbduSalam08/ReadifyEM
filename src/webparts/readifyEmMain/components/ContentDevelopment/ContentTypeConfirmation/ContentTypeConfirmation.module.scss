@@ -13,6 +13,7 @@
   border-radius: 6px;
   border: 1px solid #00000020;
   @extend .flexCenter;
+  flex-direction: column;
   .contentTypeBox {
     height: 100px;
     border-radius: 4px;
@@ -30,4 +31,12 @@
       gap: 10px;
     }
   }
+}
+.emptyMsg {
+  @extend .flexCenter;
+  gap: 5px;
+  font-size: 14px;
+  font-family: "interMedium", sans-serif;
+  color: #adadad;
+  font-style: italic;
 }
