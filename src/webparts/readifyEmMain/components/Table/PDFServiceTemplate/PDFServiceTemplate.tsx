@@ -5,7 +5,9 @@
 
 import { memo, useEffect, useRef, useState } from "react";
 import html2pdf from "html2pdf.js";
+import DefaultButton from "../../common/Buttons/DefaultButton";
 require("../../../../../../node_modules/html2pdf.js/dist/html2pdf.bundle.min.js");
+// import DefaultButton from "../../common/Buttons/DefaultButton";
 // import jsPDF from "jspdf";
 // import html2canvas from "html2canvas";
 // import ContentEditor from "../../ContentDevelopment/SectionContent/ContentEditor/ContentEditor";
@@ -379,9 +381,9 @@ const PDFServiceTemplate = (parsedJSON: any): JSX.Element => {
 
   return (
     <>
-      <button type="submit" onClick={generatePdf}>
-        PDF
-      </button>
+      <div>
+        <DefaultButton text="PDF" btnType="primary" onClick={generatePdf} />
+      </div>
       <div style={{ height: "100%" }} ref={pdfRef}>
         {points.length > 1 &&
           points?.map((item: any, idx: number) => (

@@ -12,6 +12,7 @@ import {
   setCDSectionData,
 } from "../../../redux/features/ContentDevloperSlice";
 import { sp } from "@pnp/sp/presets/all";
+import { setSectionComments } from "../../../redux/features/SectionCommentsSlice";
 
 export const getSectionsDetails = async (
   taskDetails: any,
@@ -707,5 +708,85 @@ export const addPromotedComment = async (
     })
     .catch((err) => {
       console.log(err);
+    });
+};
+export const addRejectedComment = async (
+  rejectedComment: string,
+  documentDetails: any,
+  sectionId: number,
+  handleClosePopup: any,
+  setToastState: any,
+  setLoaderState: any,
+  currentUserDetails: any,
+  AllSectionsComments: any,
+  AllSectionsDataMain: any,
+  dispatcher: any
+): Promise<any> => {
+  console.log(rejectedComment);
+  debugger;
+  const tempArray: any[] = [...AllSectionsComments];
+  const jsonObject = {
+    comments: rejectedComment,
+    role: documentDetails.taskRole,
+    sectionDetailsId: sectionId,
+    createdById: null,
+    isRejectedComment: true,
+  };
+  await SpServices.SPAddItem({
+    Listname: LISTNAMES.SectionComments,
+    RequestJSON: jsonObject,
+  })
+    .then((res: any) => {
+      console.log(res);
+      tempArray.push({
+        ID: res?.data?.ID,
+        comment: jsonObject.comments,
+        commentAuthor: currentUserDetails
+          ? [
+              {
+                id: currentUserDetails?.id,
+                name: currentUserDetails?.userName,
+                email: currentUserDetails?.email,
+              },
+            ]
+          : [],
+        commentDateAndTime: res?.data?.Created,
+        role: jsonObject.role,
+        isRejectedComment: res?.data?.isRejectedComment ? true : false,
+      });
+      dispatcher(setSectionComments([...tempArray]));
+
+      const updateArray = AllSectionsDataMain.map((obj: any) => {
+        if (obj.ID === sectionId) {
+          return { ...obj, commentsCount: obj.commentsCount + 1 };
+        } else {
+          return obj;
+        }
+      });
+      console.log(updateArray);
+      dispatcher(setCDSectionData([...updateArray]));
+
+      handleClosePopup(1);
+      setToastState({
+        isShow: true,
+        severity: "success",
+        title: "Update promote comments",
+        message: "Successfully added promote comments",
+        duration: 3000,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      setLoaderState({
+        isLoading: {
+          inprogress: false,
+          success: false,
+          error: true,
+        },
+        visibility: true,
+        text: "Unable to Send the comment.",
+        secondaryText:
+          "An unexpected error occurred while send the comment, please try again later.",
+      });
     });
 };

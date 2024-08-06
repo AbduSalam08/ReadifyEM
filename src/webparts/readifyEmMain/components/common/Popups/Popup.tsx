@@ -17,6 +17,7 @@ interface Props {
   visibility: boolean;
   confirmationTitle?: string;
   isLoading?: boolean;
+  popupHeight?: boolean;
 }
 
 interface PopupActionBtn {
@@ -39,6 +40,7 @@ const Popup = ({
   popupWidth,
   confirmationTitle,
   isLoading,
+  popupHeight,
   ...btnRest
 }: Props): JSX.Element => {
   const headerElement = (
@@ -82,14 +84,28 @@ const Popup = ({
   const popupContent =
     PopupType === "confirmation" ? (
       <div className={styles.contentWrapper}>
-        <div className={styles.contentContainer}>
+        <div
+          className={
+            popupHeight
+              ? styles.promoteContentContainer
+              : styles.contentContainer
+          }
+        >
           <span className={styles.confirmTitleText}>{confirmationTitle}</span>
         </div>
         {footerContent()}
       </div>
     ) : PopupType === "custom" ? (
       <div className={styles.contentWrapper}>
-        <div className={styles.contentContainer}>{content}</div>
+        <div
+          className={
+            popupHeight
+              ? styles.promoteContentContainer
+              : styles.contentContainer
+          }
+        >
+          {content}
+        </div>
         {footerContent()}
       </div>
     ) : (

@@ -45,6 +45,16 @@
   gap: 6px;
   overflow-y: auto
 }
+.promoteContentContainer {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  height: 60vh;
+}
+
 // alertpopup styles
 .AlertPopupWrapper {
   @extend .flexCenter;

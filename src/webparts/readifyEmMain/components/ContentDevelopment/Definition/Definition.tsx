@@ -31,6 +31,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ToastMessage from "../../common/Toast/ToastMessage";
 import { updateSectionDetails } from "../../../../../services/ContentDevelopment/SupportingDocument/SupportingDocumentServices";
 import { isEmpty } from "@microsoft/sp-lodash-subset";
+import { addRejectedComment } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 
 interface Props {
   documentId: number;
@@ -61,6 +62,14 @@ const initialPopupController = [
     defaultCloseBtn: false,
     popupData: "",
   },
+  {
+    open: false,
+    popupTitle: "Add New Definition",
+    popupWidth: "550px",
+    popupType: "custom",
+    defaultCloseBtn: false,
+    popupData: "",
+  },
 ];
 
 const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
@@ -74,8 +83,30 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
   const [popupLoaders, setPopupLoaders] =
     useState<IPopupLoaders>(initialPopupLoaders);
 
+  // Rejected comments state
+  const [rejectedComments, setRejectedComments] = useState<any>({
+    rejectedComment: "",
+    IsValid: false,
+    ErrorMsg: "",
+  });
+
   const AllDefinitionData = useSelector(
     (state: any) => state.DefinitionsData.AllDefinitions
+  );
+  const currentUserDetails: any = useSelector(
+    (state: any) => state?.MainSPContext?.currentUserDetails
+  );
+
+  const currentDocDetailsData: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDDocDetails
+  );
+
+  const AllSectionsDataMain: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDSectionsData
+  );
+
+  const AllSectionsComments: any = useSelector(
+    (state: any) => state.SectionCommentsData.SectionComments
   );
 
   const initialDefinitionsData = {
@@ -209,6 +240,37 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
         }));
         return true;
       }
+    }
+  };
+
+  const submitRejectedComment = async () => {
+    console.log(rejectedComments);
+    debugger;
+    if (rejectedComments.rejectedComment !== "") {
+      setRejectedComments({
+        ...rejectedComments,
+        rejectedComment: "",
+        IsValid: false,
+        ErrorMsg: "",
+      });
+      await addRejectedComment(
+        rejectedComments.rejectedComment,
+        currentDocDetailsData,
+        sectionId,
+        handleClosePopup,
+        setToastMessage,
+        setToastMessage,
+        currentUserDetails,
+        AllSectionsComments,
+        AllSectionsDataMain,
+        dispatch
+      );
+    } else {
+      setRejectedComments({
+        ...rejectedComments,
+        IsValid: true,
+        ErrorMsg: "Please enter comments",
+      });
     }
   };
 
@@ -346,6 +408,27 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
         </div>
       </div>,
     ],
+    [
+      <CustomTextArea
+        size="MD"
+        labelText="Comments"
+        withLabel
+        icon={false}
+        mandatory={true}
+        value={rejectedComments.rejectedComment}
+        onChange={(value: any) => {
+          setRejectedComments({
+            ...rejectedComments,
+            rejectedComment: value,
+            IsValid: false,
+          });
+        }}
+        placeholder="Enter Description"
+        isValid={rejectedComments.IsValid}
+        errorMsg={rejectedComments.ErrorMsg}
+        key={2}
+      />,
+    ],
   ];
 
   // array of obj which contains all popup action buttons
@@ -369,6 +452,29 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
         startIcon: false,
         onClick: () => {
           addNewSectionDefinition();
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(1);
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          // handleClosePopup(2);
+          await submitRejectedComment();
         },
       },
     ],
@@ -685,6 +791,18 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
               onClick={() => {
                 navigate(-1);
               }}
+            />
+            <DefaultButton
+              text="Reject"
+              btnType="lightGreyVariant"
+              onClick={() =>
+                togglePopupVisibility(
+                  setPopupController,
+                  1,
+                  "open",
+                  "Reason for rejection"
+                )
+              }
             />
             <DefaultButton
               text="Save and Close"
