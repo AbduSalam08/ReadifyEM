@@ -11,7 +11,7 @@ import CustomInput from "../../webparts/readifyEmMain/components/common/CustomIn
 import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
 import Table from "../../webparts/readifyEmMain/components/Table/Table";
 import Popup from "../../webparts/readifyEmMain/components/common/Popups/Popup";
-import CustomPeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomPeoplePicker";
+// import CustomPeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomPeoplePicker";
 import { togglePopupVisibility } from "../../utils/togglePopup";
 import { initialPopupLoaders } from "../../config/config";
 import { IPopupLoaders } from "../../interface/MainInterface";
@@ -40,6 +40,7 @@ interface IDefinitionDetails {
   ErrorMsg: string;
   definitionDescription: string;
   referenceTitle: string;
+  referenceAuthorName: string;
   referenceAuthor: any[];
   referenceLink: string;
   isApproved: boolean;
@@ -108,6 +109,7 @@ const Definitions = (): JSX.Element => {
     IsDuplicate: false,
     definitionDescription: "",
     referenceTitle: "",
+    referenceAuthorName: "",
     referenceAuthor: [],
     referenceLink: "",
     isApproved: true,
@@ -145,6 +147,7 @@ const Definitions = (): JSX.Element => {
     IsDuplicate: false,
     definitionDescription: "",
     referenceTitle: "",
+    referenceAuthorName: "",
     referenceAuthor: [],
     referenceLink: "",
     isApproved: true,
@@ -198,19 +201,37 @@ const Definitions = (): JSX.Element => {
       }));
       return false;
     } else {
-      if (
-        definitionsData.definitionName === "" ||
-        definitionsData.definitionDescription === "" ||
-        definitionsData.referenceTitle === "" ||
-        definitionsData.referenceLink === "" ||
-        definitionsData.referenceAuthor.length === 0
-      ) {
+      if (definitionsData.definitionName === "") {
         setDefinitionsData((prev: any) => ({
           ...prev,
           IsValid: false,
-          ErrorMsg: "Please enter all the fields",
+          ErrorMsg: "definitionName",
         }));
         return false;
+      } else if (definitionsData.definitionDescription === "") {
+        setDefinitionsData((prev: any) => ({
+          ...prev,
+          IsValid: false,
+          ErrorMsg: "definitionDescription",
+        }));
+      } else if (definitionsData.referenceTitle === "") {
+        setDefinitionsData((prev: any) => ({
+          ...prev,
+          IsValid: false,
+          ErrorMsg: "referenceTitle",
+        }));
+      } else if (definitionsData.referenceAuthorName === "") {
+        setDefinitionsData((prev: any) => ({
+          ...prev,
+          IsValid: false,
+          ErrorMsg: "referenceAuthorName",
+        }));
+      } else if (definitionsData.referenceLink === "") {
+        setDefinitionsData((prev: any) => ({
+          ...prev,
+          IsValid: false,
+          ErrorMsg: "referenceLink",
+        }));
       } else {
         setDefinitionsData((prev: any) => ({
           ...prev,
@@ -263,50 +284,70 @@ const Definitions = (): JSX.Element => {
   const popupInputs: any[] = [
     [
       <div key={1} className={styles.defWrapper}>
-        <CustomInput
-          size="MD"
-          labelText="Definition Name"
-          withLabel
-          icon={false}
-          value={definitionsData.definitionName}
-          isValid={
-            definitionsData.definitionName === "" && !definitionsData.IsValid
-              ? true
-              : definitionsData.definitionName !== "" &&
-                definitionsData.IsDuplicate
-              ? true
-              : false
-          }
-          onChange={(value: any) => {
-            handleOnChange(value, "definitionName");
-          }}
-          placeholder="Enter here"
-          // isValid={!definitionsData.IsValid}
-          errorMsg={
-            definitionsData.definitionName !== "" && definitionsData.IsDuplicate
-              ? definitionsData.ErrorMsg
-              : "The definition name field is required"
-          }
-          key={1}
-        />
-        <CustomTextArea
-          size="MD"
-          labelText="Description"
-          withLabel
-          icon={false}
-          mandatory={true}
-          value={definitionsData.definitionDescription}
-          onChange={(value: any) => {
-            handleOnChange(value, "definitionDescription");
-          }}
-          placeholder="Enter Description"
-          isValid={
-            definitionsData.definitionDescription === "" &&
-            !definitionsData.IsValid
-          }
-          errorMsg={"The description field is required"}
-          key={2}
-        />
+        <div key={2} className={styles.referenceWrapper}>
+          <span>Definition</span>
+          <CustomInput
+            size="MD"
+            labelText="Name"
+            withLabel
+            icon={false}
+            value={definitionsData.definitionName}
+            // isValid={
+            //   definitionsData.definitionName === "" && !definitionsData.IsValid
+            //     ? true
+            //     : definitionsData.definitionName !== "" &&
+            //       definitionsData.IsDuplicate
+            //     ? true
+            //     : false
+            // }
+            isValid={
+              definitionsData.definitionName === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "definitionName"
+                ? true
+                : definitionsData.definitionName !== "" &&
+                  definitionsData.IsDuplicate
+                ? true
+                : false
+            }
+            onChange={(value: any) => {
+              handleOnChange(value, "definitionName");
+            }}
+            placeholder="Enter here"
+            // isValid={!definitionsData.IsValid}
+            errorMsg={
+              definitionsData.definitionName !== "" &&
+              definitionsData.IsDuplicate
+                ? definitionsData.ErrorMsg
+                : "The definition name field is required"
+            }
+            key={1}
+          />
+          <CustomTextArea
+            size="MD"
+            labelText="Description"
+            withLabel
+            icon={false}
+            mandatory={true}
+            textAreaWidth={"67%"}
+            value={definitionsData.definitionDescription}
+            onChange={(value: any) => {
+              handleOnChange(value, "definitionDescription");
+            }}
+            placeholder="Enter Description"
+            // isValid={
+            //   definitionsData.definitionDescription === "" &&
+            //   !definitionsData.IsValid
+            // }
+            isValid={
+              definitionsData.definitionDescription === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "definitionDescription"
+            }
+            errorMsg={"The description field is required"}
+            key={2}
+          />
+        </div>
         <div key={3} className={styles.referenceWrapper}>
           <span>References</span>
           <CustomInput
@@ -321,12 +362,14 @@ const Definitions = (): JSX.Element => {
             inputWrapperClassName={styles.referenceInput}
             placeholder="Enter here"
             isValid={
-              definitionsData.referenceTitle === "" && !definitionsData.IsValid
+              definitionsData.referenceTitle === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceTitle"
             }
             errorMsg={"The references title field is required"}
             key={3}
           />
-          <CustomPeoplePicker
+          {/* <CustomPeoplePicker
             size="MD"
             minWidth={"265px"}
             withLabel
@@ -342,6 +385,24 @@ const Definitions = (): JSX.Element => {
             }
             errorMsg={"The reference author field is required"}
             key={4}
+          /> */}
+          <CustomInput
+            size="MD"
+            labelText="Author"
+            withLabel
+            icon={false}
+            value={definitionsData.referenceAuthorName}
+            onChange={(value: any) => {
+              handleOnChange(value, "referenceAuthorName");
+            }}
+            placeholder="Enter here"
+            isValid={
+              definitionsData.referenceAuthorName === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceAuthorName"
+            }
+            errorMsg={"The reference author field is required"}
+            key={4}
           />
           <CustomInput
             size="MD"
@@ -354,7 +415,9 @@ const Definitions = (): JSX.Element => {
             }}
             placeholder="Enter here"
             isValid={
-              definitionsData.referenceLink === "" && !definitionsData.IsValid
+              definitionsData.referenceLink === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceLink"
             }
             errorMsg={"The references Link field is required"}
             key={5}
@@ -364,49 +427,69 @@ const Definitions = (): JSX.Element => {
     ],
     [
       <div key={1} className={styles.defWrapper}>
-        <CustomInput
-          size="MD"
-          labelText="Definition Name"
-          withLabel
-          icon={false}
-          value={definitionsData.definitionName}
-          onChange={(value: any) => {
-            handleOnChange(value, "definitionName");
-          }}
-          placeholder="Enter here"
-          isValid={
-            definitionsData.definitionName === "" && !definitionsData.IsValid
-              ? true
-              : definitionsData.definitionName !== "" &&
-                definitionsData.IsDuplicate
-              ? true
-              : false
-          }
-          errorMsg={
-            definitionsData.definitionName !== "" && definitionsData.IsDuplicate
-              ? definitionsData.ErrorMsg
-              : "The definition name field is required"
-          }
-          key={1}
-        />
-        <CustomTextArea
-          size="MD"
-          labelText="Description"
-          withLabel
-          icon={false}
-          mandatory={true}
-          value={definitionsData.definitionDescription}
-          onChange={(value: any) => {
-            handleOnChange(value, "definitionDescription");
-          }}
-          placeholder="Enter Description"
-          isValid={
-            definitionsData.definitionDescription === "" &&
-            !definitionsData.IsValid
-          }
-          errorMsg={"The description field is required"}
-          key={2}
-        />
+        <div key={2} className={styles.referenceWrapper}>
+          <span>Definition</span>
+          <CustomInput
+            size="MD"
+            labelText="Name"
+            withLabel
+            icon={false}
+            value={definitionsData.definitionName}
+            onChange={(value: any) => {
+              handleOnChange(value, "definitionName");
+            }}
+            placeholder="Enter here"
+            // isValid={
+            //   definitionsData.definitionName === "" && !definitionsData.IsValid
+            //     ? true
+            //     : definitionsData.definitionName !== "" &&
+            //       definitionsData.IsDuplicate
+            //     ? true
+            //     : false
+            // }
+            isValid={
+              definitionsData.definitionName === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "definitionName"
+                ? true
+                : definitionsData.definitionName !== "" &&
+                  definitionsData.IsDuplicate
+                ? true
+                : false
+            }
+            errorMsg={
+              definitionsData.definitionName !== "" &&
+              definitionsData.IsDuplicate
+                ? definitionsData.ErrorMsg
+                : "The definition name field is required"
+            }
+            key={1}
+          />
+          <CustomTextArea
+            size="MD"
+            labelText="Description"
+            withLabel
+            icon={false}
+            mandatory={true}
+            textAreaWidth={"67%"}
+            value={definitionsData.definitionDescription}
+            onChange={(value: any) => {
+              handleOnChange(value, "definitionDescription");
+            }}
+            placeholder="Enter Description"
+            // isValid={
+            //   definitionsData.definitionDescription === "" &&
+            //   !definitionsData.IsValid
+            // }
+            isValid={
+              definitionsData.definitionDescription === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "definitionDescription"
+            }
+            errorMsg={"The description field is required"}
+            key={2}
+          />
+        </div>
         <div key={3} className={styles.referenceWrapper}>
           <span>References</span>
           <CustomInput
@@ -420,12 +503,14 @@ const Definitions = (): JSX.Element => {
             }}
             placeholder="Enter here"
             isValid={
-              definitionsData.referenceTitle === "" && !definitionsData.IsValid
+              definitionsData.referenceTitle === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceTitle"
             }
             errorMsg={"The references title field is required"}
             key={3}
           />
-          <CustomPeoplePicker
+          {/* <CustomPeoplePicker
             size="MD"
             withLabel
             labelText="Author"
@@ -441,6 +526,24 @@ const Definitions = (): JSX.Element => {
             }
             errorMsg={"The reference author field is required"}
             key={4}
+          /> */}
+          <CustomInput
+            size="MD"
+            labelText="Author"
+            withLabel
+            icon={false}
+            value={definitionsData.referenceAuthorName}
+            onChange={(value: any) => {
+              handleOnChange(value, "referenceAuthorName");
+            }}
+            placeholder="Enter here"
+            isValid={
+              definitionsData.referenceAuthorName === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceAuthorName"
+            }
+            errorMsg={"The reference author field is required"}
+            key={4}
           />
           <CustomInput
             size="MD"
@@ -453,7 +556,9 @@ const Definitions = (): JSX.Element => {
             }}
             placeholder="Enter here"
             isValid={
-              definitionsData.referenceLink === "" && !definitionsData.IsValid
+              definitionsData.referenceLink === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceLink"
             }
             errorMsg={"The references Link field is required"}
             key={5}
@@ -463,43 +568,52 @@ const Definitions = (): JSX.Element => {
     ],
     [
       <div key={1} className={styles.defWrapper}>
-        <CustomInput
-          size="MD"
-          labelText="Definition Name"
-          withLabel
-          icon={false}
-          value={definitionsData.definitionName}
-          onChange={(value: any) => {
-            handleOnChange(value, "definitionName");
-          }}
-          placeholder="Enter here"
-          // isValid={!definitionsData.IsValid}
-          // errorMsg={"Template name required"}
-          key={1}
-          readOnly={true}
-          noBorderInput={true}
-        />
-        <CustomTextArea
-          size="MD"
-          labelText="Description"
-          withLabel
-          icon={false}
-          value={definitionsData.definitionDescription}
-          onChange={(value: any) => {
-            handleOnChange(value, "definitionDescription");
-          }}
-          placeholder="Enter Description"
-          isValid={
-            definitionsData.definitionDescription === "" &&
-            !definitionsData.IsValid
-          }
-          errorMsg={"The description field is required"}
-          key={2}
-          // isValid={!definitionsData.IsValid}
-          // errorMsg={definitionsData.ErrorMsg}
-          readOnly={true}
-          noBorderInput={true}
-        />
+        <div key={2} className={styles.referenceWrapper}>
+          <span>Definition</span>
+          <CustomInput
+            size="MD"
+            labelText="Name"
+            withLabel
+            icon={false}
+            value={definitionsData.definitionName}
+            onChange={(value: any) => {
+              handleOnChange(value, "definitionName");
+            }}
+            placeholder="Enter here"
+            // isValid={!definitionsData.IsValid}
+            // errorMsg={"Template name required"}
+            key={1}
+            readOnly={true}
+            noBorderInput={true}
+          />
+          <CustomTextArea
+            size="MD"
+            labelText="Description"
+            withLabel
+            icon={false}
+            textAreaWidth={"67%"}
+            value={definitionsData.definitionDescription}
+            onChange={(value: any) => {
+              handleOnChange(value, "definitionDescription");
+            }}
+            placeholder="Enter Description"
+            // isValid={
+            //   definitionsData.definitionDescription === "" &&
+            //   !definitionsData.IsValid
+            // }
+            // isValid={
+            //   definitionsData.definitionDescription === "" &&
+            //   !definitionsData.IsValid &&
+            //   definitionsData.ErrorMsg === "definitionDescription"
+            // }
+            errorMsg={"The description field is required"}
+            key={2}
+            // isValid={!definitionsData.IsValid}
+            // errorMsg={definitionsData.ErrorMsg}
+            readOnly={true}
+            noBorderInput={true}
+          />
+        </div>
         <div key={3} className={styles.referenceWrapper}>
           <span>References</span>
           <CustomInput
@@ -518,7 +632,7 @@ const Definitions = (): JSX.Element => {
             readOnly={true}
             noBorderInput={true}
           />
-          <CustomPeoplePicker
+          {/* <CustomPeoplePicker
             size="MD"
             withLabel
             labelText="Author"
@@ -528,6 +642,22 @@ const Definitions = (): JSX.Element => {
             }}
             selectedItem={definitionsData?.referenceAuthor[0]?.Email}
             placeholder="Add people"
+            // isValid={!definitionsData.IsValid}
+            // errorMsg={definitionsData.ErrorMsg}
+            key={4}
+            readOnly={true}
+            noBorderInput={true}
+          /> */}
+          <CustomInput
+            size="MD"
+            labelText="Author"
+            withLabel
+            icon={false}
+            value={definitionsData.referenceAuthorName}
+            onChange={(value: any) => {
+              handleOnChange(value, "referenceAuthorName");
+            }}
+            placeholder="Enter here"
             // isValid={!definitionsData.IsValid}
             // errorMsg={definitionsData.ErrorMsg}
             key={4}

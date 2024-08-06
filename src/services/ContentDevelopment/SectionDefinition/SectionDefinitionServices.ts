@@ -172,8 +172,10 @@ const AddSectionDefinition = (
   documentId: number,
   sectionId: number,
   setLoaderState: any,
-  setToastState: any
+  setToastState: any,
+  setInitialLoader: any
 ) => {
+  setInitialLoader(true);
   const tempArray: any[] = [...selectedDefinitions];
   const tempAddArray = tempArray.filter((obj: any) => obj.status);
   const tempDelArray = tempArray.filter((obj: any) => obj.isDeleted);
@@ -220,6 +222,7 @@ const AddSectionDefinition = (
               message: "Successfully adding/deleting section definition",
               duration: 3000,
             });
+            setInitialLoader(false);
           }
         })
         .catch((err) => console.log(err));
@@ -258,6 +261,7 @@ const AddSectionDefinition = (
               message: "Successfully adding/deleting section definition",
               duration: 3000,
             });
+            setInitialLoader(false);
           }
         })
         .catch((err) => {
@@ -295,6 +299,7 @@ const AddSectionDefinition = (
               message: "Successfully adding/deleting section definition",
               duration: 3000,
             });
+            setInitialLoader(false);
           }
         })
         .catch((err) => {
@@ -309,15 +314,21 @@ const addNewDefinition = async (
   documentId: number,
   sectionId: number,
   setLoaderState: any,
-  setSelectedDefinitions: any
+  setToastState: any,
+  setSelectedDefinitions: any,
+  setInitialLoader: any,
+  setPopupController: any,
+  togglePopupVisibility: any
 ) => {
   try {
+    setInitialLoader(true);
     const payloadJSON = {
       Title: definitionsData?.definitionName,
       description: definitionsData?.definitionDescription,
       referenceTitle: definitionsData.referenceTitle,
+      referenceAuthorName: definitionsData.referenceAuthorName,
       referenceLink: definitionsData.referenceLink,
-      referenceAuthorId: definitionsData.referenceAuthor[0].Id,
+      // referenceAuthorId: definitionsData.referenceAuthor[0].Id,
       isApproved: false,
     };
     await SpServices.SPAddItem({
@@ -329,8 +340,9 @@ const addNewDefinition = async (
         const jsonObject = {
           Title: definitionsData.definitionName,
           description: definitionsData.definitionDescription,
-          referenceAuthorId: definitionsData.referenceAuthor[0].Id,
+          // referenceAuthorId: definitionsData.referenceAuthor[0].Id,
           referenceTitle: definitionsData.referenceTitle,
+          referenceAuthorName: definitionsData.referenceAuthorName,
           referenceLink: definitionsData.referenceLink,
           definitionDetailsId: res?.data?.ID,
           sectionDetailsId: sectionId,
@@ -342,23 +354,23 @@ const addNewDefinition = async (
         })
           .then((res: any) => {
             console.log(res);
-            setLoaderState({
-              isLoading: {
-                inprogress: false,
-                success: true,
-                error: false,
-              },
-              visibility: true,
-              text: `Definition created successfully!`,
-              secondaryText: `The Standardized definition template "${definitionsData?.definitionName}" has been created successfully! `,
-            });
+            // setLoaderState({
+            //   isLoading: {
+            //     inprogress: false,
+            //     success: true,
+            //     error: false,
+            //   },
+            //   visibility: true,
+            //   text: `Definition created successfully!`,
+            //   secondaryText: `The Standardized definition template "${definitionsData?.definitionName}" has been created successfully! `,
+            // });
+            togglePopupVisibility(setPopupController, 0, "close");
             setSelectedDefinitions((prev: any) => [
-              ...prev,
               {
                 ID: res.data.ID,
                 definitionTitle: definitionsData.definitionName,
                 definitionDescription: definitionsData.definitionDescription,
-                referenceAuthor: definitionsData.referenceAuthor,
+                referenceAuthorName: definitionsData.referenceAuthorName,
                 referenceLink: definitionsData.referenceLink,
                 referenceTitle: definitionsData.referenceTitle,
                 isDeleted: false,
@@ -366,7 +378,16 @@ const addNewDefinition = async (
                 isSelected: false,
                 status: false,
               },
+              ...prev,
             ]);
+            setToastState({
+              isShow: true,
+              severity: "success",
+              title: "Add section definition",
+              message: "Successfully add section definition",
+              duration: 3000,
+            });
+            setInitialLoader(false);
             // getAllSecDefinitions();
           })
           .catch((err) => {

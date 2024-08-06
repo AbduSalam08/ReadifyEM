@@ -11,7 +11,7 @@ import Popup from "../../common/Popups/Popup";
 import { togglePopupVisibility } from "../../../../../utils/togglePopup";
 import CustomInput from "../../common/CustomInputFields/CustomInput";
 import DefaultButton from "../../common/Buttons/DefaultButton";
-import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
+// import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
 import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
 const closeBtn = require("../../../../../assets/images/png/close.png");
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
@@ -36,6 +36,8 @@ import { addRejectedComment } from "../../../../../services/ContentDevelopment/C
 interface Props {
   documentId: number;
   sectionId: number;
+  currentSectionDetails?: any;
+  currentDocRole?: any;
 }
 
 interface IDefinitionDetails {
@@ -46,6 +48,7 @@ interface IDefinitionDetails {
   ErrorMsg: string;
   definitionDescription: string;
   referenceTitle: string;
+  referenceAuthorName: string;
   referenceAuthor: any[];
   referenceLink: string;
   isApproved: boolean;
@@ -72,7 +75,12 @@ const initialPopupController = [
   },
 ];
 
-const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
+const Definition: React.FC<Props> = ({
+  documentId,
+  sectionId,
+  currentSectionDetails,
+  currentDocRole,
+}) => {
   // redux dispatcher
   const dispatch = useDispatch();
 
@@ -117,6 +125,7 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
     IsDuplicate: false,
     definitionDescription: "",
     referenceTitle: "",
+    referenceAuthorName: "",
     referenceAuthor: [],
     referenceLink: "",
     isApproved: true,
@@ -141,6 +150,7 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
     IsDuplicate: false,
     definitionDescription: "",
     referenceTitle: "",
+    referenceAuthorName: "",
     referenceAuthor: [],
     referenceLink: "",
     isApproved: true,
@@ -220,11 +230,11 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
           IsValid: false,
           ErrorMsg: "referenceTitle",
         }));
-      } else if (definitionsData.referenceAuthor.length === 0) {
+      } else if (definitionsData.referenceAuthorName === "") {
         setDefinitionsData((prev: any) => ({
           ...prev,
           IsValid: false,
-          ErrorMsg: "referenceAuthor",
+          ErrorMsg: "referenceAuthorName",
         }));
       } else if (definitionsData.referenceLink === "") {
         setDefinitionsData((prev: any) => ({
@@ -282,9 +292,12 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
         documentId,
         sectionId,
         setPopupLoaders,
-        setSelectedDefinitions
+        setToastMessage,
+        setSelectedDefinitions,
+        setInitialLoader,
+        setPopupController,
+        togglePopupVisibility
       );
-      togglePopupVisibility(setPopupController, 0, "close");
     } else {
       console.log("invalid");
     }
@@ -294,55 +307,60 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
   const popupInputs: any[] = [
     [
       <div key={1} className={styles.defWrapper}>
-        <CustomInput
-          size="MD"
-          labelText="Definition Name"
-          withLabel
-          icon={false}
-          mandatory={true}
-          secWidth="100%"
-          value={definitionsData.definitionName}
-          isValid={
-            definitionsData.definitionName === "" &&
-            !definitionsData.IsValid &&
-            definitionsData.ErrorMsg === "definitionName"
-              ? true
-              : definitionsData.definitionName !== "" &&
-                definitionsData.IsDuplicate
-              ? true
-              : false
-          }
-          onChange={(value: any) => {
-            handleOnChange(value, "definitionName");
-          }}
-          placeholder="Enter here"
-          // isValid={!definitionsData.IsValid}
-          errorMsg={
-            definitionsData.definitionName !== "" && definitionsData.IsDuplicate
-              ? definitionsData.ErrorMsg
-              : "The definition name field is required"
-          }
-          key={1}
-        />
-        <CustomTextArea
-          size="MD"
-          labelText="Description"
-          withLabel
-          icon={false}
-          mandatory={true}
-          value={definitionsData.definitionDescription}
-          onChange={(value: any) => {
-            handleOnChange(value, "definitionDescription");
-          }}
-          placeholder="Enter Description"
-          isValid={
-            definitionsData.definitionDescription === "" &&
-            !definitionsData.IsValid &&
-            definitionsData.ErrorMsg === "definitionDescription"
-          }
-          errorMsg={"The description field is required"}
-          key={2}
-        />
+        <div key={2} className={styles.referenceWrapper}>
+          <span>Definition</span>
+          <CustomInput
+            size="MD"
+            labelText="Name"
+            withLabel
+            icon={false}
+            mandatory={true}
+            secWidth="100%"
+            value={definitionsData.definitionName}
+            isValid={
+              definitionsData.definitionName === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "definitionName"
+                ? true
+                : definitionsData.definitionName !== "" &&
+                  definitionsData.IsDuplicate
+                ? true
+                : false
+            }
+            onChange={(value: any) => {
+              handleOnChange(value, "definitionName");
+            }}
+            placeholder="Enter here"
+            // isValid={!definitionsData.IsValid}
+            errorMsg={
+              definitionsData.definitionName !== "" &&
+              definitionsData.IsDuplicate
+                ? definitionsData.ErrorMsg
+                : "The definition name field is required"
+            }
+            key={1}
+          />
+          <CustomTextArea
+            size="MD"
+            labelText="Description"
+            withLabel
+            icon={false}
+            mandatory={true}
+            textAreaWidth={"67%"}
+            value={definitionsData.definitionDescription}
+            onChange={(value: any) => {
+              handleOnChange(value, "definitionDescription");
+            }}
+            placeholder="Enter Description"
+            isValid={
+              definitionsData.definitionDescription === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "definitionDescription"
+            }
+            errorMsg={"The description field is required"}
+            key={2}
+          />
+        </div>
         <div key={3} className={styles.referenceWrapper}>
           <span>References</span>
           <CustomInput
@@ -366,7 +384,7 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
             errorMsg={"The references title field is required"}
             key={3}
           />
-          <CustomPeoplePicker
+          {/* <CustomPeoplePicker
             size="MD"
             minWidth={"265px"}
             withLabel
@@ -381,6 +399,26 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
               definitionsData.referenceAuthor.length === 0 &&
               !definitionsData.IsValid &&
               definitionsData.ErrorMsg === "referenceAuthor"
+            }
+            errorMsg={"The reference author field is required"}
+            key={4}
+          /> */}
+          <CustomInput
+            size="MD"
+            labelText="Link"
+            withLabel
+            secWidth="100%"
+            icon={false}
+            mandatory={true}
+            value={definitionsData.referenceAuthorName}
+            onChange={(value: any) => {
+              handleOnChange(value, "referenceAuthorName");
+            }}
+            placeholder="Enter here"
+            isValid={
+              definitionsData.referenceAuthorName === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceAuthorName"
             }
             errorMsg={"The reference author field is required"}
             key={4}
@@ -415,6 +453,7 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
         withLabel
         icon={false}
         mandatory={true}
+        textAreaWidth={"67%"}
         value={rejectedComments.rejectedComment}
         onChange={(value: any) => {
           setRejectedComments({
@@ -577,7 +616,8 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
       documentId,
       sectionId,
       setPopupLoaders,
-      setToastMessage
+      setToastMessage,
+      setInitialLoader
     );
     if (submitCondition) {
       // getAllSelectedDocuments();
@@ -611,7 +651,7 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
       <div className={"sectionWrapper"}>
         <div className={styles.textPlayGround}>
           <div className={styles.definitionHeaderWrapper}>
-            <span>Setup Header</span>
+            <span>Add Definitions</span>
           </div>
           <div className={styles.filterMainWrapper}>
             <div className={styles.TopFilters}>
@@ -792,18 +832,23 @@ const Definition: React.FC<Props> = ({ documentId, sectionId }) => {
                 navigate(-1);
               }}
             />
-            <DefaultButton
-              text="Reject"
-              btnType="lightGreyVariant"
-              onClick={() =>
-                togglePopupVisibility(
-                  setPopupController,
-                  1,
-                  "open",
-                  "Reason for rejection"
-                )
-              }
-            />
+            {(currentDocRole?.primaryAuthor ||
+              currentDocRole?.reviewer ||
+              currentDocRole?.approver) &&
+              currentSectionDetails?.sectionSubmitted && (
+                <DefaultButton
+                  text="Reject"
+                  btnType="lightGreyVariant"
+                  onClick={() =>
+                    togglePopupVisibility(
+                      setPopupController,
+                      1,
+                      "open",
+                      "Reason for rejection"
+                    )
+                  }
+                />
+              )}
             <DefaultButton
               text="Save and Close"
               btnType="lightGreyVariant"

@@ -32,6 +32,7 @@ const UpdateDefinition = async (
       Title: formData?.definitionName,
       description: formData?.definitionDescription,
       referenceTitle: formData.referenceTitle,
+      referenceAuthorName: formData.referenceAuthorName,
       referenceLink: formData.referenceLink,
       referenceAuthorId: formData.referenceAuthor[0].Id,
     };
@@ -224,8 +225,9 @@ const AddDefinition = async (
       Title: formData?.definitionName,
       description: formData?.definitionDescription,
       referenceTitle: formData.referenceTitle,
+      referenceAuthorName: formData.referenceAuthorName,
       referenceLink: formData.referenceLink,
-      referenceAuthorId: formData.referenceAuthor[0].Id,
+      // referenceAuthorId: formData.referenceAuthor[0].Id,
     };
 
     await SpServices.SPAddItem({
@@ -287,6 +289,7 @@ const fetchTemplates = async (): Promise<{
         },
       ],
     });
+    mainListResponse.reverse();
 
     const allMainTemplateData: any[] = mainListResponse?.map((value: any) => ({
       ID: value?.ID || null,
@@ -363,6 +366,9 @@ const LoadDefinitionData = async (
               ]
             : [],
           referenceLink: res?.referenceLink ? res.referenceLink : "",
+          referenceAuthorName: res?.referenceAuthorName
+            ? res.referenceAuthorName
+            : "",
           isLoading: false,
         };
         setSectionsData((prevData: any) => ({
@@ -380,6 +386,9 @@ const LoadDefinitionData = async (
               ]
             : "",
           referenceLink: res?.referenceLink ? res.referenceLink : "",
+          referenceAuthorName: res?.referenceAuthorName
+            ? res.referenceAuthorName
+            : "",
           isLoading: false,
         }));
         dispatch(setDefinitionDetails(CurrentDefinitionDetails));

@@ -93,7 +93,7 @@ const SectionComments: React.FC<Props> = ({
     //   message: "Your comment added successfully",
     //   duration: 3000,
     // });
-    setInputComment(value);
+    setInputComment(value.trimStart());
   };
 
   const sendSectionComment = async () => {
@@ -140,7 +140,7 @@ const SectionComments: React.FC<Props> = ({
             : styles.closedCommentSection
         }
         style={{
-          backgroundColor: viewOnly ? "#93939335" : "#fff",
+          // backgroundColor: viewOnly ? "#93939335" : "#fff",
           border: viewOnly ? "none" : "1px solid #ebeaec",
           borderTopLeftRadius: toggleCommentSection ? "0" : "5px",
         }}
