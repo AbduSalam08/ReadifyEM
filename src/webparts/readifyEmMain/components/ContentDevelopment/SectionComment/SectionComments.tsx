@@ -26,6 +26,8 @@ interface Props {
   documentId?: number;
   sectionId?: number;
   onClick?: any;
+  currentSectionData?: any;
+  currentDocRole?: any;
   promoteComments: boolean;
 }
 
@@ -40,6 +42,8 @@ const SectionComments: React.FC<Props> = ({
   sectionId,
   onClick,
   promoteComments,
+  currentDocRole,
+  currentSectionData,
 }) => {
   const dispatch = useDispatch();
 
@@ -96,9 +100,8 @@ const SectionComments: React.FC<Props> = ({
     setInputComment(value.trimStart());
   };
 
-  const sendSectionComment = async () => {
+  const sendSectionComment = async (): Promise<any> => {
     if (inputComment !== "") {
-      console.log("clicked");
       const json = {
         comments: inputComment,
         sectionDetailsId: sectionId,
@@ -199,7 +202,8 @@ const SectionComments: React.FC<Props> = ({
             <div className={styles.commentsBar}>
               <CustomInput
                 value={inputComment}
-                placeholder="Enter you comments here..."
+                disabled={currentSectionData?.sectionSubmitted}
+                placeholder="Enter your comments here..."
                 onChange={(value: string) => {
                   onChangeFunction(value);
                 }}
@@ -214,6 +218,10 @@ const SectionComments: React.FC<Props> = ({
               />
               <button
                 className={styles.sendBtn}
+                disabled={currentSectionData?.sectionSubmitted}
+                style={{
+                  opacity: currentSectionData?.sectionSubmitted ? "0.5" : 1,
+                }}
                 onClick={(ev: any) => sendSectionComment()}
               >
                 <img src={sendBtn} />

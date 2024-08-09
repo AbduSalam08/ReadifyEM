@@ -365,6 +365,7 @@ body {
   background: #555555ac !important;
   border-radius: 30px !important;
 }
+
 /* main mt should be 57px when this code is going to be in build for live deploy */
 .main {
   position: relative;
@@ -531,6 +532,7 @@ body {
 }
 .p-orderlist-list {
   min-height: auto !important;
+  min-height: 100% !important;
 }
 .p-orderlist .p-orderlist-list .p-orderlist-item:hover {
   transition: all 0.1s !important;
@@ -587,7 +589,7 @@ body {
   margin: 20px !important;
   border: 1px solid #55555550;
 }
-.p-dialog-content{
+.p-dialog-content {
   overflow-y: visible;
 }
 

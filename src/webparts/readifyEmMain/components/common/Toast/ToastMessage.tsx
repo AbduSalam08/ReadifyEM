@@ -3,6 +3,7 @@
 import { useEffect, useRef, memo } from "react";
 import { Toast } from "primereact/toast";
 const SuccessImg = require("../../../../../assets/images/png/completedIcon.png");
+const warningImg = require("../../../../../assets/images/svg/warningYellowTriangle.svg");
 import "./ToastMessage.css";
 
 interface Iprops {
@@ -41,7 +42,21 @@ const ToastMessage = ({
           style={{ display: "flex", flex: "1" }}
         >
           <div className="p-toast-image" style={{ marginRight: "15px" }}>
-            <img style={{ width: "30px", height: "30px" }} src={SuccessImg} />
+            <img
+              style={{
+                width: severity === "warn" ? "25px" : "30px",
+                height: severity === "warn" ? "25px" : "30px",
+              }}
+              src={
+                severity === "success"
+                  ? SuccessImg
+                  : severity === "info"
+                  ? SuccessImg
+                  : severity === "warn"
+                  ? warningImg
+                  : ""
+              }
+            />
           </div>
           <div>
             <span className="p-toast-summary">{title}</span>

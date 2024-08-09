@@ -112,6 +112,7 @@ const addSectionComment = async (
   sectionId: any,
   AllSectionsDataMain: any
 ): Promise<boolean> => {
+  debugger;
   console.log(jsonObject, sectionId, AllSectionsDataMain);
   let clearInput: boolean = false;
   const tempArray: any[] = [...sectionComments];
@@ -140,6 +141,7 @@ const addSectionComment = async (
             role: jsonObject.role,
             isRejectedComment: res?.data?.isRejectedComment ? true : false,
           });
+
           //   setLoaderState({
           //     isLoading: {
           //       inprogress: false,
@@ -158,7 +160,7 @@ const addSectionComment = async (
               return obj;
             }
           });
-          console.log(updateArray);
+
           dispatcher(setCDSectionData([...updateArray]));
           setToastState({
             isShow: true,

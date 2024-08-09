@@ -3,6 +3,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { LISTNAMES } from "../../../config/config";
+import { setCDSectionData } from "../../../redux/features/ContentDevloperSlice";
+import { updateSectionDataLocal } from "../../../utils/contentDevelopementUtils";
 import SpServices from "../../SPServices/SpServices";
 
 const getAllDocuments = async (sectionId: number, documentId: number) => {
@@ -166,8 +168,8 @@ const submitSupportingDocuments = (
             setToastState({
               isShow: true,
               severity: "success",
-              title: "Updated Supporting Documents",
-              message: "Successfully adding/deleting supporting documents",
+              title: "Content updated!",
+              message: "The content has been updated successfully.",
               duration: 3000,
             });
             getSelectedFun();
@@ -197,8 +199,8 @@ const submitSupportingDocuments = (
             setToastState({
               isShow: true,
               severity: "success",
-              title: "Updated Supporting Documents",
-              message: "Successfully adding/deleting supporting documents",
+              title: "Content updated!",
+              message: "The content has been updated successfully.",
               duration: 3000,
             });
             getSelectedFun();
@@ -226,8 +228,8 @@ const submitSupportingDocuments = (
             setToastState({
               isShow: true,
               severity: "success",
-              title: "Updated Supporting Documents",
-              message: "Successfully adding/deleting supporting documents",
+              title: "Content updated!",
+              message: "The content has been updated successfully.",
               duration: 3000,
             });
             getSelectedFun();
@@ -242,13 +244,27 @@ const submitSupportingDocuments = (
   // return renderCondition;
 };
 
-const updateSectionDetails = (sectionID: number) => {
+const updateSectionDetails = (
+  sectionID: number,
+  AllsectionData?: any,
+  dispatch?: any
+) => {
   SpServices.SPUpdateItem({
     Listname: LISTNAMES.SectionDetails,
     ID: sectionID,
-    RequestJSON: { sectionSubmitted: true },
+    RequestJSON: { sectionSubmitted: true, status: "submitted" },
   })
     .then((res: any) => {
+      const updatedSections = updateSectionDataLocal(
+        AllsectionData,
+        sectionID,
+        {
+          sectionSubmitted: true,
+          sectionStatus: "submitted",
+        }
+      );
+
+      dispatch(setCDSectionData([...updatedSections]));
       console.log(res);
     })
     .catch((err) => console.log(err));

@@ -147,7 +147,10 @@
 import { sp } from "@pnp/sp/presets/all";
 import { LISTNAMES } from "../config/config";
 import SpServices from "../services/SPServices/SpServices";
-import { setCDHeaderDetails } from "../redux/features/ContentDevloperSlice";
+import {
+  setCDHeaderDetails,
+  setCDSectionData,
+} from "../redux/features/ContentDevloperSlice";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const AddAppendixAttachment = async (
@@ -279,8 +282,11 @@ export const AddSectionAttachment = async (
   _file: any,
   contentType: any,
   saveAndClose: boolean,
-  fileName?: string
+  fileName?: string,
+  allSectionsData?: any,
+  dispatcher?: any
 ): Promise<any> => {
+  debugger;
   await SpServices.SPAddAttachment({
     ListName: LISTNAMES.SectionDetails,
     ListID: itemID,
@@ -302,6 +308,7 @@ export const AddSectionAttachment = async (
       : {
           typeOfContent: contentType,
           sectionSubmitted: saveAndClose ? saveAndClose : false,
+          status: saveAndClose ? "submitted" : "content in progress",
         };
 
   await SpServices.SPUpdateItem({
@@ -311,6 +318,21 @@ export const AddSectionAttachment = async (
   })
     .then((res: any) => {
       console.log("res: ", res);
+      const updateArray = allSectionsData?.map((obj: any) => {
+        if (obj.ID === itemID) {
+          return {
+            ...obj,
+            contentType: contentType,
+            sectionSubmitted: saveAndClose ? saveAndClose : false,
+            sectionStatus: saveAndClose ? "submitted" : "content in progress",
+          };
+        } else {
+          return obj;
+        }
+      });
+      console.log("updateArray: ", updateArray);
+
+      dispatcher(setCDSectionData([...updateArray]));
     })
     .catch((err: any) => {
       console.log("err: ", err);
@@ -324,9 +346,13 @@ export const UpdateSectionAttachment = async (
   contentType: any,
   saveAndClose?: boolean | any,
   fileName?: string,
-  deleteAttachments?: boolean
+  deleteAttachments?: boolean,
+  allSectionsData?: any,
+  dispatcher?: any
 ): Promise<any> => {
   debugger;
+  console.log("saveAndClose: ", saveAndClose);
+
   try {
     // Retrieve all attachments for the given item
     if (deleteAttachments) {
@@ -369,7 +395,9 @@ export const UpdateSectionAttachment = async (
         _file,
         contentType,
         saveAndClose,
-        fileName
+        fileName,
+        allSectionsData,
+        dispatcher
       );
 
       console.log("New attachment added successfully.");
@@ -400,7 +428,8 @@ export const addHeaderAttachmentData = async (
 export const addAppendixHeaderAttachmentData = async (
   submissionType?: any,
   sectionDetails?: any,
-  file?: any
+  file?: any,
+  deleteAttachment?: boolean
 ): Promise<any> => {
   debugger;
   console.log("sectionDetails: ", sectionDetails);
@@ -426,14 +455,25 @@ export const addAppendixHeaderAttachmentData = async (
         console.log("err: ", err);
       });
 
-    await UpdateAppendixAttachment(
-      appendixHeaderID,
-      file.fileData,
-      file.fileName,
-      file.fileData?.length === 0,
-      sectionDetails?.documentOfId,
-      sectionDetails?.ID
-    );
+    if (file.fileData && file.fileName) {
+      await UpdateAppendixAttachment(
+        appendixHeaderID,
+        file.fileData,
+        file.fileName,
+        file.fileData?.length === 0,
+        sectionDetails?.documentOfId,
+        sectionDetails?.ID
+      );
+    } else if (deleteAttachment) {
+      await UpdateAppendixAttachment(
+        appendixHeaderID,
+        file.fileData,
+        file.fileName,
+        file.fileData?.length === 0,
+        sectionDetails?.documentOfId,
+        sectionDetails?.ID
+      );
+    }
   }
 };
 
@@ -461,19 +501,19 @@ export const getSectionData = async (
   })
     .then((res: any) => {
       console.log("res: ", res);
-      const filteredItem: any = res?.filter((item: any) =>
-        item?.FileName?.includes("headerImg")
-      );
-      console.log("filteredItem: ", filteredItem);
-      if (filteredItem.length > 0) {
-        const data = {
-          fileData: filteredItem[0],
-          fileName: filteredItem[0]?.FileName,
-        };
-        setFile([data]);
-        dispatcher && dispatcher(setCDHeaderDetails(data));
-        // setNewAttachment(false);
-      }
+      // const filteredItem: any = res?.filter((item: any) =>
+      //   item?.FileName?.includes("headerImg")
+      // );
+      // console.log("filteredItem: ", filteredItem);
+      // if (filteredItem.length > 0) {
+      const data = {
+        fileData: res[0],
+        fileName: res[0]?.FileName,
+      };
+      setFile([data]);
+      dispatcher && dispatcher(setCDHeaderDetails(data));
+      // setNewAttachment(false);
+      // }
     })
     .catch((err) => {
       console.log(err);
@@ -510,18 +550,18 @@ export const getSectionDataFromAppendixList = async (
     })
       .then((res: any) => {
         console.log("res: ", res);
-        const filteredItem: any = res?.filter((item: any) =>
-          item?.FileName?.includes("headerImg")
-        );
-        console.log("filteredItem: ", filteredItem);
-        if (filteredItem.length > 0) {
-          const data = {
-            fileData: filteredItem[0],
-            fileName: filteredItem[0]?.FileName,
-          };
-          setFile([data]);
-          dispatcher && dispatcher(setCDHeaderDetails(data));
-        }
+        // const filteredItem: any = res?.filter((item: any) =>
+        //   item?.FileName?.includes("headerImg")
+        // );
+        // console.log("filteredItem: ", filteredItem);
+        // if (filteredItem.length > 0) {
+        const data = {
+          fileData: res[0],
+          fileName: res[0]?.FileName,
+        };
+        setFile([data]);
+        dispatcher && dispatcher(setCDHeaderDetails(data));
+        // }
       })
       .catch((err) => {
         dispatcher && dispatcher(setCDHeaderDetails([]));
@@ -530,4 +570,20 @@ export const getSectionDataFromAppendixList = async (
   } else {
     dispatcher && dispatcher(setCDHeaderDetails([]));
   }
+};
+
+export const updateSectionDataLocal = (
+  sections: any[],
+  sectionID: number,
+  updates: Partial<any>
+): any[] => {
+  return sections?.map((obj) => {
+    if (obj.ID === sectionID) {
+      return {
+        ...obj,
+        ...updates,
+      };
+    }
+    return obj;
+  });
 };

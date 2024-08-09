@@ -8,6 +8,9 @@ import SpServices from "../../../../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../../../../config/config";
 import { useNavigate } from "react-router-dom";
 import ToastMessage from "../../common/Toast/ToastMessage";
+import { setCDSectionData } from "../../../../../redux/features/ContentDevloperSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { updateSectionDataLocal } from "../../../../../utils/contentDevelopementUtils";
 
 interface IContentTypeConfirmationProps {
   setSectionData?: any;
@@ -30,8 +33,13 @@ const ContentTypeConfirmation = ({
 }: IContentTypeConfirmationProps): JSX.Element => {
   console.log("currentSectionData: ", currentSectionData);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [sectionLoader, setSectionLoader] = useState(false);
   const [toastMessage, setToastMessage] = useState<any>([]);
+
+  const AllSectionsDataMain: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDSectionsData
+  );
 
   const addData = async (submissionType?: any): Promise<any> => {
     setSectionLoader(true);
@@ -69,6 +77,13 @@ const ContentTypeConfirmation = ({
       },
     });
 
+    const updateArray = updateSectionDataLocal(AllSectionsDataMain, sectionID, {
+      contentType: "initial",
+      sectionSubmitted: false,
+    });
+
+    dispatch(setCDSectionData([...updateArray]));
+
     Promise.all([updateAttachmentPromise, updateSectionsContentType])
       .then((res: any) => {
         setSectionLoader(false);
@@ -105,41 +120,74 @@ const ContentTypeConfirmation = ({
           }}
         >
           {currentDocRole?.primaryAuthor || currentDocRole?.sectionAuthor ? (
-            <div className={styles.contentTypeBox}>
-              <>
-                <span>Please select the content type</span>
-                <div className={styles.actionsBtns}>
-                  <DefaultButton
-                    btnType="primary"
-                    text={"List"}
-                    onClick={() => {
-                      setSectionData((prev: any) => {
-                        const updatedSections = [...prev];
-                        updatedSections[activeIndex] = {
-                          ...updatedSections[activeIndex],
-                          contentType: "list",
-                        };
-                        return updatedSections;
-                      });
-                    }}
-                  />
-                  <DefaultButton
-                    btnType="primary"
-                    text={"Paragraph"}
-                    onClick={() => {
-                      setSectionData((prev: any) => {
-                        const updatedSections = [...prev];
-                        updatedSections[activeIndex] = {
-                          ...updatedSections[activeIndex],
-                          contentType: "paragraph",
-                        };
-                        return updatedSections;
-                      });
-                    }}
-                  />
-                </div>
-              </>
-            </div>
+            currentSectionData?.sectionSubmitted ? (
+              <p className={styles.emptyMsg}>
+                <AccessTimeIcon
+                  style={{
+                    width: "18px",
+                  }}
+                />
+                No content has been developed at this time.
+              </p>
+            ) : (
+              <div className={styles.contentTypeBox}>
+                <>
+                  <span>Please select the content type</span>
+                  <div className={styles.actionsBtns}>
+                    <DefaultButton
+                      btnType="primary"
+                      text={"List"}
+                      onClick={() => {
+                        const updateArray = updateSectionDataLocal(
+                          AllSectionsDataMain,
+                          sectionID,
+                          {
+                            contentType: "list",
+                            sectionSubmitted: false,
+                          }
+                        );
+
+                        dispatch(setCDSectionData([...updateArray]));
+
+                        setSectionData((prev: any) => {
+                          const updatedSections = [...prev];
+                          updatedSections[activeIndex] = {
+                            ...updatedSections[activeIndex],
+                            contentType: "list",
+                          };
+                          return updatedSections;
+                        });
+                      }}
+                    />
+                    <DefaultButton
+                      btnType="primary"
+                      text={"Paragraph"}
+                      onClick={() => {
+                        const updateArray = updateSectionDataLocal(
+                          AllSectionsDataMain,
+                          sectionID,
+                          {
+                            contentType: "paragraph",
+                            sectionSubmitted: false,
+                          }
+                        );
+
+                        dispatch(setCDSectionData([...updateArray]));
+
+                        setSectionData((prev: any) => {
+                          const updatedSections = [...prev];
+                          updatedSections[activeIndex] = {
+                            ...updatedSections[activeIndex],
+                            contentType: "paragraph",
+                          };
+                          return updatedSections;
+                        });
+                      }}
+                    />
+                  </div>
+                </>
+              </div>
+            )
           ) : (
             <p className={styles.emptyMsg}>
               <AccessTimeIcon

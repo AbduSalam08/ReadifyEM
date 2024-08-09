@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable no-lone-blocks */
 /* eslint-disable no-debugger */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-floating-promises */
@@ -23,6 +25,7 @@ import { getHeaderSectionDetails } from "../../../../../services/ContentDevelopm
 import { useDispatch, useSelector } from "react-redux";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import ToastMessage from "../../common/Toast/ToastMessage";
+import { ChevronRight } from "@mui/icons-material";
 const sampleDocHeaderImg: any = require("../../../../../assets/images/png/imagePlaceholder.png");
 
 interface Props {
@@ -72,6 +75,8 @@ const SetupHeader: React.FC<Props> = ({
   console.log("CDHeaderDetails: ", CDHeaderDetails);
   const [totalSize, setTotalSize] = useState(0);
   const [sectionLoader, setSectionLoader] = useState(true);
+  const [expandHeader, setExpandHeader] = useState(true);
+  console.log("expandHeader: ", expandHeader);
   const [file, setFile] = useState<{
     fileData: any;
     fileName: string;
@@ -86,19 +91,41 @@ const SetupHeader: React.FC<Props> = ({
     let _totalSize = totalSize;
     const files = e.files;
     console.log("files: ", files);
-
-    Object.keys(files).forEach((key) => {
-      _totalSize += files[key].size || 0;
-    });
-    setTotalSize(_totalSize);
-    setFile({
-      fileData: files[0],
-      fileName: `headerImg.${files[0]?.name?.split(".").slice(-1)[0]}`,
-    });
-    onChange({
-      fileData: files[0],
-      fileName: `headerImg.${files[0]?.name?.split(".").slice(-1)[0]}`,
-    });
+    const extension: string = files[0]?.name
+      ?.split(".")
+      .slice(-1)[0]
+      ?.toLowerCase();
+    if (
+      extension === "png" ||
+      extension === "svg" ||
+      extension === "jpg" ||
+      extension === "jpeg"
+    ) {
+      Object.keys(files).forEach((key) => {
+        _totalSize += files[key].size || 0;
+      });
+      setTotalSize(_totalSize);
+      setFile({
+        fileData: files[0],
+        // fileName: `headerImg.${files[0]?.name?.split(".").slice(-1)[0]}`,
+        fileName: `${files[0]?.name}`,
+      });
+      onChange({
+        fileData: files[0],
+        // fileName: `headerImg.${files[0]?.name?.split(".").slice(-1)[0]}`,
+        fileName: `${files[0]?.name}`,
+      });
+    } else {
+      setToastMessage({
+        isShow: true,
+        severity: "warn",
+        title: "Invalid file format!",
+        message: `${
+          files[0]?.name?.split(".").slice(-1)[0]
+        } format is not suppoted.`,
+        duration: 3000,
+      });
+    }
   };
 
   const onTemplateClear = (): void => {
@@ -127,6 +154,17 @@ const SetupHeader: React.FC<Props> = ({
   };
 
   const itemTemplate = (fileData: any, props: any): any => {
+    console.log("fileData: ", fileData);
+    // const extension: string =
+    //   fileData?.name?.split(".").slice(-1)[0] ||
+    //   CDHeaderDetails?.fileName?.split(".").slice(-1)[0] ||
+    //   fileData.name?.split(".").slice(-1)[0];
+    // if (
+    //   extension === "png" ||
+    //   extension === "svg" ||
+    //   extension === "jpg" ||
+    //   extension === "jpeg"
+    // ) {
     return (
       <div
         style={{
@@ -184,7 +222,7 @@ const SetupHeader: React.FC<Props> = ({
                 }}
               />
             </span>
-          ) : appendixSection ? (
+          ) : appendixSection && !sectionDetails?.sectionSubmitted ? (
             <span className={styles.selectedFileName}>
               <p>
                 {file?.fileName
@@ -202,6 +240,7 @@ const SetupHeader: React.FC<Props> = ({
                     ? setFile((prev: any) => ({
                         ...prev,
                         fileData: [],
+                        noContent: true,
                       }))
                     : onTemplateRemove(file, props.onRemove);
                 }}
@@ -213,6 +252,9 @@ const SetupHeader: React.FC<Props> = ({
         </div>
       </div>
     );
+    // } else {
+    //   return emptyTemplate();
+    // }
   };
 
   const emptyTemplate = (): JSX.Element | null => {
@@ -221,7 +263,7 @@ const SetupHeader: React.FC<Props> = ({
         <>
           {currentDocRole.primaryAuthor ? (
             <div className="flex align-items-center flex-column fileUploadSection">
-              <i
+              {/* <i
                 className="pi pi-plus mt-3 p-5"
                 style={{
                   fontSize: "5em",
@@ -229,7 +271,8 @@ const SetupHeader: React.FC<Props> = ({
                   backgroundColor: "#e8e6e6",
                   color: "#c5c3c3",
                 }}
-              />
+              /> */}
+              <p className="emptyMsgOfDND">Browse or drag and drop image</p>
             </div>
           ) : (
             <div className="flex align-items-center flex-column fileUploadSection">
@@ -239,9 +282,13 @@ const SetupHeader: React.FC<Props> = ({
         </>
       );
     } else {
-      return (
+      return sectionDetails?.sectionSubmitted ? (
         <div className="flex align-items-center flex-column fileUploadSection">
-          <i
+          <img src={sampleDocHeaderImg} alt="No header image found!" />
+        </div>
+      ) : (
+        <div className="flex align-items-center flex-column fileUploadSection">
+          {/* <i
             className="pi pi-plus mt-3 p-5"
             style={{
               fontSize: "5em",
@@ -249,7 +296,8 @@ const SetupHeader: React.FC<Props> = ({
               backgroundColor: "#e8e6e6",
               color: "#c5c3c3",
             }}
-          />
+          /> */}{" "}
+          <p className="emptyMsgOfDND">Browse or drag and drop image</p>
         </div>
       );
     }
@@ -326,7 +374,19 @@ const SetupHeader: React.FC<Props> = ({
             ? styles.headerWrapper
             : styles.headerWrapperAppendix
         }
+        onClick={() => {
+          setExpandHeader(!expandHeader);
+        }}
       >
+        {!primaryAuthorDefaultHeader && (
+          <ChevronRight
+            style={{
+              transform: !expandHeader ? "rotate(0deg)" : "rotate(90deg)",
+              transition: ".2s all",
+              marginRight: "5px",
+            }}
+          />
+        )}
         <span>
           {currentDocRole?.primaryAuthor ? "Setup" : "Document"} Header
         </span>
@@ -336,7 +396,13 @@ const SetupHeader: React.FC<Props> = ({
           <CircularSpinner />
         </div>
       ) : (
-        <div className={styles.setupHeaderWrapper}>
+        <div
+          className={
+            expandHeader
+              ? styles.setupHeaderWrapperExpanded
+              : styles.setupHeaderWrapper
+          }
+        >
           <div className={styles.logoUploadWrapper}>
             <FileUpload
               ref={fileUploadRef}
@@ -346,8 +412,11 @@ const SetupHeader: React.FC<Props> = ({
               onSelect={onTemplateSelect}
               onClear={onTemplateClear}
               headerTemplate={
-                (currentDocRole?.primaryAuthor || appendixSection) &&
-                headerTemplate
+                currentDocRole?.primaryAuthor && !appendixSection
+                  ? headerTemplate
+                  : appendixSection && !sectionDetails?.sectionSubmitted
+                  ? headerTemplate
+                  : null
               }
               itemTemplate={itemTemplate}
               emptyTemplate={

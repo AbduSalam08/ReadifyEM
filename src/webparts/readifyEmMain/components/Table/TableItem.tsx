@@ -217,7 +217,7 @@ const TableItem: React.FC<TableItemProps> = ({
                   handleData(e.value);
                 }}
                 dragdrop={isAdmin}
-                // focusOnHover={false}
+                focusOnHover={false}
               />
               <OrderList
                 dataKey={`ChildFolders_${item.name}`}
@@ -230,7 +230,7 @@ const TableItem: React.FC<TableItemProps> = ({
                   handleData(e.value);
                 }}
                 dragdrop={isAdmin}
-                // focusOnHover={false}
+                focusOnHover={false}
               />
             </div>
           )}
@@ -309,7 +309,7 @@ const TableItem: React.FC<TableItemProps> = ({
                 handleData(e.value);
               }}
               dragdrop={isAdmin}
-              // focusOnHover={false}
+              focusOnHover={false}
             />
 
             <OrderList
@@ -323,7 +323,7 @@ const TableItem: React.FC<TableItemProps> = ({
                 handleData(e.value);
               }}
               dragdrop={isAdmin}
-              // focusOnHover={false}
+              focusOnHover={false}
             />
           </div>
         </div>

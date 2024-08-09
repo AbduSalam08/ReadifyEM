@@ -45,6 +45,14 @@
   background-position: 0 0, 0 0, 100% 0, 0 100%;
   background-repeat: no-repeat;
 }
+.fileUploadSection .emptyMsgOfDND {
+  font-size: 13px;
+  color: #adadad;
+  text-align: center;
+  font-family: "interRegular", sans-serif !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
 .fileUploadSection i {
   background-color: #d9d9d910 !important;
   display: flex;
@@ -68,8 +76,9 @@
   height: 150px;
 }
 .imageDeleteBtn {
-  width: 20px;
+  width: 18px;
   height: 20px;
+  padding: 10px;
   font-size: 13px;
   margin-left: 10px;
 }

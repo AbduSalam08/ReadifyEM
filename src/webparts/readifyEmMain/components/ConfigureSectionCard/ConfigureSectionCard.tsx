@@ -1,3 +1,4 @@
+/* eslint-disable react/self-closing-comp */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-use-before-define */
@@ -404,8 +405,8 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
               reOrderSections(value);
               // handleDrag(objKey, value);
             }}
-            // focusOnHover={false}
-          />
+            focusOnHover={false}
+          ></OrderList>
         ) : (
           <span className={styles.emtpyMsg}>Empty section</span>
         )}

@@ -72,6 +72,12 @@ const Header: React.FC<Props> = ({
           <StatusPill size="MD" bordered={true} status={documentStatus} />
         </div>
         <div style={{ display: "flex", gap: "10px" }}>
+          {/* <DefaultButton
+            text="Promote"
+            btnType="secondary"
+            endIcon={<img src={locationIcon} alt="track" />}
+            onClick={() => selectSection(1, "Document Tracker")}
+          /> */}
           <DefaultButton
             text="Track"
             btnType="secondary"

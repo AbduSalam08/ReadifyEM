@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -13,10 +14,18 @@ import {
   addAppendixHeaderAttachmentData,
   UpdateSectionAttachment,
 } from "../../../../../utils/contentDevelopementUtils";
-import { getAppendixHeaderSectionDetails } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
-import { useDispatch } from "react-redux";
+import {
+  addRejectedComment,
+  getAppendixHeaderSectionDetails,
+} from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
+import { useDispatch, useSelector } from "react-redux";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import ToastMessage from "../../common/Toast/ToastMessage";
+import { togglePopupVisibility } from "../../../../../utils/togglePopup";
+import Popup from "../../common/Popups/Popup";
+import SecondaryTextLabel from "../../common/SecondaryText/SecondaryText";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
 // import SpServices from "../../../../../services/SPServices/SpServices";
 // import { LISTNAMES } from "../../../../../config/config";
 interface IAppendixSectionProps {
@@ -38,10 +47,164 @@ const AppendixContent = ({
   isLoading,
   currentDocRole,
 }: IAppendixSectionProps): JSX.Element => {
+  console.log("sectionDetails: ", sectionDetails);
   console.log("contentType: ", contentType);
   console.log("sectionDetails: ", sectionDetails);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const currentUserDetails: any = useSelector(
+    (state: any) => state?.MainSPContext?.currentUserDetails
+  );
+
+  const AllSectionsDataMain: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDSectionsData
+  );
+
+  const AllSectionsComments: any = useSelector(
+    (state: any) => state.SectionCommentsData.SectionComments
+  );
+  const initialPopupController = [
+    {
+      open: false,
+      popupTitle: "Are you sure want to submit this section?",
+      popupWidth: "340px",
+      popupType: "confirmation",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "Add New Definition",
+      popupWidth: "550px",
+      popupType: "custom",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+  ];
+
+  const [popupController, setPopupController] = useState(
+    initialPopupController
+  );
+
+  // util for closing popup
+  const handleClosePopup = (index?: any): void => {
+    togglePopupVisibility(setPopupController, index, "close");
+  };
+
+  // Rejected comments state
+  const [rejectedComments, setRejectedComments] = useState<any>({
+    rejectedComment: "",
+    IsValid: false,
+    ErrorMsg: "",
+  });
+
+  const popupInputs: any[] = [
+    [],
+    [
+      <CustomTextArea
+        size="MD"
+        labelText="Comments"
+        withLabel
+        icon={false}
+        mandatory={true}
+        textAreaWidth={"100%"}
+        value={rejectedComments.rejectedComment}
+        onChange={(value: any) => {
+          setRejectedComments({
+            ...rejectedComments,
+            rejectedComment: value,
+            IsValid: false,
+          });
+        }}
+        placeholder="Enter Description"
+        isValid={rejectedComments.IsValid}
+        errorMsg={rejectedComments.ErrorMsg}
+        key={2}
+      />,
+    ],
+  ];
+
+  const popupActions: any[] = [
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(0);
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          // handleClosePopup(2);
+          await addData("submit");
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(1);
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          // handleClosePopup(2);
+          await submitRejectedComment();
+        },
+      },
+    ],
+  ];
+
+  const submitRejectedComment = async (): Promise<any> => {
+    console.log(rejectedComments);
+    debugger;
+    if (rejectedComments.rejectedComment?.trim() !== "") {
+      setRejectedComments({
+        ...rejectedComments,
+        rejectedComment: "",
+        IsValid: false,
+        ErrorMsg: "",
+      });
+      await addRejectedComment(
+        rejectedComments.rejectedComment,
+        currentDocDetailsData,
+        sectionDetails?.ID,
+        handleClosePopup,
+        setToastMessage,
+        setToastMessage,
+        currentUserDetails,
+        AllSectionsComments,
+        AllSectionsDataMain,
+        dispatch
+      );
+    } else {
+      setRejectedComments({
+        ...rejectedComments,
+        IsValid: true,
+        ErrorMsg: "Please enter comments",
+      });
+    }
+  };
+
   const [toastMessage, setToastMessage] = useState<any>({
     isShow: false,
     severity: "",
@@ -71,8 +234,14 @@ const AppendixContent = ({
   };
 
   const addData = async (submissionType?: any): Promise<any> => {
+    debugger;
+    togglePopupVisibility(
+      setPopupController,
+      0,
+      "close",
+      "Are you sure want to submit this section?"
+    );
     setSectionLoader(true);
-
     const _file: any = await convertToTxtFile();
     let sectionAttachmentCall: any;
     let appendixSectionAttachmentCall: any;
@@ -82,14 +251,18 @@ const AppendixContent = ({
         _file,
         sectionDetails?.contentType,
         submissionType === "submit",
-        "Sample.txt"
+        "Sample.txt",
+        false,
+        AllSectionsDataMain,
+        dispatch
       );
     }
     if (headerImgDetails?.fileName !== "") {
       appendixSectionAttachmentCall = await addAppendixHeaderAttachmentData(
         submissionType,
         sectionDetails,
-        headerImgDetails
+        headerImgDetails,
+        headerImgDetails?.noContent || false
         // headerImgDetails?.fileData?.length === 0
       );
     }
@@ -124,29 +297,6 @@ const AppendixContent = ({
       });
   };
 
-  // const getCurrentSectionType = async (): Promise<void> => {
-  //   await SpServices.SPReadItemUsingId({
-  //     Listname: LISTNAMES.SectionDetails,
-  //     SelectedId: sectionDetails?.ID,
-  //     Select: "*,documentOf/ID",
-  //     Expand: "documentOf",
-  //   })
-  //     .then((res: any) => {
-  //       console.log("res: ", res);
-  //       setSectionData((prev: any) => {
-  //         const updatedSections = [...prev];
-  //         updatedSections[activeIndex] = {
-  //           ...updatedSections[activeIndex],
-  //           contentType: res?.typeOfContent,
-  //         };
-  //         return updatedSections;
-  //       });
-  //     })
-  //     .catch((err: any) => {
-  //       console.log("err: ", err);
-  //     });
-  // };
-
   useEffect(() => {
     getAppendixHeaderSectionDetails(
       sectionDetails?.ID,
@@ -176,6 +326,7 @@ const AppendixContent = ({
             primaryAuthorDefaultHeader={false}
             noActionBtns={true}
             onChange={(value: any) => {
+              console.log("value: ", value);
               setHeaderImgDetails(value);
             }}
           />
@@ -190,6 +341,7 @@ const AppendixContent = ({
                 noActionBtns={true}
                 setSectionData={setSectionData}
                 currentSectionData={sectionDetails}
+                sectionID={sectionDetails?.ID}
               />
             ) : contentType === "list" ? (
               <SectionContent
@@ -242,6 +394,19 @@ const AppendixContent = ({
             paddingTop: "10px",
           }}
         >
+          {sectionDetails?.sectionSubmitted && (
+            <SecondaryTextLabel
+              icon={
+                <AccessTimeIcon
+                  style={{
+                    width: "17px",
+                  }}
+                />
+              }
+              text="yet to be reviewed"
+            />
+          )}
+
           <DefaultButton
             text="Close"
             btnType="darkGreyVariant"
@@ -249,62 +414,75 @@ const AppendixContent = ({
               navigate(-1);
             }}
           />
-          {(showActionBtns && currentDocRole?.primaryAuthor) ||
-          currentDocRole?.sectionAuthor ? (
-            <>
-              {(currentDocRole?.primaryAuthor ||
-                currentDocRole?.reviewer ||
-                currentDocRole?.approver) &&
-                sectionDetails?.sectionSubmitted && (
-                  <DefaultButton
-                    disabled={sectionLoader}
-                    text="Reject"
-                    btnType="secondaryRed"
-                    onClick={() => {
-                      console.log("rejected");
-                    }}
-                  />
-                )}
-              <DefaultButton
-                disabled={sectionLoader}
-                text="Reset content"
-                btnType="secondaryRed"
-                onClick={() => {
-                  setSectionData((prev: any) => {
-                    const updatedSections = [...prev];
-                    updatedSections[activeIndex] = {
-                      ...updatedSections[activeIndex],
-                      contentType: "initial",
-                    };
-                    return updatedSections;
-                  });
-                }}
-              />
-              <DefaultButton
-                disabled={sectionLoader}
-                text="Save and Close"
-                btnType="lightGreyVariant"
-                onClick={async () => {
-                  await addData();
-                }}
-              />
-              {currentDocRole?.sectionAuthor ||
-              currentDocRole?.primaryAuthor ? (
-                <DefaultButton
-                  disabled={sectionLoader}
-                  text="Submit"
-                  btnType="primary"
-                  onClick={async () => {
-                    await addData("submit");
-                  }}
-                />
-              ) : (
-                ""
-              )}
-            </>
-          ) : (
-            ""
-          )}
+
+          {showActionBtns &&
+            (currentDocRole?.primaryAuthor ||
+              currentDocRole?.sectionAuthor) && (
+              <>
+                {sectionDetails?.sectionSubmitted &&
+                  (currentDocRole?.primaryAuthor ||
+                    currentDocRole?.reviewer ||
+                    currentDocRole?.approver) && (
+                    <DefaultButton
+                      disabled={sectionLoader}
+                      text="Reject"
+                      btnType="secondaryRed"
+                      onClick={() => {
+                        togglePopupVisibility(
+                          setPopupController,
+                          1,
+                          "open",
+                          "Reason for rejection"
+                        );
+                      }}
+                    />
+                  )}
+
+                {!sectionDetails?.sectionSubmitted &&
+                  (currentDocRole?.sectionAuthor ||
+                    currentDocRole?.primaryAuthor) && (
+                    <>
+                      <DefaultButton
+                        disabled={sectionLoader}
+                        text="Reset content"
+                        btnType="secondaryRed"
+                        onClick={() => {
+                          setSectionData((prev: any) => {
+                            const updatedSections = [...prev];
+                            updatedSections[activeIndex] = {
+                              ...updatedSections[activeIndex],
+                              contentType: "initial",
+                            };
+                            return updatedSections;
+                          });
+                        }}
+                      />
+                      <DefaultButton
+                        disabled={sectionLoader}
+                        text="Save and Close"
+                        btnType="lightGreyVariant"
+                        onClick={async () => {
+                          await addData();
+                        }}
+                      />
+                      <DefaultButton
+                        disabled={sectionLoader}
+                        text="Submit"
+                        btnType="primary"
+                        onClick={() => {
+                          // await addData("submit");
+                          togglePopupVisibility(
+                            setPopupController,
+                            0,
+                            "open",
+                            "Are you sure want to submit this section?"
+                          );
+                        }}
+                      />
+                    </>
+                  )}
+              </>
+            )}
         </div>
       </div>
       <ToastMessage
@@ -315,6 +493,29 @@ const AppendixContent = ({
         isShow={toastMessage.isShow}
         setToastMessage={setToastMessage}
       />
+
+      {popupController?.map((popupData: any, index: number) => (
+        <Popup
+          key={index}
+          // isLoading={sectionLoader}
+          PopupType={popupData.popupType}
+          onHide={() =>
+            togglePopupVisibility(setPopupController, index, "close")
+          }
+          popupTitle={
+            popupData.popupType !== "confimation" && popupData.popupTitle
+          }
+          popupActions={popupActions[index]}
+          visibility={popupData.open}
+          content={popupInputs[index]}
+          popupWidth={popupData.popupWidth}
+          defaultCloseBtn={popupData.defaultCloseBtn || false}
+          confirmationTitle={
+            popupData.popupType !== "custom" ? popupData.popupTitle : ""
+          }
+          popupHeight={index === 0 ? true : false}
+        />
+      ))}
     </>
   );
 };
