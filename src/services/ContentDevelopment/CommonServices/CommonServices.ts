@@ -13,6 +13,7 @@ import {
 } from "../../../redux/features/ContentDevloperSlice";
 import { sp } from "@pnp/sp/presets/all";
 import { setSectionComments } from "../../../redux/features/SectionCommentsSlice";
+import { updateSectionDataLocal } from "../../../utils/contentDevelopementUtils";
 
 export const getSectionsDetails = async (
   taskDetails: any,
@@ -257,8 +258,11 @@ export const AddAttachment = async (
   fileName?: string,
   listType?: "appendix",
   documentID?: any,
-  sectionID?: any
+  sectionID?: any,
+  AllSectionsDataMain?: any,
+  dispatch?: any
 ): Promise<any> => {
+  debugger;
   if (listType === "appendix" && !itemID && sectionID) {
     await SpServices.SPAddItem({
       Listname: LISTNAMES.AppendixHeader,
@@ -326,10 +330,22 @@ export const AddAttachment = async (
       RequestJSON: {
         typeOfContent: contentType,
         sectionSubmitted: saveAndClose ? saveAndClose : false,
+        status: saveAndClose ? "submitted" : "content in progress",
       },
     })
       .then((res: any) => {
         console.log("res: ", res);
+        const updateArray = updateSectionDataLocal(
+          AllSectionsDataMain,
+          itemID,
+          {
+            contentType: contentType,
+            sectionSubmitted: saveAndClose ? saveAndClose : false,
+            sectionStatus: saveAndClose ? "submitted" : "content in progress",
+          }
+        );
+
+        dispatch(setCDSectionData([...updateArray]));
       })
       .catch((err: any) => {
         console.log("err: ", err);
@@ -343,11 +359,14 @@ export const UpdateAttachment = async (
   contentType: any,
   saveAndClose?: boolean | any,
   fileName?: string,
+  AllSectionsDataMain?: any,
+  dispatch?: any,
   deleteAttachment?: any,
   listType?: "appendix",
   documentID?: any,
   sectionID?: any
 ): Promise<any> => {
+  debugger;
   if (deleteAttachment) {
     await SpServices.SPDeleteAttachments({
       ListName:
@@ -379,7 +398,9 @@ export const UpdateAttachment = async (
       fileName,
       listType,
       documentID,
-      sectionID
+      sectionID,
+      AllSectionsDataMain,
+      dispatch
     );
   }
 };
@@ -703,8 +724,8 @@ export const addPromotedComment = async (
       setToastState({
         isShow: true,
         severity: "success",
-        title: "Update promote comments",
-        message: "Successfully added promote comments",
+        title: "Comment added!",
+        message: "your comments has been added successfully.",
         duration: 3000,
       });
     })
@@ -734,6 +755,16 @@ export const addRejectedComment = async (
     createdById: currentUserDetails?.id,
     isRejectedComment: true,
   };
+
+  await SpServices.SPUpdateItem({
+    ID: sectionId,
+    Listname: LISTNAMES.SectionDetails,
+    RequestJSON: {
+      status: "Rework in progress",
+      sectionSubmitted: false,
+    },
+  });
+
   await SpServices.SPAddItem({
     Listname: LISTNAMES.SectionComments,
     RequestJSON: jsonObject,
@@ -758,9 +789,14 @@ export const addRejectedComment = async (
       });
       dispatcher(setSectionComments([...tempArray]));
 
-      const updateArray = AllSectionsDataMain.map((obj: any) => {
+      const updateArray = AllSectionsDataMain?.map((obj: any) => {
         if (obj.ID === sectionId) {
-          return { ...obj, commentsCount: obj.commentsCount + 1 };
+          return {
+            ...obj,
+            commentsCount: obj.commentsCount + 1,
+            sectionStatus: "Rework in progress",
+            sectionSubmitted: false,
+          };
         } else {
           return obj;
         }
@@ -772,8 +808,8 @@ export const addRejectedComment = async (
       setToastState({
         isShow: true,
         severity: "success",
-        title: "Update promote comments",
-        message: "Successfully added promote comments",
+        title: "Comment added!",
+        message: "your comments has been added successfully.",
         duration: 3000,
       });
     })

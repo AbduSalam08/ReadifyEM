@@ -26,8 +26,6 @@ import {
   getPromotedComments,
   getSectionComments,
 } from "../../services/ContentDevelopment/SectionComments/SectionComments";
-// import CustomMutiplePeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomMutiplePeoplePicker";
-// import ViewDetails from "../../webparts/readifyEmMain/components/ContentDevelopment/ViewDetails/ViewDetails";
 
 // toggle popup funtion
 import { togglePopupVisibility } from "../../utils/togglePopup";
@@ -35,15 +33,16 @@ import { togglePopupVisibility } from "../../utils/togglePopup";
 const commentIcon = require("../../assets/images/svg/violetCommentIcon.svg");
 // styles
 import styles from "./ContentDevelopment.module.scss";
+
 // loader
 import CircularSpinner from "../../webparts/readifyEmMain/components/common/AppLoader/CircularSpinner";
 
 // import Services and buttons
-// import SpServices from "../../services/SPServices/SpServices";
 import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
 import CustomTextArea from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomTextArea";
 import { addPromotedComment } from "../../services/ContentDevelopment/CommonServices/CommonServices";
 import ToastMessage from "../../webparts/readifyEmMain/components/common/Toast/ToastMessage";
+import { calculateDueDateByRole } from "../../utils/validations";
 
 const Details = {
   sectionName: "Introduction",
@@ -147,6 +146,22 @@ const ContentDevelopment = (): JSX.Element => {
       defaultCloseBtn: true,
       popupData: "",
     },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "513px",
+      popupType: "custom",
+      defaultCloseBtn: true,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "400px",
+      popupType: "confirmation",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
   ];
 
   const [initialLoader, setInitialLoader] = useState(true);
@@ -193,8 +208,6 @@ const ContentDevelopment = (): JSX.Element => {
       currentDocDetailsData?.taskRole?.toLowerCase() === "section author",
     consultant: currentDocDetailsData?.taskRole?.toLowerCase() === "consultant",
   });
-
-  console.log("currentDocRole: ", currentDocRole);
 
   const enabledSection = AllSectionsDataMain?.filter(
     (el: any) => el?.sectionPermission
@@ -255,6 +268,8 @@ const ContentDevelopment = (): JSX.Element => {
     [
       <SectionComments
         commentsData={sectionDetails.comments}
+        currentSectionData={AllSectionsData[activeSection]}
+        currentDocRole={currentDocRole}
         isHeader={false}
         key={1}
         noCommentInput={true}
@@ -280,6 +295,34 @@ const ContentDevelopment = (): JSX.Element => {
       />,
       <CustomInput
         size="MD"
+        labelText="Document version"
+        withLabel
+        icon={false}
+        value={currentDocDetailsData?.version}
+        onChange={(value: any) => {
+          // handleOnChangeFunction(value, "definitionName");
+        }}
+        readOnly={true}
+        noBorderInput={true}
+        hideErrMsg={true}
+        key={1}
+      />,
+      <CustomInput
+        size="MD"
+        labelText="Document type"
+        withLabel
+        icon={false}
+        value={currentDocDetailsData?.documentType}
+        onChange={(value: any) => {
+          // handleOnChangeFunction(value, "definitionName");
+        }}
+        readOnly={true}
+        noBorderInput={true}
+        hideErrMsg={true}
+        key={1}
+      />,
+      <CustomInput
+        size="MD"
         labelText="Created on"
         withLabel
         icon={false}
@@ -294,10 +337,10 @@ const ContentDevelopment = (): JSX.Element => {
       />,
       <CustomInput
         size="MD"
-        labelText="Due on"
+        labelText="Next review date"
         withLabel
         icon={false}
-        value={currentDocDetailsData?.dueOnDate}
+        value={currentDocDetailsData?.nextReviewDate}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "definitionName");
         }}
@@ -308,10 +351,13 @@ const ContentDevelopment = (): JSX.Element => {
       />,
       <CustomInput
         size="MD"
-        labelText="Next review date"
+        labelText="Due on"
         withLabel
         icon={false}
-        value={currentDocDetailsData?.nextReviewDate}
+        value={calculateDueDateByRole(
+          currentDocDetailsData?.dueOnDate,
+          "document"
+        )}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "definitionName");
         }}
@@ -460,6 +506,30 @@ const ContentDevelopment = (): JSX.Element => {
         },
       },
     ],
+    [],
+    [
+      {
+        text: "No",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(5);
+        },
+      },
+      {
+        text: "Yes",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          handleClosePopup(5);
+          // await submitPromotedComment();
+        },
+      },
+    ],
   ];
 
   const popuphandleOnChanges = (
@@ -540,7 +610,9 @@ const ContentDevelopment = (): JSX.Element => {
               <div className={styles.sectionWrapper}>
                 <div className={styles.allSectionWrapper}>
                   <AllSections
+                    currentDocRole={currentDocRole}
                     activeSection={activeSection}
+                    currentDocDetailsData={currentDocDetailsData}
                     data={AllSectionsData}
                     onChange={(
                       value: any,
@@ -551,9 +623,18 @@ const ContentDevelopment = (): JSX.Element => {
                     // primaryAuthor={true}
                   />
                 </div>
-                {currentDocRole.reviewer ||
-                  (currentDocRole.approver && (
-                    <div className={styles.promotedBtnWrapper}>
+                {(currentDocRole.reviewer ||
+                  currentDocRole.approver ||
+                  currentDocRole.primaryAuthor) && (
+                  <div
+                    className={styles.promotedBtnWrapper}
+                    style={{
+                      justifyContent: currentDocRole.primaryAuthor
+                        ? "flex-end"
+                        : "space-between",
+                    }}
+                  >
+                    {(currentDocRole.reviewer || currentDocRole.approver) && (
                       <DefaultButton
                         text={`Mark as all ${
                           currentDocRole.reviewer
@@ -565,20 +646,30 @@ const ContentDevelopment = (): JSX.Element => {
                         btnType="secondary"
                         // onClick={() => selectSection(1, "Document Tracker")}
                       />
-                      <DefaultButton
-                        text="Promote"
-                        btnType="primary"
-                        onClick={() =>
+                    )}
+                    <DefaultButton
+                      text="Promote"
+                      btnType="primary"
+                      onClick={() => {
+                        if (currentDocRole.primaryAuthor) {
+                          togglePopupVisibility(
+                            setPopupController,
+                            5,
+                            "open",
+                            "Are you sure you want to promote this document for review?"
+                          );
+                        } else {
                           togglePopupVisibility(
                             setPopupController,
                             3,
                             "open",
                             "Confirmation for completion"
-                          )
+                          );
                         }
-                      />
-                    </div>
-                  ))}
+                      }}
+                    />
+                  </div>
+                )}
               </div>
               <div className={styles.contentWrapper}>
                 {AllSectionsData[activeSection]?.sectionName !== "" &&
@@ -586,6 +677,7 @@ const ContentDevelopment = (): JSX.Element => {
                   "header" ? (
                   <SectionHeader
                     currentDocRole={currentDocRole}
+                    currentDocDetailsData={currentDocDetailsData}
                     activeSectionData={AllSectionsData[activeSection]}
                     documentName={AllSectionsData[activeSection]?.sectionName}
                     sectionAuthor={
@@ -599,6 +691,7 @@ const ContentDevelopment = (): JSX.Element => {
                   />
                 ) : (
                   <SectionHeader
+                    currentDocDetailsData={currentDocDetailsData}
                     currentDocRole={currentDocRole}
                     activeSectionData={AllSectionsData[activeSection]}
                     documentName={AllSectionsData[activeSection]?.sectionName}
@@ -635,7 +728,8 @@ const ContentDevelopment = (): JSX.Element => {
                       width: "100%",
                       display: "flex",
                       alignItems: "stretch",
-                      justifyContent: "center",
+                      // justifyContent: "center",
+                      justifyContent: "space-between",
                       gap: "10px",
                     }}
                   >
@@ -677,6 +771,8 @@ const ContentDevelopment = (): JSX.Element => {
                         ]?.sectionName?.toLowerCase() ===
                         "supporting materials" ? (
                         <SupportingDocuments
+                          currentDocRole={currentDocRole}
+                          currentSectionDetails={AllSectionsData[activeSection]}
                           sectionId={AllSectionsData[activeSection]?.ID}
                           documentId={
                             AllSectionsData[activeSection]?.documentOfId
@@ -703,14 +799,14 @@ const ContentDevelopment = (): JSX.Element => {
                             AllSectionsData[activeSection]?.sectionOrder
                           }
                           ID={AllSectionsData[activeSection]?.ID}
-                          noActionBtns={!showActionBtns}
+                          noActionBtns={false}
                         />
                       ) : (
                         <RichText
                           currentDocRole={currentDocRole}
                           activeIndex={activeSection}
                           setSectionData={setAllSectionsData}
-                          noActionBtns={!showActionBtns}
+                          noActionBtns={false}
                           ID={AllSectionsData[activeSection]?.ID}
                           currentSectionData={AllSectionsData[activeSection]}
                         />
@@ -741,6 +837,8 @@ const ContentDevelopment = (): JSX.Element => {
                         ""
                       )}
                       <SectionComments
+                        currentSectionData={AllSectionsData[activeSection]}
+                        currentDocRole={currentDocRole}
                         commentsData={sectionDetails.comments}
                         isHeader={true}
                         setToggleCommentSection={setToggleCommentSection}

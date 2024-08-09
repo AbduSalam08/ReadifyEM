@@ -30,7 +30,7 @@ import CustomTextArea from "../../webparts/readifyEmMain/components/common/Custo
 const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
 const deleteIcon: any = require("../../assets/images/svg/deleteIcon.svg");
 const viewDocBtn: any = require("../../assets/images/svg/viewEye.svg");
-const ApproveBtn: any = require("../../assets/images/svg/tickGreen.svg");
+const ApproveBtn: any = require("../../assets/images/svg/addIconPurple.svg");
 
 interface IDefinitionDetails {
   ID: number | null;
@@ -933,7 +933,7 @@ const Definitions = (): JSX.Element => {
                     <img
                       src={deleteIcon}
                       style={{
-                        height: "20px",
+                        height: "19px",
                       }}
                     />
                   }
@@ -963,7 +963,7 @@ const Definitions = (): JSX.Element => {
                       <img
                         src={ApproveBtn}
                         style={{
-                          height: "15px",
+                          height: "19px",
                         }}
                       />
                     }

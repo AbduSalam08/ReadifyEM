@@ -31,6 +31,15 @@
 }
 .setupHeaderWrapper {
   display: flex;
+  height: 0;
+  overflow: hidden;
+  transition: all 0.2s !important;
+}
+.setupHeaderWrapperExpanded {
+  display: flex;
+  height: 265px;
+  overflow: hidden;
+  transition: all 0.2s !important;
 }
 .logoUploadWrapper {
   width: 50%;

@@ -9,6 +9,7 @@
   --current-color: #ffc107;
   --hidden-color: #607d8b;
   --contentInProgress-color: #fff7e8;
+  --contentSubmitted-color: #e8fff3;
   --reviewInProgress-color: #e3fdff;
   --approvalInProgress-color: #e3e8ff;
   --reworkInProgress-color: #ffe3e5;
@@ -69,6 +70,10 @@
   &.contentInProgress {
     background-color: var(--contentInProgress-color);
     color: #b57801;
+  }
+  &.contentSubmitted {
+    background-color: var(--contentSubmitted-color);
+    color: #01b540;
   }
   &.reviewInProgress {
     background-color: var(--reviewInProgress-color);
@@ -156,6 +161,11 @@
 
 .contentInProgressDOT {
   background-color: #b57801;
+  margin: 0 5px;
+  margin-left: 0;
+}
+.contentSubmittedDOT {
+  background-color: #01b540;
   margin: 0 5px;
   margin-left: 0;
 }

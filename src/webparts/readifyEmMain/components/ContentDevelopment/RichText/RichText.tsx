@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable no-unused-expressions */
@@ -9,6 +10,7 @@ import "react-quill/dist/quill.snow.css";
 import "./RichText.css";
 import DefaultButton from "../../common/Buttons/DefaultButton";
 import {
+  addRejectedComment,
   // AddAttachment,
   UpdateAttachment,
 } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
@@ -19,6 +21,10 @@ import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import ToastMessage from "../../common/Toast/ToastMessage";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SecondaryTextLabel from "../../common/SecondaryText/SecondaryText";
+import { togglePopupVisibility } from "../../../../../utils/togglePopup";
+import Popup from "../../common/Popups/Popup";
+import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
+import { useDispatch, useSelector } from "react-redux";
 
 interface IRichTextProps {
   noActionBtns?: boolean;
@@ -39,6 +45,131 @@ const RichText = ({
   onChange,
   currentDocRole,
 }: IRichTextProps): JSX.Element => {
+  const dispatch = useDispatch();
+
+  const initialPopupController = [
+    {
+      open: false,
+      popupTitle: "Are you sure want to submit this section?",
+      popupWidth: "340px",
+      popupType: "confirmation",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "550px",
+      popupType: "custom",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+  ];
+  // Rejected comments state
+  const [rejectedComments, setRejectedComments] = useState<any>({
+    rejectedComment: "",
+    IsValid: false,
+    ErrorMsg: "",
+  });
+  const currentUserDetails: any = useSelector(
+    (state: any) => state?.MainSPContext?.currentUserDetails
+  );
+
+  const currentDocDetailsData: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDDocDetails
+  );
+
+  const AllSectionsDataMain: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDSectionsData
+  );
+
+  const AllSectionsComments: any = useSelector(
+    (state: any) => state.SectionCommentsData.SectionComments
+  );
+  const [popupController, setPopupController] = useState(
+    initialPopupController
+  );
+
+  // util for closing popup
+  const handleClosePopup = (index?: any): void => {
+    togglePopupVisibility(setPopupController, index, "close");
+  };
+
+  const popupInputs: any[] = [
+    [],
+    [
+      <CustomTextArea
+        size="MD"
+        labelText="Comments"
+        withLabel
+        icon={false}
+        mandatory={true}
+        textAreaWidth={"100%"}
+        value={rejectedComments.rejectedComment}
+        onChange={(value: any) => {
+          setRejectedComments({
+            ...rejectedComments,
+            rejectedComment: value,
+            IsValid: false,
+          });
+        }}
+        placeholder="Enter Description"
+        isValid={rejectedComments.IsValid}
+        errorMsg={rejectedComments.ErrorMsg}
+        key={2}
+      />,
+    ],
+  ];
+
+  const popupActions: any[] = [
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(0);
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          // handleClosePopup(2);
+          await addData("submit");
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(1);
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          // handleClosePopup(2);
+          await submitRejectedComment();
+        },
+      },
+    ],
+  ];
+
   console.log("currentSectionData: ", currentSectionData);
   const [toastMessage, setToastMessage] = useState<any>({
     isShow: false,
@@ -133,6 +264,36 @@ const RichText = ({
       });
   };
 
+  const submitRejectedComment = async (): Promise<any> => {
+    console.log(rejectedComments);
+    if (rejectedComments.rejectedComment?.trim() !== "") {
+      setRejectedComments({
+        ...rejectedComments,
+        rejectedComment: "",
+        IsValid: false,
+        ErrorMsg: "",
+      });
+      await addRejectedComment(
+        rejectedComments.rejectedComment,
+        currentDocDetailsData,
+        currentSectionData?.ID,
+        handleClosePopup,
+        setToastMessage,
+        setToastMessage,
+        currentUserDetails,
+        AllSectionsComments,
+        AllSectionsDataMain,
+        dispatch
+      );
+    } else {
+      setRejectedComments({
+        ...rejectedComments,
+        IsValid: true,
+        ErrorMsg: "Please enter comments",
+      });
+    }
+  };
+
   const getSectionData = async (): Promise<any> => {
     setSectionLoader(true);
     await SpServices.SPGetAttachments({
@@ -169,6 +330,12 @@ const RichText = ({
   };
 
   const addData = async (submissionType?: any): Promise<any> => {
+    togglePopupVisibility(
+      setPopupController,
+      0,
+      "close",
+      "Are you sure want to submit this section?"
+    );
     setSectionLoader(true);
     let addDataPromises: Promise<any>;
     const _file: any = await convertToTxtFile();
@@ -185,7 +352,9 @@ const RichText = ({
       _file,
       "paragraph",
       submissionType === "submit",
-      "Sample.txt"
+      "Sample.txt",
+      AllSectionsDataMain,
+      dispatch
     );
     Promise.all([addDataPromises])
       .then((res: any) => {
@@ -294,7 +463,12 @@ const RichText = ({
                       disabled={sectionLoader}
                       btnType="secondaryRed"
                       onClick={() => {
-                        console.log("rejected");
+                        togglePopupVisibility(
+                          setPopupController,
+                          1,
+                          "open",
+                          "Reason for rejection"
+                        );
                       }}
                     />
                   )}
@@ -330,8 +504,14 @@ const RichText = ({
                         text="Submit"
                         disabled={sectionLoader}
                         btnType="primary"
-                        onClick={async () => {
-                          await addData("submit");
+                        onClick={() => {
+                          // await addData("submit");
+                          togglePopupVisibility(
+                            setPopupController,
+                            0,
+                            "open",
+                            "Are you sure want to submit this section?"
+                          );
                         }}
                       />
                     )}
@@ -364,6 +544,28 @@ const RichText = ({
         isShow={toastMessage.isShow}
         setToastMessage={setToastMessage}
       />
+      {popupController?.map((popupData: any, index: number) => (
+        <Popup
+          key={index}
+          // isLoading={sectionLoader}
+          PopupType={popupData.popupType}
+          onHide={() =>
+            togglePopupVisibility(setPopupController, index, "close")
+          }
+          popupTitle={
+            popupData.popupType !== "confimation" && popupData.popupTitle
+          }
+          popupActions={popupActions[index]}
+          visibility={popupData.open}
+          content={popupInputs[index]}
+          popupWidth={popupData.popupWidth}
+          defaultCloseBtn={popupData.defaultCloseBtn || false}
+          confirmationTitle={
+            popupData.popupType !== "custom" ? popupData.popupTitle : ""
+          }
+          popupHeight={index === 0 ? true : false}
+        />
+      ))}
     </div>
   );
 };

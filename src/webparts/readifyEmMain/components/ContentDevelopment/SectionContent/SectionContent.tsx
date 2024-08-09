@@ -1,3 +1,5 @@
+/* eslint-disable no-debugger */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-floating-promises */
@@ -8,12 +10,19 @@ import DefaultButton from "../../common/Buttons/DefaultButton";
 import ContentEditor from "./ContentEditor/ContentEditor";
 import { useNavigate } from "react-router-dom";
 import SpServices from "../../../../../services/SPServices/SpServices";
-import { UpdateAttachment } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
+import {
+  addRejectedComment,
+  UpdateAttachment,
+} from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { LISTNAMES } from "../../../../../config/config";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import ToastMessage from "../../common/Toast/ToastMessage";
 import SecondaryTextLabel from "../../common/SecondaryText/SecondaryText";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { togglePopupVisibility } from "../../../../../utils/togglePopup";
+import Popup from "../../common/Popups/Popup";
+import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
+import { useDispatch, useSelector } from "react-redux";
 
 interface IProps {
   sectionNumber: any;
@@ -41,7 +50,165 @@ const SectionContent: React.FC<IProps> = ({
   onChange,
   currentDocRole,
 }) => {
-  console.log("currentSectionDetails: ", currentSectionDetails);
+  // confirmation popup controllers
+  const initialPopupController = [
+    {
+      open: false,
+      popupTitle: "Are you sure want to submit this section?",
+      popupWidth: "340px",
+      popupType: "confirmation",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "550px",
+      popupType: "custom",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+  ];
+  const dispatch = useDispatch();
+  const currentUserDetails: any = useSelector(
+    (state: any) => state?.MainSPContext?.currentUserDetails
+  );
+
+  const currentDocDetailsData: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDDocDetails
+  );
+
+  const AllSectionsDataMain: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDSectionsData
+  );
+
+  console.log("AllSectionsDataMain: ", AllSectionsDataMain);
+
+  const AllSectionsComments: any = useSelector(
+    (state: any) => state.SectionCommentsData.SectionComments
+  );
+
+  // Rejected comments state
+  const [rejectedComments, setRejectedComments] = useState<any>({
+    rejectedComment: "",
+    IsValid: false,
+    ErrorMsg: "",
+  });
+
+  const [popupController, setPopupController] = useState(
+    initialPopupController
+  );
+
+  // util for closing popup
+  const handleClosePopup = (index?: any): void => {
+    togglePopupVisibility(setPopupController, index, "close");
+  };
+
+  const popupActions: any[] = [
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(0);
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          // handleClosePopup(2);
+          await addData("submit");
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(1);
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          // handleClosePopup(2);
+          await submitRejectedComment();
+        },
+      },
+    ],
+  ];
+
+  const popupInputs: any[] = [
+    [],
+    [
+      <CustomTextArea
+        size="MD"
+        labelText="Comments"
+        withLabel
+        icon={false}
+        mandatory={true}
+        textAreaWidth={"100%"}
+        value={rejectedComments.rejectedComment}
+        onChange={(value: any) => {
+          setRejectedComments({
+            ...rejectedComments,
+            rejectedComment: value,
+            IsValid: false,
+          });
+        }}
+        placeholder="Enter Description"
+        isValid={rejectedComments.IsValid}
+        errorMsg={rejectedComments.ErrorMsg}
+        key={2}
+      />,
+    ],
+  ];
+
+  const submitRejectedComment = async (): Promise<any> => {
+    console.log(rejectedComments);
+    if (rejectedComments.rejectedComment?.trim() !== "") {
+      setRejectedComments({
+        ...rejectedComments,
+        rejectedComment: "",
+        IsValid: false,
+        ErrorMsg: "",
+      });
+      await addRejectedComment(
+        rejectedComments.rejectedComment,
+        currentDocDetailsData,
+        currentSectionDetails?.ID,
+        handleClosePopup,
+        setToastMessage,
+        setToastMessage,
+        currentUserDetails,
+        AllSectionsComments,
+        AllSectionsDataMain,
+        dispatch
+      );
+    } else {
+      setRejectedComments({
+        ...rejectedComments,
+        IsValid: true,
+        ErrorMsg: "Please enter comments",
+      });
+    }
+  };
+
   const [toastMessage, setToastMessage] = useState<any>({
     isShow: false,
     severity: "",
@@ -263,6 +430,13 @@ const SectionContent: React.FC<IProps> = ({
   };
 
   const addData = async (submissionType?: any): Promise<any> => {
+    debugger;
+    togglePopupVisibility(
+      setPopupController,
+      0,
+      "close",
+      "Are you sure want to submit this section?"
+    );
     setSectionLoader(true);
     const _file: any = await convertToTxtFile();
     const updateAttachmentPromise: Promise<any> = await UpdateAttachment(
@@ -270,7 +444,9 @@ const SectionContent: React.FC<IProps> = ({
       _file,
       "list",
       submissionType === "submit",
-      "Sample.txt"
+      "Sample.txt",
+      AllSectionsDataMain,
+      dispatch
     );
 
     Promise.all([updateAttachmentPromise])
@@ -382,7 +558,12 @@ const SectionContent: React.FC<IProps> = ({
                       disabled={sectionLoader}
                       btnType="secondaryRed"
                       onClick={() => {
-                        console.log("rejected");
+                        togglePopupVisibility(
+                          setPopupController,
+                          1,
+                          "open",
+                          "Reason for rejection"
+                        );
                       }}
                     />
                   )}
@@ -412,6 +593,7 @@ const SectionContent: React.FC<IProps> = ({
                         addData();
                       }}
                     />
+
                     {(currentDocRole?.sectionAuthor ||
                       currentDocRole?.primaryAuthor) && (
                       <DefaultButton
@@ -419,7 +601,13 @@ const SectionContent: React.FC<IProps> = ({
                         disabled={sectionLoader}
                         btnType="primary"
                         onClick={() => {
-                          addData("submit");
+                          // addData("submit");
+                          togglePopupVisibility(
+                            setPopupController,
+                            0,
+                            "open",
+                            "Are you sure want to submit this section?"
+                          );
                         }}
                       />
                     )}
@@ -454,6 +642,29 @@ const SectionContent: React.FC<IProps> = ({
         isShow={toastMessage.isShow}
         setToastMessage={setToastMessage}
       />
+
+      {popupController?.map((popupData: any, index: number) => (
+        <Popup
+          key={index}
+          // isLoading={sectionLoader}
+          PopupType={popupData.popupType}
+          onHide={() =>
+            togglePopupVisibility(setPopupController, index, "close")
+          }
+          popupTitle={
+            popupData.popupType !== "confimation" && popupData.popupTitle
+          }
+          popupActions={popupActions[index]}
+          visibility={popupData.open}
+          content={popupInputs[index]}
+          popupWidth={popupData.popupWidth}
+          defaultCloseBtn={popupData.defaultCloseBtn || false}
+          confirmationTitle={
+            popupData.popupType !== "custom" ? popupData.popupTitle : ""
+          }
+          popupHeight={index === 0 ? true : false}
+        />
+      ))}
     </div>
   );
 };

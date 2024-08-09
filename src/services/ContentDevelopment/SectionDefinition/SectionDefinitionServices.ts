@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { LISTNAMES } from "../../../config/config";
 import { setAllDefinitions } from "../../../redux/features/DefinitionSlice";
+// import { updateSectionDataLocal } from "../../../utils/contentDevelopementUtils";
 import SpServices from "../../SPServices/SpServices";
 
 interface definitionDetails {
@@ -218,8 +219,8 @@ const AddSectionDefinition = (
             setToastState({
               isShow: true,
               severity: "success",
-              title: "Update section definition",
-              message: "Successfully adding/deleting section definition",
+              title: "Content updated!",
+              message: "The content has been updated successfully.",
               duration: 3000,
             });
             setInitialLoader(false);
@@ -257,8 +258,8 @@ const AddSectionDefinition = (
             setToastState({
               isShow: true,
               severity: "success",
-              title: "Update section definition",
-              message: "Successfully adding/deleting section definition",
+              title: "Content updated!",
+              message: "The content has been updated successfully.",
               duration: 3000,
             });
             setInitialLoader(false);
@@ -295,8 +296,8 @@ const AddSectionDefinition = (
             setToastState({
               isShow: true,
               severity: "success",
-              title: "Update section definition",
-              message: "Successfully adding/deleting section definition",
+              title: "Content updated!",
+              message: "The content has been updated successfully.",
               duration: 3000,
             });
             setInitialLoader(false);
@@ -380,6 +381,20 @@ const addNewDefinition = async (
               },
               ...prev,
             ]);
+
+            // const updateArray = updateSectionDataLocal(
+            //   AllSectionsDataMain,
+            //   sectionId,
+            //   {
+            //     sectionSubmitted: saveAndClose ? saveAndClose : false,
+            //     sectionStatus: saveAndClose
+            //       ? "submitted"
+            //       : "content in progress",
+            //   }
+            // );
+
+            // dispatch(setCDSectionData([...updateArray]));
+
             setToastState({
               isShow: true,
               severity: "success",

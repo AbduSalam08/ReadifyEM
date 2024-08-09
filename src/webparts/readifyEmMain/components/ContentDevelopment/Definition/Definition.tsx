@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -15,6 +16,7 @@ import DefaultButton from "../../common/Buttons/DefaultButton";
 import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
 const closeBtn = require("../../../../../assets/images/png/close.png");
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 import {
   getAllSectionDefinitions,
@@ -32,6 +34,7 @@ import ToastMessage from "../../common/Toast/ToastMessage";
 import { updateSectionDetails } from "../../../../../services/ContentDevelopment/SupportingDocument/SupportingDocumentServices";
 import { isEmpty } from "@microsoft/sp-lodash-subset";
 import { addRejectedComment } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
+import SecondaryTextLabel from "../../common/SecondaryText/SecondaryText";
 
 interface Props {
   documentId: number;
@@ -70,6 +73,14 @@ const initialPopupController = [
     popupTitle: "Add New Definition",
     popupWidth: "550px",
     popupType: "custom",
+    defaultCloseBtn: false,
+    popupData: "",
+  },
+  {
+    open: false,
+    popupTitle: "",
+    popupWidth: "350px",
+    popupType: "confirmation",
     defaultCloseBtn: false,
     popupData: "",
   },
@@ -167,13 +178,6 @@ const Definition: React.FC<Props> = ({
     duration: "",
   });
 
-  console.log(
-    selectedDefinitions,
-    sectionDefinitions,
-    filterDefinitions,
-    definitionsData
-  );
-
   // util for closing popup
   const handleClosePopup = (index?: any): void => {
     togglePopupVisibility(setPopupController, index, "close");
@@ -253,10 +257,10 @@ const Definition: React.FC<Props> = ({
     }
   };
 
-  const submitRejectedComment = async () => {
+  const submitRejectedComment = async (): Promise<any> => {
     console.log(rejectedComments);
     debugger;
-    if (rejectedComments.rejectedComment !== "") {
+    if (rejectedComments.rejectedComment?.trim() !== "") {
       setRejectedComments({
         ...rejectedComments,
         rejectedComment: "",
@@ -284,7 +288,7 @@ const Definition: React.FC<Props> = ({
     }
   };
 
-  const addNewSectionDefinition = async () => {
+  const addNewSectionDefinition = async (): Promise<any> => {
     if (validateSections()) {
       // Submit the form
       await addNewDefinition(
@@ -405,7 +409,7 @@ const Definition: React.FC<Props> = ({
           /> */}
           <CustomInput
             size="MD"
-            labelText="Link"
+            labelText="Author"
             withLabel
             secWidth="100%"
             icon={false}
@@ -453,7 +457,7 @@ const Definition: React.FC<Props> = ({
         withLabel
         icon={false}
         mandatory={true}
-        textAreaWidth={"67%"}
+        textAreaWidth={"100%"}
         value={rejectedComments.rejectedComment}
         onChange={(value: any) => {
           setRejectedComments({
@@ -514,6 +518,30 @@ const Definition: React.FC<Props> = ({
         onClick: async () => {
           // handleClosePopup(2);
           await submitRejectedComment();
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(2);
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          submitSectionDefinition(true);
+          // handleClosePopup(2);
+          // await submitRejectedComment();
         },
       },
     ],
@@ -610,7 +638,17 @@ const Definition: React.FC<Props> = ({
     }
     setFilterDefinitions([...tempArray]);
   };
-  const submitSectionDefinition = async (submitCondition: boolean) => {
+
+  const submitSectionDefinition = async (
+    submitCondition: boolean
+  ): Promise<any> => {
+    togglePopupVisibility(
+      setPopupController,
+      2,
+      "close",
+      "Are you sure want to submit this section?"
+    );
+
     await AddSectionDefinition(
       [...selectedDefinitions],
       documentId,
@@ -619,9 +657,10 @@ const Definition: React.FC<Props> = ({
       setToastMessage,
       setInitialLoader
     );
+
     if (submitCondition) {
       // getAllSelectedDocuments();
-      await updateSectionDetails(sectionId);
+      await updateSectionDetails(sectionId, AllSectionsDataMain, dispatch);
     }
   };
 
@@ -651,91 +690,99 @@ const Definition: React.FC<Props> = ({
       <div className={"sectionWrapper"}>
         <div className={styles.textPlayGround}>
           <div className={styles.definitionHeaderWrapper}>
-            <span>Add Definitions</span>
+            <span>
+              {currentSectionDetails?.sectionSubmitted
+                ? "Definitions"
+                : "Add Definitions"}
+            </span>
           </div>
-          <div className={styles.filterMainWrapper}>
-            <div className={styles.TopFilters}>
-              <div className={styles.inputmainSec}>
-                <CustomInput
-                  value={searchValue}
-                  secWidth="257px"
-                  placeholder="Search definitions"
-                  onChange={(value: any) => {
-                    handleSearchOnChange(value);
-                  }}
-                />
-                {searchValue !== "" && (
-                  <button className={styles.closeBtn}>
-                    <img
-                      src={closeBtn}
-                      alt={"Add Document"}
-                      onClick={() => setSearchValue("")}
+          {!currentSectionDetails?.sectionSubmitted &&
+            (currentDocRole?.primaryAuthor ||
+              currentDocRole?.sectionAuthor) && (
+              <div className={styles.filterMainWrapper}>
+                <div className={styles.TopFilters}>
+                  <div className={styles.inputmainSec}>
+                    <CustomInput
+                      value={searchValue}
+                      secWidth="257px"
+                      placeholder="Search definitions"
+                      onChange={(value: any) => {
+                        handleSearchOnChange(value);
+                      }}
                     />
-                  </button>
-                )}
-              </div>
-              <DefaultButton
-                disabled={initialLoader}
-                btnType="primary"
-                text={"New"}
-                size="medium"
-                onClick={() => {
-                  togglePopupVisibility(setPopupController, 0, "open");
-                  setDefinitionsData(initialDefinitionsData);
-                }}
-              />
-            </div>
-            {searchValue !== "" && (
-              <div className={styles.filterSecWrapper}>
-                {isEmpty(filterDefinitions) && (
-                  <div className={styles.noDataFound}>
-                    <span>No data found</span>
+                    {searchValue !== "" && (
+                      <button className={styles.closeBtn}>
+                        <img
+                          src={closeBtn}
+                          alt={"Add Document"}
+                          onClick={() => setSearchValue("")}
+                        />
+                      </button>
+                    )}
+                  </div>
+                  <DefaultButton
+                    disabled={initialLoader}
+                    btnType="primary"
+                    text={"New"}
+                    size="medium"
+                    onClick={() => {
+                      togglePopupVisibility(setPopupController, 0, "open");
+                      setDefinitionsData(initialDefinitionsData);
+                    }}
+                  />
+                </div>
+                {searchValue !== "" && (
+                  <div className={styles.filterSecWrapper}>
+                    {isEmpty(filterDefinitions) && (
+                      <div className={styles.noDataFound}>
+                        <span>No data found</span>
+                      </div>
+                    )}
+                    {filterDefinitions.map((obj: any, index: number) => {
+                      return (
+                        <div
+                          key={index}
+                          className={
+                            obj.isSelected
+                              ? styles.filterDefinitionSecSelected
+                              : styles.filterDefinitionSec
+                          }
+                        >
+                          <div style={{ width: "10%" }}>
+                            <Checkbox
+                              checkedIcon={<RadioButtonCheckedIcon />}
+                              icon={<RadioButtonUncheckedIcon />}
+                              key={index}
+                              checked={obj.isSelected}
+                              onClick={(ev) => {
+                                onSelectDefinition(obj.ID);
+                                ev.preventDefault();
+                              }}
+                            />
+                          </div>
+                          <div
+                            className={styles.title}
+                            style={{ width: "30%" }}
+                            onClick={(ev) => {
+                              onSelectDefinition(obj.ID);
+                              ev.preventDefault();
+                            }}
+                          >
+                            <span>{obj.definitionTitle}</span>
+                          </div>
+                          <div
+                            className={styles.description}
+                            style={{ width: "60%" }}
+                          >
+                            <span>{obj.definitionDescription}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
-                {filterDefinitions.map((obj: any, index: number) => {
-                  return (
-                    <div
-                      key={index}
-                      className={
-                        obj.isSelected
-                          ? styles.filterDefinitionSecSelected
-                          : styles.filterDefinitionSec
-                      }
-                    >
-                      <div style={{ width: "10%" }}>
-                        <Checkbox
-                          checkedIcon={<RadioButtonCheckedIcon />}
-                          icon={<RadioButtonUncheckedIcon />}
-                          key={index}
-                          checked={obj.isSelected}
-                          onClick={(ev) => {
-                            onSelectDefinition(obj.ID);
-                            ev.preventDefault();
-                          }}
-                        />
-                      </div>
-                      <div
-                        className={styles.title}
-                        style={{ width: "30%" }}
-                        onClick={(ev) => {
-                          onSelectDefinition(obj.ID);
-                          ev.preventDefault();
-                        }}
-                      >
-                        <span>{obj.definitionTitle}</span>
-                      </div>
-                      <div
-                        className={styles.description}
-                        style={{ width: "60%" }}
-                      >
-                        <span>{obj.definitionDescription}</span>
-                      </div>
-                    </div>
-                  );
-                })}
               </div>
             )}
-          </div>
           {!initialLoader ? (
             <div style={{ padding: "10px 0px" }}>
               {!selectedDefinitions.some(
@@ -759,12 +806,16 @@ const Definition: React.FC<Props> = ({
                           {obj.definitionDescription}
                         </span>
                       </div>
-                      <button className={styles.closeBtn}>
-                        <img
-                          src={closeBtn}
-                          onClick={() => removeDefinition(index)}
-                        />
-                      </button>
+                      {!currentSectionDetails?.sectionSubmitted &&
+                        (currentDocRole?.primaryAuthor ||
+                          currentDocRole?.sectionAuthor) && (
+                          <button className={styles.closeBtn}>
+                            <img
+                              src={closeBtn}
+                              onClick={() => removeDefinition(index)}
+                            />
+                          </button>
+                        )}
                     </div>
                   )
                 );
@@ -775,36 +826,6 @@ const Definition: React.FC<Props> = ({
           )}
         </div>
 
-        {/* <div
-        style={{
-          display: "flex",
-          gap: "15px",
-          margin: "10px 0px",
-          justifyContent: "end",
-        }}
-      >
-        <DefaultButton
-          text="Close"
-          btnType="lightGreyVariant"
-          onClick={() => {
-            navigate(-1);
-          }}
-        />
-        <DefaultButton
-          text="Reject"
-          btnType="lightGreyVariant"
-          onClick={() => {
-            // _addData();
-          }}
-        />
-        <DefaultButton
-          text="Submit"
-          btnType="primary"
-          onClick={() => {
-            submitSectionDefinition();
-          }}
-        />
-      </div> */}
         <div
           style={{
             display: "flex",
@@ -825,6 +846,19 @@ const Definition: React.FC<Props> = ({
               alignItems: "center",
             }}
           >
+            {currentSectionDetails?.sectionSubmitted && (
+              <SecondaryTextLabel
+                icon={
+                  <AccessTimeIcon
+                    style={{
+                      width: "17px",
+                    }}
+                  />
+                }
+                text="yet to be reviewed"
+              />
+            )}
+
             <DefaultButton
               text="Close"
               btnType="lightGreyVariant"
@@ -833,37 +867,52 @@ const Definition: React.FC<Props> = ({
               }}
             />
             {(currentDocRole?.primaryAuthor ||
-              currentDocRole?.reviewer ||
-              currentDocRole?.approver) &&
-              currentSectionDetails?.sectionSubmitted && (
-                <DefaultButton
-                  text="Reject"
-                  btnType="lightGreyVariant"
-                  onClick={() =>
-                    togglePopupVisibility(
-                      setPopupController,
-                      1,
-                      "open",
-                      "Reason for rejection"
-                    )
-                  }
-                />
-              )}
-            <DefaultButton
-              text="Save and Close"
-              btnType="lightGreyVariant"
-              onClick={async () => {
-                await submitSectionDefinition(false);
-              }}
-            />
-            <DefaultButton
-              disabled={initialLoader}
-              text="Submit"
-              btnType="primary"
-              onClick={() => {
-                submitSectionDefinition(true);
-              }}
-            />
+              currentDocRole?.sectionAuthor) && (
+              <>
+                {(currentDocRole?.primaryAuthor ||
+                  currentDocRole?.reviewer ||
+                  currentDocRole?.approver) &&
+                  currentSectionDetails?.sectionSubmitted && (
+                    <DefaultButton
+                      text="Reject"
+                      btnType="secondaryRed"
+                      onClick={() =>
+                        togglePopupVisibility(
+                          setPopupController,
+                          1,
+                          "open",
+                          "Reason for rejection"
+                        )
+                      }
+                    />
+                  )}
+                {!currentSectionDetails?.sectionSubmitted && (
+                  <>
+                    <DefaultButton
+                      text="Save and Close"
+                      btnType="lightGreyVariant"
+                      onClick={async () => {
+                        await submitSectionDefinition(false);
+                      }}
+                    />
+                    <DefaultButton
+                      disabled={initialLoader}
+                      text="Submit"
+                      btnType="primary"
+                      onClick={() => {
+                        // submitSectionDefinition(true);
+                        togglePopupVisibility(
+                          setPopupController,
+                          2,
+                          "open",
+                          "Are you sure want to submit this section?"
+                        );
+                      }}
+                    />
+                  </>
+                )}
+              </>
+            )}
           </div>
         </div>
         <ToastMessage
@@ -891,7 +940,7 @@ const Definition: React.FC<Props> = ({
         {popupController?.map((popupData: any, index: number) => (
           <Popup
             key={index}
-            isLoading={definitionsData?.isLoading}
+            // isLoading={definitionsData?.isLoading}
             PopupType={popupData.popupType}
             onHide={() =>
               togglePopupVisibility(setPopupController, index, "close")
