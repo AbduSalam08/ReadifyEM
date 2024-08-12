@@ -20,7 +20,7 @@ import SupportingDocuments from "../../webparts/readifyEmMain/components/Content
 import Definition from "../../webparts/readifyEmMain/components/ContentDevelopment/Definition/Definition";
 import DocumentTracker from "../../webparts/readifyEmMain/components/ContentDevelopment/DocumentTracker/DocumentTracker";
 import RichText from "../../webparts/readifyEmMain/components/ContentDevelopment/RichText/RichText";
-import AppendixContent from "../../webparts/readifyEmMain/components/ContentDevelopment/AppendixContent/AppendixContent";
+// import AppendixContent from "../../webparts/readifyEmMain/components/ContentDevelopment/AppendixContent/AppendixContent";
 import ContentTypeConfirmation from "../../webparts/readifyEmMain/components/ContentDevelopment/ContentTypeConfirmation/ContentTypeConfirmation";
 import {
   getPromotedComments,
@@ -312,7 +312,7 @@ const ContentDevelopment = (): JSX.Element => {
         labelText="Document type"
         withLabel
         icon={false}
-        value={currentDocDetailsData?.documentType}
+        value={currentDocDetailsData?.documentTemplateType}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "definitionName");
         }}
@@ -716,7 +716,7 @@ const ContentDevelopment = (): JSX.Element => {
                     <SetupHeader
                       currentDocRole={currentDocRole}
                       version={currentDocDetailsData?.version}
-                      type={currentDocDetailsData?.documentType}
+                      type={currentDocDetailsData?.documentTemplateType}
                       headerTitle={currentDocDetailsData?.documentName}
                       sectionDetails={AllSectionsData[activeSection]}
                       primaryAuthorDefaultHeader={true}
@@ -750,23 +750,24 @@ const ContentDevelopment = (): JSX.Element => {
                             AllSectionsData[activeSection]?.documentOfId
                           }
                         />
-                      ) : AllSectionsData[
-                          activeSection
-                        ]?.sectionType?.toLowerCase() === "appendix section" ? (
-                        <AppendixContent
-                          currentDocRole={currentDocRole}
-                          sectionDetails={AllSectionsData[activeSection]}
-                          isLoading={
-                            AllSectionsData[activeSection]?.length === 0
-                          }
-                          contentType={
-                            AllSectionsData[activeSection]?.contentType
-                          }
-                          currentDocDetailsData={currentDocDetailsData}
-                          activeIndex={activeSection}
-                          setSectionData={setAllSectionsData}
-                        />
-                      ) : AllSectionsData[
+                      ) : //     : AllSectionsData[
+                      //   activeSection
+                      // ]?.sectionType?.toLowerCase() === "appendix section" ? (
+                      // <AppendixContent
+                      //   currentDocRole={currentDocRole}
+                      //   sectionDetails={AllSectionsData[activeSection]}
+                      //   isLoading={
+                      //     AllSectionsData[activeSection]?.length === 0
+                      //   }
+                      //   contentType={
+                      //     AllSectionsData[activeSection]?.contentType
+                      //   }
+                      //   currentDocDetailsData={currentDocDetailsData}
+                      //   activeIndex={activeSection}
+                      //   setSectionData={setAllSectionsData}
+                      // />
+                      //     )
+                      AllSectionsData[
                           activeSection
                         ]?.sectionName?.toLowerCase() ===
                         "supporting materials" ? (

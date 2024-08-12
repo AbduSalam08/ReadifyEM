@@ -317,7 +317,7 @@ const AppendixContent = ({
         <div className={styles.scrollableApxSection}>
           <SetupHeader
             currentDocRole={currentDocRole}
-            type={currentDocDetailsData.documentType}
+            type={currentDocDetailsData.documentTemplateType}
             headerTitle={currentDocDetailsData.documentName}
             appendixName={sectionDetails?.sectionName}
             version={currentDocDetailsData.version}

@@ -5,7 +5,6 @@
 // custom components
 import StatusPill from "../../webparts/readifyEmMain/components/StatusPill/StatusPill";
 import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
-import CustomDropDown from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomDropDown";
 import PageTitle from "../../webparts/readifyEmMain/components/common/PageTitle/PageTitle";
 //images
 const arrowBackBtn = require("../../assets/images/svg/arrowBack.svg");
@@ -25,7 +24,6 @@ import { IPopupLoaders } from "../../interface/MainInterface";
 import { initialPopupLoaders } from "../../config/config";
 import AlertPopup from "../../webparts/readifyEmMain/components/common/Popups/AlertPopup/AlertPopup";
 import { defaultTemplates } from "../../constants/DefaultTemplates";
-import { Close } from "@mui/icons-material";
 // styles
 import styles from "./ConfigureSections.module.scss";
 const ConfigureSections = (): JSX.Element => {
@@ -45,6 +43,7 @@ const ConfigureSections = (): JSX.Element => {
   const currentTaskData: any = useSelector(
     (state: any) => state.myTasksData?.uniqueTaskData
   );
+  console.log("currentTaskData: ", currentTaskData);
   const ConfigurePageDetails: any = useSelector(
     (state: any) => state.SectionConfiguration?.ConfigurePageDetails
   );
@@ -57,11 +56,6 @@ const ConfigureSections = (): JSX.Element => {
 
   const [popupLoaders, setPopupLoaders] =
     useState<IPopupLoaders>(initialPopupLoaders);
-
-  // options array for dropdown
-  const templateOptions: any[] = AllSDDTemplateData?.map((data: any) => {
-    return data?.templateName;
-  });
 
   // filter states
   const defaultSectionsData: any = defaultTemplates?.map(
@@ -94,23 +88,23 @@ const ConfigureSections = (): JSX.Element => {
     }
   );
 
-  const initialSectionsData: any = {
-    templateDetails: {
-      templateID: 0,
-      templateName: "",
-    },
-    defaultSectionsError: {
-      isValid: true,
-      errorMsg: "",
-    },
-    appendixSectionsError: {
-      isValid: true,
-      errorMsg: "",
-    },
-    defaultSections: [...defaultSectionsData],
-    appendixSections: [],
-    isLoading: false,
-  };
+  // const initialSectionsData: any = {
+  //   templateDetails: {
+  //     templateID: 0,
+  //     templateName: "",
+  //   },
+  //   defaultSectionsError: {
+  //     isValid: true,
+  //     errorMsg: "",
+  //   },
+  //   appendixSectionsError: {
+  //     isValid: true,
+  //     errorMsg: "",
+  //   },
+  //   defaultSections: [...defaultSectionsData],
+  //   appendixSections: [],
+  //   isLoading: false,
+  // };
 
   // state for store section's data
   const [sectionsData, setSectionsData] = useState({
@@ -253,6 +247,17 @@ const ConfigureSections = (): JSX.Element => {
       setMainData();
     } else {
       setMainData();
+      const templateID = AllSDDTemplateData?.filter(
+        (templateData: any) => templateData?.templateName === "value"
+      );
+      setSectionsData((prev: any) => ({
+        ...prev,
+        templateDetails: {
+          templateID: templateID[0]?.ID,
+          templateName: "",
+        },
+      }));
+      getTemplateDetails(templateID[0]?.ID);
     }
   }, []);
 
@@ -297,8 +302,8 @@ const ConfigureSections = (): JSX.Element => {
               </div>
             </div>
 
-            <div className={styles.filters}>
-              {ConfigurePageDetails?.pageKey !== "update" ? (
+            {/* <div className={styles.filters}>
+              {ConfigurePageDetails?.pageKey !== "update" && (
                 <CustomDropDown
                   onChange={(value: string) => {
                     const templateID = AllSDDTemplateData?.filter(
@@ -319,9 +324,7 @@ const ConfigureSections = (): JSX.Element => {
                   placeholder="Select existing templates"
                   size="MD"
                 />
-              ) : (
-                ""
-              )}
+              ) }
               {sectionsData.templateDetails.templateName ? (
                 <button
                   className={styles.clearFilterBtn}
@@ -330,14 +333,14 @@ const ConfigureSections = (): JSX.Element => {
                   }}
                 >
                   {/* Clear All Filters{" "} */}
-                  <Close
+            {/* <Close
                     sx={{
                       fontSize: "15px",
                     }}
                   />
                 </button>
-              ) : null}
-            </div>
+              ) : null} */}
+            {/* </div> */}
 
             <ConfigureSectionCard
               addNewButtonText="New Section"

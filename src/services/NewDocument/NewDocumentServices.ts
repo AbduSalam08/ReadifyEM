@@ -309,8 +309,13 @@ const UpdateDocumentInLib = async ({
 const AddNewDocument = async (
   data: any[],
   setLoaderState: (loaderState: any) => void,
-  isDraft?: boolean
+  isDraft?: boolean,
+  AllTempatesMainData?: any
 ): Promise<any> => {
+  const selectedTemplateID: any = AllTempatesMainData?.filter(
+    (el: any) => el?.templateName === data[1]?.value
+  )[0]?.ID;
+
   const formData: any = data?.reduce((acc: any, el: any) => {
     acc[el.key] =
       el.key === "approvers" || el.key === "reviewers"
@@ -319,6 +324,8 @@ const AddNewDocument = async (
         ? el.value[0]?.id
         : el.key === "Title"
         ? trimStartEnd(el.value)
+        : el.key === "documentTemplateTypeId"
+        ? selectedTemplateID
         : el.value;
     return acc;
   }, {});
@@ -406,8 +413,13 @@ const UpdateDocument = async (
   DocumentID: number,
   isDraft: boolean,
   changedDocumentPath?: any,
-  reorderDoc?: any
+  reorderDoc?: any,
+  AllTempatesMainData?: any
 ): Promise<any> => {
+  const selectedTemplateID: any = AllTempatesMainData?.filter(
+    (el: any) => el?.templateName === data[1]?.value
+  )[0]?.ID;
+
   const formData: any = reorderDoc
     ? {
         sequenceNo: data?.sequenceNo,
@@ -424,6 +436,8 @@ const UpdateDocument = async (
             ? trimStartEnd(el.value)
             : el.key === "isDraft"
             ? isDraft
+            : el.key === "documentTemplateTypeId"
+            ? selectedTemplateID
             : el.value;
         return acc;
       }, {});
@@ -479,10 +493,12 @@ const GetDocumentDetails = async (
     const res: any = await SpServices.SPReadItemUsingId({
       Listname: LISTNAMES.DocumentDetails,
       SelectedId: documentID,
-      Select: "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail",
-      Expand: "primaryAuthor",
+      Select:
+        "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, documentTemplateType/Title, documentTemplateType/ID",
+      Expand: "primaryAuthor, documentTemplateType",
     });
     if (res) {
+      console.log("res: ", res);
       setPopupLoaders({
         isLoading: {
           inprogress: true,
@@ -492,7 +508,7 @@ const GetDocumentDetails = async (
         visibility: false,
         text: "Data fetched!",
       });
-
+      console.log(res?.documentTemplateType?.Title);
       const matchedValue: any = formData.map((e: any) => {
         const matchedKey: any = Object.keys(res).find((key) => key === e.key);
         if (matchedKey) {
@@ -500,6 +516,11 @@ const GetDocumentDetails = async (
             return {
               ...e,
               value: res.primaryAuthor ? [res.primaryAuthor] : [],
+            };
+          } else if (matchedKey === "documentTemplateTypeId") {
+            return {
+              ...e,
+              value: res?.documentTemplateType?.Title || "",
             };
           } else if (matchedKey === "reviewers" || matchedKey === "approvers") {
             return {
@@ -512,7 +533,7 @@ const GetDocumentDetails = async (
           } else {
             return {
               ...e,
-              value: res[matchedKey],
+              value: res[matchedKey] || "",
             };
           }
         }

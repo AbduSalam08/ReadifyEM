@@ -202,7 +202,7 @@ const SectionComments: React.FC<Props> = ({
             <div className={styles.commentsBar}>
               <CustomInput
                 value={inputComment}
-                disabled={currentSectionData?.sectionSubmitted}
+                // disabled={currentSectionData?.sectionSubmitted}
                 placeholder="Enter your comments here..."
                 onChange={(value: string) => {
                   onChangeFunction(value);

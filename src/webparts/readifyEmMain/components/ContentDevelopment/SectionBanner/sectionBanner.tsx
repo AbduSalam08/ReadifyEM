@@ -75,7 +75,7 @@
 //           <div className={styles.bannerSec}>
 //             <span className={styles.docDetailsSpan1}>Type</span>
 //             <span className={styles.docDetailsSpan2}>
-//               {currentDocDetails?.documentType || "-"}
+//               {currentDocDetails?.documentTemplateType || "-"}
 //             </span>
 //           </div>
 //           <div className={styles.bannerSec}>
@@ -110,7 +110,7 @@
 import { useEffect, useState } from "react";
 import styles from "./SectionBanner.module.scss";
 import {
-  getAppendixHeaderSectionDetails,
+  // getAppendixHeaderSectionDetails,
   getHeaderSectionDetails,
 } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { useDispatch, useSelector } from "react-redux";
@@ -138,11 +138,11 @@ const SectionBanner: React.FC<Props> = ({
 
   // UseEffect to fetch header details based on section type
   useEffect(() => {
-    if (sectionDetails?.sectionType === "appendix section") {
-      getAppendixHeaderSectionDetails(sectionDetails, dispatch);
-    } else {
-      getHeaderSectionDetails(sectionDetails, dispatch);
-    }
+    // if (sectionDetails?.sectionType === "appendix section") {
+    //   getAppendixHeaderSectionDetails(sectionDetails, dispatch);
+    // } else {
+    getHeaderSectionDetails(sectionDetails, dispatch);
+    // }
   }, [
     sectionDetails,
     sectionDetails?.ID,
@@ -185,7 +185,7 @@ const SectionBanner: React.FC<Props> = ({
           <div className={styles.bannerSec}>
             <span className={styles.docDetailsSpan1}>Type</span>
             <span className={styles.docDetailsSpan2}>
-              {currentDocDetails?.documentType || "-"}
+              {currentDocDetails?.documentTemplateType || "-"}
             </span>
           </div>
           <div className={styles.bannerSec}>

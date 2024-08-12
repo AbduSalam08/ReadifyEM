@@ -2,7 +2,7 @@
 export const togglePopupVisibility = (
   setPopupController: any,
   index: number,
-  action: string,
+  action: "open" | "close",
   popupTitle?: any,
   popupData?: any
 ): void => {

@@ -23,8 +23,8 @@ const Header = (): JSX.Element => {
   const data = isAdmin
     ? [
         {
-          label: "Table of contents",
-          path: `${rootPath}/em_manual`,
+          label: "Home",
+          path: `${rootPath}/home`,
         },
         {
           label: "My Tasks",
@@ -37,14 +37,14 @@ const Header = (): JSX.Element => {
         },
 
         {
-          label: "SDD Templates",
-          path: `${rootPath}/sdd_templates`,
+          label: "Templates",
+          path: `${rootPath}/templates`,
         },
       ]
     : [
         {
-          label: "Table of contents",
-          path: `${rootPath}/em_manual`,
+          label: "Home",
+          path: `${rootPath}/home`,
         },
         {
           label: "My Tasks",

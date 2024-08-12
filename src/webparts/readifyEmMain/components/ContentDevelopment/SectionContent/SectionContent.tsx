@@ -619,20 +619,20 @@ const SectionContent: React.FC<IProps> = ({
             )}
           </div>
         </div>
-      ) : currentSectionDetails?.sectionType?.toLowerCase() !==
-        "appendix section" ? (
-        <DefaultButton
-          text="Close"
-          btnType="darkGreyVariant"
-          onClick={() => {
-            navigate(-1);
-          }}
-          style={{
-            marginTop: "10px",
-          }}
-        />
       ) : (
-        ""
+        currentSectionDetails?.sectionType?.toLowerCase() !==
+          "appendix section" && (
+          <DefaultButton
+            text="Close"
+            btnType="darkGreyVariant"
+            onClick={() => {
+              navigate(-1);
+            }}
+            style={{
+              marginTop: "10px",
+            }}
+          />
+        )
       )}
       <ToastMessage
         severity={toastMessage.severity}

@@ -15,7 +15,7 @@ interface IPopupLoaders {
 // formdata item
 interface IFormDataItem {
   key: string;
-  value: string | any | { id: number; user: string }[];
+  value: any;
   isValid?: boolean;
   errorMsg?: string;
 }

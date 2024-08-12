@@ -23,12 +23,12 @@ const NavBar = ({ isAdmin }: { isAdmin: boolean }): JSX.Element => {
 
   const [navTabs, setNavTabs] = useState([
     {
-      tabName: "EM Manual - Table Of Content",
+      tabName: "Table Of Content",
       role: "common",
       tabIcon: tocInActive,
       tabIconActive: toc,
       isActive: true,
-      routePath: "/em_manual",
+      routePath: "/home",
     },
     {
       tabName: "My Tasks",
@@ -52,7 +52,7 @@ const NavBar = ({ isAdmin }: { isAdmin: boolean }): JSX.Element => {
       isActive: false,
       tabIconActive: SDDTemplates,
       tabIcon: SDDTemplatesInActive,
-      routePath: "/sdd_templates",
+      routePath: "/templates",
     },
   ]);
 
