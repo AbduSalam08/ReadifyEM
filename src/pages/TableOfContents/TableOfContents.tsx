@@ -48,19 +48,21 @@ import PDFServiceTemplate from "../../webparts/readifyEmMain/components/Table/PD
 const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
 const contentDeveloperEdit: any = require("../../assets/images/svg/editContentDeveloper.svg");
 const viewDocBtn: any = require("../../assets/images/svg/viewEye.svg");
-
+import EditIcon from "@mui/icons-material/Edit";
 // constants
 const initialPopupController = [
   {
     open: false,
     popupTitle: "Add new group",
     popupWidth: "27vw",
+    defaultCloseBtn: false,
     popupData: [],
   },
   {
     open: false,
     popupTitle: "Add new subgroup",
     popupWidth: "31vw",
+    defaultCloseBtn: false,
     popupData: [],
   },
   {
@@ -68,6 +70,13 @@ const initialPopupController = [
     popupTitle: "View Document",
     popupWidth: "70vw",
     defaultCloseBtn: true,
+    popupData: [],
+  },
+  {
+    open: false,
+    popupTitle: "Change page title",
+    popupWidth: "30vw",
+    defaultCloseBtn: false,
     popupData: [],
   },
 ];
@@ -87,6 +96,11 @@ const popupInitialData = {
     value: "",
     isValid: true,
     errorMsg: "Please specify the location",
+  },
+  homePageTitle: {
+    value: "",
+    isValid: true,
+    errorMsg: "Please enter the page title",
   },
 };
 
@@ -129,7 +143,7 @@ const TableOfContents = (): JSX.Element => {
   const [screens, setScreens] = useState({
     toc: true,
     NewDocument: false,
-    pageTitle: "EM Manual - Table of contents",
+    pageTitle: "Table Of Content",
     editDocumentData: [],
   });
 
@@ -272,6 +286,24 @@ const TableOfContents = (): JSX.Element => {
       <div className={styles.DOCemptyMsg} key={3}>
         {/* <span>Document is empty.</span> */}
         <PDFServiceTemplate parsedJSON={parsedJSON} />
+      </div>,
+    ],
+    [
+      <div key={"1.4"} className={styles.homePageTitleText}>
+        <CustomInput
+          key={2}
+          size="MD"
+          labelText="Page Title"
+          withLabel
+          icon={false}
+          onChange={(value: string) => {
+            handleInputChange(value, "homePageTitle");
+          }}
+          value={popupData.homePageTitle.value}
+          placeholder="Enter here"
+          isValid={!popupData.homePageTitle.isValid}
+          errorMsg={popupData.homePageTitle.errorMsg}
+        />
       </div>,
     ],
   ];
@@ -606,6 +638,36 @@ const TableOfContents = (): JSX.Element => {
         },
       },
     ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          togglePopupVisibility(setPopupController, 3, "close");
+        },
+      },
+      {
+        text: "Save Changes",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          togglePopupVisibility(
+            setPopupController,
+            3,
+            "close",
+            "Change page title",
+            popupData
+          );
+          console.log("popupData", popupData);
+          // handleSubmit("sub group");
+        },
+      },
+    ],
   ];
 
   // fn to load all main data
@@ -623,7 +685,7 @@ const TableOfContents = (): JSX.Element => {
       .then((res: any) => {
         const parsedValue: any = JSON.parse(res);
         console.log("res: ", res, parsedValue);
-        let sectionDetails = {
+        const sectionDetails = {
           text: data.sectionName,
           sectionOrder: data.sectionOrder,
           value: parsedValue,
@@ -645,8 +707,7 @@ const TableOfContents = (): JSX.Element => {
   };
 
   // read attachments functions
-
-  const readSectionAttachments = () => {
+  const readSectionAttachments = (): any => {
     if (AllSectionsAttachments.length !== 0) {
       AllSectionsAttachments.forEach((item: any, index: number) => {
         const filteredItem: any = item?.filter(
@@ -663,7 +724,6 @@ const TableOfContents = (): JSX.Element => {
   };
 
   // lifecycle hooks
-
   useEffect(() => {
     setMainData();
   }, [dispatch]);
@@ -702,7 +762,23 @@ const TableOfContents = (): JSX.Element => {
         }}
         className={styles.topTOCHeader}
       >
-        <PageTitle text={screens.pageTitle} />
+        <div className={styles.flexcenter}>
+          <PageTitle text={screens.pageTitle} />
+          {screens?.toc && (
+            <EditIcon
+              className={styles.editIcon}
+              onClick={() => {
+                togglePopupVisibility(
+                  setPopupController,
+                  3,
+                  "open",
+                  "Change page title",
+                  popupData
+                );
+              }}
+            />
+          )}
+        </div>
 
         {!isAdmin && (
           <div>
@@ -931,7 +1007,7 @@ const TableOfContents = (): JSX.Element => {
           visibility={popupData.open}
           content={popupInputs[index]}
           popupWidth={popupData.popupWidth}
-          defaultCloseBtn={popupData.defaultCloseBtn || true}
+          defaultCloseBtn={popupData.defaultCloseBtn}
         />
       ))}
 

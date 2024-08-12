@@ -4,6 +4,7 @@ import styles from "./AllSections.module.scss";
 import MultiplePeoplePersona from "../../common/CustomInputFields/MultiplePeoplePersona";
 import StatusPill from "../../StatusPill/StatusPill";
 import { useSelector } from "react-redux";
+import { ChevronRight } from "@mui/icons-material";
 const commentsIcon: any = require("../../../../../assets/images/svg/commentsIcon.svg");
 
 interface Props {
@@ -146,7 +147,26 @@ const AllSections: React.FC<Props> = ({
                     size="SM"
                     ontrackDot={true}
                   />
-                  <span className={styles.visibleDateSec}>{item.dueDate}</span>
+                  <div
+                    className={styles.flexCenter}
+                    style={{
+                      marginTop: "5px",
+                    }}
+                  >
+                    <span className={styles.visibleDateSec}>
+                      {item.dueDate}
+                    </span>
+                    <ChevronRight
+                      style={{
+                        color: "#160364",
+                        backgroundColor: "#E2EEFF",
+                        borderRadius: "3px",
+                        fontSize: "17px",
+                        cursor: "pointer",
+                        marginLeft: "10px",
+                      }}
+                    />
+                  </div>
                 </div>
               )}
             </div>

@@ -47,7 +47,7 @@ const App = (props: any): JSX.Element => {
             {/* ADMIN ROUTES */}
             <Route path="/admin" Component={RoleAuthorizationHOC}>
               <Route index Component={TableOfContents} />
-              <Route path="em_manual" Component={TableOfContents} />
+              <Route path="home" Component={TableOfContents} />
               <Route path="my_tasks" Component={MyTasks} />
               <Route
                 path="my_tasks/:docName/configure"
@@ -59,13 +59,13 @@ const App = (props: any): JSX.Element => {
                 path="my_tasks/:docName/content_developer"
                 Component={ContentDevelopment}
               />
-              <Route path="sdd_templates" Component={SDDTemplates} />
+              <Route path="templates" Component={SDDTemplates} />
             </Route>
 
             {/* USER ROUTES */}
             <Route path="/user" Component={RoleAuthorizationHOC}>
               <Route index Component={TableOfContents} />
-              <Route path="em_manual" index Component={TableOfContents} />
+              <Route path="home" index Component={TableOfContents} />
               <Route path="my_tasks" Component={MyTasks} />
               <Route
                 path="my_tasks/:docName/configure"

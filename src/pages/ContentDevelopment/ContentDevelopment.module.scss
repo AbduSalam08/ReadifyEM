@@ -5,18 +5,20 @@
 }
 .sectionWrapper {
   width: 25%;
+  min-width: 25%;
+  max-width: 25%;
   border: 1px solid #adadad40;
   padding: 10px;
   border-radius: 5px;
-  height: 100%;
+  height: calc(100vh - 88px);
   // max-height: calc(100vh - 95px);
   // min-height: calc(100vh - 95px);
   // overflow: auto;
 }
 .allSectionWrapper {
-  height: 90%;
-  max-height: calc(80vh - 95px);
-  min-height: calc(70vh - 95px);
+  height: 92%;
+  max-height: calc(100vh - 95px);
+  // min-height: calc(0vh - 95px);
   overflow: auto;
   padding: 0px 15px;
 }

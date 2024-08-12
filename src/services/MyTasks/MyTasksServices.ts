@@ -151,9 +151,9 @@ export const getUniqueTaskData = async (
   const taskResponse: any = await SpServices.SPReadItems({
     Listname: LISTNAMES.MyTasks,
     Select:
-      "*, taskAssignee/ID, taskAssignee/EMail, taskAssignee/Title, taskAssignedBy/ID, taskAssignedBy/EMail, taskAssignedBy/Title, documentDetails/ID, sectionDetails/ID",
-
-    Expand: "taskAssignee, taskAssignedBy, documentDetails, sectionDetails",
+      "*, taskAssignee/ID, taskAssignee/EMail, taskAssignee/Title, taskAssignedBy/ID, taskAssignedBy/EMail, taskAssignedBy/Title, documentDetails/ID, documentTemplateType/Title, sectionDetails/ID",
+    Expand:
+      "taskAssignee, taskAssignedBy, documentDetails, sectionDetails, documentTemplateType",
     Filter: [
       {
         FilterKey: "ID",
@@ -164,6 +164,7 @@ export const getUniqueTaskData = async (
   });
 
   const responseData: any = taskResponse[0];
+  console.log("responseData: ", responseData);
 
   const uniqueTaskData: any = {
     taskID: responseData?.ID,
@@ -172,6 +173,7 @@ export const getUniqueTaskData = async (
     docCreatedDate: responseData?.docCreatedDate,
     docVersion: responseData?.docVersion,
     documentDetailsId: responseData?.documentDetailsId,
+    documentTemplateType: responseData?.documentTemplateType,
     pathName: responseData?.pathName,
     role: responseData?.role,
     sectionDetailsId: responseData?.sectionDetailsId,
@@ -192,8 +194,8 @@ export const AddPrimaryAuthorTask = async (fileID: any): Promise<any> => {
     const AllDocResponse: any = await SpServices.SPReadItems({
       Listname: LISTNAMES.DocumentDetails,
       Select:
-        "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail",
-      Expand: "primaryAuthor, Author",
+        "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail, documentTemplateType/Title, documentTemplateType/ID",
+      Expand: "primaryAuthor, Author, documentTemplateType",
       Filter: [
         {
           FilterKey: "isDraft",
@@ -219,6 +221,7 @@ export const AddPrimaryAuthorTask = async (fileID: any): Promise<any> => {
         docCreatedDate: item?.createdDate,
         fileDetailsId: item?.fileDetailsId,
         docName: item.Title,
+        documentTemplateTypeId: item.documentTemplateType?.ID,
         pathName: item?.documentPath?.split("sites/ReadifyEM/AllDocuments/")[1],
         taskDueDate: calculateDueDateByRole(item?.createdDate, "document"),
         completed: false,
@@ -245,6 +248,7 @@ export const AddPrimaryAuthorTask = async (fileID: any): Promise<any> => {
         Title: taskItem?.docName,
         pathName: taskItem?.pathName,
         docCreatedDate: taskItem?.docCreatedDate,
+        documentTemplateTypeId: taskItem?.documentTemplateTypeId,
         documentDetailsId: taskItem?.documentDetailsId,
         taskDueDate: taskItem?.taskDueDate,
         role: taskItem?.role,
@@ -269,13 +273,14 @@ export const AddPrimaryAuthorTask = async (fileID: any): Promise<any> => {
 
 // functions to update task's primary author item
 export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
+  debugger;
   try {
     // Fetch the document details
     const AllDocResponse: any = await SpServices.SPReadItems({
       Listname: LISTNAMES.DocumentDetails,
       Select:
-        "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail",
-      Expand: "primaryAuthor, Author",
+        "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail, documentTemplateType/Title, documentTemplateType/ID",
+      Expand: "primaryAuthor, Author, documentTemplateType",
       Filter: [
         {
           FilterKey: "isDraft",
@@ -299,9 +304,10 @@ export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
         fileDetailsId: item?.fileDetailsId,
         docName: item.Title,
         pathName: item?.documentPath?.split("sites/ReadifyEM/AllDocuments/")[1],
+        documentTemplateTypeId: item.documentTemplateType?.ID,
+        docVersion: item?.documentVersion,
         // taskDueDate: calculateDueDateByRole(item?.createdDate, "document"),
         // completed: false,
-        docVersion: item?.documentVersion,
         // status:
         //   item?.status?.toLowerCase() === "content in progress"
         //     ? "development in progress"
@@ -343,6 +349,7 @@ export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
           pathName: taskItem?.pathName,
           documentDetailsId: taskItem?.documentDetailsId,
           taskDueDate: taskItem?.taskDueDate,
+          documentTemplateTypeId: taskItem?.documentTemplateTypeId,
           role: taskItem?.role,
           taskAssignedById: taskItem?.taskAssignedBy,
           taskAssigneeId: taskItem?.taskAssignee,
@@ -407,8 +414,8 @@ export const AddTask = async (
     const AllDocResponse: any = await SpServices.SPReadItems({
       Listname: LISTNAMES.DocumentDetails,
       Select:
-        "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail",
-      Expand: "primaryAuthor, Author",
+        "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail, documentTemplateType/Title, documentTemplateType/ID",
+      Expand: "primaryAuthor, Author, documentTemplateType",
       Filter: [
         { FilterKey: "isDraft", Operator: "eq", FilterValue: "0" },
         { FilterKey: "ID", Operator: "eq", FilterValue: fileID },
@@ -435,6 +442,7 @@ export const AddTask = async (
               ? "reviewer"
               : "content developer"
           ),
+      documentTemplateTypeId: item.documentTemplateType?.ID,
       taskStatus:
         docStatusProp?.toLowerCase() === "in development"
           ? "In Development"
@@ -479,8 +487,8 @@ export const UpdateTask = async (fileID: any, formData?: any): Promise<any> => {
     const AllDocResponse: any = await SpServices.SPReadItems({
       Listname: LISTNAMES.DocumentDetails,
       Select:
-        "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail",
-      Expand: "primaryAuthor, Author",
+        "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail, documentTemplateType/Title, documentTemplateType/ID",
+      Expand: "primaryAuthor, Author, documentTemplateType",
       Filter: [
         {
           FilterKey: "isDraft",
@@ -501,6 +509,7 @@ export const UpdateTask = async (fileID: any, formData?: any): Promise<any> => {
       docCreatedDate: item?.createdDate,
       fileDetailsId: item?.fileDetailsId,
       docName: item.Title,
+      documentTemplateType: item.documentTemplateType?.ID,
       pathName: item?.documentPath?.split("sites/ReadifyEM/AllDocuments/")[1],
       docVersion: item?.documentVersion,
       // role: "Primary Author",
@@ -529,6 +538,7 @@ export const UpdateTask = async (fileID: any, formData?: any): Promise<any> => {
           Title: taskItem?.docName,
           pathName: taskItem?.pathName,
           documentDetailsId: taskItem?.documentDetailsId,
+          documentTemplateTypeId: taskItem.documentTemplateType?.ID,
           taskDueDate: taskItem?.taskDueDate,
           role: taskItem?.role,
           taskAssignedById: taskItem?.taskAssignedBy,
