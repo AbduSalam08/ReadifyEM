@@ -40,7 +40,11 @@ import CircularSpinner from "../../webparts/readifyEmMain/components/common/AppL
 // import Services and buttons
 import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
 import CustomTextArea from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomTextArea";
-import { addPromotedComment } from "../../services/ContentDevelopment/CommonServices/CommonServices";
+import {
+  addPromotedComment,
+  changeDocStatus,
+  changeSectionStatus,
+} from "../../services/ContentDevelopment/CommonServices/CommonServices";
 import ToastMessage from "../../webparts/readifyEmMain/components/common/Toast/ToastMessage";
 import { calculateDueDateByRole } from "../../utils/validations";
 
@@ -187,6 +191,7 @@ const ContentDevelopment = (): JSX.Element => {
   const [sectionDetails, setSectionDetails] = useState<any>(Details);
   const [AllSectionsData, setAllSectionsData] =
     useState<any>(AllSectionsDataMain);
+  console.log("AllSectionsData: ", AllSectionsData);
   const [toggleCommentSection, setToggleCommentSection] = useState(false);
 
   // Active Section Index
@@ -312,7 +317,7 @@ const ContentDevelopment = (): JSX.Element => {
         labelText="Document type"
         withLabel
         icon={false}
-        value={currentDocDetailsData?.documentTemplateType}
+        value={currentDocDetailsData?.documentTemplateType?.Title}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "definitionName");
         }}
@@ -525,6 +530,43 @@ const ContentDevelopment = (): JSX.Element => {
         endIcon: false,
         startIcon: false,
         onClick: async () => {
+          const totalReviewers = currentDocDetailsData?.reviewers?.length;
+
+          const changeReviewer: any = currentDocDetailsData?.reviewers?.map(
+            (e: any, idx: number) => {
+              if (idx === 0) {
+                return {
+                  ...e,
+                  status: "in progress",
+                };
+              } else {
+                return { ...e };
+              }
+            }
+          );
+          console.log("changeReviewer: ", changeReviewer);
+
+          const payLoad: any = AllSectionsDataMain?.filter(
+            (item: any) => item?.sectionType?.toLowerCase() !== "header"
+          )?.map((el: any) => {
+            return {
+              ID: el?.ID,
+              status: `${`review in progress (1/${totalReviewers})`}`,
+            };
+          });
+
+          await changeDocStatus(
+            currentDocDetailsData?.documentDetailsID,
+            "In Review",
+            "reviewers",
+            changeReviewer,
+            currentDocDetailsData,
+            dispatch
+          );
+
+          await changeSectionStatus(payLoad, AllSectionsDataMain, dispatch);
+
+          console.log("payLoad: ", payLoad);
           handleClosePopup(5);
           // await submitPromotedComment();
         },
@@ -647,27 +689,44 @@ const ContentDevelopment = (): JSX.Element => {
                         // onClick={() => selectSection(1, "Document Tracker")}
                       />
                     )}
-                    <DefaultButton
-                      text="Promote"
-                      btnType="primary"
-                      onClick={() => {
-                        if (currentDocRole.primaryAuthor) {
+                    {currentDocRole.primaryAuthor ? (
+                      <DefaultButton
+                        text="Promote"
+                        disabled={
+                          AllSectionsData?.filter(
+                            (item: any) =>
+                              item?.sectionType?.toLowerCase() !==
+                              "header section"
+                          )?.every((item: any) => item?.sectionSubmitted) &&
+                          currentDocDetailsData?.documentStatus?.toLowerCase() ===
+                            "in development"
+                            ? false
+                            : true
+                        }
+                        btnType="primary"
+                        onClick={() => {
                           togglePopupVisibility(
                             setPopupController,
                             5,
                             "open",
                             "Are you sure you want to promote this document for review?"
                           );
-                        } else {
+                        }}
+                      />
+                    ) : (
+                      <DefaultButton
+                        text="Promote"
+                        btnType="primary"
+                        onClick={() => {
                           togglePopupVisibility(
                             setPopupController,
                             3,
                             "open",
                             "Confirmation for completion"
                           );
-                        }
-                      }}
-                    />
+                        }}
+                      />
+                    )}
                   </div>
                 )}
               </div>
@@ -716,7 +775,7 @@ const ContentDevelopment = (): JSX.Element => {
                     <SetupHeader
                       currentDocRole={currentDocRole}
                       version={currentDocDetailsData?.version}
-                      type={currentDocDetailsData?.documentTemplateType}
+                      type={currentDocDetailsData?.documentTemplateType?.Title}
                       headerTitle={currentDocDetailsData?.documentName}
                       sectionDetails={AllSectionsData[activeSection]}
                       primaryAuthorDefaultHeader={true}
@@ -766,7 +825,7 @@ const ContentDevelopment = (): JSX.Element => {
                       //   activeIndex={activeSection}
                       //   setSectionData={setAllSectionsData}
                       // />
-                      //     )
+                      // )
                       AllSectionsData[
                           activeSection
                         ]?.sectionName?.toLowerCase() ===
@@ -825,7 +884,7 @@ const ContentDevelopment = (): JSX.Element => {
                         // overflow: "hidden",
                       }}
                     >
-                      {toggleCommentSection ? (
+                      {toggleCommentSection && (
                         <button
                           className={styles.commentsToggleBtn}
                           onClick={() => {
@@ -834,8 +893,6 @@ const ContentDevelopment = (): JSX.Element => {
                         >
                           <img src={commentIcon} alt={"comments"} />
                         </button>
-                      ) : (
-                        ""
                       )}
                       <SectionComments
                         currentSectionData={AllSectionsData[activeSection]}

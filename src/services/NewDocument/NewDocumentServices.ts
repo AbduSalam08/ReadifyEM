@@ -43,6 +43,7 @@ const AddNewDocumentToLib = async ({
   setLoaderState,
   isDraft,
 }: IProps): Promise<any> => {
+  debugger;
   try {
     setLoaderState({
       isLoading: {
@@ -373,10 +374,12 @@ const AddNewDocument = async (
 
       // Ensure filePath is correctly passed
       const filePath = responseData?.documentPath;
+      console.log("filePath: ", filePath);
 
       const fileName = responseData?.Title;
       const fileID = responseData?.ID;
       if (filePath && fileName && fileID) {
+        debugger;
         await AddNewDocumentToLib({
           fileName,
           fileID,
@@ -406,6 +409,119 @@ const AddNewDocument = async (
 };
 
 // Function to update an existing document in the list
+// const UpdateDocument = async (
+//   data: any[] | any,
+//   fileID: number,
+//   setLoaderState: (loaderState: any) => void,
+//   DocumentID: number,
+//   isDraft: boolean,
+//   changedDocumentPath?: any,
+//   reorderDoc?: any,
+//   AllTempatesMainData?: any,
+//   prevDocType?: any
+// ): Promise<any> => {
+//   debugger;
+
+//   const docTypeChanged: boolean =
+//     trimStartEnd(prevDocType) !== trimStartEnd(data[1]?.value);
+
+//   const selectedTemplateID: any = AllTempatesMainData?.filter(
+//     (el: any) => el?.templateName === data[1]?.value
+//   )[0]?.ID;
+
+//   const formData: any = reorderDoc
+//     ? {
+//         sequenceNo: data?.sequenceNo,
+//       }
+//     : data?.reduce((acc: any, el: any) => {
+//         acc[el.key] =
+//           el.key === "approvers" || el.key === "reviewers"
+//             ? JSON.stringify(el.value)
+//             : el.key === "primaryAuthorId"
+//             ? el?.value?.length === 0
+//               ? null
+//               : el.value[0]?.id
+//             : el.key === "Title"
+//             ? trimStartEnd(el.value)
+//             : el.key === "isDraft"
+//             ? isDraft
+//             : el.key === "status"
+//             ? docTypeChanged && !isDraft
+//               ? "Not Started"
+//               : el.value
+//             : el.key === "documentTemplateTypeId"
+//             ? selectedTemplateID
+//             : el.value;
+//         return acc;
+//       }, {});
+//   debugger;
+//   await SpServices.SPUpdateItem({
+//     Listname: LISTNAMES.DocumentDetails,
+//     ID: DocumentID,
+//     RequestJSON: formData,
+//   })
+//     .then(async (res: any) => {
+//       if (docTypeChanged) {
+//         await SpServices?.SPReadItems({
+//           Listname: LISTNAMES.SectionDetails,
+//           Select: "*",
+//           Filter: [
+//             {
+//               FilterKey: "documentOfId",
+//               Operator: "eq",
+//               FilterValue: DocumentID,
+//             },
+//           ],
+//         }).then(async (res: any) => {
+//           await SpServices.batchDelete({
+//             ListName: LISTNAMES.SectionDetails,
+//             responseData: res,
+//           });
+//         });
+
+//         await SpServices?.SPReadItems({
+//           Listname: LISTNAMES.MyTasks,
+//           Select: "*",
+//           Filter: [
+//             {
+//               FilterKey: "documentDetailsId",
+//               Operator: "eq",
+//               FilterValue: DocumentID,
+//             },
+//           ],
+//         }).then(async (res: any) => {
+//           await SpServices.batchDelete({
+//             ListName: LISTNAMES.MyTasks,
+//             responseData: res,
+//           });
+//         });
+//       }
+
+//       await UpdateDocumentInLib({
+//         DocumentID,
+//         fileID,
+//         setLoaderState,
+//         isDraft,
+//         changedDocumentPath,
+//         reorderDoc,
+//       });
+//     })
+//     .catch((err) => {
+//       console.error("Error updating document:", err);
+//       setLoaderState({
+//         isLoading: {
+//           inprogress: false,
+//           success: false,
+//           error: true,
+//         },
+//         visibility: true,
+//         text: "Unable to update the document.",
+//         secondaryText:
+//           "An unexpected error occurred while updating document details, please try again later.",
+//       });
+//     });
+// };
+
 const UpdateDocument = async (
   data: any[] | any,
   fileID: number,
@@ -414,40 +530,105 @@ const UpdateDocument = async (
   isDraft: boolean,
   changedDocumentPath?: any,
   reorderDoc?: any,
-  AllTempatesMainData?: any
+  AllTempatesMainData?: any,
+  prevDocType?: any
 ): Promise<any> => {
-  const selectedTemplateID: any = AllTempatesMainData?.filter(
-    (el: any) => el?.templateName === data[1]?.value
-  )[0]?.ID;
+  debugger;
+  try {
+    setLoaderState({
+      isLoading: {
+        inprogress: true,
+        success: false,
+        error: false,
+      },
+      visibility: true,
+      text: reorderDoc
+        ? "Reordering Documents. Please wait..."
+        : "Document update in progress. Please Wait...",
+    });
+    const docTypeChanged =
+      trimStartEnd(prevDocType) !== trimStartEnd(data[1]?.value);
+    const selectedTemplateID = AllTempatesMainData?.find(
+      (el: any) => el?.templateName === data[1]?.value
+    )?.ID;
 
-  const formData: any = reorderDoc
-    ? {
-        sequenceNo: data?.sequenceNo,
-      }
-    : data?.reduce((acc: any, el: any) => {
-        acc[el.key] =
-          el.key === "approvers" || el.key === "reviewers"
-            ? JSON.stringify(el.value)
-            : el.key === "primaryAuthorId"
-            ? el?.value?.length === 0
-              ? null
-              : el.value[0]?.id
-            : el.key === "Title"
-            ? trimStartEnd(el.value)
-            : el.key === "isDraft"
-            ? isDraft
-            : el.key === "documentTemplateTypeId"
-            ? selectedTemplateID
-            : el.value;
-        return acc;
-      }, {});
+    const formData = reorderDoc
+      ? { sequenceNo: data?.sequenceNo }
+      : data?.reduce((acc: any, el: any) => {
+          acc[el.key] =
+            el.key === "approvers" || el.key === "reviewers"
+              ? JSON.stringify(el.value)
+              : el.key === "primaryAuthorId"
+              ? el?.value?.length === 0
+                ? null
+                : el.value[0]?.id
+              : el.key === "Title"
+              ? trimStartEnd(el.value)
+              : el.key === "isDraft"
+              ? isDraft
+              : el.key === "status"
+              ? docTypeChanged && el?.value !== "Not Started" && !isDraft
+                ? "Not Started"
+                : el.value
+              : el.key === "documentTemplateTypeId"
+              ? selectedTemplateID
+              : el.value;
+          return acc;
+        }, {});
 
-  await SpServices.SPUpdateItem({
-    Listname: LISTNAMES.DocumentDetails,
-    ID: DocumentID,
-    RequestJSON: formData,
-  })
-    .then(async (res: any) => {
+    await SpServices.SPUpdateItem({
+      Listname: LISTNAMES.DocumentDetails,
+      ID: DocumentID,
+      RequestJSON: formData,
+    });
+
+    const docStatus: any = data?.filter((el: any) => el?.key === "status")[0]
+      ?.value;
+    console.log("docStatus: ", docStatus);
+
+    if (docTypeChanged && docStatus !== "Not Started") {
+      // const [sectionDetails, myTasks] = await Promise.all([
+      await SpServices.SPReadItems({
+        Listname: LISTNAMES.SectionDetails,
+        Select: "*",
+        Filter: [
+          {
+            FilterKey: "documentOfId",
+            Operator: "eq",
+            FilterValue: DocumentID,
+          },
+        ],
+      }).then(async (sectionDetails: any) => {
+        await SpServices.batchDelete({
+          ListName: LISTNAMES.SectionDetails,
+          responseData: sectionDetails,
+        });
+      });
+
+      await SpServices.SPReadItems({
+        Listname: LISTNAMES.MyTasks,
+        Select: "*",
+        Filter: [
+          {
+            FilterKey: "documentDetailsId",
+            Operator: "eq",
+            FilterValue: DocumentID,
+          },
+        ],
+      }).then(async (myTasks: any) => {
+        await SpServices.batchDelete({
+          ListName: LISTNAMES.MyTasks,
+          responseData: myTasks,
+        });
+      });
+      // ]);
+
+      // console.log("myTasks: ", myTasks);
+      // console.log("sectionDetails: ", sectionDetails);
+
+      // await Promise.all([
+
+      // ]).then(async (res: any) => {
       await UpdateDocumentInLib({
         DocumentID,
         fileID,
@@ -456,21 +637,36 @@ const UpdateDocument = async (
         changedDocumentPath,
         reorderDoc,
       });
-    })
-    .catch((err) => {
-      console.error("Error updating document:", err);
+      // .catch((err: any) => {
+      //   console.log("err: ", err);
+      // });
+
+      // });
+    } else {
+      await UpdateDocumentInLib({
+        DocumentID,
+        fileID,
+        setLoaderState,
+        isDraft,
+        changedDocumentPath,
+        reorderDoc,
+      });
+    }
+  } catch (err) {
+    console.error("Error updating document:", err);
+    if (
+      err.message !==
+      "Item does not exist. It may have been deleted by another user."
+    ) {
       setLoaderState({
-        isLoading: {
-          inprogress: false,
-          success: false,
-          error: true,
-        },
+        isLoading: { inprogress: false, success: false, error: true },
         visibility: true,
         text: "Unable to update the document.",
         secondaryText:
           "An unexpected error occurred while updating document details, please try again later.",
       });
-    });
+    }
+  }
 };
 
 // function to get all document details
@@ -508,7 +704,6 @@ const GetDocumentDetails = async (
         visibility: false,
         text: "Data fetched!",
       });
-      console.log(res?.documentTemplateType?.Title);
       const matchedValue: any = formData.map((e: any) => {
         const matchedKey: any = Object.keys(res).find((key) => key === e.key);
         if (matchedKey) {

@@ -109,7 +109,7 @@ const Popup = ({
         {footerContent()}
       </div>
     ) : (
-      "Need Content to be displayed in popup."
+      "some thing is wrong with the properties!, please check."
     );
 
   return (

@@ -59,13 +59,10 @@ export const getParsedDocData = (data: string): any => {
     return JSON.parse(data)
       .sort((elem1: any, elem2: any) => elem1?.id - elem2?.id)
       .flatMap((item: any) => {
-        return (
-          item?.userData?.map((userDataItem: any) => ({
-            id: userDataItem?.id,
-            text: userDataItem?.text,
-            email: userDataItem?.secondaryText,
-          })) || []
-        );
+        return {
+          ...item,
+          userData: item?.userData?.[0] || item?.userData || [],
+        };
       });
   } catch (error) {
     console.error("Error processing document details data:", error);

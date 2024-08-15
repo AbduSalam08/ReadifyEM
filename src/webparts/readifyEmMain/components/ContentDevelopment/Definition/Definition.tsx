@@ -258,8 +258,6 @@ const Definition: React.FC<Props> = ({
   };
 
   const submitRejectedComment = async (): Promise<any> => {
-    console.log(rejectedComments);
-    debugger;
     if (rejectedComments.rejectedComment?.trim() !== "") {
       setRejectedComments({
         ...rejectedComments,
@@ -792,7 +790,7 @@ const Definition: React.FC<Props> = ({
                   <span>No Document Definition Data Found</span>
                 </div>
               )}
-              {selectedDefinitions.map((obj: any, index: number) => {
+              {selectedDefinitions?.map((obj: any, index: number) => {
                 return (
                   !obj.isDeleted && (
                     <div key={index} className={styles.SelectedDefinitionSec}>
@@ -866,26 +864,39 @@ const Definition: React.FC<Props> = ({
                 navigate(-1);
               }}
             />
+
             {(currentDocRole?.primaryAuthor ||
               currentDocRole?.sectionAuthor) && (
               <>
-                {(currentDocRole?.primaryAuthor ||
-                  currentDocRole?.reviewer ||
-                  currentDocRole?.approver) &&
-                  currentSectionDetails?.sectionSubmitted && (
-                    <DefaultButton
-                      text="Reject"
-                      btnType="secondaryRed"
-                      onClick={() =>
-                        togglePopupVisibility(
-                          setPopupController,
-                          1,
-                          "open",
-                          "Reason for rejection"
-                        )
-                      }
-                    />
-                  )}
+                {currentDocRole?.primaryAuthor
+                  ? currentSectionDetails?.sectionSubmitted && (
+                      <DefaultButton
+                        text="Rework"
+                        btnType="secondaryRed"
+                        onClick={() =>
+                          togglePopupVisibility(
+                            setPopupController,
+                            1,
+                            "open",
+                            "Reason for rejection"
+                          )
+                        }
+                      />
+                    )
+                  : (currentDocRole?.reviewer || currentDocRole?.approver) && (
+                      <DefaultButton
+                        text="Rework"
+                        btnType="secondaryRed"
+                        onClick={() =>
+                          togglePopupVisibility(
+                            setPopupController,
+                            1,
+                            "open",
+                            "Reason for rejection"
+                          )
+                        }
+                      />
+                    )}
                 {!currentSectionDetails?.sectionSubmitted && (
                   <>
                     <DefaultButton

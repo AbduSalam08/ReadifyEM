@@ -155,7 +155,7 @@ import {
 
 export const AddAppendixAttachment = async (
   itemID: number,
-  _file: any,
+  file: any,
   documentID: any,
   sectionID: any,
   fileName?: string
@@ -175,7 +175,7 @@ export const AddAppendixAttachment = async (
           ListName: LISTNAMES.AppendixHeader,
           ListID: res?.data?.ID,
           FileName: fileName,
-          Attachments: _file,
+          Attachments: file,
         })
           .then((res: any) => {
             console.log("res: ", res);
@@ -192,7 +192,7 @@ export const AddAppendixAttachment = async (
       ListName: LISTNAMES.AppendixHeader,
       ListID: itemID,
       FileName: fileName,
-      Attachments: _file,
+      Attachments: file,
     })
       .then((res: any) => {
         console.log("res: ", res);
@@ -205,7 +205,7 @@ export const AddAppendixAttachment = async (
 
 // export const UpdateAppendixAttachment = async (
 //   itemID: number,
-//   _file: any,
+//   file: any,
 //   fileName?: string,
 //   deleteAttachment?: any,
 //   documentID?: any,
@@ -229,13 +229,13 @@ export const AddAppendixAttachment = async (
 //       .then((res) => console.log("res:", res))
 //       .catch((err) => console.log(err));
 
-//     await AddAppendixAttachment(itemID, _file, documentID, sectionID, fileName);
+//     await AddAppendixAttachment(itemID, file, documentID, sectionID, fileName);
 //   }
 // };
 
 export const UpdateAppendixAttachment = async (
   itemID: number,
-  _file: any,
+  file: any,
   fileName?: string,
   deleteAttachment?: any,
   documentID?: any,
@@ -265,21 +265,21 @@ export const UpdateAppendixAttachment = async (
     if (!deleteAttachment) {
       await AddAppendixAttachment(
         itemID,
-        _file,
+        file,
         documentID,
         sectionID,
         fileName
       );
     }
   } else {
-    await AddAppendixAttachment(itemID, _file, documentID, sectionID, fileName);
+    await AddAppendixAttachment(itemID, file, documentID, sectionID, fileName);
   }
 };
 
 // Services for Section Details
 export const AddSectionAttachment = async (
   itemID: number,
-  _file: any,
+  file: any,
   contentType: any,
   saveAndClose: boolean,
   fileName?: string,
@@ -291,7 +291,7 @@ export const AddSectionAttachment = async (
     ListName: LISTNAMES.SectionDetails,
     ListID: itemID,
     FileName: fileName,
-    Attachments: _file,
+    Attachments: file,
   })
     .then((res: any) => {
       console.log("res: ", res);
@@ -342,7 +342,7 @@ export const AddSectionAttachment = async (
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const UpdateSectionAttachment = async (
   itemID: number,
-  _file: any,
+  file: any,
   contentType: any,
   saveAndClose?: boolean | any,
   fileName?: string,
@@ -355,7 +355,7 @@ export const UpdateSectionAttachment = async (
 
   try {
     // Retrieve all attachments for the given item
-    if (deleteAttachments) {
+    if (deleteAttachments && !file) {
       const attachments = await sp.web.lists
         .getByTitle(LISTNAMES.SectionDetails)
         .items.getById(itemID)
@@ -372,7 +372,7 @@ export const UpdateSectionAttachment = async (
         }
         console.log("All existing attachments deleted.");
       }
-    } else {
+    } else if (!deleteAttachments && file) {
       const attachments = await sp.web.lists
         .getByTitle(LISTNAMES.SectionDetails)
         .items.getById(itemID)
@@ -389,18 +389,19 @@ export const UpdateSectionAttachment = async (
         }
         console.log("All existing attachments deleted.");
       }
-      // Add new attachment
-      await AddSectionAttachment(
-        itemID,
-        _file,
-        contentType,
-        saveAndClose,
-        fileName,
-        allSectionsData,
-        dispatcher
-      );
-
-      console.log("New attachment added successfully.");
+      if (!deleteAttachments && file) {
+        // Add new attachment
+        await AddSectionAttachment(
+          itemID,
+          file,
+          contentType,
+          saveAndClose,
+          fileName,
+          allSectionsData,
+          dispatcher
+        );
+        console.log("New attachment added successfully.");
+      }
     }
   } catch (err) {
     console.error("Error while updating section attachments: ", err);
@@ -411,6 +412,8 @@ export const addHeaderAttachmentData = async (
   submissionType?: any,
   sectionDetails?: any,
   file?: any,
+  allSectionData?: any,
+  dispatch?: any,
   contentType?: any
 ): Promise<any> => {
   if (!file.fileData?.ServerRelativeUrl && file.fileName?.trim() !== "") {
@@ -420,7 +423,9 @@ export const addHeaderAttachmentData = async (
       contentType,
       submissionType === "submit",
       file.fileName,
-      file.fileData?.length === 0
+      file.fileData?.length === 0,
+      allSectionData,
+      dispatch
     );
   }
 };
@@ -586,4 +591,62 @@ export const updateSectionDataLocal = (
     }
     return obj;
   });
+};
+
+export const updateDocDataLocal = (
+  DocData: any[],
+  docID: number,
+  updates: Partial<any>
+): any[] => {
+  return DocData?.map((obj) => {
+    if (obj.ID === docID) {
+      return {
+        ...obj,
+        ...updates,
+      };
+    }
+    return obj;
+  });
+};
+
+export const getCurrentPromoter = (
+  promoterData: any
+):
+  | {
+      currentOrder: number;
+      currentPromoter: any;
+      totalPromoters: number;
+    }
+  | any => {
+  if (promoterData?.length === 0) {
+    return {
+      currentOrder: 0,
+      currentPromoter: [],
+      totalPromoters: 0,
+    };
+  }
+  // Check if all promoters are pending
+  const checkAllPromotersIsPending: boolean = promoterData?.every(
+    (item: any) => item?.status === "pending"
+  );
+
+  if (checkAllPromotersIsPending) return null;
+
+  // Find the first promoter with status 'in progress'
+  const currentPromoter = promoterData?.find(
+    (item: any) => item?.status === "in progress"
+  );
+
+  // If no promoter is in progress, return null
+  if (!currentPromoter) return null;
+
+  // Calculate the current order
+  const currentOrder = promoterData?.indexOf(currentPromoter) + 1;
+
+  // Return the current promoter, its order, and the total number of promoters
+  return {
+    currentOrder,
+    currentPromoter,
+    totalPromoters: promoterData?.length,
+  };
 };

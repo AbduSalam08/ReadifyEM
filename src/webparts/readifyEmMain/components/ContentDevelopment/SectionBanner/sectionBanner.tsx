@@ -129,7 +129,6 @@ const SectionBanner: React.FC<Props> = ({
   appendixHeader,
   secondaryTitle,
 }) => {
-  console.log("sectionDetails: ", sectionDetails);
   const [imgURL, setImgURL] = useState<string>("");
   const dispatch = useDispatch();
   const CDHeaderDetails = useSelector(
@@ -153,7 +152,6 @@ const SectionBanner: React.FC<Props> = ({
   // UseEffect to set image URL when CDHeaderDetails or sectionDetails changes
   useEffect(() => {
     setImgURL(CDHeaderDetails?.imgURL);
-    console.log("CDHeaderDetails?.imgURL: ", CDHeaderDetails?.imgURL);
   }, [CDHeaderDetails, sectionDetails]);
 
   return (
@@ -173,7 +171,9 @@ const SectionBanner: React.FC<Props> = ({
           <p>{currentDocDetails?.documentName || "-"}</p>
           <span>
             {sectionDetails?.sectionType === "appendix section"
-              ? sectionDetails?.sectionName
+              ? `${
+                  sectionDetails?.sectionName
+                } ${` - version ${currentDocDetails.version}`}`
               : `Version: ${
                   currentDocDetails.version ||
                   CDHeaderDetails?.headerDescription ||
@@ -185,7 +185,7 @@ const SectionBanner: React.FC<Props> = ({
           <div className={styles.bannerSec}>
             <span className={styles.docDetailsSpan1}>Type</span>
             <span className={styles.docDetailsSpan2}>
-              {currentDocDetails?.documentTemplateType || "-"}
+              {currentDocDetails?.documentTemplateType?.Title || "-"}
             </span>
           </div>
           <div className={styles.bannerSec}>

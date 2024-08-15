@@ -106,7 +106,10 @@ const UserList = ({
                 isValid={!user.isValid}
                 // key={i}
                 selectedItem={
-                  user?.userData?.[0]?.secondaryText || user?.userData?.EMail
+                  user?.userData?.[0]?.secondaryText ||
+                  user?.userData?.EMail ||
+                  user?.userData?.[0]?.email ||
+                  user?.userData?.email
                 }
                 onChange={(value: any) => {
                   const updatedUsers = users?.map((item: any, index: number) =>

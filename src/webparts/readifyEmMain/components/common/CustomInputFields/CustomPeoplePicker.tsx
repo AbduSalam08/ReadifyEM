@@ -243,7 +243,15 @@ const CustomPeoplePicker: React.FC<Props> = ({
   );
 
   const handleChange = (items: any[]): void => {
-    onChange && onChange(items);
+    console.log("items: ", items);
+    const obj = items?.map((item: any) => {
+      return {
+        id: item.id,
+        email: item?.secondaryText,
+        name: item?.text,
+      };
+    });
+    onChange && onChange(obj);
   };
 
   const selectedUserItem = (() => {

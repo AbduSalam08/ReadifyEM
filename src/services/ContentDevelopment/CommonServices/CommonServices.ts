@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import dayjs from "dayjs";
 import SpServices from "../../SPServices/SpServices";
-import { CONFIG, LISTNAMES } from "../../../config/config";
+import { CONFIG, LIBNAMES, LISTNAMES } from "../../../config/config";
 import { calculateDueDateByRole } from "../../../utils/validations";
 import { getParsedDocData } from "../../../utils/EMManualUtils";
 import {
@@ -13,7 +13,11 @@ import {
 } from "../../../redux/features/ContentDevloperSlice";
 import { sp } from "@pnp/sp/presets/all";
 import { setSectionComments } from "../../../redux/features/SectionCommentsSlice";
-import { updateSectionDataLocal } from "../../../utils/contentDevelopementUtils";
+import {
+  getCurrentPromoter,
+  // updateDocDataLocal,
+  updateSectionDataLocal,
+} from "../../../utils/contentDevelopementUtils";
 
 export const getSectionsDetails = async (
   taskDetails: any,
@@ -197,8 +201,8 @@ export const getSectionsDetails = async (
     const DocDetailsResponse: any = await SpServices.SPReadItems({
       Listname: LISTNAMES.DocumentDetails,
       Select:
-        "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail",
-      Expand: "primaryAuthor, Author",
+        "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail, documentTemplateType/ID, documentTemplateType/Title",
+      Expand: "primaryAuthor, Author, documentTemplateType",
       Filter: [
         {
           FilterKey: "ID",
@@ -260,9 +264,28 @@ export const AddAttachment = async (
   documentID?: any,
   sectionID?: any,
   AllSectionsDataMain?: any,
-  dispatch?: any
+  dispatch?: any,
+  currentDocDetailsData?: any
 ): Promise<any> => {
   debugger;
+  const docInReview: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in review";
+
+  const docInApproval: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
+
+  const promoters: any = docInReview
+    ? currentDocDetailsData?.reviewers
+    : docInApproval
+    ? currentDocDetailsData?.approvers
+    : [];
+
+  console.log("promoters: ", promoters);
+
+  const currentPromoter: any = getCurrentPromoter(promoters);
+
+  console.log("currentPromoter: ", currentPromoter);
+
   if (listType === "appendix" && !itemID && sectionID) {
     await SpServices.SPAddItem({
       Listname: LISTNAMES.AppendixHeader,
@@ -323,6 +346,16 @@ export const AddAttachment = async (
       });
   }
 
+  const currentSectionStatus: any =
+    saveAndClose && !docInReview && !docInApproval
+      ? "Submitted"
+      : !saveAndClose
+      ? "Content in progress"
+      : docInReview
+      ? `Yet to be reviewed (${currentPromoter?.currentOrder}/${currentPromoter?.totalPromoters})`
+      : docInApproval
+      ? `Yet to be approved (${currentPromoter?.currentOrder}/${currentPromoter?.totalPromoters})`
+      : "Content in progress";
   if (listType !== "appendix") {
     await SpServices.SPUpdateItem({
       ID: itemID,
@@ -330,7 +363,7 @@ export const AddAttachment = async (
       RequestJSON: {
         typeOfContent: contentType,
         sectionSubmitted: saveAndClose ? saveAndClose : false,
-        status: saveAndClose ? "submitted" : "content in progress",
+        status: currentSectionStatus,
       },
     })
       .then((res: any) => {
@@ -341,7 +374,7 @@ export const AddAttachment = async (
           {
             contentType: contentType,
             sectionSubmitted: saveAndClose ? saveAndClose : false,
-            sectionStatus: saveAndClose ? "submitted" : "content in progress",
+            sectionStatus: currentSectionStatus,
           }
         );
 
@@ -361,6 +394,7 @@ export const UpdateAttachment = async (
   fileName?: string,
   AllSectionsDataMain?: any,
   dispatch?: any,
+  currentDocDetailsData?: any,
   deleteAttachment?: any,
   listType?: "appendix",
   documentID?: any,
@@ -400,7 +434,8 @@ export const UpdateAttachment = async (
       documentID,
       sectionID,
       AllSectionsDataMain,
-      dispatch
+      dispatch,
+      currentDocDetailsData
     );
   }
 };
@@ -733,6 +768,7 @@ export const addPromotedComment = async (
       console.log(err);
     });
 };
+
 export const addRejectedComment = async (
   rejectedComment: string,
   documentDetails: any,
@@ -827,4 +863,129 @@ export const addRejectedComment = async (
           "An unexpected error occurred while send the comment, please try again later.",
       });
     });
+};
+
+export const changeDocStatus = async (
+  docID: any,
+  statusName: any,
+  promoteTo: "reviewers" | "approvers",
+  promoteToData: any,
+  docDetailsData: any,
+  dispatch: any
+): Promise<any> => {
+  debugger;
+  console.log("statusName: ", statusName);
+  let fileID: any;
+  let currentDocResponse: any;
+  await SpServices.SPReadItemUsingId({
+    Listname: LISTNAMES.DocumentDetails,
+    SelectedId: docID,
+    Select: "*, fileDetails/ID",
+    Expand: "fileDetails",
+  })
+    .then((res: any) => {
+      console.log("res: ", res);
+      fileID = res?.fileDetailsId;
+      currentDocResponse = res;
+    })
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
+
+  console.log("CurrentDocResponse: ", currentDocResponse);
+  await SpServices.SPUpdateItem({
+    Listname: LISTNAMES.DocumentDetails,
+    ID: docID,
+    RequestJSON: {
+      status: statusName,
+      [`${promoteTo}`]: JSON.stringify(promoteToData),
+    },
+  })
+    .then(async (res: any) => {
+      console.log("res: ", res);
+      await sp.web.lists
+        .getByTitle(LIBNAMES.AllDocuments)
+        .items.getById(fileID)
+        .update({
+          status: statusName,
+        });
+      console.log(
+        "dada",
+        promoteToData?.filter((item: any) => item?.status === "in progress")
+      );
+      if (promoteTo === "reviewers") {
+        await SpServices.SPAddItem({
+          Listname: LISTNAMES.MyTasks,
+          RequestJSON: {
+            taskAssigneeId: promoteToData?.filter(
+              (item: any) => item?.status === "in progress"
+            )[0]?.userData?.id,
+            role: "Reviewer",
+            taskStatus: "review in progress",
+            taskAssignedById: currentDocResponse?.primaryAuthorId,
+            Title: currentDocResponse?.Title,
+            taskDueDate: calculateDueDateByRole(
+              dayjs()?.format("DD/MM/YYYY"),
+              "reviewer"
+            ),
+            docStatus: currentDocResponse?.status,
+            completed: false,
+            docCreatedDate: currentDocResponse?.createdDate,
+            documentDetailsId: currentDocResponse?.ID,
+            docVersion: currentDocResponse?.documentVersion,
+            documentTemplateTypeId: currentDocResponse?.documentTemplateTypeId,
+            pathName: currentDocResponse?.documentPath?.split("/").pop(),
+          },
+        });
+      }
+    })
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
+
+  // const updatedDOCDetails: any = updateDocDataLocal(docDetailsData, docID, {
+  //   documentStatus: "In Review",
+  // });
+
+  dispatch(
+    setCDDocDetails({
+      ...docDetailsData,
+      documentStatus: "In Review",
+    })
+  );
+};
+
+export const changeSectionStatus = async (
+  sectionsData: any,
+  AllSectionsData: any,
+  dispatch: any
+): Promise<any> => {
+  debugger;
+  await SpServices.batchUpdate({
+    ListName: LISTNAMES.SectionDetails,
+    responseData: sectionsData,
+  })
+    .then((res: any) => {
+      console.log("res: ", res);
+    })
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
+
+  for (const element of sectionsData) {
+    const updatedSection: any = updateSectionDataLocal(
+      AllSectionsData,
+      element?.ID,
+      {
+        sectionStatus: element?.status,
+      }
+    );
+    console.log("updatedSection: ", updatedSection);
+    // Collect the updates instead of dispatching right away
+    AllSectionsData = [...updatedSection];
+  }
+  console.log("AllSectionsData: ", AllSectionsData);
+
+  // Dispatch the update once after the loop
+  dispatch(setCDSectionData(AllSectionsData));
 };
