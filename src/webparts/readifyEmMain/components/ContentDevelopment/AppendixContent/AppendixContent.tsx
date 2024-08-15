@@ -47,6 +47,12 @@ const AppendixContent = ({
   isLoading,
   currentDocRole,
 }: IAppendixSectionProps): JSX.Element => {
+  console.log("currentDocDetailsData: ", currentDocDetailsData);
+  console.log(
+    "currentDocDetailsData.documentTemplateType: ",
+    currentDocDetailsData.documentTemplateType
+  );
+
   console.log("sectionDetails: ", sectionDetails);
   console.log("contentType: ", contentType);
   console.log("sectionDetails: ", sectionDetails);
@@ -317,7 +323,7 @@ const AppendixContent = ({
         <div className={styles.scrollableApxSection}>
           <SetupHeader
             currentDocRole={currentDocRole}
-            type={currentDocDetailsData.documentTemplateType}
+            type={currentDocDetailsData.documentTemplateType?.Title}
             headerTitle={currentDocDetailsData.documentName}
             appendixName={sectionDetails?.sectionName}
             version={currentDocDetailsData.version}
@@ -419,24 +425,37 @@ const AppendixContent = ({
             (currentDocRole?.primaryAuthor ||
               currentDocRole?.sectionAuthor) && (
               <>
-                {sectionDetails?.sectionSubmitted &&
-                  (currentDocRole?.primaryAuthor ||
-                    currentDocRole?.reviewer ||
-                    currentDocRole?.approver) && (
-                    <DefaultButton
-                      disabled={sectionLoader}
-                      text="Reject"
-                      btnType="secondaryRed"
-                      onClick={() => {
-                        togglePopupVisibility(
-                          setPopupController,
-                          1,
-                          "open",
-                          "Reason for rejection"
-                        );
-                      }}
-                    />
-                  )}
+                {currentDocRole?.primaryAuthor
+                  ? sectionDetails?.sectionSubmitted && (
+                      <DefaultButton
+                        disabled={sectionLoader}
+                        text="Rework"
+                        btnType="secondaryRed"
+                        onClick={() => {
+                          togglePopupVisibility(
+                            setPopupController,
+                            1,
+                            "open",
+                            "Reason for rejection"
+                          );
+                        }}
+                      />
+                    )
+                  : (currentDocRole?.reviewer || currentDocRole?.approver) && (
+                      <DefaultButton
+                        disabled={sectionLoader}
+                        text="Rework"
+                        btnType="secondaryRed"
+                        onClick={() => {
+                          togglePopupVisibility(
+                            setPopupController,
+                            1,
+                            "open",
+                            "Reason for rejection"
+                          );
+                        }}
+                      />
+                    )}
 
                 {!sectionDetails?.sectionSubmitted &&
                   (currentDocRole?.sectionAuthor ||

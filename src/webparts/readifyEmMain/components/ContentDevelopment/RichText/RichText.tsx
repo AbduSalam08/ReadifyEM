@@ -354,7 +354,8 @@ const RichText = ({
       submissionType === "submit",
       "Sample.txt",
       AllSectionsDataMain,
-      dispatch
+      dispatch,
+      currentDocDetailsData
     );
     Promise.all([addDataPromises])
       .then((res: any) => {
@@ -403,7 +404,12 @@ const RichText = ({
           modules={modules}
           formats={formats}
           value={description}
-          readOnly={currentSectionData?.sectionSubmitted}
+          readOnly={
+            !currentSectionData?.sectionSubmitted &&
+            (currentDocRole?.sectionAuthor || currentDocRole?.primaryAuthor)
+              ? false
+              : true
+          }
           placeholder="Content goes here"
           className="customeRichText"
           onChange={(text) => {
@@ -452,71 +458,88 @@ const RichText = ({
             />
 
             {(currentDocRole?.primaryAuthor ||
-              currentDocRole?.sectionAuthor) && (
+              currentDocRole?.sectionAuthor ||
+              currentDocRole?.reviewer ||
+              currentDocRole?.approver) && (
               <>
-                {(currentDocRole?.primaryAuthor ||
-                  currentDocRole?.reviewer ||
-                  currentDocRole?.approver) &&
-                  currentSectionData?.sectionSubmitted && (
-                    <DefaultButton
-                      text="Reject"
-                      disabled={sectionLoader}
-                      btnType="secondaryRed"
-                      onClick={() => {
-                        togglePopupVisibility(
-                          setPopupController,
-                          1,
-                          "open",
-                          "Reason for rejection"
-                        );
-                      }}
-                    />
-                  )}
-
-                {!currentSectionData?.sectionSubmitted && (
-                  <>
-                    <DefaultButton
-                      text="Reset content"
-                      disabled={sectionLoader}
-                      btnType="secondaryRed"
-                      onClick={() => {
-                        setSectionData((prev: any) => {
-                          const updatedSections = [...prev];
-                          updatedSections[activeIndex] = {
-                            ...updatedSections[activeIndex],
-                            contentType: "initial",
-                          };
-                          return updatedSections;
-                        });
-                      }}
-                    />
-                    <DefaultButton
-                      text="Save and Close"
-                      disabled={sectionLoader}
-                      btnType="lightGreyVariant"
-                      onClick={async () => {
-                        await addData();
-                      }}
-                    />
-                    {(currentDocRole?.sectionAuthor ||
-                      currentDocRole?.primaryAuthor) && (
+                {currentDocRole?.primaryAuthor
+                  ? currentSectionData?.sectionSubmitted && (
                       <DefaultButton
-                        text="Submit"
+                        text="Rework"
                         disabled={sectionLoader}
-                        btnType="primary"
+                        btnType="secondaryRed"
                         onClick={() => {
-                          // await addData("submit");
                           togglePopupVisibility(
                             setPopupController,
-                            0,
+                            1,
                             "open",
-                            "Are you sure want to submit this section?"
+                            "Reason for rejection"
+                          );
+                        }}
+                      />
+                    )
+                  : (currentDocRole?.reviewer || currentDocRole?.approver) && (
+                      <DefaultButton
+                        text="Rework"
+                        disabled={sectionLoader}
+                        btnType="secondaryRed"
+                        onClick={() => {
+                          togglePopupVisibility(
+                            setPopupController,
+                            1,
+                            "open",
+                            "Reason for rejection"
                           );
                         }}
                       />
                     )}
-                  </>
-                )}
+
+                {!currentSectionData?.sectionSubmitted &&
+                  (currentDocRole?.sectionAuthor ||
+                    currentDocRole?.primaryAuthor) && (
+                    <>
+                      <DefaultButton
+                        text="Reset content"
+                        disabled={sectionLoader}
+                        btnType="secondaryRed"
+                        onClick={() => {
+                          setSectionData((prev: any) => {
+                            const updatedSections = [...prev];
+                            updatedSections[activeIndex] = {
+                              ...updatedSections[activeIndex],
+                              contentType: "initial",
+                            };
+                            return updatedSections;
+                          });
+                        }}
+                      />
+                      <DefaultButton
+                        text="Save and Close"
+                        disabled={sectionLoader}
+                        btnType="lightGreyVariant"
+                        onClick={async () => {
+                          await addData();
+                        }}
+                      />
+                      {(currentDocRole?.sectionAuthor ||
+                        currentDocRole?.primaryAuthor) && (
+                        <DefaultButton
+                          text="Submit"
+                          disabled={sectionLoader}
+                          btnType="primary"
+                          onClick={() => {
+                            // await addData("submit");
+                            togglePopupVisibility(
+                              setPopupController,
+                              0,
+                              "open",
+                              "Are you sure want to submit this section?"
+                            );
+                          }}
+                        />
+                      )}
+                    </>
+                  )}
               </>
             )}
           </div>

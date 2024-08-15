@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { memo } from "react";
 import styles from "./StatusPill.module.scss";
 
@@ -28,6 +29,7 @@ interface Props {
   customWrapperClass?: string;
   ontrackDot?: boolean;
   bordered?: boolean;
+  dynamicText?: any;
 }
 
 const StatusPill: React.FC<Props> = ({
@@ -36,6 +38,7 @@ const StatusPill: React.FC<Props> = ({
   customWrapperClass,
   ontrackDot,
   size = "MD",
+  dynamicText,
   bordered,
 }: Props) => {
   const getStatusClassName = (status?: Props["status"]): string => {
@@ -59,7 +62,6 @@ const StatusPill: React.FC<Props> = ({
       case "Hidden":
         return styles.hidden;
       case "Content in progress":
-        return styles.contentInProgress;
       case "content in progress":
         return styles.contentInProgress;
       case "submitted":
@@ -74,6 +76,7 @@ const StatusPill: React.FC<Props> = ({
         return "";
     }
   };
+
   const getDotClass = (status?: Props["status"]): string => {
     switch (status) {
       case "Overdue":
@@ -95,7 +98,6 @@ const StatusPill: React.FC<Props> = ({
       case "Hidden":
         return styles.hidden;
       case "Content in progress":
-        return styles.contentInProgressDOT;
       case "content in progress":
         return styles.contentInProgressDOT;
       case "submitted":
@@ -111,7 +113,8 @@ const StatusPill: React.FC<Props> = ({
     }
   };
 
-  const getStatusText = (status?: Props["status"]): string => {
+  const getDisplayText = (): string => {
+    if (dynamicText) return dynamicText || "";
     switch (status) {
       case "Overdue":
         return "Overdue";
@@ -132,7 +135,6 @@ const StatusPill: React.FC<Props> = ({
       case "Hidden":
         return "Hidden";
       case "Content in progress":
-        return "Content in progress";
       case "content in progress":
         return "Content in progress";
       case "submitted":
@@ -144,7 +146,7 @@ const StatusPill: React.FC<Props> = ({
       case "Rework in progress":
         return "Rework in progress";
       default:
-        return "Unknown";
+        return dynamicText || "";
     }
   };
 
@@ -193,7 +195,7 @@ const StatusPill: React.FC<Props> = ({
       {ontrackDot && (
         <span className={`${styles.ontrackDot} ${getDotClass(status)}`} />
       )}
-      {status && getStatusText(status)}
+      {getDisplayText()}
       {roles && getRoleText(roles)}
     </div>
   );

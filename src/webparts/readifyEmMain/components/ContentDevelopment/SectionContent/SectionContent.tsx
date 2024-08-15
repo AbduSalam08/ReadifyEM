@@ -328,7 +328,10 @@ const SectionContent: React.FC<IProps> = ({
             {point.text}
           </span>
           <ContentEditor
-            readOnly={currentSectionDetails?.sectionSubmitted}
+            readOnly={
+              currentSectionDetails?.sectionSubmitted ||
+              currentDocRole?.consultant
+            }
             editorHtmlValue={point.value}
             placeholder="Enter here"
             setEditorHtml={(html: any) => {
@@ -446,7 +449,8 @@ const SectionContent: React.FC<IProps> = ({
       submissionType === "submit",
       "Sample.txt",
       AllSectionsDataMain,
-      dispatch
+      dispatch,
+      currentDocDetailsData
     );
 
     Promise.all([updateAttachmentPromise])
@@ -554,7 +558,7 @@ const SectionContent: React.FC<IProps> = ({
                   currentDocRole?.approver) &&
                   currentSectionDetails?.sectionSubmitted && (
                     <DefaultButton
-                      text="Reject"
+                      text="Rework"
                       disabled={sectionLoader}
                       btnType="secondaryRed"
                       onClick={() => {

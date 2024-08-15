@@ -734,7 +734,7 @@ const SupportingDocuments: React.FC<Props> = ({
                 currentDocRole?.approver) &&
                 currentSectionDetails?.sectionSubmitted && (
                   <DefaultButton
-                    text="Reject"
+                    text="Rework"
                     // disabled={sectionLoader}
                     btnType="secondaryRed"
                     onClick={() => {

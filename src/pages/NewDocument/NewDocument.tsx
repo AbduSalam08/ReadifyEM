@@ -32,7 +32,7 @@ import {
 } from "../../services/NewDocument/NewDocumentServices";
 import { getAllFilesList } from "../../services/EMManual/EMMServices";
 // utils
-import { initialPopupLoaders } from "../../config/config";
+import { initialPopupLoaders, LISTNAMES } from "../../config/config";
 import { emptyCheck, trimStartEnd } from "../../utils/validations";
 // styles
 import styles from "./NewDocument.module.scss";
@@ -42,6 +42,8 @@ import {
 } from "../../utils/NewDocumentUtils";
 import CustomDropDown from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomDropDown";
 import { LoadTableData } from "../../services/SDDTemplates/SDDTemplatesServices";
+import { togglePopupVisibility } from "../../utils/togglePopup";
+import SpServices from "../../services/SPServices/SpServices";
 // interfaces
 
 interface Props {
@@ -59,7 +61,12 @@ const NewDocument = ({
   const DocumentPathOptions = useSelector(
     (state: any) => state.EMMTableOfContents.foldersData
   );
-
+  const [currentDocTemplateType, setCurrentDocTemplateType] = useState({
+    value: "",
+    currentValue: "",
+    change: false,
+  });
+  console.log("currentDocTemplateType: ", currentDocTemplateType);
   const EMMTOCAdminData = useSelector(
     (state: any) => state.EMMTableOfContents.adminData
   );
@@ -84,10 +91,10 @@ const NewDocument = ({
   const [popupLoaders, setPopupLoaders] =
     useState<IPopupLoaders>(initialPopupLoaders);
 
-  const [confimationPopup, setConfimationPopup] = useState({
-    visibility: false,
-    title: "Are you sure want to save this as draft?",
-  });
+  // const [confimationPopup, setConfimationPopup] = useState({
+  //   visibility: false,
+  //   title: "Are you sure want to save this as draft?",
+  // });
 
   const [docUsersList, setDocUsersList] = useState({
     approvers: [
@@ -105,6 +112,29 @@ const NewDocument = ({
       },
     ],
   });
+
+  const initialPopupController = [
+    {
+      open: false,
+      popupTitle: "Are you sure want to save this as draft?",
+      popupWidth: "25vw",
+      popupType: "confirmation",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "Are you sure want to change the document type?",
+      popupWidth: "25vw",
+      popupType: "confirmation",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+  ];
+
+  const [popupController, setPopupController] = useState(
+    initialPopupController
+  );
 
   const initialFormData: IFormDataItem[] = [
     {
@@ -237,35 +267,71 @@ const NewDocument = ({
 
   // the folder URL which comes form the screens props
   const splittedPath: any = screens.editDocumentData?.url;
+  console.log("screens.editDocumentData: ", screens.editDocumentData);
 
   // splitting the folder path for saving and editting the path if only its editted
   const folderPathShallowCopy: string = isEditDocument ? splittedPath : "";
 
   // confirmation buttons to render it on the bottom of the forms.
-  const confirmationButtons: any[] = [
-    {
-      text: "No",
-      btnType: "darkGreyVariant",
-      disabled: false,
-      endIcon: false,
-      startIcon: false,
-      onClick: () => {
-        setConfimationPopup((prev) => ({
-          ...prev,
-          visibility: false,
-        }));
+  const popupActions: any[] = [
+    [
+      {
+        text: "No",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          // setConfimationPopup((prev) => ({
+          //   ...prev,
+          //   visibility: false,
+          // }));
+          togglePopupVisibility(setPopupController, 0, "close");
+        },
       },
-    },
-    {
-      text: "Yes",
-      btnType: "primary",
-      disabled: false,
-      endIcon: false,
-      startIcon: false,
-      onClick: () => {
-        saveAndClose();
+      {
+        text: "Yes",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          saveAndClose();
+        },
       },
-    },
+    ],
+    [
+      {
+        text: "No",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          togglePopupVisibility(setPopupController, 1, "close");
+          setCurrentDocTemplateType((prev: any) => ({
+            ...prev,
+            change: false,
+          }));
+        },
+      },
+      {
+        text: "Yes",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          togglePopupVisibility(setPopupController, 1, "close");
+          setCurrentDocTemplateType((prev: any) => ({
+            ...prev,
+            change: true,
+          }));
+          handleInputChange(currentDocTemplateType.currentValue);
+          // saveAndClose();
+        },
+      },
+    ],
   ];
 
   const handleInputChange = (value: any): any => {
@@ -321,6 +387,13 @@ const NewDocument = ({
             : currentStep.errorMsg,
       };
 
+      if (currentStep.key === "documentTemplateTypeId") {
+        setCurrentDocTemplateType((prev: any) => ({
+          ...prev,
+          change: false,
+        }));
+      }
+
       return updatedFormData;
     });
   };
@@ -350,10 +423,30 @@ const NewDocument = ({
     <CustomDropDown
       key={2}
       onChange={(value: string) => {
-        const templateID = AllSDDTemplateData?.filter(
-          (templateData: any) => templateData?.templateName === value
-        );
-        handleInputChange(templateID[0]?.templateName);
+        if (editPageDocument) {
+          if (
+            trimStartEnd(currentDocTemplateType.value) !==
+              trimStartEnd(value) &&
+            !currentDocTemplateType.change
+          ) {
+            togglePopupVisibility(setPopupController, 1, "open");
+            setCurrentDocTemplateType((prev: any) => ({
+              ...prev,
+              currentValue: value,
+              change: false,
+            }));
+          } else {
+            const templateID = AllSDDTemplateData?.filter(
+              (templateData: any) => templateData?.templateName === value
+            );
+            handleInputChange(templateID[0]?.templateName);
+          }
+        } else {
+          const templateID = AllSDDTemplateData?.filter(
+            (templateData: any) => templateData?.templateName === value
+          );
+          handleInputChange(templateID[0]?.templateName);
+        }
       }}
       options={templateOptions}
       value={formData[1].value}
@@ -383,9 +476,10 @@ const NewDocument = ({
         console.log("inputValue: ", inputValue);
       }}
       selectedItem={
-        inputValue?.secondaryText ||
+        inputValue?.email ||
+        inputValue?.[0]?.eMail ||
         inputValue?.[0]?.EMail ||
-        inputValue[0]?.secondaryText
+        inputValue?.[0]?.secondaryText
       }
       personSelectionLimit={1}
       placeholder="Add people"
@@ -618,7 +712,8 @@ const NewDocument = ({
               ? false
               : folderPathShallowCopy,
             false,
-            AllSDDTemplateData
+            AllSDDTemplateData,
+            currentDocTemplateType?.value
           );
         } else {
           AddNewDocument(
@@ -719,7 +814,8 @@ const NewDocument = ({
               ? false
               : folderPathShallowCopy,
             false,
-            AllSDDTemplateData
+            AllSDDTemplateData,
+            currentDocTemplateType?.value
           )
         : AddNewDocument(
             updatedFormData,
@@ -750,6 +846,23 @@ const NewDocument = ({
         formData,
         setPopupLoaders
       );
+
+      SpServices.SPReadItemUsingId({
+        Listname: LISTNAMES.DocumentDetails,
+        Select: "*, documentTemplateType/ID, documentTemplateType/Title",
+        SelectedId: screens?.editDocumentData?.ID,
+        Expand: "documentTemplateType",
+      })
+        .then((res: any) => {
+          setCurrentDocTemplateType((prev: any) => ({
+            ...prev,
+            change: false,
+            value: res?.documentTemplateType?.Title,
+          }));
+        })
+        .catch((err: any) => {
+          console.log("err: ", err);
+        });
     }
     LoadTableData(dispatch);
   }, [screens.pageTitle]);
@@ -760,6 +873,7 @@ const NewDocument = ({
         activeStep={activeStep}
         stepperFormData={stepperFormData}
         stepperInputs={stepperInputs}
+        updateForm={isEditDocument}
       />
 
       <div className={styles.stepperFormFooter}>
@@ -780,10 +894,7 @@ const NewDocument = ({
                   text="Save & Close"
                   disabled={activeStep < 3}
                   onClick={() => {
-                    setConfimationPopup((prev) => ({
-                      ...prev,
-                      visibility: true,
-                    }));
+                    togglePopupVisibility(setPopupController, 0, "open");
                   }}
                 />
               )}
@@ -837,7 +948,30 @@ const NewDocument = ({
         popupWidth={"30vw"}
       />
 
-      <Popup
+      {popupController?.map((popupData: any, index: number) => (
+        <Popup
+          key={index}
+          // isLoading={AllSectionsData[activeSection]?.isLoading}
+          PopupType={popupData.popupType}
+          onHide={() =>
+            togglePopupVisibility(setPopupController, index, "close")
+          }
+          popupTitle={
+            popupData.popupType !== "confimation" && popupData.popupTitle
+          }
+          popupActions={popupActions[index]}
+          visibility={popupData.open}
+          // content={popupInputs[index]}
+          popupWidth={popupData.popupWidth}
+          defaultCloseBtn={popupData.defaultCloseBtn || false}
+          confirmationTitle={
+            popupData.popupType !== "custom" ? popupData.popupTitle : ""
+          }
+          // popupHeight={index === 0 ? true : false}
+        />
+      ))}
+
+      {/* <Popup
         PopupType="confirmation"
         onHide={() => {
           setConfimationPopup((prev) => ({
@@ -849,7 +983,7 @@ const NewDocument = ({
         confirmationTitle={confimationPopup.title}
         visibility={confimationPopup.visibility}
         popupActions={confirmationButtons}
-      />
+      /> */}
     </div>
   );
 };

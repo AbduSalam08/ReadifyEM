@@ -803,3 +803,10 @@ body {
 .contentDevLoaderWrapper {
   height: calc(100% - 55px);
 }
+.stepperWarning.p-inline-message.p-inline-message-warn {
+  color: #856404;
+  padding: 10px !important;
+  justify-content: flex-start;
+  gap: 10px;
+  font-family: "interRegular" !important;
+}

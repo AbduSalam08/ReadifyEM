@@ -2,7 +2,7 @@
   --overdue-color: #f44336;
   --notStarted-color: #eaeaea;
   --inDevelopment-color: #fff2e2;
-  --inReview-color: #9c27b0;
+  --inReview-color: #e0feff;
   --inRework-color: #ff5722;
   --inApproval-color: #673ab7;
   --approved-color: #deffe6;
@@ -10,7 +10,7 @@
   --hidden-color: #607d8b;
   --contentInProgress-color: #fff7e8;
   --contentSubmitted-color: #e8fff3;
-  --reviewInProgress-color: #e3fdff;
+  --reviewInProgress-color: #fff2e2;
   --approvalInProgress-color: #e3e8ff;
   --reworkInProgress-color: #ffe3e5;
 }
@@ -24,7 +24,7 @@
   align-items: center;
   justify-content: center;
   font-family: "interMedium", sans-serif !important;
-  text-transform: capitalize;
+  // text-transform: capitalize;
   border-radius: 40px;
   height: 27px;
   user-select: none !important;
@@ -45,7 +45,7 @@
   }
   &.inReview {
     background-color: var(--inReview-color);
-    color: white;
+    color: #0c757c;
   }
   &.inRework {
     background-color: var(--inRework-color);
@@ -77,7 +77,7 @@
   }
   &.reviewInProgress {
     background-color: var(--reviewInProgress-color);
-    color: #01573e;
+    color: #b57801;
   }
   &.approvalInProgress {
     background-color: var(--approvalInProgress-color);
@@ -132,14 +132,14 @@
 
 .reviewer {
   @extend .rolesPill;
-  background-color: #795548;
-  color: white;
+  background-color: #ffeced;
+  color: #bb3c44;
 }
 
 .approver {
   @extend .rolesPill;
-  background-color: #deffe6;
-  color: black;
+  background-color: #e8f3fb;
+  color: #0897ff;
 }
 
 .SM {
@@ -170,7 +170,7 @@
   margin-left: 0;
 }
 .reviewInProgressDOT {
-  background-color: #01573e;
+  background-color: #b57801 !important;
   margin: 0 5px;
   margin-left: 0;
 }

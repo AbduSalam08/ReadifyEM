@@ -25,7 +25,7 @@ import { getHeaderSectionDetails } from "../../../../../services/ContentDevelopm
 import { useDispatch, useSelector } from "react-redux";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import ToastMessage from "../../common/Toast/ToastMessage";
-import { ChevronRight } from "@mui/icons-material";
+// import { ChevronRight } from "@mui/icons-material";
 const sampleDocHeaderImg: any = require("../../../../../assets/images/png/imagePlaceholder.png");
 
 interface Props {
@@ -72,11 +72,14 @@ const SetupHeader: React.FC<Props> = ({
   const CDHeaderDetails = useSelector(
     (state: any) => state.ContentDeveloperData.CDHeaderDetails
   );
+  const AllSectionsDataMain: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDSectionsData
+  );
   console.log("CDHeaderDetails: ", CDHeaderDetails);
   const [totalSize, setTotalSize] = useState(0);
   const [sectionLoader, setSectionLoader] = useState(true);
-  const [expandHeader, setExpandHeader] = useState(true);
-  console.log("expandHeader: ", expandHeader);
+  // const [expandHeader, setExpandHeader] = useState(true);
+  // console.log("expandHeader: ", expandHeader);
   const [file, setFile] = useState<{
     fileData: any;
     fileName: string;
@@ -374,11 +377,11 @@ const SetupHeader: React.FC<Props> = ({
             ? styles.headerWrapper
             : styles.headerWrapperAppendix
         }
-        onClick={() => {
-          setExpandHeader(!expandHeader);
-        }}
+        // onClick={() => {
+        //   setExpandHeader(!expandHeader);
+        // }}
       >
-        {!primaryAuthorDefaultHeader && (
+        {/* {!primaryAuthorDefaultHeader && (
           <ChevronRight
             style={{
               transform: !expandHeader ? "rotate(0deg)" : "rotate(90deg)",
@@ -386,7 +389,7 @@ const SetupHeader: React.FC<Props> = ({
               marginRight: "5px",
             }}
           />
-        )}
+        )} */}
         <span>
           {currentDocRole?.primaryAuthor ? "Setup" : "Document"} Header
         </span>
@@ -398,9 +401,10 @@ const SetupHeader: React.FC<Props> = ({
       ) : (
         <div
           className={
-            expandHeader
-              ? styles.setupHeaderWrapperExpanded
-              : styles.setupHeaderWrapper
+            // expandHeader
+            //   ? styles.setupHeaderWrapperExpanded
+            //   : styles.setupHeaderWrapper
+            styles.setupHeaderWrapperExpanded
           }
         >
           <div className={styles.logoUploadWrapper}>
@@ -497,7 +501,9 @@ const SetupHeader: React.FC<Props> = ({
                       await addHeaderAttachmentData(
                         "submit",
                         sectionDetails,
-                        file
+                        file,
+                        AllSectionsDataMain,
+                        dispatch
                       );
 
                     Promise.all([dataAdded])

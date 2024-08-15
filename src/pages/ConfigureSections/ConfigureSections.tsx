@@ -32,9 +32,9 @@ const ConfigureSections = (): JSX.Element => {
   // use dispatch for redux triggers
   const dispatch = useDispatch();
 
-  const AllSDDTemplateData = useSelector(
-    (state: any) => state.SDDTemplatesData.AllSDDTemplates
-  );
+  // const AllSDDTemplateData = useSelector(
+  //   (state: any) => state.SDDTemplatesData.AllSDDTemplates
+  // );
 
   // const AllSDDTemplateDetails = useSelector(
   //   (state: any) => state.SDDTemplatesData.SDDtemplateDetails
@@ -124,6 +124,8 @@ const ConfigureSections = (): JSX.Element => {
     appendixSections: [],
     isLoading: false,
   });
+
+  console.log("sectionsData: ", sectionsData);
 
   // main that calls all data
   const setMainData = async () => {
@@ -247,17 +249,19 @@ const ConfigureSections = (): JSX.Element => {
       setMainData();
     } else {
       setMainData();
-      const templateID = AllSDDTemplateData?.filter(
-        (templateData: any) => templateData?.templateName === "value"
-      );
+      // const templateID = AllSDDTemplateData?.filter(
+      //   (templateData: any) =>
+      //     templateData?.templateName ===
+      //     currentTaskData?.documentTemplateType?.Title
+      // );
       setSectionsData((prev: any) => ({
         ...prev,
         templateDetails: {
-          templateID: templateID[0]?.ID,
-          templateName: "",
+          templateID: currentTaskData?.documentTemplateType?.ID,
+          templateName: currentTaskData?.documentTemplateType?.Title,
         },
       }));
-      getTemplateDetails(templateID[0]?.ID);
+      getTemplateDetails(currentTaskData?.documentTemplateType?.ID);
     }
   }, []);
 

@@ -239,7 +239,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
           >
             <CustomInput
               value={sectionName}
-              readOnly={section?.readOnlySection}
+              readOnly={section?.readOnlySection || section?.templateSectionID}
               autoFocus={section?.readOnlySection ? false : true}
               isValid={!section?.sectionName?.isValid}
               onChange={(value: string) => {
@@ -284,6 +284,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
             <InputSwitch
               checked={sectionSelected}
               className="sectionToggler"
+              disabled={section?.templateSectionID}
               onChange={(e) => {
                 handleOnChange(currentItemIndex, "sectionSelected", e?.value);
               }}
@@ -322,21 +323,22 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
             />
           </div>
         </div>
-        {(currentItemIndex !== 0 || sectionType === "appendixSection") && (
-          <button
-            className={styles.deleteIcon}
-            onClick={() => {
-              if (section?.templateSectionID === null) {
-                handleDeleteRow(currentItemIndex);
-              } else {
-                handleOnChange(currentItemIndex, "removed", true);
-                // handleOnChange(currentItemIndex, "sectionOrderNo", "0");
-              }
-            }}
-          >
-            <DeleteIcon />
-          </button>
-        )}
+        {!section?.templateSectionID &&
+          (currentItemIndex !== 0 || sectionType === "appendixSection") && (
+            <button
+              className={styles.deleteIcon}
+              onClick={() => {
+                if (section?.templateSectionID === null) {
+                  handleDeleteRow(currentItemIndex);
+                } else {
+                  handleOnChange(currentItemIndex, "removed", true);
+                  // handleOnChange(currentItemIndex, "sectionOrderNo", "0");
+                }
+              }}
+            >
+              <DeleteIcon />
+            </button>
+          )}
       </div>
     );
   };

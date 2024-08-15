@@ -49,3 +49,11 @@
 .questionInputsWrapper {
   width: 370px;
 }
+.answerInputSpace {
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}

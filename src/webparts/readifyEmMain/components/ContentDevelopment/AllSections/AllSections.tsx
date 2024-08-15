@@ -43,6 +43,28 @@ const AllSections: React.FC<Props> = ({
   );
   console.log("currentUserDetails: ", currentUserDetails);
 
+  const updateStatusCount = (itemStatus: string, newCount: number): string => {
+    // Check if the status string includes either "review in progress" or "approval in progress"
+    if (
+      itemStatus.toLowerCase().includes("yet to be reviewed") ||
+      itemStatus.toLowerCase().includes("yet to be approved")
+    ) {
+      // Split the status to get the current counts
+      const parts = itemStatus.split("(");
+      if (parts.length > 1) {
+        const countPart = parts[1].split("/");
+        if (countPart.length > 1) {
+          // Update the last count with the newCount
+          countPart[1] = `${newCount})`;
+          // Reconstruct the status string
+          return `${parts[0]}(${countPart.join("/")}`;
+        }
+      }
+    }
+    // Return the original status if the conditions are not met
+    return itemStatus;
+  };
+
   return (
     <div>
       <div className={styles.sectionHeader}>
@@ -57,6 +79,7 @@ const AllSections: React.FC<Props> = ({
       {data.length > 0 &&
         data?.map((item: any, index: number) => {
           console.log("item: ", item);
+
           return item?.sectionType === "header section" &&
             currentDocRole?.primaryAuthor ? (
             <div
@@ -143,7 +166,30 @@ const AllSections: React.FC<Props> = ({
                 <div className={styles.sectionList}>
                   {/* <span className={styles.statusSec}>{item.sectionStatus}</span> */}
                   <StatusPill
-                    status={item?.sectionStatus}
+                    status={
+                      item?.sectionStatus
+                        ?.toLowerCase()
+                        ?.includes("yet to be reviewed")
+                        ? "Review in progress"
+                        : item?.sectionStatus
+                    }
+                    dynamicText={
+                      item?.sectionStatus
+                        ?.toLowerCase()
+                        ?.includes("yet to be reviewed")
+                        ? updateStatusCount(
+                            item?.sectionStatus,
+                            currentDocDetailsData?.reviewers?.length
+                          )
+                        : item?.sectionStatus
+                            ?.toLowerCase()
+                            ?.includes("approval in progress")
+                        ? updateStatusCount(
+                            item?.sectionStatus,
+                            currentDocDetailsData?.approvers?.length
+                          )
+                        : ""
+                    }
                     size="SM"
                     ontrackDot={true}
                   />
