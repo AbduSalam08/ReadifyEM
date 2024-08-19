@@ -82,8 +82,6 @@ const AllSections: React.FC<Props> = ({
       </div>
       {data?.length > 0 &&
         data?.map((item: any, index: number) => {
-          console.log("item: ", item);
-
           return (item?.sectionType === "header section" ||
             item?.sectionType === "change record" ||
             item?.sectionType === "references section") &&
@@ -100,24 +98,24 @@ const AllSections: React.FC<Props> = ({
                   {item.sectionName}
                 </span>
               </div>
-              {(item?.sectionType !== "change record" ||
-                item?.sectionType !== "references section") && (
-                <div className={styles.sectionList}>
-                  <span className={styles.assignedText}>Assigned to you</span>
-                  <div
-                    style={{
-                      marginLeft: "8px",
-                    }}
-                  >
-                    <MultiplePeoplePersona
-                      data={[
-                        ...(item.consultants || []),
-                        ...(item.sectionAuthor || []),
-                      ]}
-                    />
+              {item?.sectionType !== "change record" &&
+                item?.sectionType !== "references section" && (
+                  <div className={styles.sectionList}>
+                    <span className={styles.assignedText}>Assigned to you</span>
+                    <div
+                      style={{
+                        marginLeft: "8px",
+                      }}
+                    >
+                      <MultiplePeoplePersona
+                        data={[
+                          ...(item.consultants || []),
+                          ...(item.sectionAuthor || []),
+                        ]}
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           ) : (item?.sectionType !== "header section" ||
               item?.sectionType !== "change record" ||
@@ -166,17 +164,17 @@ const AllSections: React.FC<Props> = ({
                   </span>
                 )}
               </div>
-              {(item?.sectionType !== "change record" ||
-                item?.sectionType !== "references section") && (
-                <>
-                  <div className={styles.sectionList}>
-                    {item?.assignedToUser && (
-                      <span className={styles.assignedText}>
-                        Assigned to you
-                      </span>
-                    )}
+              {item?.sectionType !== "change record" &&
+                item?.sectionType !== "references section" && (
+                  <>
+                    <div className={styles.sectionList}>
+                      {item?.assignedToUser && (
+                        <span className={styles.assignedText}>
+                          Assigned to you
+                        </span>
+                      )}
 
-                    {/* {currentDocRole?.primaryAuthor
+                      {/* {currentDocRole?.primaryAuthor
                   ? item?.sectionType?.toLowerCase() === "header section" &&
                     currentDocDetailsData?.primaryAuthor?.email ===
                       currentUserDetails?.email && (
@@ -190,80 +188,80 @@ const AllSections: React.FC<Props> = ({
                       </span>
                     )} */}
 
-                    <div
-                      style={{
-                        marginLeft: "8px",
-                      }}
-                    >
-                      <MultiplePeoplePersona
-                        data={[
-                          ...(item.consultants || []),
-                          ...(item.sectionAuthor || []),
-                        ]}
-                      />
-                    </div>
-                  </div>
-                  {(item?.sectionType !== "header section" ||
-                    item?.sectionType !== "change record" ||
-                    item?.sectionType !== "references section") && (
-                    <div className={styles.sectionList}>
-                      {/* <span className={styles.statusSec}>{item.sectionStatus}</span> */}
-                      <StatusPill
-                        status={
-                          item?.sectionStatus
-                            ?.toLowerCase()
-                            ?.includes("yet to be reviewed")
-                            ? "Review in progress"
-                            : item?.sectionStatus
-                                ?.toLowerCase()
-                                ?.includes("yet to be approved")
-                            ? "Approval in progress"
-                            : item?.sectionStatus
-                        }
-                        dynamicText={
-                          item?.sectionStatus
-                            ?.toLowerCase()
-                            ?.includes("yet to be reviewed")
-                            ? updateStatusCount(
-                                item?.sectionStatus,
-                                currentDocDetailsData?.reviewers?.length
-                              )
-                            : item?.sectionStatus
-                                ?.toLowerCase()
-                                ?.includes("yet to be approved")
-                            ? updateStatusCount(
-                                item?.sectionStatus,
-                                currentDocDetailsData?.approvers?.length
-                              )
-                            : ""
-                        }
-                        size="SM"
-                        ontrackDot={true}
-                      />
                       <div
-                        className={styles.flexCenter}
                         style={{
-                          marginTop: "5px",
+                          marginLeft: "8px",
                         }}
                       >
-                        <span className={styles.visibleDateSec}>
-                          {item.dueDate}
-                        </span>
-                        <ChevronRight
-                          style={{
-                            color: "#160364",
-                            backgroundColor: "#E2EEFF",
-                            borderRadius: "3px",
-                            fontSize: "17px",
-                            cursor: "pointer",
-                            marginLeft: "10px",
-                          }}
+                        <MultiplePeoplePersona
+                          data={[
+                            ...(item.consultants || []),
+                            ...(item.sectionAuthor || []),
+                          ]}
                         />
                       </div>
                     </div>
-                  )}
-                </>
-              )}
+                    {(item?.sectionType !== "header section" ||
+                      item?.sectionType !== "change record" ||
+                      item?.sectionType !== "references section") && (
+                      <div className={styles.sectionList}>
+                        {/* <span className={styles.statusSec}>{item.sectionStatus}</span> */}
+                        <StatusPill
+                          status={
+                            item?.sectionStatus
+                              ?.toLowerCase()
+                              ?.includes("yet to be reviewed")
+                              ? "Review in progress"
+                              : item?.sectionStatus
+                                  ?.toLowerCase()
+                                  ?.includes("yet to be approved")
+                              ? "Approval in progress"
+                              : item?.sectionStatus
+                          }
+                          dynamicText={
+                            item?.sectionStatus
+                              ?.toLowerCase()
+                              ?.includes("yet to be reviewed")
+                              ? updateStatusCount(
+                                  item?.sectionStatus,
+                                  currentDocDetailsData?.reviewers?.length
+                                )
+                              : item?.sectionStatus
+                                  ?.toLowerCase()
+                                  ?.includes("yet to be approved")
+                              ? updateStatusCount(
+                                  item?.sectionStatus,
+                                  currentDocDetailsData?.approvers?.length
+                                )
+                              : ""
+                          }
+                          size="SM"
+                          ontrackDot={true}
+                        />
+                        <div
+                          className={styles.flexCenter}
+                          style={{
+                            marginTop: "5px",
+                          }}
+                        >
+                          <span className={styles.visibleDateSec}>
+                            {item.dueDate}
+                          </span>
+                          <ChevronRight
+                            style={{
+                              color: "#160364",
+                              backgroundColor: "#E2EEFF",
+                              borderRadius: "3px",
+                              fontSize: "17px",
+                              cursor: "pointer",
+                              marginLeft: "10px",
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
             </div>
           ) : (item?.sectionType !== "header section" ||
               item?.sectionType !== "change record" ||
@@ -291,25 +289,25 @@ const AllSections: React.FC<Props> = ({
                   {item.sectionName}
                 </span>
               </div>
-              {(item?.sectionType !== "change record" ||
-                item?.sectionType !== "references section") && (
-                <>
-                  <div className={styles.sectionList}>
-                    <div
-                      style={{
-                        marginLeft: "8px",
-                      }}
-                    >
-                      <MultiplePeoplePersona
-                        data={[
-                          ...(item.consultants || []),
-                          ...(item.sectionAuthor || []),
-                        ]}
-                      />
+              {item?.sectionType !== "change record" &&
+                item?.sectionType !== "references section" && (
+                  <>
+                    <div className={styles.sectionList}>
+                      <div
+                        style={{
+                          marginLeft: "8px",
+                        }}
+                      >
+                        <MultiplePeoplePersona
+                          data={[
+                            ...(item.consultants || []),
+                            ...(item.sectionAuthor || []),
+                          ]}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
             </div>
           );
         })}

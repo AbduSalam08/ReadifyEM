@@ -436,7 +436,9 @@ const AppendixContent = ({
                           sectionLoader && currentDocRole?.reviewer
                             ? sectionDetails?.sectionReviewed
                             : currentDocRole?.approver &&
-                              sectionDetails?.sectionApprover
+                              sectionDetails?.sectionApprover &&
+                              currentDocDetailsData?.documentStatus
+                                ?.toLowerCase === "approved"
                         }
                         text="Rework"
                         btnType="secondaryRed"

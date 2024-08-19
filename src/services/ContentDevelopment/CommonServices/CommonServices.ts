@@ -193,6 +193,15 @@ export const getSectionsDetails = async (
         (elem1: any, elem2: any) => elem1?.sectionOrder - elem2?.sectionOrder
       );
 
+    const sortReferneceSection: any = sectionData
+      ?.filter(
+        (elem1: any) =>
+          elem1?.sectionType?.toLowerCase() === "references section"
+      )
+      ?.sort(
+        (elem1: any, elem2: any) => elem1?.sectionOrder - elem2?.sectionOrder
+      );
+
     const sortAppendixSectionsByOrderNo: any = sectionData
       ?.filter(
         (elem1: any) => elem1?.sectionType?.toLowerCase() === "appendix section"
@@ -260,6 +269,7 @@ export const getSectionsDetails = async (
     dispatcher(
       setCDSectionData([
         ...sortDefaultSectionsByOrderNo,
+        ...sortReferneceSection,
         ...sortAppendixSectionsByOrderNo,
         ...sortLastAppendixSectionsByOrderNo,
       ])
@@ -1345,7 +1355,7 @@ export const getAllSectionsChangeRecord = async (
     .then(async (res: any[]) => {
       console.log(res);
       res?.forEach((obj: any) => {
-        if (obj.Title === "Change Record") {
+        if (obj.sectionType === "change record") {
           changeRecId = obj.ID;
         }
         if (obj.changeRecordDescription)

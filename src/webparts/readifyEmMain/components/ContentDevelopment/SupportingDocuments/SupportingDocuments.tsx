@@ -18,7 +18,7 @@ const checkBtn = require("../../../../../assets/images/png/checkmark.png");
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 
 import {
-  getAllDocuments,
+  getAllSectionsChangeRecord,
   getDocumentDeatils,
   getApprovedDocuments,
   submitSupportingDocuments,
@@ -535,7 +535,7 @@ const SupportingDocuments: React.FC<Props> = ({
 
   const getAllSelectedDocuments = async (): Promise<any> => {
     setLoader(true);
-    const tempSelectedDocumentsArray: any = await getAllDocuments(
+    const tempSelectedDocumentsArray: any = await getAllSectionsChangeRecord(
       sectionId,
       documentId
     );
@@ -1027,18 +1027,21 @@ const SupportingDocuments: React.FC<Props> = ({
             }}
           />
 
-          <DefaultButton
-            text="Change record"
-            btnType="primaryGreen"
-            onClick={() => {
-              togglePopupVisibility(
-                setPopupController,
-                3,
-                "open",
-                "Change record"
-              );
-            }}
-          />
+          {currentDocDetailsData?.version !== "1.0" &&
+            (currentDocRole?.reviewer || currentDocRole?.approver) && (
+              <DefaultButton
+                text="Change record"
+                btnType="primaryGreen"
+                onClick={() => {
+                  togglePopupVisibility(
+                    setPopupController,
+                    3,
+                    "open",
+                    "Change record"
+                  );
+                }}
+              />
+            )}
 
           {(currentDocRole?.primaryAuthor ||
             currentDocRole?.sectionAuthor ||
@@ -1051,7 +1054,7 @@ const SupportingDocuments: React.FC<Props> = ({
                       text="Rework"
                       // disabled={sectionLoader}
                       disabled={
-                        !["in development"].includes(
+                        !["in development", "approved"].includes(
                           currentDocDetailsData?.documentStatus?.toLowerCase()
                         )
                       }
@@ -1106,7 +1109,11 @@ const SupportingDocuments: React.FC<Props> = ({
                         text="Rework"
                         btnType="secondaryRed"
                         disabled={
-                          loggerPromoter?.status !== "completed" ? false : true
+                          loggerPromoter?.status !== "completed" &&
+                          currentDocDetailsData?.documentStatus?.toLowerCase !==
+                            "approved"
+                            ? false
+                            : true
                         }
                         onClick={() =>
                           togglePopupVisibility(
