@@ -6,161 +6,179 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import dayjs from "dayjs";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 // import styles from "./ChangeRecord.module.scss";
 
 const ChangeRecord = () => {
   const allSectionsChangeRecord: any = useSelector(
     (state: any) => state.SectionData.allSectionsChangeRecord
   );
+
+  const [loader, setLoader] = useState<boolean>(false);
+  const [allSectionChangeRec, setAllSectionChangeRec] = useState<any[]>([]);
   console.log(allSectionsChangeRecord);
 
+  useEffect(() => {
+    setLoader(true);
+    setAllSectionChangeRec([...allSectionsChangeRecord]);
+    setLoader(false);
+  }, [allSectionsChangeRecord]);
+
   return (
-    <div>
-      <table
-        // className={styles.tableWrapper}
-        style={{ borderCollapse: "collapse", width: "100%" }}
-      >
-        <thead>
-          <tr>
-            <th
-              style={{
-                width: "8%",
-                fontSize: "15px",
-                color: "#555",
-                padding: "15px",
-                fontFamily: "interMedium,sans-serif",
-                textAlign: "center",
-                border: "1px solid #DDD",
-              }}
-            >
-              Section no
-            </th>
-            <th
-              style={{
-                width: "12%",
-                fontSize: "15px",
-                color: "#555",
-                padding: "15px",
-                fontFamily: "interMedium,sans-serif",
-                textAlign: "center",
-                border: "1px solid #DDD",
-              }}
-            >
-              Section name
-            </th>
-            <th
-              style={{
-                width: "30%",
-                fontSize: "15px",
-                color: "#555",
-                padding: "15px",
-                fontFamily: "interMedium,sans-serif",
-                textAlign: "center",
-                border: "1px solid #DDD",
-              }}
-            >
-              Current change
-            </th>
-            <th
-              style={{
-                width: "12%",
-                fontSize: "15px",
-                color: "#555",
-                padding: "15px",
-                fontFamily: "interMedium,sans-serif",
-                textAlign: "center",
-                border: "1px solid #DDD",
-              }}
-            >
-              Author
-            </th>
-            <th
-              style={{
-                width: "10%",
-                fontSize: "15px",
-                color: "#555",
-                padding: "15px",
-                fontFamily: "interMedium,sans-serif",
-                textAlign: "center",
-                border: "1px solid #DDD",
-              }}
-            >
-              Last modify
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {allSectionsChangeRecord?.map((obj: any, index: number) => {
-            return (
-              <tr key={index}>
-                <td
+    <>
+      {loader ? (
+        <CircularSpinner />
+      ) : (
+        <div style={{ height: "100%", overflow: "auto" }}>
+          <table
+            // className={styles.tableWrapper}
+            style={{ borderCollapse: "collapse", width: "100%" }}
+          >
+            <thead>
+              <tr>
+                <th
                   style={{
-                    fontSize: "13px",
-                    padding: "8px 20px 8px 20px",
-                    lineHeight: "18px",
+                    width: "8%",
+                    fontSize: "15px",
+                    color: "#555",
+                    padding: "15px",
                     fontFamily: "interMedium,sans-serif",
                     textAlign: "center",
                     border: "1px solid #DDD",
                   }}
                 >
-                  {obj.sectionOrder}
-                </td>
-                <td
+                  Section no
+                </th>
+                <th
                   style={{
-                    fontSize: "13px",
-                    padding: "8px 20px 8px 20px",
-                    lineHeight: "18px",
+                    width: "12%",
+                    fontSize: "15px",
+                    color: "#555",
+                    padding: "15px",
                     fontFamily: "interMedium,sans-serif",
                     textAlign: "center",
                     border: "1px solid #DDD",
                   }}
                 >
-                  {obj.sectionName}
-                </td>
-                <td
+                  Section name
+                </th>
+                <th
                   style={{
-                    fontSize: "13px",
-                    padding: "8px 20px 8px 20px",
-                    lineHeight: "18px",
+                    width: "30%",
+                    fontSize: "15px",
+                    color: "#555",
+                    padding: "15px",
                     fontFamily: "interMedium,sans-serif",
                     textAlign: "center",
                     border: "1px solid #DDD",
                   }}
                 >
-                  {obj.changeRecordDescription}
-                </td>
-                <td
+                  Current change
+                </th>
+                <th
                   style={{
-                    fontSize: "13px",
-                    padding: "8px 20px 8px 20px",
-                    lineHeight: "18px",
+                    width: "12%",
+                    fontSize: "15px",
+                    color: "#555",
+                    padding: "15px",
                     fontFamily: "interMedium,sans-serif",
                     textAlign: "center",
                     border: "1px solid #DDD",
                   }}
                 >
-                  {obj.changeRecordAuthor.authorName}
-                </td>
-                <td
+                  Author
+                </th>
+                <th
                   style={{
-                    fontSize: "13px",
-                    padding: "8px 20px 8px 20px",
-                    lineHeight: "18px",
+                    width: "10%",
+                    fontSize: "15px",
+                    color: "#555",
+                    padding: "15px",
                     fontFamily: "interMedium,sans-serif",
                     textAlign: "center",
                     border: "1px solid #DDD",
                   }}
                 >
-                  {dayjs(obj.changeRecordModify).format("DD-MMM-YYYY hh:mm A")}
-                </td>
+                  Last modify
+                </th>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+            </thead>
+            <tbody>
+              {allSectionChangeRec?.map((obj: any, index: number) => {
+                return (
+                  <tr key={index}>
+                    <td
+                      style={{
+                        fontSize: "13px",
+                        padding: "8px 20px 8px 20px",
+                        lineHeight: "18px",
+                        fontFamily: "interMedium,sans-serif",
+                        textAlign: "center",
+                        border: "1px solid #DDD",
+                      }}
+                    >
+                      {obj.sectionOrder}
+                    </td>
+                    <td
+                      style={{
+                        fontSize: "13px",
+                        padding: "8px 20px 8px 20px",
+                        lineHeight: "18px",
+                        fontFamily: "interMedium,sans-serif",
+                        textAlign: "center",
+                        border: "1px solid #DDD",
+                      }}
+                    >
+                      {obj.sectionName}
+                    </td>
+                    <td
+                      style={{
+                        fontSize: "13px",
+                        padding: "8px 20px 8px 20px",
+                        lineHeight: "18px",
+                        fontFamily: "interMedium,sans-serif",
+                        textAlign: "center",
+                        border: "1px solid #DDD",
+                      }}
+                    >
+                      {obj.changeRecordDescription}
+                    </td>
+                    <td
+                      style={{
+                        fontSize: "13px",
+                        padding: "8px 20px 8px 20px",
+                        lineHeight: "18px",
+                        fontFamily: "interMedium,sans-serif",
+                        textAlign: "center",
+                        border: "1px solid #DDD",
+                      }}
+                    >
+                      {obj.changeRecordAuthor.authorName}
+                    </td>
+                    <td
+                      style={{
+                        fontSize: "13px",
+                        padding: "8px 20px 8px 20px",
+                        lineHeight: "18px",
+                        fontFamily: "interMedium,sans-serif",
+                        textAlign: "center",
+                        border: "1px solid #DDD",
+                      }}
+                    >
+                      {dayjs(obj.changeRecordModify).format(
+                        "DD-MMM-YYYY hh:mm A"
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </>
   );
 };
 export default memo(ChangeRecord);

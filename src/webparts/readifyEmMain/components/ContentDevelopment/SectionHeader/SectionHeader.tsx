@@ -190,73 +190,74 @@ const SectionHeader: React.FC<Props> = ({
           ""
         )}
       </span>
-
-      <div style={{ display: "flex", gap: "10px" }}>
-        <div className={styles.authors}>
-          <span className={styles.label}>
-            {!isPrimaryAuthor
-              ? `Section Author ${
-                  activeSectionData?.sectionAuthor[0]?.email ===
-                  currentUserDetails?.email
-                    ? "(you)"
-                    : ""
-                }`
-              : `Primary Author ${
-                  currentDocDetailsData?.primaryAuthor?.email ===
-                  currentUserDetails?.email
-                    ? "(you)"
-                    : ""
-                }`}
-          </span>
-          <CustomPeoplePicker
-            size="SM"
-            maxWidth={"200px"}
-            minWidth={"200px"}
-            noRemoveBtn={true}
-            selectedItem={
-              !isPrimaryAuthor
-                ? authorState?.email
-                : currentDocDetailsData?.primaryAuthor?.email
-            }
-            onChange={handleOnChangeFunction}
-            isValid={false}
-            placeholder="Add Reference Author"
-            readOnly
-            hideErrMsg
-          />
-        </div>
-        {!isPrimaryAuthor && (
+      {activeSectionData?.sectionType?.toLowerCase() !== "change record" && (
+        <div style={{ display: "flex", gap: "10px" }}>
           <div className={styles.authors}>
-            <span className={styles.label}>Consultant</span>
+            <span className={styles.label}>
+              {!isPrimaryAuthor
+                ? `Section Author ${
+                    activeSectionData?.sectionAuthor[0]?.email ===
+                    currentUserDetails?.email
+                      ? "(you)"
+                      : ""
+                  }`
+                : `Primary Author ${
+                    currentDocDetailsData?.primaryAuthor?.email ===
+                    currentUserDetails?.email
+                      ? "(you)"
+                      : ""
+                  }`}
+            </span>
             <CustomPeoplePicker
               size="SM"
               maxWidth={"200px"}
               minWidth={"200px"}
-              personSelectionLimit={
-                currentDocRole.sectionAuthor || currentDocRole.primaryAuthor
-                  ? 5
-                  : consultantsState?.length
+              noRemoveBtn={true}
+              selectedItem={
+                !isPrimaryAuthor
+                  ? authorState?.email
+                  : currentDocDetailsData?.primaryAuthor?.email
               }
-              selectedItem={consultantsState}
               onChange={handleOnChangeFunction}
               isValid={false}
               placeholder="Add Reference Author"
-              readOnly={
-                currentDocRole.sectionAuthor
-                  ? !currentDocRole.sectionAuthor
-                  : !currentDocRole.primaryAuthor
-              }
-              noRemoveBtn={
-                currentDocRole.sectionAuthor
-                  ? !currentDocRole.sectionAuthor
-                  : !currentDocRole.primaryAuthor
-              }
-              multiUsers={true}
+              readOnly
               hideErrMsg
             />
           </div>
-        )}
-      </div>
+          {!isPrimaryAuthor && (
+            <div className={styles.authors}>
+              <span className={styles.label}>Consultant</span>
+              <CustomPeoplePicker
+                size="SM"
+                maxWidth={"200px"}
+                minWidth={"200px"}
+                personSelectionLimit={
+                  currentDocRole.sectionAuthor || currentDocRole.primaryAuthor
+                    ? 5
+                    : consultantsState?.length
+                }
+                selectedItem={consultantsState}
+                onChange={handleOnChangeFunction}
+                isValid={false}
+                placeholder="Add Reference Author"
+                readOnly={
+                  currentDocRole.sectionAuthor
+                    ? !currentDocRole.sectionAuthor
+                    : !currentDocRole.primaryAuthor
+                }
+                noRemoveBtn={
+                  currentDocRole.sectionAuthor
+                    ? !currentDocRole.sectionAuthor
+                    : !currentDocRole.primaryAuthor
+                }
+                multiUsers={true}
+                hideErrMsg
+              />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
