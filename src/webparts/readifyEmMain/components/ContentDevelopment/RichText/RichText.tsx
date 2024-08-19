@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-floating-promises */
@@ -11,6 +12,7 @@ import "./RichText.css";
 import DefaultButton from "../../common/Buttons/DefaultButton";
 import {
   addRejectedComment,
+  addChangeRecord,
   // AddAttachment,
   UpdateAttachment,
 } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
@@ -19,12 +21,20 @@ import { LISTNAMES } from "../../../../../config/config";
 import { useNavigate } from "react-router-dom";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import ToastMessage from "../../common/Toast/ToastMessage";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import SecondaryTextLabel from "../../common/SecondaryText/SecondaryText";
 import { togglePopupVisibility } from "../../../../../utils/togglePopup";
 import Popup from "../../common/Popups/Popup";
 import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  getCurrentLoggedPromoter,
+  getCurrentPromoter,
+  updateSectionDataLocal,
+} from "../../../../../utils/contentDevelopementUtils";
+import { setCDSectionData } from "../../../../../redux/features/ContentDevloperSlice";
+import { ContentDeveloperStatusLabel } from "../../common/ContentDeveloperStatusLabel/ContentDeveloperStatusLabel";
+import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
+import dayjs from "dayjs";
+import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
 
 interface IRichTextProps {
   noActionBtns?: boolean;
@@ -64,6 +74,22 @@ const RichText = ({
       defaultCloseBtn: false,
       popupData: "",
     },
+    {
+      open: false,
+      popupTitle: "Are you sure want to mark this section as reviewed?",
+      popupWidth: "340px",
+      popupType: "confirmation",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "550px",
+      popupType: "custom",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
   ];
   // Rejected comments state
   const [rejectedComments, setRejectedComments] = useState<any>({
@@ -74,6 +100,7 @@ const RichText = ({
   const currentUserDetails: any = useSelector(
     (state: any) => state?.MainSPContext?.currentUserDetails
   );
+  console.log("currentUserDetails: ", currentUserDetails);
 
   const currentDocDetailsData: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDDocDetails
@@ -84,8 +111,13 @@ const RichText = ({
   );
 
   const AllSectionsComments: any = useSelector(
-    (state: any) => state.SectionCommentsData.SectionComments
+    (state: any) => state.SectionData.SectionComments
   );
+
+  const sectionChangeRecord: any = useSelector(
+    (state: any) => state.SectionData.sectionChangeRecord
+  );
+
   const [popupController, setPopupController] = useState(
     initialPopupController
   );
@@ -93,6 +125,47 @@ const RichText = ({
   // util for closing popup
   const handleClosePopup = (index?: any): void => {
     togglePopupVisibility(setPopupController, index, "close");
+  };
+
+  // Change record state
+  const [changeRecordDetails, setChangeRecordDetails] = useState<any>({
+    author: sectionChangeRecord.changeRecordAuthor
+      ? sectionChangeRecord.changeRecordAuthor
+      : currentUserDetails,
+    currentDate: dayjs(new Date(sectionChangeRecord.changeRecordModify)).format(
+      "DD-MMM-YYYY hh:mm A"
+    ),
+    lastSubmitDate: "",
+    Description: sectionChangeRecord.changeRecordDescription,
+    IsValid: false,
+    ErrorMsg: "",
+  });
+
+  const submitChangeRecord = async (): Promise<any> => {
+    if (changeRecordDetails.Description?.trimStart() !== "") {
+      await addChangeRecord(
+        changeRecordDetails,
+        currentSectionData?.ID,
+        currentDocDetailsData.documentDetailsID,
+        handleClosePopup,
+        3,
+        setToastMessage,
+        setChangeRecordDetails,
+        currentUserDetails,
+        dispatch
+      );
+      setChangeRecordDetails({
+        ...changeRecordDetails,
+        IsValid: false,
+        ErrorMsg: "",
+      });
+    } else {
+      setChangeRecordDetails({
+        ...changeRecordDetails,
+        IsValid: true,
+        ErrorMsg: "Please enter Description",
+      });
+    }
   };
 
   const popupInputs: any[] = [
@@ -118,6 +191,63 @@ const RichText = ({
         errorMsg={rejectedComments.ErrorMsg}
         key={2}
       />,
+    ],
+    [],
+    [
+      <div
+        style={{ display: "flex", gap: "9px", flexDirection: "column" }}
+        key={1}
+      >
+        <CustomDateInput
+          size="MD"
+          withLabel
+          label="Last change date"
+          readOnly
+          value={changeRecordDetails.currentDate}
+          key={1}
+        />
+        <CustomPeoplePicker
+          size="MD"
+          minWidth={"265px"}
+          withLabel
+          labelText="Author"
+          // onChange={(value: any) => {
+          //   handleOnChange(value, "referenceAuthor");
+          // }}
+          selectedItem={changeRecordDetails?.author?.email}
+          placeholder="Add people"
+          // isValid={
+          //   definitionsData.referenceAuthor.length === 0 &&
+          //   !definitionsData.IsValid
+          // }
+          errorMsg={"The reference author field is required"}
+          readOnly
+          key={2}
+        />
+        <CustomTextArea
+          size="MD"
+          labelText="Description"
+          withLabel
+          topLabel={true}
+          icon={false}
+          mandatory={true}
+          rows={7}
+          textAreaWidth={"100%"}
+          // textAreaWidth={"67%"}
+          value={changeRecordDetails.Description}
+          onChange={(value: any) => {
+            setChangeRecordDetails({
+              ...changeRecordDetails,
+              Description: value,
+              IsValid: false,
+            });
+          }}
+          placeholder="Enter Description"
+          isValid={changeRecordDetails.IsValid}
+          errorMsg={changeRecordDetails.ErrorMsg}
+          key={3}
+        />
+      </div>,
     ],
   ];
 
@@ -168,9 +298,65 @@ const RichText = ({
         },
       },
     ],
+    [
+      {
+        text: "No",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(2);
+        },
+      },
+      {
+        text: "Yes",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          handleClosePopup(2);
+          await promoteSection();
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(2);
+          setChangeRecordDetails({
+            ...changeRecordDetails,
+            author: sectionChangeRecord.changeRecordAuthor
+              ? sectionChangeRecord.changeRecordAuthor
+              : currentUserDetails,
+            Description: sectionChangeRecord.changeRecordDescription,
+            currentDate: dayjs(
+              new Date(sectionChangeRecord.changeRecordModify)
+            ).format("DD-MMM-YYYY hh:mm A"),
+            IsValid: false,
+          });
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          // handleClosePopup(2);
+          await submitChangeRecord();
+        },
+      },
+    ],
   ];
 
-  console.log("currentSectionData: ", currentSectionData);
   const [toastMessage, setToastMessage] = useState<any>({
     isShow: false,
     severity: "",
@@ -381,12 +567,120 @@ const RichText = ({
       });
   };
 
+  const docInReview: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in review";
+
+  const docInApproval: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
+
+  const promoteSection = async (): Promise<any> => {
+    debugger;
+    togglePopupVisibility(
+      setPopupController,
+      2,
+      "close",
+      "Are you sure want to submit this section?"
+    );
+    setSectionLoader(true);
+
+    const promoters: any = docInReview
+      ? currentDocDetailsData?.reviewers
+      : docInApproval
+      ? currentDocDetailsData?.approvers
+      : [];
+
+    console.log("promoters: ", promoters);
+
+    const currentPromoter: any = getCurrentPromoter(promoters);
+    console.log("currentPromoter: ", currentPromoter);
+
+    const promoterKey: string = currentDocRole?.reviewer
+      ? "sectionReviewed"
+      : currentDocRole?.approver
+      ? "sectionApproved"
+      : "";
+
+    await SpServices.SPUpdateItem({
+      Listname: LISTNAMES.SectionDetails,
+      ID: currentSectionData?.ID,
+      RequestJSON: {
+        [`${promoterKey}`]: true,
+        lastReviewedBy: JSON.stringify({
+          currentOrder: currentPromoter?.currentOrder,
+          currentPromoter: currentPromoter?.currentPromoter?.userData,
+          totalPromoters: currentPromoter?.totalPromoters,
+        }),
+      },
+    })
+      .then((res: any) => {
+        setSectionLoader(false);
+        setToastMessage({
+          isShow: true,
+          severity: "success",
+          title: "Content updated!",
+          message: "The content has been updated successfully.",
+          duration: 3000,
+        });
+
+        const updatedSections: any = updateSectionDataLocal(
+          AllSectionsDataMain,
+          currentSectionData?.ID,
+          {
+            [`${promoterKey}`]: true,
+            sectionRework: false,
+            lastReviewedBy: {
+              currentOrder: currentPromoter?.currentOrder,
+              currentPromoter: currentPromoter?.userData,
+              totalPromoters: currentPromoter?.totalPromoters,
+            },
+          }
+        );
+        console.log("updatedSections: ", updatedSections);
+
+        dispatch(setCDSectionData([...updatedSections]));
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+        setSectionLoader(false);
+        setToastMessage({
+          isShow: true,
+          severity: "warn",
+          title: "Something went wrong!",
+          message:
+            "A unexpected error happened while updating! please try again later.",
+          duration: 3000,
+        });
+      });
+  };
+
+  const loggerPromoter: any = getCurrentLoggedPromoter(
+    currentDocRole,
+    currentDocDetailsData,
+    currentUserDetails
+  );
+
+  console.log("loggerPromoter: ", loggerPromoter);
+
   useEffect(() => {
     setSectionLoader(true);
     if (currentSectionData?.contentType === "paragraph") {
       getSectionData();
     }
   }, [ID]);
+
+  useEffect(() => {
+    console.log(sectionChangeRecord);
+    setChangeRecordDetails({
+      ...changeRecordDetails,
+      author: sectionChangeRecord.changeRecordAuthor
+        ? sectionChangeRecord.changeRecordAuthor
+        : currentUserDetails,
+      Description: sectionChangeRecord.changeRecordDescription,
+      currentDate: dayjs(
+        new Date(sectionChangeRecord.changeRecordModify)
+      ).format("DD-MMM-YYYY hh:mm A"),
+    });
+  }, [sectionChangeRecord.changeRecordDescription]);
 
   return (
     <div
@@ -436,17 +730,14 @@ const RichText = ({
               gap: "15px",
             }}
           >
-            {currentSectionData?.sectionSubmitted && (
-              <SecondaryTextLabel
-                icon={
-                  <AccessTimeIcon
-                    style={{
-                      width: "17px",
-                    }}
-                  />
-                }
-                text="yet to be reviewed"
-              />
+            {ContentDeveloperStatusLabel(
+              currentSectionData?.sectionSubmitted,
+              currentSectionData?.sectionReviewed,
+              currentSectionData?.sectionApproved,
+              currentSectionData?.sectionRework,
+              currentDocDetailsData,
+              currentDocRole,
+              loggerPromoter
             )}
 
             <DefaultButton
@@ -454,6 +745,19 @@ const RichText = ({
               btnType="darkGreyVariant"
               onClick={() => {
                 navigate(-1);
+              }}
+            />
+
+            <DefaultButton
+              text="Change record"
+              btnType="primaryGreen"
+              onClick={() => {
+                togglePopupVisibility(
+                  setPopupController,
+                  3,
+                  "open",
+                  "Change record"
+                );
               }}
             />
 
@@ -466,7 +770,11 @@ const RichText = ({
                   ? currentSectionData?.sectionSubmitted && (
                       <DefaultButton
                         text="Rework"
-                        disabled={sectionLoader}
+                        disabled={
+                          !["in development"].includes(
+                            currentDocDetailsData?.documentStatus?.toLowerCase()
+                          )
+                        }
                         btnType="secondaryRed"
                         onClick={() => {
                           togglePopupVisibility(
@@ -479,19 +787,61 @@ const RichText = ({
                       />
                     )
                   : (currentDocRole?.reviewer || currentDocRole?.approver) && (
-                      <DefaultButton
-                        text="Rework"
-                        disabled={sectionLoader}
-                        btnType="secondaryRed"
-                        onClick={() => {
-                          togglePopupVisibility(
-                            setPopupController,
-                            1,
-                            "open",
-                            "Reason for rejection"
-                          );
-                        }}
-                      />
+                      <>
+                        {
+                          <DefaultButton
+                            text={
+                              currentDocRole?.reviewer
+                                ? "Reviewed"
+                                : currentDocRole?.approver && "Approved"
+                            }
+                            disabled={
+                              !sectionLoader &&
+                              currentSectionData?.sectionSubmitted &&
+                              !currentSectionData?.sectionRework &&
+                              ((currentDocRole?.reviewer &&
+                                !currentSectionData?.sectionReviewed) ||
+                                (currentDocRole?.approver &&
+                                  !currentSectionData?.sectionApproved)) &&
+                              loggerPromoter?.status !== "completed"
+                                ? false
+                                : true
+                            }
+                            btnType="primary"
+                            onClick={() => {
+                              togglePopupVisibility(
+                                setPopupController,
+                                2,
+                                "open",
+                                `Are you sure want to mark this section as ${
+                                  currentDocRole?.reviewer
+                                    ? "reviewed"
+                                    : currentDocRole?.approver && "approved"
+                                }?`
+                              );
+                            }}
+                          />
+                        }
+
+                        <DefaultButton
+                          text="Rework"
+                          disabled={
+                            !sectionLoader &&
+                            loggerPromoter?.status !== "completed"
+                              ? false
+                              : true
+                          }
+                          btnType="secondaryRed"
+                          onClick={() => {
+                            togglePopupVisibility(
+                              setPopupController,
+                              1,
+                              "open",
+                              "Reason for rejection"
+                            );
+                          }}
+                        />
+                      </>
                     )}
 
                 {!currentSectionData?.sectionSubmitted &&
@@ -544,20 +894,20 @@ const RichText = ({
             )}
           </div>
         </div>
-      ) : currentSectionData?.sectionType?.toLowerCase() !==
-        "appendix section" ? (
-        <DefaultButton
-          text="Close"
-          btnType="darkGreyVariant"
-          onClick={() => {
-            navigate(-1);
-          }}
-          style={{
-            marginTop: "10px",
-          }}
-        />
       ) : (
-        ""
+        currentSectionData?.sectionType?.toLowerCase() !==
+          "appendix section" && (
+          <DefaultButton
+            text="Close"
+            btnType="darkGreyVariant"
+            onClick={() => {
+              navigate(-1);
+            }}
+            style={{
+              marginTop: "10px",
+            }}
+          />
+        )
       )}
       <ToastMessage
         severity={toastMessage.severity}

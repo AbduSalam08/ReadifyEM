@@ -3,7 +3,7 @@
   --notStarted-color: #eaeaea;
   --inDevelopment-color: #fff2e2;
   --inReview-color: #e0feff;
-  --inRework-color: #ff5722;
+  --inRework-color: #ffe3e3;
   --inApproval-color: #673ab7;
   --approved-color: #deffe6;
   --current-color: #ffc107;
@@ -49,11 +49,11 @@
   }
   &.inRework {
     background-color: var(--inRework-color);
-    color: white;
+    color: #870303;
   }
   &.inApproval {
-    background-color: var(--inApproval-color);
-    color: white;
+    background-color: var(--approvalInProgress-color);
+    color: #0000c4;
   }
   &.approved {
     background-color: var(--approved-color);

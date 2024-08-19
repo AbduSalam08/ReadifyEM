@@ -6,7 +6,7 @@ const DocStatus = [
   "Approved",
   "Current",
   "Hidden",
-  "Rework",
+  "In Rework",
 ];
 
 const DocRoles = [

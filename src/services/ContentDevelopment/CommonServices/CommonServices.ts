@@ -12,12 +12,17 @@ import {
   setCDSectionData,
 } from "../../../redux/features/ContentDevloperSlice";
 import { sp } from "@pnp/sp/presets/all";
-import { setSectionComments } from "../../../redux/features/SectionCommentsSlice";
 import {
   getCurrentPromoter,
+  updateDocDataLocal,
   // updateDocDataLocal,
   updateSectionDataLocal,
 } from "../../../utils/contentDevelopementUtils";
+import {
+  setAllSectionsChangeRecord,
+  setSectionChangeRecord,
+  setSectionComments,
+} from "../../../redux/features/SectionCommentsSlice";
 
 export const getSectionsDetails = async (
   taskDetails: any,
@@ -48,6 +53,7 @@ export const getSectionsDetails = async (
       ],
     });
 
+    console.log("sectionsResponse: ", sectionsResponse);
     const sectionData: any[] = await Promise.all(
       sectionsResponse.map(async (item: any) => {
         try {
@@ -85,7 +91,10 @@ export const getSectionsDetails = async (
             sectionOrder: item?.sectionOrder,
             documentOfId: item?.documentOfId,
             sectionStatus: item?.status,
-            sectionSubmitted: item?.sectionSubmitted,
+            sectionSubmitted: item?.sectionSubmitted || false,
+            sectionApproved: item?.sectionApproved || false,
+            sectionReviewed: item?.sectionReviewed || false,
+            sectionRework: item?.sectionReviewed || false,
             lastApprovedBy: item?.lastApprovedBy,
             lastReviewedBy: item?.lastReviewedBy,
             sectionReviewers: item?.sectionReviewers,
@@ -268,23 +277,31 @@ export const AddAttachment = async (
   currentDocDetailsData?: any
 ): Promise<any> => {
   debugger;
+
+  const currentSectionDetail = AllSectionsDataMain?.filter(
+    (item: any) => item?.ID === itemID
+  )[0];
+
   const docInReview: boolean =
     currentDocDetailsData?.documentStatus?.toLowerCase() === "in review";
 
   const docInApproval: boolean =
     currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
 
-  const promoters: any = docInReview
+  const sectionInRework: boolean =
+    currentSectionDetail?.sectionStatus?.toLowerCase() === "rework in progress";
+
+  const promoters: any = currentDocDetailsData?.reviewers?.some(
+    (item: any) => item?.status === "in progress"
+  )
     ? currentDocDetailsData?.reviewers
-    : docInApproval
+    : currentDocDetailsData?.approvers?.some(
+        (item: any) => item?.status === "in progress"
+      )
     ? currentDocDetailsData?.approvers
     : [];
 
-  console.log("promoters: ", promoters);
-
   const currentPromoter: any = getCurrentPromoter(promoters);
-
-  console.log("currentPromoter: ", currentPromoter);
 
   if (listType === "appendix" && !itemID && sectionID) {
     await SpServices.SPAddItem({
@@ -346,16 +363,37 @@ export const AddAttachment = async (
       });
   }
 
+  const isReviewerInProgress = currentDocDetailsData?.reviewers?.some(
+    (item: any) => item?.status === "in progress"
+  );
+
+  const isApproverInProgress = currentDocDetailsData?.approvers?.some(
+    (item: any) => item?.status === "in progress"
+  );
+
+  const isReviewerNotInProgress = currentDocDetailsData?.reviewers?.every(
+    (item: any) => item?.status === "pending"
+  );
+
+  const isApproverNotInProgress = currentDocDetailsData?.approvers?.every(
+    (item: any) => item?.status === "pending"
+  );
+
   const currentSectionStatus: any =
-    saveAndClose && !docInReview && !docInApproval
-      ? "Submitted"
-      : !saveAndClose
-      ? "Content in progress"
-      : docInReview
+    saveAndClose &&
+    !docInReview &&
+    !docInApproval &&
+    isReviewerNotInProgress &&
+    isApproverNotInProgress
+      ? "submitted"
+      : !saveAndClose && sectionInRework
+      ? "Rework in progress"
+      : docInReview || isReviewerInProgress
       ? `Yet to be reviewed (${currentPromoter?.currentOrder}/${currentPromoter?.totalPromoters})`
-      : docInApproval
+      : docInApproval || isApproverInProgress
       ? `Yet to be approved (${currentPromoter?.currentOrder}/${currentPromoter?.totalPromoters})`
       : "Content in progress";
+
   if (listType !== "appendix") {
     await SpServices.SPUpdateItem({
       ID: itemID,
@@ -364,9 +402,14 @@ export const AddAttachment = async (
         typeOfContent: contentType,
         sectionSubmitted: saveAndClose ? saveAndClose : false,
         status: currentSectionStatus,
+        sectionRework:
+          !saveAndClose &&
+          !currentSectionStatus?.toLowerCase()?.includes("rework")
+            ? false
+            : currentSectionStatus?.toLowerCase()?.includes("rework"),
       },
     })
-      .then((res: any) => {
+      .then(async (res: any) => {
         console.log("res: ", res);
         const updateArray = updateSectionDataLocal(
           AllSectionsDataMain,
@@ -375,10 +418,69 @@ export const AddAttachment = async (
             contentType: contentType,
             sectionSubmitted: saveAndClose ? saveAndClose : false,
             sectionStatus: currentSectionStatus,
+            sectionRework:
+              !saveAndClose &&
+              !currentSectionStatus?.toLowerCase()?.includes("rework") &&
+              false,
           }
         );
 
         dispatch(setCDSectionData([...updateArray]));
+        debugger;
+        try {
+          const res = await SpServices.SPReadItems({
+            Listname: LISTNAMES.SectionDetails,
+            Select: "*",
+            Filter: [
+              {
+                FilterValue: currentDocDetailsData?.documentDetailsID,
+                Operator: "eq",
+                FilterKey: "documentOf",
+              },
+            ],
+          });
+
+          console.log("res: ", res);
+
+          const checkIfAnySectionHasRework = res?.some(
+            (item: any) => item?.status?.toLowerCase() === "rework in progress"
+          );
+
+          let currentStageStatus = "In Development";
+
+          if (
+            currentDocDetailsData?.reviewers?.some(
+              (item: any) => item?.status === "in progress"
+            )
+          ) {
+            currentStageStatus = "In Review";
+          } else if (
+            currentDocDetailsData?.approvers?.some(
+              (item: any) => item?.status === "in progress"
+            )
+          ) {
+            currentStageStatus = "In Approval";
+          }
+
+          if (!checkIfAnySectionHasRework) {
+            await SpServices.SPUpdateItem({
+              Listname: LISTNAMES.DocumentDetails,
+              ID: currentDocDetailsData?.documentDetailsID,
+              RequestJSON: {
+                status: currentStageStatus,
+              },
+            }).then((res: any) => {
+              dispatch(
+                setCDDocDetails({
+                  ...currentDocDetailsData,
+                  documentStatus: currentStageStatus,
+                })
+              );
+            });
+          }
+        } catch (error) {
+          console.error("Error processing document status:", error);
+        }
       })
       .catch((err: any) => {
         console.log("err: ", err);
@@ -749,6 +851,7 @@ export const addPromotedComment = async (
     documentDetailsId: documentDetails.documentDetailsID,
     createdById: currentUserDetails.id,
   };
+
   await SpServices.SPAddItem({
     Listname: LISTNAMES.PromotedComments,
     RequestJSON: jsonObject,
@@ -781,8 +884,28 @@ export const addRejectedComment = async (
   AllSectionsDataMain: any,
   dispatcher: any
 ): Promise<any> => {
+  console.log("documentDetails: ", documentDetails);
   console.log(rejectedComment);
   debugger;
+  let fileID: any;
+  let currentDocResponse: any;
+  console.log("currentDocResponse: ", currentDocResponse);
+
+  await SpServices.SPReadItemUsingId({
+    Listname: LISTNAMES.DocumentDetails,
+    SelectedId: documentDetails?.documentDetailsID,
+    Select: "*, fileDetails/ID",
+    Expand: "fileDetails",
+  })
+    .then((res: any) => {
+      console.log("res: ", res);
+      fileID = res?.fileDetailsId;
+      currentDocResponse = res;
+    })
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
+
   const tempArray: any[] = [...AllSectionsComments];
   const jsonObject = {
     comments: rejectedComment,
@@ -798,7 +921,24 @@ export const addRejectedComment = async (
     RequestJSON: {
       status: "Rework in progress",
       sectionSubmitted: false,
+      sectionReviewed: false,
+      sectionApproved: false,
     },
+  });
+
+  await SpServices.SPUpdateItem({
+    ID: documentDetails?.documentDetailsID,
+    Listname: LISTNAMES.DocumentDetails,
+    RequestJSON: {
+      status: "In Rework",
+    },
+  }).then(async (res: any) => {
+    await sp.web.lists
+      .getByTitle(LIBNAMES.AllDocuments)
+      .items.getById(fileID)
+      .update({
+        status: "In Rework",
+      });
   });
 
   await SpServices.SPAddItem({
@@ -832,6 +972,9 @@ export const addRejectedComment = async (
             commentsCount: obj.commentsCount + 1,
             sectionStatus: "Rework in progress",
             sectionSubmitted: false,
+            sectionReviewed: false,
+            sectionApproved: false,
+            sectionRework: true,
           };
         } else {
           return obj;
@@ -839,6 +982,13 @@ export const addRejectedComment = async (
       });
       console.log(updateArray);
       dispatcher(setCDSectionData([...updateArray]));
+
+      dispatcher(
+        setCDDocDetails({
+          ...documentDetails,
+          documentStatus: "In Rework",
+        })
+      );
 
       handleClosePopup(1);
       setToastState({
@@ -868,15 +1018,15 @@ export const addRejectedComment = async (
 export const changeDocStatus = async (
   docID: any,
   statusName: any,
-  promoteTo: "reviewers" | "approvers",
+  promoteTo: "reviewers" | "approvers" | any,
   promoteToData: any,
   docDetailsData: any,
-  dispatch: any
+  dispatch: any,
+  lastPromoter?: any
 ): Promise<any> => {
-  debugger;
-  console.log("statusName: ", statusName);
   let fileID: any;
   let currentDocResponse: any;
+
   await SpServices.SPReadItemUsingId({
     Listname: LISTNAMES.DocumentDetails,
     SelectedId: docID,
@@ -892,7 +1042,6 @@ export const changeDocStatus = async (
       console.log("err: ", err);
     });
 
-  console.log("CurrentDocResponse: ", currentDocResponse);
   await SpServices.SPUpdateItem({
     Listname: LISTNAMES.DocumentDetails,
     ID: docID,
@@ -909,17 +1058,15 @@ export const changeDocStatus = async (
         .update({
           status: statusName,
         });
-      console.log(
-        "dada",
-        promoteToData?.filter((item: any) => item?.status === "in progress")
-      );
-      if (promoteTo === "reviewers") {
+
+      if (promoteTo === "reviewers" && !lastPromoter) {
         await SpServices.SPAddItem({
           Listname: LISTNAMES.MyTasks,
           RequestJSON: {
-            taskAssigneeId: promoteToData?.filter(
-              (item: any) => item?.status === "in progress"
-            )[0]?.userData?.id,
+            taskAssigneeId:
+              promoteToData?.filter(
+                (item: any) => item?.status === "in progress"
+              )[0]?.userData?.id || promoteToData[0]?.userData?.id,
             role: "Reviewer",
             taskStatus: "review in progress",
             taskAssignedById: currentDocResponse?.primaryAuthorId,
@@ -937,6 +1084,58 @@ export const changeDocStatus = async (
             pathName: currentDocResponse?.documentPath?.split("/").pop(),
           },
         });
+      } else if (promoteTo === "approvers" && !lastPromoter) {
+        await SpServices.SPAddItem({
+          Listname: LISTNAMES.MyTasks,
+          RequestJSON: {
+            taskAssigneeId:
+              promoteToData?.filter(
+                (item: any) => item?.status === "in progress"
+              )[0]?.userData?.id || promoteToData[0]?.userData?.id,
+            role: "Approver",
+            taskStatus: "approval in progress",
+            taskAssignedById: currentDocResponse?.primaryAuthorId,
+            Title: currentDocResponse?.Title,
+            taskDueDate: calculateDueDateByRole(
+              dayjs()?.format("DD/MM/YYYY"),
+              "approver"
+            ),
+            docStatus: currentDocResponse?.status,
+            completed: false,
+            docCreatedDate: currentDocResponse?.createdDate,
+            documentDetailsId: currentDocResponse?.ID,
+            docVersion: currentDocResponse?.documentVersion,
+            documentTemplateTypeId: currentDocResponse?.documentTemplateTypeId,
+            pathName: currentDocResponse?.documentPath?.split("/").pop(),
+          },
+        });
+      }
+
+      if (lastPromoter && promoteTo === "approvers") {
+        await SpServices.SPReadItems({
+          Listname: LISTNAMES.MyTasks,
+          Select: "*, documentDetails/ID",
+          Expand: "documentDetails",
+          Filter: [
+            {
+              FilterKey: "documentDetails",
+              Operator: "eq",
+              FilterValue: currentDocResponse?.ID,
+            },
+          ],
+        }).then(async (res: any) => {
+          console.log("res: ", res);
+          const updatedtask: any = res?.map((item: any) => {
+            return {
+              ...item,
+              completed: true,
+            };
+          });
+          await SpServices.batchUpdate({
+            ListName: LISTNAMES.MyTasks,
+            responseData: updatedtask,
+          });
+        });
       }
     })
     .catch((err: any) => {
@@ -950,7 +1149,11 @@ export const changeDocStatus = async (
   dispatch(
     setCDDocDetails({
       ...docDetailsData,
-      documentStatus: "In Review",
+      documentStatus: statusName,
+      // documentStatus:
+      //   promoteTo === "reviewers"
+      //     ? "In Review"
+      //     : promoteTo === "approvers" && "In Approval",
     })
   );
 };
@@ -958,8 +1161,13 @@ export const changeDocStatus = async (
 export const changeSectionStatus = async (
   sectionsData: any,
   AllSectionsData: any,
-  dispatch: any
+  dispatch: any,
+  promoterType?: any,
+  promoterTypeKey?: any,
+  lastPromoter?: boolean,
+  currentDocumentDetails?: any
 ): Promise<any> => {
+  console.log("AllSectionsData: ", AllSectionsData);
   debugger;
   await SpServices.batchUpdate({
     ListName: LISTNAMES.SectionDetails,
@@ -976,16 +1184,265 @@ export const changeSectionStatus = async (
     const updatedSection: any = updateSectionDataLocal(
       AllSectionsData,
       element?.ID,
-      {
-        sectionStatus: element?.status,
-      }
+      !lastPromoter && promoterType !== "approver"
+        ? {
+            sectionStatus: element?.status,
+            sectionReviewed: false,
+            sectionApproved: false,
+            sectionRework: false,
+          }
+        : {
+            sectionStatus: element?.status,
+            // [`${promoterTypeKey}`]: true,
+            sectionReviewed: true,
+            sectionApproved: true,
+            sectionRework: false,
+          }
     );
     console.log("updatedSection: ", updatedSection);
     // Collect the updates instead of dispatching right away
     AllSectionsData = [...updatedSection];
   }
-  console.log("AllSectionsData: ", AllSectionsData);
 
   // Dispatch the update once after the loop
   dispatch(setCDSectionData(AllSectionsData));
+
+  const updatedDOCDetails = updateDocDataLocal(
+    currentDocumentDetails,
+    currentDocumentDetails?.documentDetailsId,
+    {
+      [`${promoterType}`]: currentDocumentDetails[`${promoterType}`],
+    }
+  );
+
+  dispatch(setCDDocDetails(updatedDOCDetails));
+};
+
+// function to handle change record
+export const getSectionChangeRecord = async (
+  sectionId: number,
+  dispatcher: any
+): Promise<any> => {
+  let sectionChangeRecord = {};
+  await SpServices.SPReadItems({
+    Listname: LISTNAMES.SectionDetails,
+    Select:
+      "*,changeRecordAuthor/ID,changeRecordAuthor/EMail,changeRecordAuthor/Title",
+    Expand: "changeRecordAuthor",
+    Filter: [
+      {
+        FilterKey: "ID",
+        Operator: "eq",
+        FilterValue: sectionId,
+      },
+    ],
+  })
+    .then((res: any[]) => {
+      console.log(res);
+      debugger;
+      sectionChangeRecord = {
+        changeRecordDescription: res[0].changeRecordDescription
+          ? res[0].changeRecordDescription
+          : "",
+        changeRecordModify: res[0].changeRecordModify
+          ? res[0].changeRecordModify
+          : res[0].Modified,
+        changeRecordAuthor: res[0].changeRecordAuthor
+          ? { email: res[0].changeRecordAuthor.EMail }
+          : "",
+      };
+    })
+    .catch((err) => console.log(err));
+  dispatcher(setSectionChangeRecord(sectionChangeRecord));
+  return sectionChangeRecord;
+};
+
+const convertToTxtFile = (content: any[]): any => {
+  let changeRecordTable = "";
+
+  changeRecordTable = `<table style="border-collapse: collapse; width: 100%;">
+        <thead>
+          <tr>
+            <th style="width: 8%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+              Section no
+            </th>
+            <th style="width: 12%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+              Section name
+            </th>
+                  <th style="width: 30%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+              Current change
+            </th>
+                  <th style="width: 12%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+              Author
+            </th>
+                  <th style="width: 10%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+              Last modify
+            </th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+  content?.forEach((obj: any, index: number) => {
+    changeRecordTable += `<tr key={${index}}>
+                      <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                  ${obj.sectionOrder}
+                </td>
+                      <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                  ${obj.sectionName}
+                </td>
+                      <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                  ${obj.changeRecordDescription}
+                </td>
+                      <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                  ${obj.changeRecordAuthor.authorName}
+                </td>
+                      <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                  ${dayjs(obj.changeRecordModify).format("DD-MMM-YYYY hh:mm A")}
+                </td>
+              </tr>`;
+  });
+  changeRecordTable += `</tbody></table>`;
+
+  const cleanedTable = changeRecordTable
+    .replace(/\n/g, "")
+    .replace(/\s{2,}/g, " ");
+
+  const blob = new Blob([cleanedTable.toString()], {
+    type: "text/plain",
+  });
+  const file: any = new File([blob], "Sample.txt", { type: "text/plain" });
+  return file;
+};
+export const getAllSectionsChangeRecord = async (
+  documentId: number,
+  dispatcher: any
+): Promise<any> => {
+  debugger;
+  let sectionsChangeRecord: any[] = [];
+  let changeRecId: any = null;
+  await SpServices.SPReadItems({
+    Listname: LISTNAMES.SectionDetails,
+    Select:
+      "*,changeRecordAuthor/ID,changeRecordAuthor/EMail,changeRecordAuthor/Title",
+    Expand: "changeRecordAuthor",
+    Filter: [
+      {
+        FilterKey: "documentOfId",
+        Operator: "eq",
+        FilterValue: documentId,
+      },
+    ],
+  })
+    .then(async (res: any[]) => {
+      console.log(res);
+      res?.forEach((obj: any) => {
+        if (obj.Title === "Change Record") {
+          changeRecId = obj.ID;
+        }
+        if (obj.changeRecordDescription)
+          sectionsChangeRecord.push({
+            sectionOrder: parseInt(obj.sectionOrder),
+            sectionName: obj.Title,
+            changeRecordDescription: obj.changeRecordDescription,
+            changeRecordModify: obj.changeRecordModify
+              ? obj.changeRecordModify
+              : obj.Modified,
+            changeRecordAuthor: obj.changeRecordAuthor
+              ? { authorName: obj.changeRecordAuthor.Title }
+              : "",
+          });
+      });
+    })
+    .catch((err) => console.log(err));
+  sectionsChangeRecord = sectionsChangeRecord.sort(
+    (a, b) => a.sectionOrder - b.sectionOrder
+  );
+  dispatcher(setAllSectionsChangeRecord(sectionsChangeRecord));
+  const _file: any = await convertToTxtFile(sectionsChangeRecord);
+  await SpServices.SPDeleteAttachments({
+    ListName: LISTNAMES.SectionDetails,
+    ListID: changeRecId,
+    AttachmentName: "Sample.txt",
+  })
+    .then((res) => {
+      console.log("res:", res);
+      SpServices.SPAddAttachment({
+        ListName: LISTNAMES.SectionDetails,
+        ListID: changeRecId,
+        FileName: "Sample.txt",
+        Attachments: _file,
+      })
+        .then((res: any) => {
+          console.log("res: ", res);
+          // _getData();
+        })
+        .catch((err: any) => {
+          console.log("err: ", err);
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      SpServices.SPAddAttachment({
+        ListName: LISTNAMES.SectionDetails,
+        ListID: changeRecId,
+        FileName: "Sample.txt",
+        Attachments: _file,
+      })
+        .then((res: any) => {
+          console.log("res: ", res);
+          // _getData();
+        })
+        .catch((err: any) => {
+          console.log("err: ", err);
+        });
+    });
+};
+export const addChangeRecord = async (
+  changeRecordState: any,
+  sectionId: number,
+  documentId: number,
+  handleClosePopup: any,
+  closePopupIndex: number,
+  setToastState: any,
+  setChangeRecordState: any,
+  currentUserDetails: any,
+  dispatcher: any
+): Promise<void> => {
+  console.log(changeRecordState.Description);
+  debugger;
+  const jsonObject = {
+    changeRecordDescription: changeRecordState.Description,
+    changeRecordAuthorId: currentUserDetails?.id,
+    changeRecordModify: new Date().toISOString(),
+  };
+  await SpServices.SPUpdateItem({
+    ID: sectionId,
+    Listname: LISTNAMES.SectionDetails,
+    RequestJSON: jsonObject,
+  })
+    .then(async (res: any) => {
+      dispatcher(
+        setSectionChangeRecord({
+          changeRecordDescription: jsonObject.changeRecordDescription,
+          changeRecordModify: jsonObject.changeRecordModify,
+          changeRecordAuthor: currentUserDetails,
+        })
+      );
+      handleClosePopup(closePopupIndex);
+      setChangeRecordState((prev: any) => ({
+        ...prev,
+        Description: "",
+        IsValid: false,
+        ErrorMsg: "",
+      }));
+      setToastState({
+        isShow: true,
+        severity: "success",
+        title: "Description added!",
+        message: "Change record description has been added successfully.",
+        duration: 3000,
+      });
+      await getAllSectionsChangeRecord(documentId, dispatcher);
+    })
+    .catch((err: any) => console.log(err));
 };

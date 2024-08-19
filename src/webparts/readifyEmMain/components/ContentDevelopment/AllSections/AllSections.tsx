@@ -1,10 +1,12 @@
+/* eslint-disable no-unsafe-optional-chaining */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from "./AllSections.module.scss";
 import MultiplePeoplePersona from "../../common/CustomInputFields/MultiplePeoplePersona";
 import StatusPill from "../../StatusPill/StatusPill";
 import { useSelector } from "react-redux";
-import { ChevronRight } from "@mui/icons-material";
+import { Check, ChevronRight } from "@mui/icons-material";
+import { getCurrentLoggedPromoter } from "../../../../../utils/contentDevelopementUtils";
 const commentsIcon: any = require("../../../../../assets/images/svg/commentsIcon.svg");
 
 interface Props {
@@ -42,6 +44,12 @@ const AllSections: React.FC<Props> = ({
     (state: any) => state?.MainSPContext?.currentUserDetails
   );
   console.log("currentUserDetails: ", currentUserDetails);
+
+  const currentPromoter: any = getCurrentLoggedPromoter(
+    currentDocRole,
+    currentDocDetailsData,
+    currentUserDetails
+  );
 
   const updateStatusCount = (itemStatus: string, newCount: number): string => {
     // Check if the status string includes either "review in progress" or "approval in progress"
@@ -120,9 +128,33 @@ const AllSections: React.FC<Props> = ({
               onClick={() => selectSection(index, "Select section")}
             >
               <div className={styles.sectionList}>
-                <span className={styles.sectionsName} title={item.sectionName}>
-                  {item.sectionName}
-                </span>
+                <div className={styles.flexCenter}>
+                  <span
+                    className={styles.sectionsName}
+                    title={item.sectionName}
+                  >
+                    {item.sectionName}
+                  </span>
+
+                  {(currentDocRole?.reviewer &&
+                    (item?.sectionReviewed ||
+                      currentPromoter?.status?.toLowerCase() ===
+                        "completed")) ||
+                  (currentDocRole?.approver &&
+                    (item?.sectionApproved ||
+                      currentPromoter?.status?.toLowerCase() ===
+                        "completed")) ? (
+                    <div className={styles.verfiedMark}>
+                      <Check
+                        style={{
+                          width: "15px",
+                          color: "#fff",
+                        }}
+                      />
+                    </div>
+                  ) : null}
+                </div>
+
                 {item.commentsCount !== 0 && (
                   <span className={styles.commentCount}>
                     {item?.commentsCount && Number(item?.commentsCount) > 9
@@ -172,6 +204,10 @@ const AllSections: React.FC<Props> = ({
                         ?.includes("yet to be reviewed")
                         ? "Review in progress"
                         : item?.sectionStatus
+                            ?.toLowerCase()
+                            ?.includes("yet to be approved")
+                        ? "Approval in progress"
+                        : item?.sectionStatus
                     }
                     dynamicText={
                       item?.sectionStatus
@@ -183,7 +219,7 @@ const AllSections: React.FC<Props> = ({
                           )
                         : item?.sectionStatus
                             ?.toLowerCase()
-                            ?.includes("approval in progress")
+                            ?.includes("yet to be approved")
                         ? updateStatusCount(
                             item?.sectionStatus,
                             currentDocDetailsData?.approvers?.length

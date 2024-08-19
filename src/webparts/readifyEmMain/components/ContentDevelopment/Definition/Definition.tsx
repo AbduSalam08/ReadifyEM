@@ -16,7 +16,6 @@ import DefaultButton from "../../common/Buttons/DefaultButton";
 import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
 const closeBtn = require("../../../../../assets/images/png/close.png");
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 import {
   getAllSectionDefinitions,
@@ -33,8 +32,15 @@ import { useDispatch, useSelector } from "react-redux";
 import ToastMessage from "../../common/Toast/ToastMessage";
 import { updateSectionDetails } from "../../../../../services/ContentDevelopment/SupportingDocument/SupportingDocumentServices";
 import { isEmpty } from "@microsoft/sp-lodash-subset";
-import { addRejectedComment } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
-import SecondaryTextLabel from "../../common/SecondaryText/SecondaryText";
+import {
+  addChangeRecord,
+  addRejectedComment,
+} from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
+import { ContentDeveloperStatusLabel } from "../../common/ContentDeveloperStatusLabel/ContentDeveloperStatusLabel";
+import { getCurrentLoggedPromoter } from "../../../../../utils/contentDevelopementUtils";
+import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
+import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
+import dayjs from "dayjs";
 
 interface Props {
   documentId: number;
@@ -84,6 +90,14 @@ const initialPopupController = [
     defaultCloseBtn: false,
     popupData: "",
   },
+  {
+    open: false,
+    popupTitle: "",
+    popupWidth: "550px",
+    popupType: "custom",
+    defaultCloseBtn: false,
+    popupData: "",
+  },
 ];
 
 const Definition: React.FC<Props> = ({
@@ -125,8 +139,53 @@ const Definition: React.FC<Props> = ({
   );
 
   const AllSectionsComments: any = useSelector(
-    (state: any) => state.SectionCommentsData.SectionComments
+    (state: any) => state.SectionData.SectionComments
   );
+  const sectionChangeRecord: any = useSelector(
+    (state: any) => state.SectionData.sectionChangeRecord
+  );
+
+  // Change record state
+  const [changeRecordDetails, setChangeRecordDetails] = useState<any>({
+    author: sectionChangeRecord.changeRecordAuthor
+      ? sectionChangeRecord.changeRecordAuthor
+      : currentUserDetails,
+    currentDate: dayjs(new Date(sectionChangeRecord.changeRecordModify)).format(
+      "DD-MMM-YYYY hh:mm A"
+    ),
+    lastSubmitDate: "",
+    Description: sectionChangeRecord.changeRecordDescription,
+    IsValid: false,
+    ErrorMsg: "",
+  });
+
+  const submitChangeRecord = async (): Promise<any> => {
+    console.log("clicked");
+    if (changeRecordDetails.Description?.trimStart() !== "") {
+      await addChangeRecord(
+        changeRecordDetails,
+        currentSectionDetails?.ID,
+        currentDocDetailsData.documentDetailsID,
+        handleClosePopup,
+        3,
+        setToastMessage,
+        setChangeRecordDetails,
+        currentUserDetails,
+        dispatch
+      );
+      setChangeRecordDetails({
+        ...changeRecordDetails,
+        IsValid: false,
+        ErrorMsg: "",
+      });
+    } else {
+      setChangeRecordDetails({
+        ...changeRecordDetails,
+        IsValid: true,
+        ErrorMsg: "Please enter Description",
+      });
+    }
+  };
 
   const initialDefinitionsData = {
     ID: null,
@@ -386,6 +445,7 @@ const Definition: React.FC<Props> = ({
             errorMsg={"The references title field is required"}
             key={3}
           />
+
           {/* <CustomPeoplePicker
             size="MD"
             minWidth={"265px"}
@@ -405,6 +465,7 @@ const Definition: React.FC<Props> = ({
             errorMsg={"The reference author field is required"}
             key={4}
           /> */}
+
           <CustomInput
             size="MD"
             labelText="Author"
@@ -469,6 +530,63 @@ const Definition: React.FC<Props> = ({
         errorMsg={rejectedComments.ErrorMsg}
         key={2}
       />,
+    ],
+    [],
+    [
+      <div
+        style={{ display: "flex", gap: "9px", flexDirection: "column" }}
+        key={1}
+      >
+        <CustomDateInput
+          size="MD"
+          withLabel
+          label="Last change date"
+          readOnly
+          value={changeRecordDetails.currentDate}
+          key={1}
+        />
+        <CustomPeoplePicker
+          size="MD"
+          minWidth={"265px"}
+          withLabel
+          labelText="Author"
+          // onChange={(value: any) => {
+          //   handleOnChange(value, "referenceAuthor");
+          // }}
+          selectedItem={changeRecordDetails?.author?.email}
+          placeholder="Add people"
+          // isValid={
+          //   definitionsData.referenceAuthor.length === 0 &&
+          //   !definitionsData.IsValid
+          // }
+          errorMsg={"The reference author field is required"}
+          readOnly
+          key={2}
+        />
+        <CustomTextArea
+          size="MD"
+          labelText="Description"
+          withLabel
+          topLabel={true}
+          icon={false}
+          mandatory={true}
+          rows={7}
+          textAreaWidth={"100%"}
+          // textAreaWidth={"67%"}
+          value={changeRecordDetails.Description}
+          onChange={(value: any) => {
+            setChangeRecordDetails({
+              ...changeRecordDetails,
+              Description: value,
+              IsValid: false,
+            });
+          }}
+          placeholder="Enter Description"
+          isValid={changeRecordDetails.IsValid}
+          errorMsg={changeRecordDetails.ErrorMsg}
+          key={3}
+        />
+      </div>,
     ],
   ];
 
@@ -540,6 +658,40 @@ const Definition: React.FC<Props> = ({
           submitSectionDefinition(true);
           // handleClosePopup(2);
           // await submitRejectedComment();
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(3);
+          setChangeRecordDetails({
+            ...changeRecordDetails,
+            author: sectionChangeRecord.changeRecordAuthor
+              ? sectionChangeRecord.changeRecordAuthor
+              : currentUserDetails,
+            Description: sectionChangeRecord.changeRecordDescription,
+            currentDate: dayjs(
+              new Date(sectionChangeRecord.changeRecordModify)
+            ).format("DD-MMM-YYYY hh:mm A"),
+            IsValid: false,
+          });
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          // handleClosePopup(2);
+          await submitChangeRecord();
         },
       },
     ],
@@ -658,7 +810,12 @@ const Definition: React.FC<Props> = ({
 
     if (submitCondition) {
       // getAllSelectedDocuments();
-      await updateSectionDetails(sectionId, AllSectionsDataMain, dispatch);
+      await updateSectionDetails(
+        sectionId,
+        AllSectionsDataMain,
+        dispatch,
+        currentDocDetailsData
+      );
     }
   };
 
@@ -678,10 +835,30 @@ const Definition: React.FC<Props> = ({
     setSelectedDefinitions([...tempSelectedDocuments]);
   };
 
+  const loggerPromoter: any = getCurrentLoggedPromoter(
+    currentDocRole,
+    currentDocDetailsData,
+    currentUserDetails
+  );
+
   useEffect(() => {
     getAllSecDefinitions();
     LoadDefinitionTableData(dispatch);
   }, []);
+
+  useEffect(() => {
+    console.log(sectionChangeRecord);
+    setChangeRecordDetails({
+      ...changeRecordDetails,
+      author: sectionChangeRecord.changeRecordAuthor
+        ? sectionChangeRecord.changeRecordAuthor
+        : currentUserDetails,
+      Description: sectionChangeRecord.changeRecordDescription,
+      currentDate: dayjs(
+        new Date(sectionChangeRecord.changeRecordModify)
+      ).format("DD-MMM-YYYY hh:mm A"),
+    });
+  }, [sectionChangeRecord]);
 
   return (
     <>
@@ -844,7 +1021,17 @@ const Definition: React.FC<Props> = ({
               alignItems: "center",
             }}
           >
-            {currentSectionDetails?.sectionSubmitted && (
+            {ContentDeveloperStatusLabel(
+              currentSectionDetails?.sectionSubmitted,
+              currentSectionDetails?.sectionReviewed,
+              currentSectionDetails?.sectionApproved,
+              currentSectionDetails?.sectionRework,
+              currentDocDetailsData,
+              currentDocRole,
+              loggerPromoter
+            )}
+
+            {/* {currentSectionDetails?.sectionSubmitted && (
               <SecondaryTextLabel
                 icon={
                   <AccessTimeIcon
@@ -855,7 +1042,7 @@ const Definition: React.FC<Props> = ({
                 }
                 text="yet to be reviewed"
               />
-            )}
+            )} */}
 
             <DefaultButton
               text="Close"
@@ -865,14 +1052,34 @@ const Definition: React.FC<Props> = ({
               }}
             />
 
+            <DefaultButton
+              text="Change record"
+              btnType="primaryGreen"
+              onClick={() => {
+                togglePopupVisibility(
+                  setPopupController,
+                  3,
+                  "open",
+                  "Change record"
+                );
+              }}
+            />
+
             {(currentDocRole?.primaryAuthor ||
-              currentDocRole?.sectionAuthor) && (
+              currentDocRole?.sectionAuthor ||
+              currentDocRole?.reviewer ||
+              currentDocRole?.approver) && (
               <>
                 {currentDocRole?.primaryAuthor
                   ? currentSectionDetails?.sectionSubmitted && (
                       <DefaultButton
                         text="Rework"
                         btnType="secondaryRed"
+                        disabled={
+                          !["in development"].includes(
+                            currentDocDetailsData?.documentStatus?.toLowerCase()
+                          )
+                        }
                         onClick={() =>
                           togglePopupVisibility(
                             setPopupController,
@@ -884,44 +1091,88 @@ const Definition: React.FC<Props> = ({
                       />
                     )
                   : (currentDocRole?.reviewer || currentDocRole?.approver) && (
+                      <>
+                        {
+                          <DefaultButton
+                            text={
+                              currentDocRole?.reviewer
+                                ? "Reviewed"
+                                : currentDocRole?.approver && "Approved"
+                            }
+                            disabled={
+                              currentSectionDetails?.sectionSubmitted &&
+                              !currentSectionDetails?.sectionRework &&
+                              ((currentDocRole?.reviewer &&
+                                !currentSectionDetails?.sectionReviewed) ||
+                                (currentDocRole?.approver &&
+                                  !currentSectionDetails?.sectionApproved)) &&
+                              loggerPromoter?.status !== "completed"
+                                ? false
+                                : true
+                            }
+                            btnType="primary"
+                            onClick={() => {
+                              togglePopupVisibility(
+                                setPopupController,
+                                2,
+                                "open",
+                                `Are you sure want to mark this section as ${
+                                  currentDocRole?.reviewer
+                                    ? "reviewed"
+                                    : currentDocRole?.approver && "approved"
+                                }?`
+                              );
+                            }}
+                          />
+                        }
+
+                        <DefaultButton
+                          text="Rework"
+                          btnType="secondaryRed"
+                          disabled={
+                            loggerPromoter?.status !== "completed"
+                              ? false
+                              : true
+                          }
+                          onClick={() =>
+                            togglePopupVisibility(
+                              setPopupController,
+                              1,
+                              "open",
+                              "Reason for rejection"
+                            )
+                          }
+                        />
+                      </>
+                    )}
+
+                {!currentSectionDetails?.sectionSubmitted &&
+                  (currentDocRole?.sectionAuthor ||
+                    currentDocRole?.primaryAuthor) && (
+                    <>
                       <DefaultButton
-                        text="Rework"
-                        btnType="secondaryRed"
-                        onClick={() =>
+                        text="Save and Close"
+                        btnType="lightGreyVariant"
+                        onClick={async () => {
+                          await submitSectionDefinition(false);
+                        }}
+                      />
+                      <DefaultButton
+                        disabled={initialLoader}
+                        text="Submit"
+                        btnType="primary"
+                        onClick={() => {
+                          // submitSectionDefinition(true);
                           togglePopupVisibility(
                             setPopupController,
-                            1,
+                            2,
                             "open",
-                            "Reason for rejection"
-                          )
-                        }
+                            "Are you sure want to submit this section?"
+                          );
+                        }}
                       />
-                    )}
-                {!currentSectionDetails?.sectionSubmitted && (
-                  <>
-                    <DefaultButton
-                      text="Save and Close"
-                      btnType="lightGreyVariant"
-                      onClick={async () => {
-                        await submitSectionDefinition(false);
-                      }}
-                    />
-                    <DefaultButton
-                      disabled={initialLoader}
-                      text="Submit"
-                      btnType="primary"
-                      onClick={() => {
-                        // submitSectionDefinition(true);
-                        togglePopupVisibility(
-                          setPopupController,
-                          2,
-                          "open",
-                          "Are you sure want to submit this section?"
-                        );
-                      }}
-                    />
-                  </>
-                )}
+                    </>
+                  )}
               </>
             )}
           </div>

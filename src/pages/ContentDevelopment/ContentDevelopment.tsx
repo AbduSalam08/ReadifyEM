@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -44,9 +45,22 @@ import {
   addPromotedComment,
   changeDocStatus,
   changeSectionStatus,
+  getAllSectionsChangeRecord,
+  getSectionChangeRecord,
 } from "../../services/ContentDevelopment/CommonServices/CommonServices";
+
+import ChangeRecord from "../../webparts/readifyEmMain/components/ContentDevelopment/ChangeRecord/ChangeRecord";
+
 import ToastMessage from "../../webparts/readifyEmMain/components/common/Toast/ToastMessage";
 import { calculateDueDateByRole } from "../../utils/validations";
+import {
+  getCurrentLoggedPromoter,
+  getCurrentPromoter,
+  updateSectionDataLocal,
+} from "../../utils/contentDevelopementUtils";
+import SpServices from "../../services/SPServices/SpServices";
+import { LISTNAMES } from "../../config/config";
+import { setCDSectionData } from "../../redux/features/ContentDevloperSlice";
 
 const Details = {
   sectionName: "Introduction",
@@ -166,6 +180,22 @@ const ContentDevelopment = (): JSX.Element => {
       defaultCloseBtn: false,
       popupData: "",
     },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "400px",
+      popupType: "confirmation",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "400px",
+      popupType: "confirmation",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
   ];
 
   const [initialLoader, setInitialLoader] = useState(true);
@@ -182,9 +212,6 @@ const ContentDevelopment = (): JSX.Element => {
   const currentDocDetailsData: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDDocDetails
   );
-  console.log("currentDocDetailsData: ", currentDocDetailsData);
-
-  console.log(currentDocDetailsData);
 
   // initial States
   // AllSections State
@@ -237,16 +264,171 @@ const ContentDevelopment = (): JSX.Element => {
   const handleClosePopup = (index?: any): void => {
     togglePopupVisibility(setPopupController, index, "close");
   };
-  // add Promote Comments
+
+  const handleReviewerUpdate = async (
+    currentDocDetailsData: any,
+    totalReviewers: number,
+    dispatch: any
+  ) => {
+    const currentPromoter = getCurrentPromoter(
+      currentDocDetailsData?.reviewers
+    );
+
+    let updatedReviewers;
+
+    // Update reviewers
+    if (currentPromoter?.currentPromoter?.status === "in progress") {
+      updatedReviewers = currentDocDetailsData?.reviewers?.map(
+        (item: any, index: number) => {
+          if (item?.id === currentPromoter?.currentOrder) {
+            return { ...item, status: "completed" };
+          } else if (item?.id === currentPromoter?.currentOrder + 1) {
+            return { ...item, status: "in progress" };
+          } else {
+            return item;
+          }
+        }
+      );
+
+      // Check if the current reviewer is the last one
+      if (currentPromoter?.currentOrder === totalReviewers) {
+        // Last reviewer completed, move to the first approver
+        await changeDocStatus(
+          currentDocDetailsData?.documentDetailsID,
+          "In Review",
+          "reviewers",
+          updatedReviewers,
+          currentDocDetailsData,
+          dispatch,
+          true // Mark that all reviewers have completed
+        );
+
+        // Now move to approvers
+        updatedReviewers = currentDocDetailsData?.approvers?.map(
+          (item: any, index: number) => {
+            if (index === 0) {
+              return { ...item, status: "in progress" };
+            } else {
+              return item;
+            }
+          }
+        );
+
+        await changeDocStatus(
+          currentDocDetailsData?.documentDetailsID,
+          "In Approval",
+          "approvers",
+          updatedReviewers,
+          currentDocDetailsData,
+          dispatch
+        );
+      } else {
+        // Not the last reviewer, just update the reviewers
+        await changeDocStatus(
+          currentDocDetailsData?.documentDetailsID,
+          "In Review",
+          "reviewers",
+          updatedReviewers,
+          currentDocDetailsData,
+          dispatch
+        );
+      }
+    }
+
+    if (!updatedReviewers) {
+      console.error("No active reviewer found");
+      return;
+    }
+
+    console.log("updatedReviewers: ", updatedReviewers);
+
+    return updatedReviewers;
+  };
+
+  const handleApproverUpdate = async (
+    currentDocDetailsData: any,
+    totalApprovers: number,
+    dispatch: any
+  ) => {
+    debugger;
+    const currentPromoter = getCurrentPromoter(
+      currentDocDetailsData?.approvers
+    );
+
+    let updatedApprovers;
+
+    if (currentPromoter?.currentPromoter?.status === "in progress") {
+      updatedApprovers = currentDocDetailsData?.approvers?.map(
+        (item: any, index: number) => {
+          if (item?.id === currentPromoter?.currentOrder) {
+            // Mark the current approver as completed
+            return { ...item, status: "completed" };
+          } else if (
+            item?.id === currentPromoter?.currentOrder + 1 &&
+            currentPromoter?.currentOrder !== totalApprovers
+          ) {
+            // Move to the next approver only if it's not the last one
+            return { ...item, status: "in progress" };
+          } else {
+            return item;
+          }
+        }
+      );
+    }
+
+    if (!updatedApprovers) {
+      console.error("No active approver found");
+      return;
+    }
+
+    // If the current approver is the last one, mark the document as Approved
+    if (currentPromoter?.currentOrder === totalApprovers) {
+      await changeDocStatus(
+        currentDocDetailsData?.documentDetailsID,
+        "Approved", // Set the document status to Approved
+        "approvers",
+        updatedApprovers,
+        currentDocDetailsData,
+        dispatch,
+        true // Indicate that this is the last step in the flow
+      );
+    } else {
+      await changeDocStatus(
+        currentDocDetailsData?.documentDetailsID,
+        "In Approval",
+        "approvers",
+        updatedApprovers,
+        currentDocDetailsData,
+        dispatch,
+        false
+      );
+    }
+
+    console.log("updatedApprovers: ", updatedApprovers);
+
+    return updatedApprovers;
+  };
 
   const submitPromotedComment = async () => {
-    console.log(promoteComments);
-    if (promoteComments.promoteComment !== "") {
+    debugger;
+    handleClosePopup(5);
+
+    try {
+      if (promoteComments.promoteComment?.trim() === "") {
+        setPromoteComments({
+          ...promoteComments,
+          IsValid: true,
+          ErrorMsg: "Please enter comments",
+        });
+        return;
+      }
+
       setPromoteComments({
         ...promoteComments,
         IsValid: false,
         ErrorMsg: "",
       });
+
       await addPromotedComment(
         promoteComments.promoteComment,
         currentDocDetailsData,
@@ -254,13 +436,233 @@ const ContentDevelopment = (): JSX.Element => {
         setToastMessage,
         currentUserDetails
       );
-    } else {
-      setPromoteComments({
-        ...promoteComments,
-        IsValid: true,
-        ErrorMsg: "Please enter comments",
+
+      const totalReviewers = currentDocDetailsData?.reviewers?.length || 0;
+      const totalApprovers = currentDocDetailsData?.approvers?.length || 0;
+      const currentPromoter = getCurrentPromoter(
+        currentDocDetailsData?.reviewers
+      );
+      let updatedPromoters: any;
+
+      if (
+        (currentDocRole?.reviewer &&
+          currentDocDetailsData?.documentStatus?.toLowerCase() ===
+            "in review") ||
+        currentDocDetailsData?.documentStatus?.toLowerCase() === "in rework" ||
+        currentDocDetailsData?.reviewers?.some(
+          (item: any) => item?.status?.toLowerCase() === "in progress"
+        )
+      ) {
+        updatedPromoters = await handleReviewerUpdate(
+          currentDocDetailsData,
+          totalReviewers,
+          dispatch
+        );
+      } else if (
+        (currentDocRole?.approver &&
+          currentDocDetailsData?.documentStatus?.toLowerCase() ===
+            "in approval") ||
+        currentDocDetailsData?.documentStatus?.toLowerCase() === "in rework" ||
+        currentDocDetailsData?.approvers?.some(
+          (item: any) => item?.status?.toLowerCase() === "in progress"
+        )
+      ) {
+        updatedPromoters = await handleApproverUpdate(
+          currentDocDetailsData,
+          totalApprovers,
+          dispatch
+        );
+      }
+
+      const currentInProgressPromoter = updatedPromoters?.filter(
+        (item: any) => item?.status === "in progress"
+      )[0]?.id;
+
+      console.log("currentInProgressPromoter: ", currentInProgressPromoter);
+
+      const sectionPromoterCount = currentDocRole.reviewer
+        ? totalReviewers
+        : currentDocRole.approver && totalApprovers;
+
+      const sectionPromoterKey = currentDocRole.approver
+        ? "sectionApproved"
+        : currentDocRole.reviewer && "sectionReviewed";
+      const sectionPromoterType = currentDocRole.approver
+        ? "approver"
+        : currentDocRole.reviewer && "reviewer";
+
+      const payLoad = AllSectionsDataMain?.filter(
+        (item: any) => item?.sectionType?.toLowerCase() !== "header"
+      )?.map((el: any) => {
+        if (currentPromoter?.currentOrder === sectionPromoterCount) {
+          return {
+            ID: el?.ID,
+            status:
+              currentDocDetailsData?.documentStatus?.toLowerCase() ===
+                "in review" &&
+              updatedPromoters?.some(
+                (item: any) => item?.status === "in progress"
+              ) &&
+              currentInProgressPromoter &&
+              currentDocRole?.reviewer &&
+              currentPromoter?.currentOrder === totalReviewers
+                ? `Yet to be approved (1/${totalApprovers})`
+                : currentDocDetailsData?.documentStatus?.toLowerCase() ===
+                    "in review" &&
+                  updatedPromoters?.some(
+                    (item: any) => item?.status === "in progress"
+                  ) &&
+                  currentInProgressPromoter
+                ? `Yet to be reviewed (${currentInProgressPromoter}/${totalReviewers})`
+                : currentDocDetailsData?.documentStatus?.toLowerCase() ===
+                    "in approval" &&
+                  currentInProgressPromoter &&
+                  updatedPromoters?.some(
+                    (item: any) => item?.status === "in progress"
+                  )
+                ? `Yet to be approved (${currentInProgressPromoter}/${totalApprovers})`
+                : "Approved",
+            sectionReviewed:
+              currentPromoter?.currentOrder === sectionPromoterCount &&
+              sectionPromoterType === "approver",
+            sectionApproved:
+              currentPromoter?.currentOrder === sectionPromoterCount &&
+              sectionPromoterType === "approver",
+            sectionRework: false,
+          };
+        } else {
+          return {
+            ID: el?.ID,
+            status:
+              currentDocDetailsData?.documentStatus?.toLowerCase() ===
+                "in review" &&
+              updatedPromoters?.some(
+                (item: any) => item?.status === "in progress"
+              ) &&
+              currentInProgressPromoter &&
+              currentDocRole?.reviewer &&
+              currentPromoter?.currentOrder === totalReviewers
+                ? `Yet to be approved (1/${totalApprovers})`
+                : currentDocDetailsData?.documentStatus?.toLowerCase() ===
+                  "in review"
+                ? `Yet to be reviewed (${currentInProgressPromoter}/${totalReviewers})`
+                : currentDocRole?.approver &&
+                  currentInProgressPromoter &&
+                  currentPromoter?.currentOrder === totalApprovers
+                ? "Approved"
+                : currentDocDetailsData?.documentStatus?.toLowerCase() ===
+                  "in approval"
+                ? `Yet to be approved (${
+                    currentInProgressPromoter || totalApprovers
+                  }/${totalApprovers})`
+                : "Approved",
+            sectionReviewed: false,
+            sectionApproved: false,
+            sectionRework: false,
+          };
+        }
       });
+
+      await changeSectionStatus(
+        payLoad,
+        AllSectionsDataMain,
+        dispatch,
+        sectionPromoterType,
+        sectionPromoterKey,
+        currentDocRole.reviewer
+          ? currentPromoter?.currentOrder === totalReviewers
+          : currentDocRole.approver
+          ? currentPromoter?.currentOrder === totalApprovers
+          : false
+      );
+    } catch (error) {
+      console.error("Error in submitPromotedComment:", error);
     }
+  };
+
+  const markAllSection = async () => {
+    const totalPromoters: any = currentDocRole?.reviewer
+      ? {
+          data: currentDocDetailsData?.reviewers,
+          total: currentDocDetailsData?.reviewers?.length,
+        }
+      : currentDocRole?.approver
+      ? {
+          data: currentDocDetailsData?.approvers,
+          total: currentDocDetailsData?.approvers?.length,
+        }
+      : {
+          data: currentDocDetailsData?.reviewers,
+          total: currentDocDetailsData?.reviewers?.length,
+        };
+
+    const currentPromoter: any = getCurrentPromoter(totalPromoters.data);
+
+    await SpServices.SPReadItems({
+      Listname: LISTNAMES.SectionDetails,
+      Select: "*,documentOf/ID",
+      Expand: "documentOf",
+      Filter: [
+        {
+          FilterKey: "documentOf",
+          FilterValue: currentDocDetailsData?.documentDetailsID,
+          Operator: "eq",
+        },
+      ],
+    })
+      .then(async (res: any) => {
+        console.log("res: ", res);
+        const SectionPromoteKey: any = currentDocRole.reviewer
+          ? "sectionReviewed"
+          : "sectionApproved";
+        const SectionLastPromotedKey: any = currentDocRole.reviewer
+          ? "lastReviewedBy"
+          : "lastApprovedBy";
+        const updatedSections: any = res?.map((item: any) => {
+          return {
+            ID: item?.ID,
+            status: `Yet to be ${
+              currentDocRole.reviewer ? "reviewed" : "approved"
+            } ${`${currentPromoter?.currentOrder}/${totalPromoters?.total}`}`,
+            [`${SectionPromoteKey}`]: true,
+            [`${SectionLastPromotedKey}`]: JSON.stringify(currentPromoter),
+          };
+        });
+
+        await SpServices.batchUpdate({
+          ListName: LISTNAMES.SectionDetails,
+          responseData: updatedSections,
+        })
+          .then((res: any) => {
+            console.log("res: ", res);
+
+            // Initialize the shallow copy outside the loop
+            let AllSectionDataLocalShallowCopy = [...AllSectionsData];
+
+            for (const element of updatedSections) {
+              AllSectionDataLocalShallowCopy = updateSectionDataLocal(
+                AllSectionDataLocalShallowCopy,
+                element?.ID,
+                {
+                  sectionStatus: element?.status,
+                  [`${SectionPromoteKey}`]: true,
+                  [`${SectionLastPromotedKey}`]:
+                    JSON.stringify(currentPromoter),
+                  sectionRework: false,
+                }
+              );
+            }
+
+            // Dispatch the update once after the loop
+            dispatch(setCDSectionData(AllSectionDataLocalShallowCopy));
+          })
+          .catch((err: any) => {
+            console.log("err: ", err);
+          });
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
   };
 
   const showActionBtns: boolean =
@@ -530,6 +932,8 @@ const ContentDevelopment = (): JSX.Element => {
         endIcon: false,
         startIcon: false,
         onClick: async () => {
+          handleClosePopup(5);
+
           const totalReviewers = currentDocDetailsData?.reviewers?.length;
 
           const changeReviewer: any = currentDocDetailsData?.reviewers?.map(
@@ -551,7 +955,7 @@ const ContentDevelopment = (): JSX.Element => {
           )?.map((el: any) => {
             return {
               ID: el?.ID,
-              status: `${`review in progress (1/${totalReviewers})`}`,
+              status: `${`Yet to be reviewed (1/${totalReviewers})`}`,
             };
           });
 
@@ -561,18 +965,70 @@ const ContentDevelopment = (): JSX.Element => {
             "reviewers",
             changeReviewer,
             currentDocDetailsData,
-            dispatch
+            dispatch,
+            false
           );
 
           await changeSectionStatus(payLoad, AllSectionsDataMain, dispatch);
 
           console.log("payLoad: ", payLoad);
-          handleClosePopup(5);
           // await submitPromotedComment();
         },
       },
     ],
+    [
+      {
+        text: "No",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(6);
+        },
+      },
+      {
+        text: "Yes",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          handleClosePopup(6);
+          await markAllSection();
+        },
+      },
+    ],
+    [
+      {
+        text: "No",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(7);
+        },
+      },
+      {
+        text: "Yes",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          handleClosePopup(7);
+          // await markAllSection();
+        },
+      },
+    ],
   ];
+
+  const currentPromoter: any = getCurrentLoggedPromoter(
+    currentDocRole,
+    currentDocDetailsData,
+    currentUserDetails
+  );
 
   const popuphandleOnChanges = (
     value: number,
@@ -582,11 +1038,64 @@ const ContentDevelopment = (): JSX.Element => {
     if (condition) {
       setActiveSection(value);
       const Comments = getSectionComments(AllSectionsData[value].ID, dispatch);
-      console.log(Comments);
+      const changeRecordDetails = getSectionChangeRecord(
+        AllSectionsData[value].ID,
+        dispatch
+      );
+      console.log(Comments, changeRecordDetails);
+      debugger;
+      if (AllSectionsData[value].sectionName === "Change Record") {
+        getAllSectionsChangeRecord(
+          currentDocDetailsData.documentDetailsID,
+          dispatch
+        );
+      }
     } else {
       getPromotedComments(currentDocDetailsData.documentDetailsID, dispatch);
       togglePopupVisibility(setPopupController, value, "open", popupTitle);
     }
+  };
+
+  const enablePromote = (): boolean | undefined => {
+    if (!currentDocDetailsData || !AllSectionsData) return false;
+
+    const isInReview =
+      currentDocDetailsData.documentStatus?.toLowerCase() === "in review";
+    const isApproved =
+      currentDocDetailsData.documentStatus?.toLowerCase() === "Approved";
+    const isInApproval =
+      currentDocDetailsData.documentStatus?.toLowerCase() === "in approval";
+    const isInRework =
+      currentDocDetailsData.documentStatus?.toLowerCase() === "in rework";
+
+    const sectionsValid = AllSectionsData?.filter(
+      (item: any) => item?.sectionType?.toLowerCase() !== "header section"
+    )?.every(
+      (item: any) =>
+        item?.sectionSubmitted &&
+        (isInReview ? item?.sectionReviewed : item?.sectionApproved)
+    );
+
+    if ((isInReview || isInRework || isApproved) && currentDocRole?.reviewer) {
+      return (
+        sectionsValid &&
+        currentDocDetailsData?.reviewers?.some(
+          (item: any) => item?.status === "in progress"
+        )
+      );
+    } else if (
+      (isInApproval || isInRework || isApproved) &&
+      currentDocRole?.approver
+    ) {
+      return (
+        sectionsValid &&
+        currentDocDetailsData?.approvers?.some(
+          (item: any) => item?.status === "in progress"
+        )
+      );
+    }
+
+    return false;
   };
 
   useEffect(() => {
@@ -637,6 +1146,7 @@ const ContentDevelopment = (): JSX.Element => {
           <div style={{ width: "100%" }}>
             <div style={{ width: "100%" }}>
               <Header
+                currentDocRole={currentDocRole}
                 documentName={currentDocDetailsData?.documentName}
                 currentDocDetailsData={currentDocDetailsData}
                 role={currentDocDetailsData?.taskRole}
@@ -685,8 +1195,22 @@ const ContentDevelopment = (): JSX.Element => {
                             ? "approved"
                             : "view"
                         }`}
+                        disabled={
+                          currentPromoter?.status === "completed" ||
+                          currentDocDetailsData?.documentStatus?.toLowerCase() ===
+                            "in rework"
+                        }
                         btnType="secondary"
-                        // onClick={() => selectSection(1, "Document Tracker")}
+                        onClick={() => {
+                          togglePopupVisibility(
+                            setPopupController,
+                            6,
+                            "open",
+                            `Are you sure you want to mark all section as ${
+                              currentDocRole.reviewer ? "reviewed" : "approved"
+                            }?`
+                          );
+                        }}
                       />
                     )}
                     {currentDocRole.primaryAuthor ? (
@@ -699,7 +1223,8 @@ const ContentDevelopment = (): JSX.Element => {
                               "header section"
                           )?.every((item: any) => item?.sectionSubmitted) &&
                           currentDocDetailsData?.documentStatus?.toLowerCase() ===
-                            "in development"
+                            "in development" &&
+                          currentPromoter?.status !== "completed"
                             ? false
                             : true
                         }
@@ -717,6 +1242,7 @@ const ContentDevelopment = (): JSX.Element => {
                       <DefaultButton
                         text="Promote"
                         btnType="primary"
+                        disabled={!enablePromote()}
                         onClick={() => {
                           togglePopupVisibility(
                             setPopupController,
@@ -794,8 +1320,13 @@ const ContentDevelopment = (): JSX.Element => {
                   >
                     <div
                       style={{
-                        width: toggleCommentSection ? "100%" : "75%",
-                        height: "calc(100vh - 286px)",
+                        width:
+                          toggleCommentSection ||
+                          AllSectionsData[activeSection]?.contentType ===
+                            "changerecord"
+                            ? "100%"
+                            : "75%",
+                        height: "calc(95vh - 286px)",
                       }}
                     >
                       {AllSectionsData[
@@ -861,6 +1392,9 @@ const ContentDevelopment = (): JSX.Element => {
                           ID={AllSectionsData[activeSection]?.ID}
                           noActionBtns={false}
                         />
+                      ) : AllSectionsData[activeSection]?.contentType ===
+                        "changerecord" ? (
+                        <ChangeRecord />
                       ) : (
                         <RichText
                           currentDocRole={currentDocRole}
@@ -872,45 +1406,49 @@ const ContentDevelopment = (): JSX.Element => {
                         />
                       )}
                     </div>
-                    <div
-                      style={{
-                        width: toggleCommentSection ? "1px" : "25%",
-                        transition: "all .2s",
-                        position: "relative",
-                        height: "calc(100vh - 286px)",
-                        border: toggleCommentSection
-                          ? "1px solid #eee"
-                          : "1px solid transparent",
-                        // overflow: "hidden",
-                      }}
-                    >
-                      {toggleCommentSection && (
-                        <button
-                          className={styles.commentsToggleBtn}
-                          onClick={() => {
-                            setToggleCommentSection(false);
-                          }}
-                        >
-                          <img src={commentIcon} alt={"comments"} />
-                        </button>
-                      )}
-                      <SectionComments
-                        currentSectionData={AllSectionsData[activeSection]}
-                        currentDocRole={currentDocRole}
-                        commentsData={sectionDetails.comments}
-                        isHeader={true}
-                        setToggleCommentSection={setToggleCommentSection}
-                        toggleCommentSection={toggleCommentSection}
-                        sectionId={AllSectionsData[activeSection]?.ID}
-                        documentId={
-                          AllSectionsData[activeSection]?.documentOfId
-                        }
-                        onClick={() => {
-                          // setToggleCommentSection(true);
+
+                    {AllSectionsData[activeSection]?.contentType !==
+                      "changerecord" && (
+                      <div
+                        style={{
+                          width: toggleCommentSection ? "1px" : "25%",
+                          transition: "all .2s",
+                          position: "relative",
+                          height: "calc(100vh - 286px)",
+                          border: toggleCommentSection
+                            ? "1px solid #eee"
+                            : "1px solid transparent",
+                          // overflow: "hidden",
                         }}
-                        promoteComments={false}
-                      />
-                    </div>
+                      >
+                        {toggleCommentSection && (
+                          <button
+                            className={styles.commentsToggleBtn}
+                            onClick={() => {
+                              setToggleCommentSection(false);
+                            }}
+                          >
+                            <img src={commentIcon} alt={"comments"} />
+                          </button>
+                        )}
+                        <SectionComments
+                          currentSectionData={AllSectionsData[activeSection]}
+                          currentDocRole={currentDocRole}
+                          commentsData={sectionDetails.comments}
+                          isHeader={true}
+                          setToggleCommentSection={setToggleCommentSection}
+                          toggleCommentSection={toggleCommentSection}
+                          sectionId={AllSectionsData[activeSection]?.ID}
+                          documentId={
+                            AllSectionsData[activeSection]?.documentOfId
+                          }
+                          onClick={() => {
+                            // setToggleCommentSection(true);
+                          }}
+                          promoteComments={false}
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

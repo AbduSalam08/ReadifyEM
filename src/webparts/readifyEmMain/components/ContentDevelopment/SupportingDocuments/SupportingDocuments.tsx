@@ -27,13 +27,19 @@ import {
 import { useNavigate } from "react-router-dom";
 import { isEmpty } from "@microsoft/sp-lodash-subset";
 import ToastMessage from "../../common/Toast/ToastMessage";
-import SecondaryTextLabel from "../../common/SecondaryText/SecondaryText";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import Popup from "../../common/Popups/Popup";
 import { togglePopupVisibility } from "../../../../../utils/togglePopup";
 import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
-import { addRejectedComment } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
+import {
+  addRejectedComment,
+  addChangeRecord,
+} from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { useDispatch, useSelector } from "react-redux";
+import { ContentDeveloperStatusLabel } from "../../common/ContentDeveloperStatusLabel/ContentDeveloperStatusLabel";
+import { getCurrentLoggedPromoter } from "../../../../../utils/contentDevelopementUtils";
+import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
+import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
+import dayjs from "dayjs";
 
 interface Props {
   documentId: number;
@@ -76,6 +82,22 @@ const SupportingDocuments: React.FC<Props> = ({
       defaultCloseBtn: false,
       popupData: "",
     },
+    {
+      open: false,
+      popupTitle: "Are you sure want to mark this section as reviewed?",
+      popupWidth: "340px",
+      popupType: "confirmation",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "550px",
+      popupType: "custom",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
   ];
   // Rejected comments state
   const [rejectedComments, setRejectedComments] = useState<any>({
@@ -103,10 +125,56 @@ const SupportingDocuments: React.FC<Props> = ({
   const AllSectionsComments: any = useSelector(
     (state: any) => state.SectionCommentsData.SectionComments
   );
-
+  const AllSectionsComments: any = useSelector(
+    (state: any) => state.SectionData.SectionComments
+  );
+  const sectionChangeRecord: any = useSelector(
+    (state: any) => state.SectionData.sectionChangeRecord
+  );
   const [popupController, setPopupController] = useState(
     initialPopupController
   );
+
+  // Change record state
+  const [changeRecordDetails, setChangeRecordDetails] = useState<any>({
+    author: sectionChangeRecord.changeRecordAuthor
+      ? sectionChangeRecord.changeRecordAuthor
+      : currentUserDetails,
+    currentDate: dayjs(new Date(sectionChangeRecord.changeRecordModify)).format(
+      "DD-MMM-YYYY hh:mm A"
+    ),
+    lastSubmitDate: "",
+    Description: sectionChangeRecord.changeRecordDescription,
+    IsValid: false,
+    ErrorMsg: "",
+  });
+
+  const submitChangeRecord = async (): Promise<any> => {
+    if (changeRecordDetails.Description?.trimStart() !== "") {
+      await addChangeRecord(
+        changeRecordDetails,
+        currentSectionData?.ID,
+        currentDocDetailsData.documentDetailsID,
+        handleClosePopup,
+        3,
+        setToastMessage,
+        setChangeRecordDetails,
+        currentUserDetails,
+        dispatch
+      );
+      setChangeRecordDetails({
+        ...changeRecordDetails,
+        IsValid: false,
+        ErrorMsg: "",
+      });
+    } else {
+      setChangeRecordDetails({
+        ...changeRecordDetails,
+        IsValid: true,
+        ErrorMsg: "Please enter Description",
+      });
+    }
+  };
 
   // util for closing popup
   const handleClosePopup = (index?: any): void => {
@@ -136,6 +204,63 @@ const SupportingDocuments: React.FC<Props> = ({
         errorMsg={rejectedComments.ErrorMsg}
         key={2}
       />,
+    ],
+    [],
+    [
+      <div
+        style={{ display: "flex", gap: "9px", flexDirection: "column" }}
+        key={1}
+      >
+        <CustomDateInput
+          size="MD"
+          withLabel
+          label="Last change date"
+          readOnly
+          value={changeRecordDetails.currentDate}
+          key={1}
+        />
+        <CustomPeoplePicker
+          size="MD"
+          minWidth={"265px"}
+          withLabel
+          labelText="Author"
+          // onChange={(value: any) => {
+          //   handleOnChange(value, "referenceAuthor");
+          // }}
+          selectedItem={changeRecordDetails?.author?.email}
+          placeholder="Add people"
+          // isValid={
+          //   definitionsData.referenceAuthor.length === 0 &&
+          //   !definitionsData.IsValid
+          // }
+          errorMsg={"The reference author field is required"}
+          readOnly
+          key={2}
+        />
+        <CustomTextArea
+          size="MD"
+          labelText="Description"
+          withLabel
+          topLabel={true}
+          icon={false}
+          mandatory={true}
+          rows={7}
+          textAreaWidth={"100%"}
+          // textAreaWidth={"67%"}
+          value={changeRecordDetails.Description}
+          onChange={(value: any) => {
+            setChangeRecordDetails({
+              ...changeRecordDetails,
+              Description: value,
+              IsValid: false,
+            });
+          }}
+          placeholder="Enter Description"
+          isValid={changeRecordDetails.IsValid}
+          errorMsg={changeRecordDetails.ErrorMsg}
+          key={3}
+        />
+      </div>,
     ],
   ];
 
@@ -183,6 +308,63 @@ const SupportingDocuments: React.FC<Props> = ({
         onClick: async () => {
           // handleClosePopup(2);
           await submitRejectedComment();
+        },
+      },
+    ],
+    [
+      {
+        text: "No",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(2);
+        },
+      },
+      {
+        text: "Yes",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          handleClosePopup(2);
+          await promoteSection();
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(2);
+          setChangeRecordDetails({
+            ...changeRecordDetails,
+            author: sectionChangeRecord.changeRecordAuthor
+              ? sectionChangeRecord.changeRecordAuthor
+              : currentUserDetails,
+            Description: sectionChangeRecord.changeRecordDescription,
+            currentDate: dayjs(
+              new Date(sectionChangeRecord.changeRecordModify)
+            ).format("DD-MMM-YYYY hh:mm A"),
+            IsValid: false,
+          });
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          // handleClosePopup(2);
+          await submitChangeRecord();
         },
       },
     ],
@@ -258,7 +440,7 @@ const SupportingDocuments: React.FC<Props> = ({
     setLoader(false);
   };
 
-  const getAllSelectedDocuments = async () => {
+  const getAllSelectedDocuments = async (): Promise<any> => {
     setLoader(true);
     const tempSelectedDocumentsArray: any = await getAllDocuments(
       sectionId,
@@ -418,9 +600,11 @@ const SupportingDocuments: React.FC<Props> = ({
     setSelectedDocuments([...onChangeArray]);
   };
 
-  useEffect(() => {
-    getAllSelectedDocuments();
-  }, []);
+  const loggerPromoter: any = getCurrentLoggedPromoter(
+    currentDocRole,
+    currentDocDetailsData,
+    currentUserDetails
+  );
 
   const submitSupDocuments = async (submitCondition: boolean) => {
     togglePopupVisibility(
@@ -441,7 +625,12 @@ const SupportingDocuments: React.FC<Props> = ({
       console.log(reRender);
       if (submitCondition) {
         // getAllSelectedDocuments();
-        await updateSectionDetails(sectionId, AllSectionsDataMain, dispatch);
+        await updateSectionDetails(
+          sectionId,
+          AllSectionsDataMain,
+          dispatch,
+          currentDocDetailsData
+        );
       }
     } else {
       setToastMessage({
@@ -453,6 +642,24 @@ const SupportingDocuments: React.FC<Props> = ({
       });
     }
   };
+
+  useEffect(() => {
+    getAllSelectedDocuments();
+  }, []);
+
+  useEffect(() => {
+    console.log(sectionChangeRecord);
+    setChangeRecordDetails({
+      ...changeRecordDetails,
+      author: sectionChangeRecord.changeRecordAuthor
+        ? sectionChangeRecord.changeRecordAuthor
+        : currentUserDetails,
+      Description: sectionChangeRecord.changeRecordDescription,
+      currentDate: dayjs(
+        new Date(sectionChangeRecord.changeRecordModify)
+      ).format("DD-MMM-YYYY hh:mm A"),
+    });
+  }, [sectionChangeRecord.changeRecordDescription]);
 
   return (
     <div className="sectionWrapper">
@@ -708,18 +915,16 @@ const SupportingDocuments: React.FC<Props> = ({
             justifyContent: "flex-end",
           }}
         >
-          {currentSectionDetails?.sectionSubmitted && (
-            <SecondaryTextLabel
-              icon={
-                <AccessTimeIcon
-                  style={{
-                    width: "17px",
-                  }}
-                />
-              }
-              text="yet to be reviewed"
-            />
+          {ContentDeveloperStatusLabel(
+            currentSectionDetails?.sectionSubmitted,
+            currentSectionDetails?.sectionReviewed,
+            currentSectionDetails?.sectionApproved,
+            currentSectionDetails?.sectionRework,
+            currentDocDetailsData,
+            currentDocRole,
+            loggerPromoter
           )}
+
           <DefaultButton
             text="Close"
             btnType="darkGreyVariant"
@@ -727,51 +932,127 @@ const SupportingDocuments: React.FC<Props> = ({
               navigate(-1);
             }}
           />
-          {(currentDocRole?.primaryAuthor || currentDocRole?.sectionAuthor) && (
+
+          <DefaultButton
+            text="Change record"
+            btnType="primaryGreen"
+            onClick={() => {
+              togglePopupVisibility(
+                setPopupController,
+                3,
+                "open",
+                "Change record"
+              );
+            }}
+          />
+
+          {(currentDocRole?.primaryAuthor ||
+            currentDocRole?.sectionAuthor ||
+            currentDocRole?.reviewer ||
+            currentDocRole?.approver) && (
             <>
-              {(currentDocRole?.primaryAuthor ||
-                currentDocRole?.reviewer ||
-                currentDocRole?.approver) &&
-                currentSectionDetails?.sectionSubmitted && (
-                  <DefaultButton
-                    text="Rework"
-                    // disabled={sectionLoader}
-                    btnType="secondaryRed"
-                    onClick={() => {
-                      togglePopupVisibility(
-                        setPopupController,
-                        1,
-                        "open",
-                        "Reason for rejection"
-                      );
-                    }}
-                  />
+              {currentDocRole?.primaryAuthor
+                ? currentSectionDetails?.sectionSubmitted && (
+                    <DefaultButton
+                      text="Rework"
+                      // disabled={sectionLoader}
+                      disabled={
+                        !["in development"].includes(
+                          currentDocDetailsData?.documentStatus?.toLowerCase()
+                        )
+                      }
+                      btnType="secondaryRed"
+                      onClick={() => {
+                        togglePopupVisibility(
+                          setPopupController,
+                          1,
+                          "open",
+                          "Reason for rejection"
+                        );
+                      }}
+                    />
+                  )
+                : (currentDocRole?.reviewer || currentDocRole?.approver) && (
+                    <>
+                      {
+                        <DefaultButton
+                          text={
+                            currentDocRole?.reviewer
+                              ? "Reviewed"
+                              : currentDocRole?.approver && "Approved"
+                          }
+                          disabled={
+                            currentSectionDetails?.sectionSubmitted &&
+                            !currentSectionDetails?.sectionRework &&
+                            ((currentDocRole?.reviewer &&
+                              !currentSectionDetails?.sectionReviewed) ||
+                              (currentDocRole?.approver &&
+                                !currentSectionDetails?.sectionApproved)) &&
+                            loggerPromoter?.status !== "completed"
+                              ? false
+                              : true
+                          }
+                          btnType="primary"
+                          onClick={() => {
+                            togglePopupVisibility(
+                              setPopupController,
+                              2,
+                              "open",
+                              `Are you sure want to mark this section as ${
+                                currentDocRole?.reviewer
+                                  ? "reviewed"
+                                  : currentDocRole?.approver && "approved"
+                              }?`
+                            );
+                          }}
+                        />
+                      }
+
+                      <DefaultButton
+                        text="Rework"
+                        btnType="secondaryRed"
+                        disabled={
+                          loggerPromoter?.status !== "completed" ? false : true
+                        }
+                        onClick={() =>
+                          togglePopupVisibility(
+                            setPopupController,
+                            1,
+                            "open",
+                            "Reason for rejection"
+                          )
+                        }
+                      />
+                    </>
+                  )}
+
+              {!currentSectionDetails?.sectionSubmitted &&
+                (currentDocRole?.sectionAuthor ||
+                  currentDocRole?.primaryAuthor) && (
+                  <>
+                    <DefaultButton
+                      text="Save and Close"
+                      btnType="lightGreyVariant"
+                      onClick={async () => {
+                        await submitSupDocuments(false);
+                      }}
+                    />
+                    <DefaultButton
+                      disabled={loader}
+                      text="Submit"
+                      btnType="primary"
+                      onClick={async () => {
+                        // await submitSupDocuments(true);
+                        togglePopupVisibility(
+                          setPopupController,
+                          0,
+                          "open",
+                          "Are you sure want to submit this section?"
+                        );
+                      }}
+                    />
+                  </>
                 )}
-              {!currentSectionDetails?.sectionSubmitted && (
-                <>
-                  <DefaultButton
-                    text="Save and Close"
-                    btnType="lightGreyVariant"
-                    onClick={async () => {
-                      await submitSupDocuments(false);
-                    }}
-                  />
-                  <DefaultButton
-                    disabled={loader}
-                    text="Submit"
-                    btnType="primary"
-                    onClick={async () => {
-                      // await submitSupDocuments(true);
-                      togglePopupVisibility(
-                        setPopupController,
-                        0,
-                        "open",
-                        "Are you sure want to submit this section?"
-                      );
-                    }}
-                  />
-                </>
-              )}
             </>
           )}
         </div>
