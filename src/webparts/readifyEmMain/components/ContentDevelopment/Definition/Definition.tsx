@@ -207,6 +207,8 @@ const Definition: React.FC<Props> = ({
   const [searchValue, setSearchValue] = useState("");
   const [initialLoader, setInitialLoader] = useState(true);
 
+  console.log(selectedDefinitions, sectionDefinitions, filterDefinitions);
+
   // popup view and actions controller
   const [popupController, setPopupController] = useState(
     initialPopupController
@@ -756,6 +758,7 @@ const Definition: React.FC<Props> = ({
               referenceLink: definitionObject.referenceLink,
               referenceTitle: definitionObject.referenceTitle,
               isSelected: false,
+              isDeleted: false,
               isNew: false,
               status: true,
             },
