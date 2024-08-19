@@ -6,8 +6,9 @@ import StatusPill from "../../StatusPill/StatusPill";
 import { useNavigate } from "react-router-dom";
 import { getUniqueTaskData } from "../../../../../services/MyTasks/MyTasksServices";
 import { setConfigurePageDetails } from "../../../../../redux/features/SectionConfigurationSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CurrentUserIsAdmin } from "../../../../../constants/DefineUser";
+import { getCurrentLoggedPromoter } from "../../../../../utils/contentDevelopementUtils";
 const arrowBackBtn = require("../../../../../assets/images/svg/arrowBack.svg");
 const locationIcon = require("../../../../../assets/images/svg/locationIcon.svg");
 const editConfigurationImg = require("../../../../../assets/images/svg/taskConfigurationEditIconBlue.svg");
@@ -23,6 +24,7 @@ interface Props {
     condition: boolean,
     popupTitle: string
   ) => void;
+  currentDocRole: any;
 }
 
 const Header: React.FC<Props> = ({
@@ -31,11 +33,21 @@ const Header: React.FC<Props> = ({
   documentStatus,
   onChange,
   currentDocDetailsData,
+  currentDocRole,
 }) => {
   // route navigator
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isAdmin = CurrentUserIsAdmin();
+  const currentUserDetails: any = useSelector(
+    (state: any) => state?.MainSPContext?.currentUserDetails
+  );
+  const currentApprover = getCurrentLoggedPromoter(
+    currentDocRole,
+    currentDocDetailsData,
+    currentUserDetails
+  );
+  console.log("currentApprover: ", currentApprover);
 
   const selectSection = (index: number, title: string): any => {
     onChange(index, false, title);
@@ -72,12 +84,25 @@ const Header: React.FC<Props> = ({
           <StatusPill size="MD" bordered={true} status={documentStatus} />
         </div>
         <div style={{ display: "flex", gap: "10px" }}>
-          {/* <DefaultButton
-            text="Promote"
-            btnType="secondary"
-            endIcon={<img src={locationIcon} alt="track" />}
-            onClick={() => selectSection(1, "Document Tracker")}
-          /> */}
+          {currentDocRole?.approver &&
+            currentApprover?.id ===
+              currentDocDetailsData?.approvers?.length && (
+              <DefaultButton
+                text="Publish Document"
+                btnType="primaryGreen"
+                disabled={
+                  currentDocDetailsData?.documentStatus?.toLowerCase() !==
+                  "approved"
+                }
+                // endIcon={<img src={locationIcon} alt="track" />}
+                onClick={() =>
+                  selectSection(
+                    7,
+                    "Are you sure want to publish this document?"
+                  )
+                }
+              />
+            )}
           <DefaultButton
             text="Track"
             btnType="secondary"

@@ -22,20 +22,22 @@ export const RoleAuth = async (
         return currentUser?.Email === item?.UserPrincipalName;
       });
 
+      console.log("defineUserIsAdmin: ", defineUserIsAdmin);
+
       // setting the current user details
       if (defineUserIsAdmin?.length === 0) {
         currentUserDetails = {
           userName: currentUser?.userName,
           email: currentUser?.Email,
           role: "User",
-          id: defineUserIsAdmin[0]?.Id,
+          id: defineUserIsAdmin[0]?.id,
         };
       } else {
         currentUserDetails = {
           userName: defineUserIsAdmin[0]?.Title,
           email: defineUserIsAdmin[0]?.UserPrincipalName,
           role: "Admin",
-          id: defineUserIsAdmin[0]?.Id,
+          id: defineUserIsAdmin[0]?.id,
         };
       }
 

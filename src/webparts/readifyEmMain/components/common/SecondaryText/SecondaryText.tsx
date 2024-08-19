@@ -5,16 +5,18 @@ interface SecondaryTextLabelProps {
   text: any;
   icon?: any;
   customClassWrapper?: string;
+  externalStyles?: any;
 }
 
 const SecondaryTextLabel = ({
   text,
   icon,
   customClassWrapper = "",
+  externalStyles,
 }: SecondaryTextLabelProps): JSX.Element => {
   return (
     <div className={`${styles.wrapper} ${customClassWrapper}`}>
-      <p className={styles.emptyMsg}>
+      <p className={styles.emptyMsg} style={externalStyles}>
         {icon && icon}
         {text}
       </p>

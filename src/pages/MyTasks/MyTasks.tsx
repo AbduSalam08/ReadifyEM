@@ -122,7 +122,11 @@ const MyTasks = (): JSX.Element => {
         pageKey: "add",
       })
     );
-  }, []);
+    const filteredData: any[] = myTasksData?.filter(
+      (task: any) => !task.completed
+    );
+    setTasksData({ loading: false, data: filteredData });
+  }, [myTasksData]);
 
   return (
     <div className={styles.myTasksWrapper}>

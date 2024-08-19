@@ -650,3 +650,24 @@ export const getCurrentPromoter = (
     totalPromoters: promoterData?.length,
   };
 };
+
+export const getCurrentLoggedPromoter = (
+  currentDocRole: any,
+  currentDocDetailsData: any,
+  currentUserDetails: any
+): any => {
+  return currentDocRole?.reviewer
+    ? currentDocDetailsData?.reviewers?.filter((item: any) => {
+        return (
+          item?.userData?.secondaryText === currentUserDetails?.email ||
+          item?.userData?.email === currentUserDetails?.email
+        );
+      })[0]
+    : currentDocRole?.approver &&
+        currentDocDetailsData?.approvers?.filter((item: any) => {
+          return (
+            item?.userData?.secondaryText === currentUserDetails?.email ||
+            item?.userData?.email === currentUserDetails?.email
+          );
+        })[0];
+};

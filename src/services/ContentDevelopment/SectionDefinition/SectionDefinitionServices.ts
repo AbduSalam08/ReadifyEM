@@ -398,8 +398,8 @@ const addNewDefinition = async (
             setToastState({
               isShow: true,
               severity: "success",
-              title: "Add section definition",
-              message: "Successfully add section definition",
+              title: "Section updated",
+              message: "section has been updated successfully!",
               duration: 3000,
             });
             setInitialLoader(false);

@@ -3,8 +3,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { LISTNAMES } from "../../../config/config";
-import { setCDSectionData } from "../../../redux/features/ContentDevloperSlice";
-import { updateSectionDataLocal } from "../../../utils/contentDevelopementUtils";
+import {
+  setCDDocDetails,
+  setCDSectionData,
+} from "../../../redux/features/ContentDevloperSlice";
+import {
+  getCurrentPromoter,
+  updateSectionDataLocal,
+} from "../../../utils/contentDevelopementUtils";
 import SpServices from "../../SPServices/SpServices";
 
 const getAllDocuments = async (sectionId: number, documentId: number) => {
@@ -244,30 +250,165 @@ const submitSupportingDocuments = (
   // return renderCondition;
 };
 
-const updateSectionDetails = (
+const updateSectionDetails = async (
   sectionID: number,
   AllsectionData?: any,
-  dispatch?: any
+  dispatch?: any,
+  currentDocDetailsData?: any
 ) => {
-  SpServices.SPUpdateItem({
-    Listname: LISTNAMES.SectionDetails,
-    ID: sectionID,
-    RequestJSON: { sectionSubmitted: true, status: "submitted" },
-  })
-    .then((res: any) => {
-      const updatedSections = updateSectionDataLocal(
-        AllsectionData,
-        sectionID,
-        {
-          sectionSubmitted: true,
-          sectionStatus: "submitted",
-        }
-      );
+  // const currentSectionDetail = AllsectionData?.filter(
+  //   (item: any) => item?.ID === sectionID
+  // )[0];
 
-      dispatch(setCDSectionData([...updatedSections]));
-      console.log(res);
+  const docInReview: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in review";
+
+  const docInApproval: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
+
+  // const sectionInRework: boolean =
+  //   currentSectionDetail?.sectionStatus?.toLowerCase() === "rework in progress";
+
+  const promoters: any = currentDocDetailsData?.reviewers?.some(
+    (item: any) => item?.status === "in progress"
+  )
+    ? currentDocDetailsData?.reviewers
+    : currentDocDetailsData?.approvers?.some(
+        (item: any) => item?.status === "in progress"
+      )
+    ? currentDocDetailsData?.approvers
+    : [];
+
+  const currentPromoter: any = getCurrentPromoter(promoters);
+
+  const isReviewerInProgress = currentDocDetailsData?.reviewers?.some(
+    (item: any) => item?.status === "in progress"
+  );
+
+  const isApproverInProgress = currentDocDetailsData?.approvers?.some(
+    (item: any) => item?.status === "in progress"
+  );
+
+  const isReviewerNotInProgress = currentDocDetailsData?.reviewers?.every(
+    (item: any) => item?.status === "pending"
+  );
+
+  const isApproverNotInProgress = currentDocDetailsData?.approvers?.every(
+    (item: any) => item?.status === "pending"
+  );
+
+  const currentSectionStatus: any =
+    !docInReview &&
+    !docInApproval &&
+    isReviewerNotInProgress &&
+    isApproverNotInProgress
+      ? "submitted"
+      : docInReview || isReviewerInProgress
+      ? `Yet to be reviewed (${currentPromoter?.currentOrder}/${currentPromoter?.totalPromoters})`
+      : docInApproval || isApproverInProgress
+      ? `Yet to be approved (${currentPromoter?.currentOrder}/${currentPromoter?.totalPromoters})`
+      : "Content in progress";
+
+  await SpServices.SPUpdateItem({
+    ID: sectionID,
+    Listname: LISTNAMES.SectionDetails,
+    RequestJSON: {
+      sectionSubmitted: true,
+      status: currentSectionStatus,
+      sectionRework: !currentSectionStatus?.toLowerCase()?.includes("rework")
+        ? false
+        : currentSectionStatus?.toLowerCase()?.includes("rework"),
+    },
+  })
+    .then(async (res: any) => {
+      console.log("res: ", res);
+      const updateArray = updateSectionDataLocal(AllsectionData, sectionID, {
+        sectionSubmitted: true,
+        sectionStatus: currentSectionStatus,
+        sectionRework:
+          !currentSectionStatus?.toLowerCase()?.includes("rework") && false,
+      });
+
+      dispatch(setCDSectionData([...updateArray]));
+      debugger;
+      try {
+        const res = await SpServices.SPReadItems({
+          Listname: LISTNAMES.SectionDetails,
+          Select: "*",
+          Filter: [
+            {
+              FilterValue: currentDocDetailsData?.documentDetailsID,
+              Operator: "eq",
+              FilterKey: "documentOf",
+            },
+          ],
+        });
+
+        console.log("res: ", res);
+
+        const checkIfAnySectionHasRework = res?.some(
+          (item: any) => item?.status?.toLowerCase() === "rework in progress"
+        );
+
+        let currentStageStatus = "In Development";
+
+        if (
+          currentDocDetailsData?.reviewers?.some(
+            (item: any) => item?.status === "in progress"
+          )
+        ) {
+          currentStageStatus = "In Review";
+        } else if (
+          currentDocDetailsData?.approvers?.some(
+            (item: any) => item?.status === "in progress"
+          )
+        ) {
+          currentStageStatus = "In Approval";
+        }
+
+        if (!checkIfAnySectionHasRework) {
+          await SpServices.SPUpdateItem({
+            Listname: LISTNAMES.DocumentDetails,
+            ID: currentDocDetailsData?.documentDetailsID,
+            RequestJSON: {
+              status: currentStageStatus,
+            },
+          }).then((res: any) => {
+            dispatch(
+              setCDDocDetails({
+                ...currentDocDetailsData,
+                documentStatus: currentStageStatus,
+              })
+            );
+          });
+        }
+      } catch (error) {
+        console.error("Error processing document status:", error);
+      }
     })
-    .catch((err) => console.log(err));
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
+
+  // SpServices.SPUpdateItem({
+  //   Listname: LISTNAMES.SectionDetails,
+  //   ID: sectionID,
+  //   RequestJSON: { sectionSubmitted: true, status: "submitted" },
+  // })
+  //   .then((res: any) => {
+  //     const updatedSections = updateSectionDataLocal(
+  //       AllsectionData,
+  //       sectionID,
+  //       {
+  //         sectionSubmitted: true,
+  //         sectionStatus: "submitted",
+  //       }
+  //     );
+
+  //     dispatch(setCDSectionData([...updatedSections]));
+  //     console.log(res);
+  //   })
+  //   .catch((err) => console.log(err));
 };
 
 export {

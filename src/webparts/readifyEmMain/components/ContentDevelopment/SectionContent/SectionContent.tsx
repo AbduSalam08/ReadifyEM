@@ -13,16 +13,22 @@ import SpServices from "../../../../../services/SPServices/SpServices";
 import {
   addRejectedComment,
   UpdateAttachment,
+  addChangeRecord,
 } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { LISTNAMES } from "../../../../../config/config";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import ToastMessage from "../../common/Toast/ToastMessage";
-import SecondaryTextLabel from "../../common/SecondaryText/SecondaryText";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
+// import SecondaryTextLabel from "../../common/SecondaryText/SecondaryText";
+// import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { togglePopupVisibility } from "../../../../../utils/togglePopup";
 import Popup from "../../common/Popups/Popup";
 import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
 import { useDispatch, useSelector } from "react-redux";
+import { ContentDeveloperStatusLabel } from "../../common/ContentDeveloperStatusLabel/ContentDeveloperStatusLabel";
+import { getCurrentLoggedPromoter } from "../../../../../utils/contentDevelopementUtils";
+import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
+import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
+import dayjs from "dayjs";
 
 interface IProps {
   sectionNumber: any;
@@ -68,6 +74,22 @@ const SectionContent: React.FC<IProps> = ({
       defaultCloseBtn: false,
       popupData: "",
     },
+    {
+      open: false,
+      popupTitle: "Are you sure want to mark this section as reviewed?",
+      popupWidth: "340px",
+      popupType: "confirmation",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "550px",
+      popupType: "custom",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
   ];
   const dispatch = useDispatch();
   const currentUserDetails: any = useSelector(
@@ -85,8 +107,52 @@ const SectionContent: React.FC<IProps> = ({
   console.log("AllSectionsDataMain: ", AllSectionsDataMain);
 
   const AllSectionsComments: any = useSelector(
-    (state: any) => state.SectionCommentsData.SectionComments
+    (state: any) => state.SectionData.SectionComments
   );
+  const sectionChangeRecord: any = useSelector(
+    (state: any) => state.SectionData.sectionChangeRecord
+  );
+
+  // Change record state
+  const [changeRecordDetails, setChangeRecordDetails] = useState<any>({
+    author: sectionChangeRecord.changeRecordAuthor
+      ? sectionChangeRecord.changeRecordAuthor
+      : currentUserDetails,
+    currentDate: dayjs(new Date(sectionChangeRecord.changeRecordModify)).format(
+      "DD-MMM-YYYY hh:mm A"
+    ),
+    lastSubmitDate: "",
+    Description: sectionChangeRecord.changeRecordDescription,
+    IsValid: false,
+    ErrorMsg: "",
+  });
+
+  const submitChangeRecord = async (): Promise<any> => {
+    if (changeRecordDetails.Description?.trimStart() !== "") {
+      await addChangeRecord(
+        changeRecordDetails,
+        currentSectionData?.ID,
+        currentDocDetailsData.documentDetailsID,
+        handleClosePopup,
+        3,
+        setToastMessage,
+        setChangeRecordDetails,
+        currentUserDetails,
+        dispatch
+      );
+      setChangeRecordDetails({
+        ...changeRecordDetails,
+        IsValid: false,
+        ErrorMsg: "",
+      });
+    } else {
+      setChangeRecordDetails({
+        ...changeRecordDetails,
+        IsValid: true,
+        ErrorMsg: "Please enter Description",
+      });
+    }
+  };
 
   // Rejected comments state
   const [rejectedComments, setRejectedComments] = useState<any>({
@@ -151,6 +217,63 @@ const SectionContent: React.FC<IProps> = ({
         },
       },
     ],
+    [
+      {
+        text: "No",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(2);
+        },
+      },
+      {
+        text: "Yes",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          handleClosePopup(2);
+          await promoteSection();
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(2);
+          setChangeRecordDetails({
+            ...changeRecordDetails,
+            author: sectionChangeRecord.changeRecordAuthor
+              ? sectionChangeRecord.changeRecordAuthor
+              : currentUserDetails,
+            Description: sectionChangeRecord.changeRecordDescription,
+            currentDate: dayjs(
+              new Date(sectionChangeRecord.changeRecordModify)
+            ).format("DD-MMM-YYYY hh:mm A"),
+            IsValid: false,
+          });
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          // handleClosePopup(2);
+          await submitChangeRecord();
+        },
+      },
+    ],
   ];
 
   const popupInputs: any[] = [
@@ -176,6 +299,63 @@ const SectionContent: React.FC<IProps> = ({
         errorMsg={rejectedComments.ErrorMsg}
         key={2}
       />,
+    ],
+    [],
+    [
+      <div
+        style={{ display: "flex", gap: "9px", flexDirection: "column" }}
+        key={1}
+      >
+        <CustomDateInput
+          size="MD"
+          withLabel
+          label="Last change date"
+          readOnly
+          value={changeRecordDetails.currentDate}
+          key={1}
+        />
+        <CustomPeoplePicker
+          size="MD"
+          minWidth={"265px"}
+          withLabel
+          labelText="Author"
+          // onChange={(value: any) => {
+          //   handleOnChange(value, "referenceAuthor");
+          // }}
+          selectedItem={changeRecordDetails?.author?.email}
+          placeholder="Add people"
+          // isValid={
+          //   definitionsData.referenceAuthor.length === 0 &&
+          //   !definitionsData.IsValid
+          // }
+          errorMsg={"The reference author field is required"}
+          readOnly
+          key={2}
+        />
+        <CustomTextArea
+          size="MD"
+          labelText="Description"
+          withLabel
+          topLabel={true}
+          icon={false}
+          mandatory={true}
+          rows={7}
+          textAreaWidth={"100%"}
+          // textAreaWidth={"67%"}
+          value={changeRecordDetails.Description}
+          onChange={(value: any) => {
+            setChangeRecordDetails({
+              ...changeRecordDetails,
+              Description: value,
+              IsValid: false,
+            });
+          }}
+          placeholder="Enter Description"
+          isValid={changeRecordDetails.IsValid}
+          errorMsg={changeRecordDetails.ErrorMsg}
+          key={3}
+        />
+      </div>,
     ],
   ];
 
@@ -242,6 +422,12 @@ const SectionContent: React.FC<IProps> = ({
   const getNextSubPoint = (parentPoint: string, sequence: number): IPoint => {
     return { text: `${parentPoint}.${sequence}`, value: "" };
   };
+
+  const loggerPromoter: any = getCurrentLoggedPromoter(
+    currentDocRole,
+    currentDocDetailsData,
+    currentUserDetails
+  );
 
   const handleAddSubPoint = (index: number): void => {
     const parentPoint = points[index];
@@ -488,6 +674,20 @@ const SectionContent: React.FC<IProps> = ({
     // }
   }, [ID]);
 
+  useEffect(() => {
+    console.log(sectionChangeRecord);
+    setChangeRecordDetails({
+      ...changeRecordDetails,
+      author: sectionChangeRecord.changeRecordAuthor
+        ? sectionChangeRecord.changeRecordAuthor
+        : currentUserDetails,
+      Description: sectionChangeRecord.changeRecordDescription,
+      currentDate: dayjs(
+        new Date(sectionChangeRecord.changeRecordModify)
+      ).format("DD-MMM-YYYY hh:mm A"),
+    });
+  }, [sectionChangeRecord.changeRecordDescription]);
+
   return (
     <div className="sectionWrapper">
       {sectionLoader && !noActionBtns ? (
@@ -520,7 +720,7 @@ const SectionContent: React.FC<IProps> = ({
           )}
         </div>
       )}
-      {!noActionBtns ? (
+      {/* {!noActionBtns ? (
         <div
           style={{
             width: "100%",
@@ -637,7 +837,207 @@ const SectionContent: React.FC<IProps> = ({
             }}
           />
         )
+      )} */}
+
+      {!noActionBtns ? (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+            gap: "15px",
+          }}
+        >
+          <button className={"helpButton"}>Help?</button>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              gap: "15px",
+            }}
+          >
+            {ContentDeveloperStatusLabel(
+              currentSectionDetails?.sectionSubmitted,
+              currentSectionDetails?.sectionReviewed,
+              currentSectionDetails?.sectionApproved,
+              currentSectionDetails?.sectionRework,
+              currentDocDetailsData,
+              currentDocRole,
+              loggerPromoter
+            )}
+
+            <DefaultButton
+              text="Close"
+              btnType="darkGreyVariant"
+              onClick={() => {
+                navigate(-1);
+              }}
+            />
+
+            <DefaultButton
+              text="Change record"
+              btnType="primaryGreen"
+              onClick={() => {
+                togglePopupVisibility(
+                  setPopupController,
+                  3,
+                  "open",
+                  "Change record"
+                );
+              }}
+            />
+
+            {(currentDocRole?.primaryAuthor ||
+              currentDocRole?.sectionAuthor ||
+              currentDocRole?.reviewer ||
+              currentDocRole?.approver) && (
+              <>
+                {currentDocRole?.primaryAuthor
+                  ? currentSectionDetails?.sectionSubmitted && (
+                      <DefaultButton
+                        text="Rework"
+                        disabled={
+                          !["in development"].includes(
+                            currentDocDetailsData?.documentStatus?.toLowerCase()
+                          )
+                        }
+                        btnType="secondaryRed"
+                        onClick={() => {
+                          togglePopupVisibility(
+                            setPopupController,
+                            1,
+                            "open",
+                            "Reason for rejection"
+                          );
+                        }}
+                      />
+                    )
+                  : (currentDocRole?.reviewer || currentDocRole?.approver) && (
+                      <>
+                        {
+                          <DefaultButton
+                            text={
+                              currentDocRole?.reviewer
+                                ? "Reviewed"
+                                : currentDocRole?.approver && "Approved"
+                            }
+                            disabled={
+                              !sectionLoader &&
+                              currentSectionDetails?.sectionSubmitted &&
+                              !currentSectionDetails?.sectionRework &&
+                              ((currentDocRole?.reviewer &&
+                                !currentSectionDetails?.sectionReviewed) ||
+                                (currentDocRole?.approver &&
+                                  !currentSectionDetails?.sectionApproved)) &&
+                              loggerPromoter?.status !== "completed"
+                                ? false
+                                : true
+                            }
+                            btnType="primary"
+                            onClick={() => {
+                              togglePopupVisibility(
+                                setPopupController,
+                                2,
+                                "open",
+                                `Are you sure want to mark this section as ${
+                                  currentDocRole?.reviewer
+                                    ? "reviewed"
+                                    : currentDocRole?.approver && "approved"
+                                }?`
+                              );
+                            }}
+                          />
+                        }
+
+                        <DefaultButton
+                          text="Rework"
+                          disabled={
+                            !sectionLoader &&
+                            loggerPromoter?.status !== "completed"
+                              ? false
+                              : true
+                          }
+                          btnType="secondaryRed"
+                          onClick={() => {
+                            togglePopupVisibility(
+                              setPopupController,
+                              1,
+                              "open",
+                              "Reason for rejection"
+                            );
+                          }}
+                        />
+                      </>
+                    )}
+
+                {!currentSectionDetails?.sectionSubmitted &&
+                  (currentDocRole?.sectionAuthor ||
+                    currentDocRole?.primaryAuthor) && (
+                    <>
+                      <DefaultButton
+                        text="Reset content"
+                        disabled={sectionLoader}
+                        btnType="secondaryRed"
+                        onClick={() => {
+                          setSectionData((prev: any) => {
+                            const updatedSections = [...prev];
+                            updatedSections[activeIndex] = {
+                              ...updatedSections[activeIndex],
+                              contentType: "initial",
+                            };
+                            return updatedSections;
+                          });
+                        }}
+                      />
+                      <DefaultButton
+                        text="Save and Close"
+                        disabled={sectionLoader}
+                        btnType="lightGreyVariant"
+                        onClick={async () => {
+                          await addData();
+                        }}
+                      />
+                      {(currentDocRole?.sectionAuthor ||
+                        currentDocRole?.primaryAuthor) && (
+                        <DefaultButton
+                          text="Submit"
+                          disabled={sectionLoader}
+                          btnType="primary"
+                          onClick={() => {
+                            // await addData("submit");
+                            togglePopupVisibility(
+                              setPopupController,
+                              0,
+                              "open",
+                              "Are you sure want to submit this section?"
+                            );
+                          }}
+                        />
+                      )}
+                    </>
+                  )}
+              </>
+            )}
+          </div>
+        </div>
+      ) : (
+        currentSectionDetails?.sectionType?.toLowerCase() !==
+          "appendix section" && (
+          <DefaultButton
+            text="Close"
+            btnType="darkGreyVariant"
+            onClick={() => {
+              navigate(-1);
+            }}
+            style={{
+              marginTop: "10px",
+            }}
+          />
+        )
       )}
+
       <ToastMessage
         severity={toastMessage.severity}
         title={toastMessage.title}

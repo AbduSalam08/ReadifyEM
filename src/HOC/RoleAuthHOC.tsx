@@ -14,6 +14,7 @@ const RoleAuthorizationHOC = (): JSX.Element => {
   const mainContext: any = useSelector(
     (state: any) => state.MainSPContext.value
   );
+  console.log("mainContext: ", mainContext);
 
   const currentUserDetails: any = useSelector(
     (state: any) => state.MainSPContext.currentUserDetails
@@ -23,6 +24,7 @@ const RoleAuthorizationHOC = (): JSX.Element => {
     const currentUserDetails: any = {
       userName: mainContext?._pageContext?._user?.displayName,
       Email: mainContext?._pageContext?._user?.email,
+      id: mainContext?._pageContext?._user?.id,
     };
     await RoleAuth(currentUserDetails, dispatch);
   };

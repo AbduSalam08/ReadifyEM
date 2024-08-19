@@ -67,8 +67,12 @@ const AppendixContent = ({
     (state: any) => state.ContentDeveloperData.CDSectionsData
   );
 
+  // const AllSectionsComments: any = useSelector(
+  //   (state: any) => state.SectionCommentsData.SectionComments
+  // );
+
   const AllSectionsComments: any = useSelector(
-    (state: any) => state.SectionCommentsData.SectionComments
+    (state: any) => state.SectionData.SectionComments
   );
   const initialPopupController = [
     {
@@ -428,7 +432,12 @@ const AppendixContent = ({
                 {currentDocRole?.primaryAuthor
                   ? sectionDetails?.sectionSubmitted && (
                       <DefaultButton
-                        disabled={sectionLoader}
+                        disabled={
+                          sectionLoader && currentDocRole?.reviewer
+                            ? sectionDetails?.sectionReviewed
+                            : currentDocRole?.approver &&
+                              sectionDetails?.sectionApprover
+                        }
                         text="Rework"
                         btnType="secondaryRed"
                         onClick={() => {
