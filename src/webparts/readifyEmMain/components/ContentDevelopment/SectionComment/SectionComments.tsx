@@ -53,10 +53,10 @@ const SectionComments: React.FC<Props> = ({
 
   // selectors
   const AllSectionsComments: any = useSelector(
-    (state: any) => state.SectionCommentsData.SectionComments
+    (state: any) => state.SectionData.SectionComments
   );
   const promotedComments: any = useSelector(
-    (state: any) => state.SectionCommentsData.promatedComments
+    (state: any) => state.SectionData.promatedComments
   );
   const currentUserDetails: any = useSelector(
     (state: any) => state?.MainSPContext?.currentUserDetails

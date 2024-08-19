@@ -18,7 +18,7 @@ const store = configureStore({
     DefinitionsData: DefinitionSlice,
     ContentDeveloperData: ContentDevloperSlice,
     SectionConfiguration: SectionConfigurationSlice,
-    SectionCommentsData: SectionCommentsSlice,
+    SectionData: SectionCommentsSlice,
     PDFServiceData: PDFServicceSlice,
   },
 });

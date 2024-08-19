@@ -1,0 +1,23 @@
+.tableWrapper{
+    border-collapse: collapse;
+    width: 100%;
+    th{
+        font-size: 15px;
+        color: #555;
+        font-family: "interMedium", sans-serif;
+        padding: 15px;
+    }
+    td{
+        font-family: "interRegular", sans-serif;
+        font-size: 13px;
+        line-height: 18px;
+        padding: 8px 20px 8px 20px;
+    }
+    th,td{
+        text-align: center;
+        border: 1px solid #DDD;
+    }
+    tr:hovor{
+        background-color: #D6EEEE;
+    }
+}
