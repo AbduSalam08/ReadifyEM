@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
@@ -219,6 +220,7 @@ const ContentDevelopment = (): JSX.Element => {
   const [AllSectionsData, setAllSectionsData] =
     useState<any>(AllSectionsDataMain);
   console.log("AllSectionsData: ", AllSectionsData);
+
   const [toggleCommentSection, setToggleCommentSection] = useState(false);
 
   // Active Section Index
@@ -1307,6 +1309,10 @@ const ContentDevelopment = (): JSX.Element => {
                       primaryAuthorDefaultHeader={true}
                     />
                   </div>
+                ) : AllSectionsData[
+                    activeSection
+                  ]?.sectionType?.toLowerCase() === "change record" ? (
+                  <ChangeRecord />
                 ) : (
                   <div
                     style={{
@@ -1323,7 +1329,7 @@ const ContentDevelopment = (): JSX.Element => {
                         width:
                           toggleCommentSection ||
                           AllSectionsData[activeSection]?.contentType ===
-                            "changerecord"
+                            "change record"
                             ? "100%"
                             : "75%",
                         height: "calc(95vh - 286px)",
@@ -1392,9 +1398,6 @@ const ContentDevelopment = (): JSX.Element => {
                           ID={AllSectionsData[activeSection]?.ID}
                           noActionBtns={false}
                         />
-                      ) : AllSectionsData[activeSection]?.contentType ===
-                        "changerecord" ? (
-                        <ChangeRecord />
                       ) : (
                         <RichText
                           currentDocRole={currentDocRole}

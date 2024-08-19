@@ -25,20 +25,94 @@ export const AddSections = async (
   const templateTitle = formData?.templateDetails?.templateName;
   try {
     // const sectionKeys = ["defaultSections", "appendixSections"];
-    const payloadJSON: any[] = noHeader
-      ? []
-      : [
-          {
-            Title: "Header",
-            templateTitle: "",
-            sectionOrder: "0",
-            sectionType: "header section",
-            sectionAuthorId: docDetails?.taskAssignedBy?.ID,
-            documentOfId: docDetails?.documentDetailsId,
-            status: "content in progress",
-            isActive: true,
-          },
-        ];
+    // const payloadJSON: any[] =
+    //   docDetails?.docVersion !== "1.0"
+    //     ? [
+    //         {
+    //           Title: "Change Record",
+    //           templateTitle: "",
+    //           sectionOrder: String(formData?.appendixSections?.length),
+    //           sectionType: "change record",
+    //           sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+    //           documentOfId: docDetails?.documentDetailsId,
+    //           status: "content in progress",
+    //           isActive: true,
+    //         },
+    //       ]
+    //     : !noHeader
+    //     ? [
+    //         {
+    //           Title: "Header",
+    //           templateTitle: "",
+    //           sectionOrder: String(formData?.length),
+    //           sectionType: "header section",
+    //           sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+    //           documentOfId: docDetails?.documentDetailsId,
+    //           status: "content in progress",
+    //           isActive: true,
+    //         },
+    //       ]
+    //     : formData?.defaultSections?.filter(
+    //         (item: any) => item?.sectionName?.value === "definitions"
+    //       )?.length !== 0
+    //     ? [
+    //         {
+    //           Title: "References",
+    //           templateTitle: "",
+    //           sectionOrder: String(formData?.defaultSections?.length),
+    //           sectionType: "references section",
+    //           sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+    //           documentOfId: docDetails?.documentDetailsId,
+    //           status: "content in progress",
+    //           isActive: true,
+    //         },
+    //       ]
+    //     : [];
+
+    const payloadJSON: any[] = [];
+
+    if (docDetails?.docVersion !== "1.0") {
+      payloadJSON.push({
+        Title: "Change Record",
+        templateTitle: "",
+        sectionOrder: String(formData?.appendixSections?.length),
+        sectionType: "change record",
+        sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+        documentOfId: docDetails?.documentDetailsId,
+        status: "content in progress",
+        isActive: true,
+      });
+    }
+    if (!noHeader) {
+      payloadJSON.push({
+        Title: "Header",
+        templateTitle: "",
+        sectionOrder: "0",
+        sectionType: "header section",
+        sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+        documentOfId: docDetails?.documentDetailsId,
+        status: "content in progress",
+        isActive: true,
+      });
+    }
+    if (
+      formData?.defaultSections?.some(
+        (item: any) => item?.sectionName?.value === "definitions"
+      )
+    ) {
+      payloadJSON.push({
+        Title: "References",
+        templateTitle: "",
+        sectionOrder: String(formData?.defaultSections?.length),
+        sectionType: "references section",
+        sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+        documentOfId: docDetails?.documentDetailsId,
+        status: "content in progress",
+        isActive: true,
+      });
+    }
+    // If none of the conditions are met, payloadJSON will remain an empty array.
+
     const SATasks: any[] = [];
     const CONSULTANTSTasks: any[] = [];
 
@@ -820,6 +894,12 @@ export const getUniqueSectionsDetails = async (
           sectionType: "appendixSection",
         });
       }
+      // else if (e?.sectionType?.toLowerCase() === "change record") {
+      //   appendixSection.push({
+      //     ...sectionData,
+      //     sectionType: "change record",
+      //   });
+      // }
     });
 
     // Order sections
