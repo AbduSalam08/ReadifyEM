@@ -26,7 +26,7 @@ import {
 } from "../../../../../services/ContentDevelopment/SectionDefinition/SectionDefinitionServices";
 import { useNavigate } from "react-router-dom";
 import { IPopupLoaders } from "../../../../../interface/MainInterface";
-import { initialPopupLoaders } from "../../../../../config/config";
+import { initialPopupLoaders, LISTNAMES } from "../../../../../config/config";
 import AlertPopup from "../../common/Popups/AlertPopup/AlertPopup";
 import { useDispatch, useSelector } from "react-redux";
 import ToastMessage from "../../common/Toast/ToastMessage";
@@ -37,10 +37,16 @@ import {
   addRejectedComment,
 } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { ContentDeveloperStatusLabel } from "../../common/ContentDeveloperStatusLabel/ContentDeveloperStatusLabel";
-import { getCurrentLoggedPromoter } from "../../../../../utils/contentDevelopementUtils";
+import {
+  getCurrentLoggedPromoter,
+  getCurrentPromoter,
+  updateSectionDataLocal,
+} from "../../../../../utils/contentDevelopementUtils";
 import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
 import dayjs from "dayjs";
+import { setCDSectionData } from "../../../../../redux/features/ContentDevloperSlice";
+import SpServices from "../../../../../services/SPServices/SpServices";
 
 interface Props {
   documentId: number;
@@ -95,6 +101,14 @@ const initialPopupController = [
     popupTitle: "",
     popupWidth: "550px",
     popupType: "custom",
+    defaultCloseBtn: false,
+    popupData: "",
+  },
+  {
+    open: false,
+    popupTitle: "Are you sure want to mark this section as reviewed?",
+    popupWidth: "340px",
+    popupType: "confirmation",
     defaultCloseBtn: false,
     popupData: "",
   },
@@ -364,6 +378,92 @@ const Definition: React.FC<Props> = ({
     } else {
       console.log("invalid");
     }
+  };
+
+  const docInReview: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in review";
+
+  const docInApproval: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
+
+  const promoteSection = async (): Promise<any> => {
+    debugger;
+    togglePopupVisibility(
+      setPopupController,
+      2,
+      "close",
+      "Are you sure want to submit this section?"
+    );
+    setInitialLoader(true);
+
+    const promoters: any = docInReview
+      ? currentDocDetailsData?.reviewers
+      : docInApproval
+      ? currentDocDetailsData?.approvers
+      : [];
+
+    console.log("promoters: ", promoters);
+
+    const currentPromoter: any = getCurrentPromoter(promoters);
+    console.log("currentPromoter: ", currentPromoter);
+
+    const promoterKey: string = currentDocRole?.reviewer
+      ? "sectionReviewed"
+      : currentDocRole?.approver
+      ? "sectionApproved"
+      : "";
+
+    await SpServices.SPUpdateItem({
+      Listname: LISTNAMES.SectionDetails,
+      ID: currentSectionDetails?.ID,
+      RequestJSON: {
+        [`${promoterKey}`]: true,
+        lastReviewedBy: JSON.stringify({
+          currentOrder: currentPromoter?.currentOrder,
+          currentPromoter: currentPromoter?.currentPromoter?.userData,
+          totalPromoters: currentPromoter?.totalPromoters,
+        }),
+      },
+    })
+      .then((res: any) => {
+        setInitialLoader(false);
+        setToastMessage({
+          isShow: true,
+          severity: "success",
+          title: "Content updated!",
+          message: "The content has been updated successfully.",
+          duration: 3000,
+        });
+
+        const updatedSections: any = updateSectionDataLocal(
+          AllSectionsDataMain,
+          currentSectionDetails?.ID,
+          {
+            [`${promoterKey}`]: true,
+            sectionRework: false,
+            lastReviewedBy: {
+              currentOrder: currentPromoter?.currentOrder,
+              currentPromoter: currentPromoter?.userData,
+              totalPromoters: currentPromoter?.totalPromoters,
+            },
+          }
+        );
+        console.log("updatedSections: ", updatedSections);
+
+        dispatch(setCDSectionData([...updatedSections]));
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+        setInitialLoader(false);
+        setToastMessage({
+          isShow: true,
+          severity: "warn",
+          title: "Something went wrong!",
+          message:
+            "A unexpected error happened while updating! please try again later.",
+          duration: 3000,
+        });
+      });
   };
 
   // array of obj which contains all popup inputs
@@ -694,6 +794,29 @@ const Definition: React.FC<Props> = ({
         onClick: async () => {
           // handleClosePopup(2);
           await submitChangeRecord();
+        },
+      },
+    ],
+    [
+      {
+        text: "No",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(4);
+        },
+      },
+      {
+        text: "Yes",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          handleClosePopup(4);
+          await promoteSection();
         },
       },
     ],
@@ -1049,24 +1172,26 @@ const Definition: React.FC<Props> = ({
 
             <DefaultButton
               text="Close"
-              btnType="lightGreyVariant"
+              btnType="darkGreyVariant"
               onClick={() => {
                 navigate(-1);
               }}
             />
-
-            <DefaultButton
-              text="Change record"
-              btnType="primaryGreen"
-              onClick={() => {
-                togglePopupVisibility(
-                  setPopupController,
-                  3,
-                  "open",
-                  "Change record"
-                );
-              }}
-            />
+            {currentDocDetailsData?.version !== "1.0" &&
+              (currentDocRole?.reviewer || currentDocRole?.approver) && (
+                <DefaultButton
+                  text="Change record"
+                  btnType="primaryGreen"
+                  onClick={() => {
+                    togglePopupVisibility(
+                      setPopupController,
+                      3,
+                      "open",
+                      "Change record"
+                    );
+                  }}
+                />
+              )}
 
             {(currentDocRole?.primaryAuthor ||
               currentDocRole?.sectionAuthor ||
@@ -1079,7 +1204,7 @@ const Definition: React.FC<Props> = ({
                         text="Rework"
                         btnType="secondaryRed"
                         disabled={
-                          !["in development"].includes(
+                          !["in development", "approved"].includes(
                             currentDocDetailsData?.documentStatus?.toLowerCase()
                           )
                         }
@@ -1117,7 +1242,7 @@ const Definition: React.FC<Props> = ({
                             onClick={() => {
                               togglePopupVisibility(
                                 setPopupController,
-                                2,
+                                4,
                                 "open",
                                 `Are you sure want to mark this section as ${
                                   currentDocRole?.reviewer

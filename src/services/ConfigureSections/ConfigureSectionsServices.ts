@@ -5,7 +5,11 @@ import dayjs from "dayjs";
 import { LISTNAMES } from "../../config/config";
 import { defaultTemplates } from "../../constants/DefaultTemplates";
 import { setSDDTemplateDetails } from "../../redux/features/SDDTemplatesSlice";
-import { calculateDueDateByRole, emptyCheck } from "../../utils/validations";
+import {
+  calculateDueDateByRole,
+  emptyCheck,
+  trimStartEnd,
+} from "../../utils/validations";
 import { AddTask } from "../MyTasks/MyTasksServices";
 import SpServices from "../SPServices/SpServices";
 
@@ -97,7 +101,9 @@ export const AddSections = async (
     }
     if (
       formData?.defaultSections?.some(
-        (item: any) => item?.sectionName?.value === "definitions"
+        (item: any) =>
+          trimStartEnd(item?.sectionName?.value?.toLowerCase()) ===
+          "definitions"
       )
     ) {
       payloadJSON.push({

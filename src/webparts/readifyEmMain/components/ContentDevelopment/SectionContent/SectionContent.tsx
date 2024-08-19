@@ -1056,19 +1056,21 @@ const SectionContent: React.FC<IProps> = ({
               }}
             />
 
-            <DefaultButton
-              text="Change record"
-              btnType="primaryGreen"
-              onClick={() => {
-                togglePopupVisibility(
-                  setPopupController,
-                  3,
-                  "open",
-                  "Change record"
-                );
-              }}
-            />
-
+            {currentDocDetailsData?.version !== "1.0" &&
+              (currentDocRole?.reviewer || currentDocRole?.approver) && (
+                <DefaultButton
+                  text="Change record"
+                  btnType="primaryGreen"
+                  onClick={() => {
+                    togglePopupVisibility(
+                      setPopupController,
+                      3,
+                      "open",
+                      "Change record"
+                    );
+                  }}
+                />
+              )}
             {(currentDocRole?.primaryAuthor ||
               currentDocRole?.sectionAuthor ||
               currentDocRole?.reviewer ||
@@ -1079,7 +1081,7 @@ const SectionContent: React.FC<IProps> = ({
                       <DefaultButton
                         text="Rework"
                         disabled={
-                          !["in development"].includes(
+                          !["in development", "approved"].includes(
                             currentDocDetailsData?.documentStatus?.toLowerCase()
                           )
                         }

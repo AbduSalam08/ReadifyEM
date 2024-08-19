@@ -99,33 +99,6 @@ const Details = {
     { name: "Kawin V", email: "Kawin@chandrudemo.onmicrosoft.com" },
     { name: "kali muthu", email: "kalimuthu@chandrudemo.onmicrosoft.com" },
   ],
-  comments: [
-    {
-      comment: "This is a comment This is a comment",
-      commentAuthor: {
-        name: "Kawin V",
-        email: "Kawin@chandrudemo.onmicrosoft.com",
-      },
-      commentDateAndTime: "03/03/24",
-      role: "Section Author",
-    },
-    {
-      comment: "This is a comment This is a comment",
-      commentAuthor: {
-        name: "Madhesh Maasi",
-        email: "Madhesh@chandrudemo.onmicrosoft.com",
-      },
-      commentDateAndTime: "03/03/24",
-      role: "Section Author",
-    },
-  ],
-  headerTitle: "Welcome aboard",
-  version: "1.0",
-  type: "insurance",
-  createdDate: "03/03/24",
-  lastReviewDate: "03/03/24",
-  nextReviewDate: "03/03/24",
-  isLoading: false,
 };
 
 const ContentDevelopment = (): JSX.Element => {
@@ -214,11 +187,14 @@ const ContentDevelopment = (): JSX.Element => {
     (state: any) => state.ContentDeveloperData.CDDocDetails
   );
 
+  console.log("currentDocDetailsData: ", currentDocDetailsData);
+
   // initial States
   // AllSections State
   const [sectionDetails, setSectionDetails] = useState<any>(Details);
   const [AllSectionsData, setAllSectionsData] =
     useState<any>(AllSectionsDataMain);
+
   console.log("AllSectionsData: ", AllSectionsData);
 
   const [toggleCommentSection, setToggleCommentSection] = useState(false);
@@ -686,7 +662,7 @@ const ContentDevelopment = (): JSX.Element => {
         promoteComments={true}
       />,
     ],
-    [<DocumentTracker sectionData={sectionDetails} key={1} />],
+    [<DocumentTracker documentData={currentDocDetailsData} sectionsData={AllSectionsData} key={1} />],
     [
       <CustomInput
         size="MD"
@@ -1071,7 +1047,10 @@ const ContentDevelopment = (): JSX.Element => {
       currentDocDetailsData.documentStatus?.toLowerCase() === "in rework";
 
     const sectionsValid = AllSectionsData?.filter(
-      (item: any) => item?.sectionType?.toLowerCase() !== "header section"
+      (item: any) =>
+        item?.sectionType?.toLowerCase() !== "header section" &&
+        item?.sectionType?.toLowerCase() !== "change record" &&
+        item?.sectionType?.toLowerCase() !== "references section"
     )?.every(
       (item: any) =>
         item?.sectionSubmitted &&
@@ -1222,7 +1201,11 @@ const ContentDevelopment = (): JSX.Element => {
                           AllSectionsData?.filter(
                             (item: any) =>
                               item?.sectionType?.toLowerCase() !==
-                              "header section"
+                                "header section" &&
+                              item?.sectionType?.toLowerCase() !==
+                                "references section" &&
+                              item?.sectionType?.toLowerCase() !==
+                                "change record"
                           )?.every((item: any) => item?.sectionSubmitted) &&
                           currentDocDetailsData?.documentStatus?.toLowerCase() ===
                             "in development" &&
