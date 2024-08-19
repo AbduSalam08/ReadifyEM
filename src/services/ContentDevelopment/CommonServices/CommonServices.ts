@@ -200,6 +200,13 @@ export const getSectionsDetails = async (
       ?.sort(
         (elem1: any, elem2: any) => elem1?.sectionOrder - elem2?.sectionOrder
       );
+    const sortLastAppendixSectionsByOrderNo: any = sectionData
+      ?.filter(
+        (elem1: any) => elem1?.sectionType?.toLowerCase() === "change record"
+      )
+      ?.sort(
+        (elem1: any, elem2: any) => elem1?.sectionOrder - elem2?.sectionOrder
+      );
 
     dispatcher(
       setCDDocDetails({
@@ -242,6 +249,7 @@ export const getSectionsDetails = async (
       ),
       nextReviewDate: DocDetailsResponseData?.nextReviewDate,
       contentType: DocDetailsResponseData?.typeOfContent || "initial",
+      sectionType: DocDetailsResponseData?.sectionType || "initial",
       isLoading: false,
       taskRole: taskDetails?.role,
       taskID: taskDetails?.taskID ? taskDetails?.taskID[0] : null,
@@ -253,6 +261,7 @@ export const getSectionsDetails = async (
       setCDSectionData([
         ...sortDefaultSectionsByOrderNo,
         ...sortAppendixSectionsByOrderNo,
+        ...sortLastAppendixSectionsByOrderNo,
       ])
     );
 

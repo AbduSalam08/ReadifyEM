@@ -12,6 +12,15 @@ export const RoleAuth = async (
   dispatch?: any
 ): Promise<any> => {
   let currentUserDetails: any;
+  let currentUserID: any;
+  await sp.web.currentUser
+    .get()
+    ?.then((res: any) => {
+      currentUserID = res?.Id;
+    })
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
 
   await sp.web.siteGroups
     // .getByName("ReadifyEM_Admin")
@@ -22,22 +31,20 @@ export const RoleAuth = async (
         return currentUser?.Email === item?.UserPrincipalName;
       });
 
-      console.log("defineUserIsAdmin: ", defineUserIsAdmin);
-
       // setting the current user details
       if (defineUserIsAdmin?.length === 0) {
         currentUserDetails = {
           userName: currentUser?.userName,
           email: currentUser?.Email,
           role: "User",
-          id: defineUserIsAdmin[0]?.id,
+          id: defineUserIsAdmin[0]?.id || currentUserID,
         };
       } else {
         currentUserDetails = {
           userName: defineUserIsAdmin[0]?.Title,
           email: defineUserIsAdmin[0]?.UserPrincipalName,
           role: "Admin",
-          id: defineUserIsAdmin[0]?.id,
+          id: defineUserIsAdmin[0]?.id || currentUserID,
         };
       }
 

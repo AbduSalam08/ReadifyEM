@@ -25,10 +25,15 @@ import Popup from "../../common/Popups/Popup";
 import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
 import { useDispatch, useSelector } from "react-redux";
 import { ContentDeveloperStatusLabel } from "../../common/ContentDeveloperStatusLabel/ContentDeveloperStatusLabel";
-import { getCurrentLoggedPromoter } from "../../../../../utils/contentDevelopementUtils";
+import {
+  getCurrentLoggedPromoter,
+  getCurrentPromoter,
+  updateSectionDataLocal,
+} from "../../../../../utils/contentDevelopementUtils";
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
 import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
 import dayjs from "dayjs";
+import { setCDSectionData } from "../../../../../redux/features/ContentDevloperSlice";
 
 interface IProps {
   sectionNumber: any;
@@ -44,6 +49,7 @@ interface IProps {
 interface IPoint {
   text: string;
   value: string;
+  class: any;
 }
 
 const SectionContent: React.FC<IProps> = ({
@@ -91,7 +97,9 @@ const SectionContent: React.FC<IProps> = ({
       popupData: "",
     },
   ];
+
   const dispatch = useDispatch();
+
   const currentUserDetails: any = useSelector(
     (state: any) => state?.MainSPContext?.currentUserDetails
   );
@@ -103,8 +111,6 @@ const SectionContent: React.FC<IProps> = ({
   const AllSectionsDataMain: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDSectionsData
   );
-
-  console.log("AllSectionsDataMain: ", AllSectionsDataMain);
 
   const AllSectionsComments: any = useSelector(
     (state: any) => state.SectionData.SectionComments
@@ -131,7 +137,7 @@ const SectionContent: React.FC<IProps> = ({
     if (changeRecordDetails.Description?.trimStart() !== "") {
       await addChangeRecord(
         changeRecordDetails,
-        currentSectionData?.ID,
+        currentSectionDetails?.ID,
         currentDocDetailsData.documentDetailsID,
         handleClosePopup,
         3,
@@ -168,6 +174,92 @@ const SectionContent: React.FC<IProps> = ({
   // util for closing popup
   const handleClosePopup = (index?: any): void => {
     togglePopupVisibility(setPopupController, index, "close");
+  };
+
+  const docInReview: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in review";
+
+  const docInApproval: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
+
+  const promoteSection = async (): Promise<any> => {
+    debugger;
+    togglePopupVisibility(
+      setPopupController,
+      2,
+      "close",
+      "Are you sure want to submit this section?"
+    );
+    setSectionLoader(true);
+
+    const promoters: any = docInReview
+      ? currentDocDetailsData?.reviewers
+      : docInApproval
+      ? currentDocDetailsData?.approvers
+      : [];
+
+    console.log("promoters: ", promoters);
+
+    const currentPromoter: any = getCurrentPromoter(promoters);
+    console.log("currentPromoter: ", currentPromoter);
+
+    const promoterKey: string = currentDocRole?.reviewer
+      ? "sectionReviewed"
+      : currentDocRole?.approver
+      ? "sectionApproved"
+      : "";
+
+    await SpServices.SPUpdateItem({
+      Listname: LISTNAMES.SectionDetails,
+      ID: currentSectionDetails?.ID,
+      RequestJSON: {
+        [`${promoterKey}`]: true,
+        lastReviewedBy: JSON.stringify({
+          currentOrder: currentPromoter?.currentOrder,
+          currentPromoter: currentPromoter?.currentPromoter?.userData,
+          totalPromoters: currentPromoter?.totalPromoters,
+        }),
+      },
+    })
+      .then((res: any) => {
+        setSectionLoader(false);
+        setToastMessage({
+          isShow: true,
+          severity: "success",
+          title: "Content updated!",
+          message: "The content has been updated successfully.",
+          duration: 3000,
+        });
+
+        const updatedSections: any = updateSectionDataLocal(
+          AllSectionsDataMain,
+          currentSectionDetails?.ID,
+          {
+            [`${promoterKey}`]: true,
+            sectionRework: false,
+            lastReviewedBy: {
+              currentOrder: currentPromoter?.currentOrder,
+              currentPromoter: currentPromoter?.userData,
+              totalPromoters: currentPromoter?.totalPromoters,
+            },
+          }
+        );
+        console.log("updatedSections: ", updatedSections);
+
+        dispatch(setCDSectionData([...updatedSections]));
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+        setSectionLoader(false);
+        setToastMessage({
+          isShow: true,
+          severity: "warn",
+          title: "Something went wrong!",
+          message:
+            "A unexpected error happened while updating! please try again later.",
+          duration: 3000,
+        });
+      });
   };
 
   const popupActions: any[] = [
@@ -396,38 +488,37 @@ const SectionContent: React.FC<IProps> = ({
     message: "",
     duration: "",
   });
+
   const [sectionLoader, setSectionLoader] = useState(true);
+
+  const navigate = useNavigate();
+
   const [points, setPoints] = useState<IPoint[]>([
-    { text: String(sectionNumber), value: "" },
+    { text: String(sectionNumber), value: "", class: "I_0" },
   ]);
   console.log("points: ", points);
-  const navigate = useNavigate();
+
   const [subPointSequences, setSubPointSequences] = useState<{
     [key: string]: number;
   }>({});
-  // const [newAttachment, setNewAttachment] = useState<boolean>(true);
 
   const getNextPoint = (lastPoint: IPoint): IPoint => {
     const parts = lastPoint?.text.split(".");
     const majorPart = parseInt(parts[0]);
     const minorPart = parseInt(parts[1]) + 1 || 1;
-    return { text: `${majorPart}.${minorPart}`, value: "" };
+    const className = `I_${parts.length}`; // Calculate the indent count based on the number of dots
+    return { text: `${majorPart}.${minorPart}`, value: "", class: className };
+  };
+
+  const getNextSubPoint = (parentPoint: string, sequence: number): IPoint => {
+    const className = `I_${parentPoint.split(".").length + 1}`; // Increase indent count for sub-points
+    return { text: `${parentPoint}.${sequence}`, value: "", class: className };
   };
 
   const handleAddPoint = (): void => {
     const newPoint = getNextPoint(points[points.length - 1]);
     setPoints([...points, newPoint]);
   };
-
-  const getNextSubPoint = (parentPoint: string, sequence: number): IPoint => {
-    return { text: `${parentPoint}.${sequence}`, value: "" };
-  };
-
-  const loggerPromoter: any = getCurrentLoggedPromoter(
-    currentDocRole,
-    currentDocDetailsData,
-    currentUserDetails
-  );
 
   const handleAddSubPoint = (index: number): void => {
     const parentPoint = points[index];
@@ -452,34 +543,8 @@ const SectionContent: React.FC<IProps> = ({
     setPoints(newPoints);
   };
 
-  const handleInputChange = (index: number, value: string): void => {
-    const newPoints = [...points];
-    newPoints[index].value = value;
-    setPoints(newPoints);
-    onChange && onChange(newPoints);
-  };
-
-  const handleInputClear = (index: number): void => {
-    const pointToRemove = points[index];
-    const newPoints = points.filter((_, i) => i !== index);
-
-    const removeSubPoints = (parentPoint: string): any => {
-      const subPoints = newPoints.filter((point) =>
-        point.text.startsWith(parentPoint + ".")
-      );
-      subPoints.forEach((subPoint) => {
-        const subPointIndex = newPoints.indexOf(subPoint);
-        newPoints.splice(subPointIndex, 1);
-        removeSubPoints(subPoint.text);
-      });
-    };
-    removeSubPoints(pointToRemove.text);
-    setPoints(newPoints);
-    onChange && onChange(newPoints);
-  };
-
   const renderPoint = (point: IPoint, index: number): JSX.Element => {
-    const indent = point.text.split(".").length - 1;
+    const indent = point.class;
     const marginLeft = (indent - 1) * 26;
     const nestedStyle: React.CSSProperties = {
       marginLeft: `${marginLeft}px`,
@@ -560,6 +625,121 @@ const SectionContent: React.FC<IProps> = ({
     }
     return pointA.length - pointB.length;
   });
+
+  const handleInputChange = (index: number, value: string): void => {
+    const newPoints = [...points];
+    newPoints[index].value = value;
+    setPoints(newPoints);
+    onChange && onChange(newPoints);
+  };
+
+  const handleInputClear = (index: number): void => {
+    const pointToRemove = points[index];
+    const newPoints = points.filter((_, i) => i !== index);
+
+    const removeSubPoints = (parentPoint: string): any => {
+      const subPoints = newPoints.filter((point) =>
+        point.text.startsWith(parentPoint + ".")
+      );
+      subPoints.forEach((subPoint) => {
+        const subPointIndex = newPoints.indexOf(subPoint);
+        newPoints.splice(subPointIndex, 1);
+        removeSubPoints(subPoint.text);
+      });
+    };
+    removeSubPoints(pointToRemove.text);
+    setPoints(newPoints);
+    onChange && onChange(newPoints);
+  };
+
+  // const renderPoint = (point: IPoint, index: number): JSX.Element => {
+  //   const indent = point.text.split(".").length - 1;
+  //   const marginLeft = (indent - 1) * 26;
+  //   const nestedStyle: React.CSSProperties = {
+  //     marginLeft: `${marginLeft}px`,
+  //     display: "flex",
+  //     alignItems: "center",
+  //   };
+
+  //   const ancestors: JSX.Element[] = [];
+  //   for (let i = 1; i < indent; i++) {
+  //     ancestors.push(
+  //       <div
+  //         key={i}
+  //         style={{
+  //           position: "absolute",
+  //           top: `-12%`,
+  //           left: `${i === 1 ? `0` : `${(i - 1) * 26}px`}`,
+  //           borderLeft: `1px solid ${i === 1 ? `transparent` : `#adadad60`}`,
+  //           height: "136%",
+  //         }}
+  //       />
+  //     );
+  //   }
+
+  //   return (
+  //     <div key={index} style={{ position: "relative" }}>
+  //       <div
+  //         style={nestedStyle}
+  //         className={`${styles.renderedInput} renderedInput`}
+  //       >
+  //         {ancestors}
+  //         <span style={{ marginRight: "5px" }} className={styles.pointText}>
+  //           {point.text}
+  //         </span>
+  //         <ContentEditor
+  //           readOnly={
+  //             currentSectionDetails?.sectionSubmitted ||
+  //             currentDocRole?.consultant
+  //           }
+  //           editorHtmlValue={point.value}
+  //           placeholder="Enter here"
+  //           setEditorHtml={(html: any) => {
+  //             handleInputChange(index, html);
+  //           }}
+  //         />
+  //         {!currentSectionDetails?.sectionSubmitted && (
+  //           <>
+  //             <button
+  //               onClick={() => handleInputClear(index)}
+  //               className="actionButtons"
+  //               style={{
+  //                 background: "transparent",
+  //                 padding: "0 5px 0 0",
+  //               }}
+  //             >
+  //               <i className="pi pi-times-circle" />
+  //             </button>
+  //             <button
+  //               onClick={() => handleAddSubPoint(index)}
+  //               className="actionButtons"
+  //             >
+  //               <i className="pi pi-angle-double-right" />
+  //             </button>
+  //           </>
+  //         )}
+  //       </div>
+  //     </div>
+  //   );
+  // };
+
+  // const sortedPoints = points.sort((a, b) => {
+  //   const pointA = a?.text?.split(".")?.map(parseFloat);
+  //   const pointB = b?.text?.split(".")?.map(parseFloat);
+
+  //   for (let i = 0; i < Math.min(pointA.length, pointB.length); i++) {
+  //     if (pointA[i] !== pointB[i]) {
+  //       return pointA[i] - pointB[i];
+  //     }
+  //   }
+  //   return pointA.length - pointB.length;
+  // });
+
+  const loggerPromoter: any = getCurrentLoggedPromoter(
+    currentDocRole,
+    currentDocDetailsData,
+    currentUserDetails
+  );
 
   const readTextFileFromTXT = (data: any): void => {
     setSectionLoader(true);

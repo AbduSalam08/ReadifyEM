@@ -36,10 +36,17 @@ import {
 } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { useDispatch, useSelector } from "react-redux";
 import { ContentDeveloperStatusLabel } from "../../common/ContentDeveloperStatusLabel/ContentDeveloperStatusLabel";
-import { getCurrentLoggedPromoter } from "../../../../../utils/contentDevelopementUtils";
+import {
+  getCurrentLoggedPromoter,
+  getCurrentPromoter,
+  updateSectionDataLocal,
+} from "../../../../../utils/contentDevelopementUtils";
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
 import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
 import dayjs from "dayjs";
+import { setCDSectionData } from "../../../../../redux/features/ContentDevloperSlice";
+import SpServices from "../../../../../services/SPServices/SpServices";
+import { LISTNAMES } from "../../../../../config/config";
 
 interface Props {
   documentId: number;
@@ -122,9 +129,9 @@ const SupportingDocuments: React.FC<Props> = ({
     (state: any) => state.ContentDeveloperData.CDSectionsData
   );
 
-  const AllSectionsComments: any = useSelector(
-    (state: any) => state.SectionCommentsData.SectionComments
-  );
+  // const AllSectionsComments: any = useSelector(
+  //   (state: any) => state.SectionCommentsData.SectionComments
+  // );
   const AllSectionsComments: any = useSelector(
     (state: any) => state.SectionData.SectionComments
   );
@@ -153,7 +160,7 @@ const SupportingDocuments: React.FC<Props> = ({
     if (changeRecordDetails.Description?.trimStart() !== "") {
       await addChangeRecord(
         changeRecordDetails,
-        currentSectionData?.ID,
+        currentSectionDetails?.ID,
         currentDocDetailsData.documentDetailsID,
         handleClosePopup,
         3,
@@ -179,6 +186,92 @@ const SupportingDocuments: React.FC<Props> = ({
   // util for closing popup
   const handleClosePopup = (index?: any): void => {
     togglePopupVisibility(setPopupController, index, "close");
+  };
+
+  const docInReview: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in review";
+
+  const docInApproval: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
+
+  const promoteSection = async (): Promise<any> => {
+    debugger;
+    togglePopupVisibility(
+      setPopupController,
+      2,
+      "close",
+      "Are you sure want to submit this section?"
+    );
+    setLoader(true);
+
+    const promoters: any = docInReview
+      ? currentDocDetailsData?.reviewers
+      : docInApproval
+      ? currentDocDetailsData?.approvers
+      : [];
+
+    console.log("promoters: ", promoters);
+
+    const currentPromoter: any = getCurrentPromoter(promoters);
+    console.log("currentPromoter: ", currentPromoter);
+
+    const promoterKey: string = currentDocRole?.reviewer
+      ? "sectionReviewed"
+      : currentDocRole?.approver
+      ? "sectionApproved"
+      : "";
+
+    await SpServices.SPUpdateItem({
+      Listname: LISTNAMES.SectionDetails,
+      ID: currentSectionDetails?.ID,
+      RequestJSON: {
+        [`${promoterKey}`]: true,
+        lastReviewedBy: JSON.stringify({
+          currentOrder: currentPromoter?.currentOrder,
+          currentPromoter: currentPromoter?.currentPromoter?.userData,
+          totalPromoters: currentPromoter?.totalPromoters,
+        }),
+      },
+    })
+      .then((res: any) => {
+        setLoader(false);
+        setToastMessage({
+          isShow: true,
+          severity: "success",
+          title: "Content updated!",
+          message: "The content has been updated successfully.",
+          duration: 3000,
+        });
+
+        const updatedSections: any = updateSectionDataLocal(
+          AllSectionsDataMain,
+          currentSectionDetails?.ID,
+          {
+            [`${promoterKey}`]: true,
+            sectionRework: false,
+            lastReviewedBy: {
+              currentOrder: currentPromoter?.currentOrder,
+              currentPromoter: currentPromoter?.userData,
+              totalPromoters: currentPromoter?.totalPromoters,
+            },
+          }
+        );
+        console.log("updatedSections: ", updatedSections);
+
+        dispatch(setCDSectionData([...updatedSections]));
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+        setLoader(false);
+        setToastMessage({
+          isShow: true,
+          severity: "warn",
+          title: "Something went wrong!",
+          message:
+            "A unexpected error happened while updating! please try again later.",
+          duration: 3000,
+        });
+      });
   };
 
   const popupInputs: any[] = [
@@ -478,6 +571,7 @@ const SupportingDocuments: React.FC<Props> = ({
               documentName: documentObject.documentName,
               documentLink: documentObject.FileRef,
               isSelected: false,
+              isDeleted: false,
               isNew: false,
               status: true,
             },
