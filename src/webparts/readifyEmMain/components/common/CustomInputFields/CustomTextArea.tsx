@@ -7,6 +7,7 @@ import styles from "./Inputs.module.scss";
 
 interface Props {
   value: string | number | any;
+  rows?: number;
   onChange: (value: string | any) => void;
   type?: "text" | "number";
   placeholder?: string;
@@ -15,6 +16,7 @@ interface Props {
   isValid?: any;
   errorMsg?: string;
   withLabel?: boolean;
+  topLabel?: boolean;
   labelText?: string;
   disabled?: boolean;
   mandatory?: boolean;
@@ -43,6 +45,8 @@ const CustomTextArea: React.FC<Props> = ({
   mandatory,
   noBorderInput,
   textAreaWidth,
+  rows,
+  topLabel,
 }) => {
   const handleChange = (e: any): any => {
     onChange(e.target.value);
@@ -58,6 +62,7 @@ const CustomTextArea: React.FC<Props> = ({
           width: "100%",
           gap: 0,
           alignItems: "flex-start",
+          flexWrap: topLabel ? "wrap" : "nowrap",
         }}
       >
         {withLabel && (
@@ -65,7 +70,7 @@ const CustomTextArea: React.FC<Props> = ({
             className={`${styles.inputLabel} ${
               mandatory ? styles.mandatoryField : ""
             }`}
-            style={{ width: "50%" }}
+            style={{ width: "50%", marginBottom: topLabel ? "10px" : "0px" }}
           >
             {labelText}
           </p>
@@ -79,7 +84,7 @@ const CustomTextArea: React.FC<Props> = ({
           placeholder={placeholder}
           onChange={(e) => handleChange(e)}
           className={inputClassName}
-          rows={5}
+          rows={rows ? rows : 5}
           cols={30}
           style={{
             // paddingLeft: icon ? "30px" : "0px",

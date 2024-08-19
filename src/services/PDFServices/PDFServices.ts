@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { LISTNAMES } from "../../config/config";
 import { setSectionsAttachments } from "../../redux/features/PDFServicceSlice";
 import SpServices from "../SPServices/SpServices";
@@ -29,7 +30,7 @@ export const getDocumentRelatedSections = async (
             parseInt(a.sectionOrder) - parseInt(b.sectionOrder)
         );
         let sectionObject: any = {};
-        let tempAttachments: any[] = [];
+        const tempAttachments: any[] = [];
         console.log(sortedArray);
 
         for (const item of sortedArray) {
@@ -39,7 +40,7 @@ export const getDocumentRelatedSections = async (
           //       .attachmentFiles();
           console.log(item.sectionOrder);
 
-          let attachments = await SpServices.SPGetAttachments({
+          const attachments = await SpServices.SPGetAttachments({
             Listname: LISTNAMES.SectionDetails,
             ID: item.Id,
           });

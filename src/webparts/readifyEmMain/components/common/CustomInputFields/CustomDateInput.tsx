@@ -11,8 +11,12 @@ interface DDateInputProps {
   disablePast?: boolean;
   disableFuture?: boolean;
   value: string;
-  onChange: any;
+  onChange?: any;
   error?: boolean;
+  readOnly?: boolean;
+  mandatory?: boolean;
+  topLabel?: boolean;
+  withLabel?: boolean;
   errorMsg?: string;
   customClass?: string;
   size?: string;
@@ -28,7 +32,11 @@ const DDateInput: React.FC<DDateInputProps> = ({
   placeHolder,
   value,
   onChange,
+  readOnly,
+  withLabel,
+  topLabel,
   error = false,
+  mandatory = false,
   errorMsg = "",
   customClass = "",
   size = "100%",
@@ -52,34 +60,54 @@ const DDateInput: React.FC<DDateInputProps> = ({
 
   return (
     <div
-      className={`${styles.d_input_container} ${customClass} ${
-        disabledInput && styles.diabledField
+      // className={styles.inputMainWrapper}
+      className={`${styles.inputMainWrapper} ${
+        topLabel ? styles.topinputMainWrapper : ""
       }`}
-      style={{ width: `${size}` }}
+      style={{
+        width: size ? size : "auto",
+      }}
     >
-      <label>{label}</label>
       <div
-        className={`${styles.d_datepicker_wrapper} ${
-          error ? styles.error : ""
-        }`}
+        className={`${
+          withLabel ? styles.inputWrapperWithLabel : styles.inputWrapper
+        } ${disabledInput ? styles.disabledInput : ""} ${
+          topLabel ? styles.topLabel : ""
+        } `}
       >
-        <Calendar
-          value={defaultValue}
-          onChange={(data: any) => {
-            handleChange(data);
-          }}
-          disabled={disabledInput}
-          //   minDate={fromDate ? dayjs(fromDate).toDate() : undefined}
-          showIcon
-          monthNavigator
-          yearNavigator
-          yearRange="2000:2100"
-          dateFormat="dd/mm/yy"
-          showTime={false}
-          placeholder={!defaultValue ? placeHolder : ""}
-          className={`${styles.d_datepicker}`}
-          style={{ width: "100%" }}
-        />
+        {withLabel && (
+          <p
+            style={{
+              width: "42%",
+              fontSize: "16px",
+              color: "#414141",
+              fontFamily: "interMedium, sans-serif",
+            }}
+          >
+            {label}
+          </p>
+        )}
+        {!readOnly ? (
+          <Calendar
+            value={defaultValue}
+            onChange={(data: any) => {
+              handleChange(data);
+            }}
+            disabled={disabledInput}
+            //   minDate={fromDate ? dayjs(fromDate).toDate() : undefined}
+            showIcon
+            monthNavigator
+            yearNavigator
+            yearRange="2000:2100"
+            dateFormat="dd/mm/yy"
+            showTime={false}
+            placeholder={!defaultValue ? placeHolder : ""}
+            className={`${styles.d_datepicker}`}
+            style={{ width: "100%" }}
+          />
+        ) : (
+          <div style={{ width: "63%" }}>{value}</div>
+        )}
       </div>
       {error && <p className={styles.errorMessage}>{errorMsg}</p>}
     </div>
