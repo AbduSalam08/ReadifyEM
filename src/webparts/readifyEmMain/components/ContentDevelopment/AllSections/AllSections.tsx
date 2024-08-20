@@ -117,9 +117,9 @@ const AllSections: React.FC<Props> = ({
                   </div>
                 )}
             </div>
-          ) : (item?.sectionType !== "header section" ||
-              item?.sectionType !== "change record" ||
-              item?.sectionType !== "references section") &&
+          ) : item?.sectionType !== "header section" &&
+            item?.sectionType !== "change record" &&
+            item?.sectionType !== "references section" &&
             item.sectionPermission ? (
             <div
               className={`${styles.sectionVisible} ${
@@ -201,71 +201,71 @@ const AllSections: React.FC<Props> = ({
                         />
                       </div>
                     </div>
-                    {(item?.sectionType !== "header section" ||
-                      item?.sectionType !== "change record" ||
-                      item?.sectionType !== "references section") && (
-                      <div className={styles.sectionList}>
-                        {/* <span className={styles.statusSec}>{item.sectionStatus}</span> */}
-                        <StatusPill
-                          status={
-                            item?.sectionStatus
-                              ?.toLowerCase()
-                              ?.includes("yet to be reviewed")
-                              ? "Review in progress"
-                              : item?.sectionStatus
-                                  ?.toLowerCase()
-                                  ?.includes("yet to be approved")
-                              ? "Approval in progress"
-                              : item?.sectionStatus
-                          }
-                          dynamicText={
-                            item?.sectionStatus
-                              ?.toLowerCase()
-                              ?.includes("yet to be reviewed")
-                              ? updateStatusCount(
-                                  item?.sectionStatus,
-                                  currentDocDetailsData?.reviewers?.length
-                                )
-                              : item?.sectionStatus
-                                  ?.toLowerCase()
-                                  ?.includes("yet to be approved")
-                              ? updateStatusCount(
-                                  item?.sectionStatus,
-                                  currentDocDetailsData?.approvers?.length
-                                )
-                              : ""
-                          }
-                          size="SM"
-                          ontrackDot={true}
-                        />
-                        <div
-                          className={styles.flexCenter}
-                          style={{
-                            marginTop: "5px",
-                          }}
-                        >
-                          <span className={styles.visibleDateSec}>
-                            {item.dueDate}
-                          </span>
-                          <ChevronRight
-                            style={{
-                              color: "#160364",
-                              backgroundColor: "#E2EEFF",
-                              borderRadius: "3px",
-                              fontSize: "17px",
-                              cursor: "pointer",
-                              marginLeft: "10px",
-                            }}
+                    {item?.sectionType !== "header section" &&
+                      item?.sectionType !== "change record" &&
+                      item?.sectionType !== "references section" && (
+                        <div className={styles.sectionList}>
+                          {/* <span className={styles.statusSec}>{item.sectionStatus}</span> */}
+                          <StatusPill
+                            status={
+                              item?.sectionStatus
+                                ?.toLowerCase()
+                                ?.includes("yet to be reviewed")
+                                ? "Review in progress"
+                                : item?.sectionStatus
+                                    ?.toLowerCase()
+                                    ?.includes("yet to be approved")
+                                ? "Approval in progress"
+                                : item?.sectionStatus
+                            }
+                            dynamicText={
+                              item?.sectionStatus
+                                ?.toLowerCase()
+                                ?.includes("yet to be reviewed")
+                                ? updateStatusCount(
+                                    item?.sectionStatus,
+                                    currentDocDetailsData?.reviewers?.length
+                                  )
+                                : item?.sectionStatus
+                                    ?.toLowerCase()
+                                    ?.includes("yet to be approved")
+                                ? updateStatusCount(
+                                    item?.sectionStatus,
+                                    currentDocDetailsData?.approvers?.length
+                                  )
+                                : ""
+                            }
+                            size="SM"
+                            ontrackDot={true}
                           />
+                          <div
+                            className={styles.flexCenter}
+                            style={{
+                              marginTop: "5px",
+                            }}
+                          >
+                            <span className={styles.visibleDateSec}>
+                              {item.dueDate}
+                            </span>
+                            <ChevronRight
+                              style={{
+                                color: "#160364",
+                                backgroundColor: "#E2EEFF",
+                                borderRadius: "3px",
+                                fontSize: "17px",
+                                cursor: "pointer",
+                                marginLeft: "10px",
+                              }}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                   </>
                 )}
             </div>
-          ) : (item?.sectionType !== "header section" ||
-              item?.sectionType !== "change record" ||
-              item?.sectionType !== "references section") &&
+          ) : item?.sectionType !== "header section" &&
+            item?.sectionType !== "change record" &&
+            item?.sectionType !== "references section" &&
             !currentDocRole?.primaryAuthor &&
             !item.sectionPermission ? (
             <div className={styles.sectionDisabled} key={index}>

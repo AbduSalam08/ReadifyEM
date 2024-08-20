@@ -1027,6 +1027,7 @@ const SectionContent: React.FC<IProps> = ({
             justifyContent: "space-between",
             width: "100%",
             gap: "15px",
+            marginTop: "10px",
           }}
         >
           <button className={"helpButton"}>Help?</button>

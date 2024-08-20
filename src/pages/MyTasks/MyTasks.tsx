@@ -175,6 +175,9 @@ const MyTasks = (): JSX.Element => {
             filterOptions.filterByTaskDueDate ? (
               <button
                 className={styles.clearFilterBtn}
+                style={{
+                  width: "290px",
+                }}
                 onClick={() => {
                   setFilterOptions((prev: any) => ({
                     ...prev,
@@ -188,7 +191,7 @@ const MyTasks = (): JSX.Element => {
                   }));
                 }}
               >
-                Clear All Filters{" "}
+                Clear All Filters
                 <Close
                   sx={{
                     fontSize: "15px",

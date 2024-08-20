@@ -278,11 +278,14 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
   const sectionAuthors = sectionsData?.map((item: any) => item?.sectionAuthor);
 
   const hasRework = sectionsData?.some(
-    (item: any) => item?.sectionStatus === "rework in progress"
+    (item: any) => item?.sectionStatus?.toLowerCase() === "rework in progress"
   );
   const docApproved =
     documentData?.documentStatus?.toLowerCase() === "approved";
 
+  const reviewPending = documentData?.reviewers?.every(
+    (item: any) => item?.status === "pending"
+  );
   const reviewStarted = documentData?.reviewers?.some(
     (item: any) => item?.status === "in progress"
   );
@@ -290,6 +293,9 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
     (item: any) => item?.status === "completed"
   );
 
+  const approvalPending = documentData?.approvers?.some(
+    (item: any) => item?.status === "pending"
+  );
   const approvalStarted = documentData?.approvers?.some(
     (item: any) => item?.status === "in progress"
   );
@@ -382,7 +388,7 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
               <>
                 <p
                   style={{
-                    color: "#adadad",
+                    color: "#593ABB",
                     fontFamily: "interMedium, sans-serif",
                   }}
                 >
@@ -397,7 +403,7 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
               <>
                 <p
                   style={{
-                    color: "#adadad",
+                    color: "#593ABB",
                     fontFamily: "interMedium, sans-serif",
                   }}
                 >
@@ -408,7 +414,7 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
               <>
                 <p
                   style={{
-                    color: "#adadad",
+                    color: "#593ABB",
                     fontFamily: "interMedium, sans-serif",
                   }}
                 >
@@ -448,11 +454,22 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
               <button className={styles.backBtn}>
                 <img src={checkMark} alt="check mark" />
               </button>
-            ) : (
+            ) : reviewPending ? (
               <>
                 <p
                   style={{
                     color: "#adadad",
+                    fontFamily: "interMedium, sans-serif",
+                  }}
+                >
+                  Reviewal is pending
+                </p>
+              </>
+            ) : (
+              <>
+                <p
+                  style={{
+                    color: "#593ABB",
                     fontFamily: "interMedium, sans-serif",
                   }}
                 >
@@ -495,11 +512,22 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
               <button className={styles.backBtn}>
                 <img src={checkMark} alt="check mark" />
               </button>
+            ) : approvalPending ? (
+              <>
+                <p
+                  style={{
+                    color: "#adadad ",
+                    fontFamily: "interMedium, sans-serif",
+                  }}
+                >
+                  Approval is pending
+                </p>
+              </>
             ) : (
               <>
                 <p
                   style={{
-                    color: "#adadad",
+                    color: "#593ABB",
                     fontFamily: "interMedium, sans-serif",
                   }}
                 >
