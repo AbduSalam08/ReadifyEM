@@ -62,6 +62,7 @@ import {
 import SpServices from "../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../config/config";
 import { setCDSectionData } from "../../redux/features/ContentDevloperSlice";
+import References from "../../webparts/readifyEmMain/components/ContentDevelopment/References/References";
 
 const Details = {
   sectionName: "Introduction",
@@ -662,7 +663,13 @@ const ContentDevelopment = (): JSX.Element => {
         promoteComments={true}
       />,
     ],
-    [<DocumentTracker documentData={currentDocDetailsData} sectionsData={AllSectionsData} key={1} />],
+    [
+      <DocumentTracker
+        documentData={currentDocDetailsData}
+        sectionsData={AllSectionsData}
+        key={1}
+      />,
+    ],
     [
       <CustomInput
         size="MD"
@@ -1022,7 +1029,9 @@ const ContentDevelopment = (): JSX.Element => {
       );
       console.log(Comments, changeRecordDetails);
       debugger;
-      if (AllSectionsData[value].sectionName === "Change Record") {
+      if (
+        AllSectionsData[value].sectionType?.toLowerCase() === "change record"
+      ) {
         getAllSectionsChangeRecord(
           currentDocDetailsData.documentDetailsID,
           dispatch
@@ -1296,6 +1305,14 @@ const ContentDevelopment = (): JSX.Element => {
                     activeSection
                   ]?.sectionType?.toLowerCase() === "change record" ? (
                   <ChangeRecord />
+                ) : AllSectionsData[
+                    activeSection
+                  ]?.sectionType?.toLowerCase() === "references section" ? (
+                  <References
+                    allSectionsData={AllSectionsData}
+                    documentId={AllSectionsData[activeSection]?.documentOfId}
+                    sectionId={AllSectionsData[activeSection]?.ID}
+                  />
                 ) : (
                   <div
                     style={{
@@ -1311,8 +1328,9 @@ const ContentDevelopment = (): JSX.Element => {
                       style={{
                         width:
                           toggleCommentSection ||
-                          AllSectionsData[activeSection]?.contentType ===
-                            "change record"
+                          AllSectionsData[
+                            activeSection
+                          ]?.sectionType?.toLowerCase() === "change record"
                             ? "100%"
                             : "75%",
                         height: "calc(95vh - 286px)",
@@ -1393,8 +1411,9 @@ const ContentDevelopment = (): JSX.Element => {
                       )}
                     </div>
 
-                    {AllSectionsData[activeSection]?.contentType !==
-                      "changerecord" && (
+                    {AllSectionsData[
+                      activeSection
+                    ]?.sectionType?.toLowerCase() !== "change record" && (
                       <div
                         style={{
                           width: toggleCommentSection ? "1px" : "25%",

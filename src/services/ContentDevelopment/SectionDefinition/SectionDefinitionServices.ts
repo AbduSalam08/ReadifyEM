@@ -23,7 +23,7 @@ interface definitionDetails {
 }
 
 const convertDefinitionsToTxtFile = (content: any[]): any => {
-  let filterDefinitions = content.filter((obj: any) => !obj.isDeleted);
+  const filterDefinitions = content.filter((obj: any) => !obj.isDeleted);
   let definitionsTable = "";
 
   definitionsTable = `<table style="border-collapse: collapse; width: 100%;">
@@ -68,7 +68,7 @@ const convertDefinitionsToTxtFile = (content: any[]): any => {
   return file;
 };
 const convertReferenceToTxtFile = (content: any[]): any => {
-  let filterDefinitions = content.filter((obj: any) => !obj.isDeleted);
+  const filterDefinitions = content.filter((obj: any) => !obj.isDeleted);
   let referencesTable = "";
 
   referencesTable = `<table style="border-collapse: collapse; width: 100%;">
@@ -78,7 +78,7 @@ const convertReferenceToTxtFile = (content: any[]): any => {
               S.No
             </th>
             <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-              Reference Title
+              Title
             </th>
             <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
               Author
@@ -102,7 +102,11 @@ const convertReferenceToTxtFile = (content: any[]): any => {
                   ${obj.referenceAuthorName}
                 </td>
                 <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                  ${obj.referenceLink}
+                   <a style="word-break: break-all;" href=${
+                     obj.referenceLink
+                   } target="_blank">
+                    ${obj.referenceLink}
+                  </a>
                 </td>
               </tr>`;
   });
@@ -144,6 +148,8 @@ const getAllSectionDefinitions = async (
     ],
   })
     .then((res: any[]) => {
+      console.log(res);
+
       res?.forEach((item: any) => {
         tempArray.push({
           ID: item.ID,
@@ -161,7 +167,8 @@ const getAllSectionDefinitions = async (
       });
     })
     .catch((err) => console.log(err));
-  return tempArray;
+  const sortedArray = tempArray.sort((a: any, b: any) => b.ID - a.ID);
+  return sortedArray;
 };
 
 const getMasterDefinition = async (Data: any) => {
@@ -369,7 +376,7 @@ const AddSectionDefinition = (
             //   text: `Changes updated successfully!`,
             //   secondaryText: `Definitions add/remove updated successfully! `,
             // });
-            let sectionDefinitions = getAllSectionDefinitions(
+            const sectionDefinitions = getAllSectionDefinitions(
               documentId,
               sectionId
             );
@@ -420,7 +427,7 @@ const AddSectionDefinition = (
             //   text: `Changes updated successfully!`,
             //   secondaryText: `Definitions add/remove updated successfully! `,
             // });
-            let sectionDefinitions = getAllSectionDefinitions(
+            const sectionDefinitions = getAllSectionDefinitions(
               documentId,
               sectionId
             );
@@ -470,7 +477,7 @@ const AddSectionDefinition = (
             //   text: `Changes updated successfully!`,
             //   secondaryText: `Definitions add/remove updated successfully! `,
             // });
-            let sectionDefinitions = getAllSectionDefinitions(
+            const sectionDefinitions = getAllSectionDefinitions(
               documentId,
               sectionId
             );
@@ -554,7 +561,7 @@ const addNewDefinition = async (
             //   text: `Definition created successfully!`,
             //   secondaryText: `The Standardized definition template "${definitionsData?.definitionName}" has been created successfully! `,
             // });
-            let sectionDefinitions = getAllSectionDefinitions(
+            const sectionDefinitions = getAllSectionDefinitions(
               documentId,
               sectionId
             );

@@ -18,7 +18,7 @@ const checkBtn = require("../../../../../assets/images/png/checkmark.png");
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 
 import {
-  getAllSectionsChangeRecord,
+  getAllSupportingDocumentsData,
   getDocumentDeatils,
   getApprovedDocuments,
   submitSupportingDocuments,
@@ -535,7 +535,7 @@ const SupportingDocuments: React.FC<Props> = ({
 
   const getAllSelectedDocuments = async (): Promise<any> => {
     setLoader(true);
-    const tempSelectedDocumentsArray: any = await getAllSectionsChangeRecord(
+    const tempSelectedDocumentsArray: any = await getAllSupportingDocumentsData(
       sectionId,
       documentId
     );

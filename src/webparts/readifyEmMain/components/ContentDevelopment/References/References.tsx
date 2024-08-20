@@ -5,26 +5,47 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-import dayjs from "dayjs";
 import { memo, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
-import styles from "./ChangeRecord.module.scss";
+import { getAllSectionDefinitions } from "../../../../../services/ContentDevelopment/SectionDefinition/SectionDefinitionServices";
+import styles from "./References.module.scss";
+interface Props {
+  allSectionsData: any;
+  documentId: number;
+  sectionId: number;
+}
 
-const ChangeRecord = () => {
-  const allSectionsChangeRecord: any = useSelector(
-    (state: any) => state.SectionData.allSectionsChangeRecord
-  );
-
+const References: React.FC<Props> = ({
+  allSectionsData,
+  documentId,
+  sectionId,
+}) => {
   const [loader, setLoader] = useState<boolean>(false);
-  const [allSectionChangeRec, setAllSectionChangeRec] = useState<any[]>([]);
-  console.log(allSectionsChangeRecord);
+  const [allReferencesData, setallReferencesData] = useState<any[]>([]);
+
+  console.log(allSectionsData);
+
+  const getReferencesFromDefintions = () => {
+    setLoader(true);
+    allSectionsData.forEach(async (obj: any) => {
+      if (obj.sectionName === "Definitions") {
+        const tempSelectedDefinitionArray = await getAllSectionDefinitions(
+          documentId,
+          obj.ID
+        );
+        const tempArray = tempSelectedDefinitionArray.filter(
+          (obj: any) => !obj.isDeleted
+        );
+        console.log(tempArray);
+        setallReferencesData([...tempArray]);
+      }
+    });
+    setLoader(false);
+  };
 
   useEffect(() => {
-    setLoader(true);
-    setAllSectionChangeRec([...allSectionsChangeRecord]);
-    setLoader(false);
-  }, [allSectionsChangeRecord]);
+    getReferencesFromDefintions();
+  }, []);
 
   return (
     <>
@@ -40,7 +61,7 @@ const ChangeRecord = () => {
               <tr>
                 <th
                   style={{
-                    width: "8%",
+                    width: "10%",
                     fontSize: "15px",
                     color: "#555",
                     padding: "15px",
@@ -49,11 +70,11 @@ const ChangeRecord = () => {
                     border: "1px solid #DDD",
                   }}
                 >
-                  Section no
+                  S.No
                 </th>
                 <th
                   style={{
-                    width: "12%",
+                    width: "20%",
                     fontSize: "15px",
                     color: "#555",
                     padding: "15px",
@@ -62,24 +83,11 @@ const ChangeRecord = () => {
                     border: "1px solid #DDD",
                   }}
                 >
-                  Section name
+                  Title
                 </th>
                 <th
                   style={{
-                    width: "30%",
-                    fontSize: "15px",
-                    color: "#555",
-                    padding: "15px",
-                    fontFamily: "interMedium,sans-serif",
-                    textAlign: "center",
-                    border: "1px solid #DDD",
-                  }}
-                >
-                  Current change
-                </th>
-                <th
-                  style={{
-                    width: "12%",
+                    width: "20%",
                     fontSize: "15px",
                     color: "#555",
                     padding: "15px",
@@ -92,7 +100,7 @@ const ChangeRecord = () => {
                 </th>
                 <th
                   style={{
-                    width: "10%",
+                    width: "50%",
                     fontSize: "15px",
                     color: "#555",
                     padding: "15px",
@@ -101,12 +109,12 @@ const ChangeRecord = () => {
                     border: "1px solid #DDD",
                   }}
                 >
-                  Last modify
+                  Link
                 </th>
               </tr>
             </thead>
             <tbody>
-              {allSectionChangeRec?.map((obj: any, index: number) => {
+              {allReferencesData?.map((obj: any, index: number) => {
                 return (
                   <tr key={index}>
                     <td
@@ -119,7 +127,7 @@ const ChangeRecord = () => {
                         border: "1px solid #DDD",
                       }}
                     >
-                      {obj.sectionOrder}
+                      {index + 1}
                     </td>
                     <td
                       style={{
@@ -131,7 +139,7 @@ const ChangeRecord = () => {
                         border: "1px solid #DDD",
                       }}
                     >
-                      {obj.sectionName}
+                      {obj.referenceTitle}
                     </td>
                     <td
                       style={{
@@ -143,7 +151,7 @@ const ChangeRecord = () => {
                         border: "1px solid #DDD",
                       }}
                     >
-                      {obj.changeRecordDescription}
+                      {obj.referenceAuthorName}
                     </td>
                     <td
                       style={{
@@ -155,28 +163,20 @@ const ChangeRecord = () => {
                         border: "1px solid #DDD",
                       }}
                     >
-                      {obj.changeRecordAuthor.authorName}
-                    </td>
-                    <td
-                      style={{
-                        fontSize: "13px",
-                        padding: "8px 20px 8px 20px",
-                        lineHeight: "18px",
-                        fontFamily: "interMedium,sans-serif",
-                        textAlign: "center",
-                        border: "1px solid #DDD",
-                      }}
-                    >
-                      {dayjs(obj.changeRecordModify).format(
-                        "DD-MMM-YYYY hh:mm A"
-                      )}
+                      <a
+                        style={{ wordBreak: "break-all" }}
+                        href={obj.referenceLink}
+                        target="_blank"
+                      >
+                        {obj.referenceLink}
+                      </a>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-          {allSectionChangeRec.length === 0 && (
+          {allReferencesData.length === 0 && (
             <div className={styles.noDataFound}>
               <span>No Data Found</span>
             </div>
@@ -186,4 +186,4 @@ const ChangeRecord = () => {
     </>
   );
 };
-export default memo(ChangeRecord);
+export default memo(References);
