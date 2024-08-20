@@ -293,7 +293,8 @@
 }
 
 .panelChild.active {
-  max-height: 1000px;
+  // max-height: 1000px;
+  max-height: max-content;
   opacity: 1;
 }
 .emptyPill {

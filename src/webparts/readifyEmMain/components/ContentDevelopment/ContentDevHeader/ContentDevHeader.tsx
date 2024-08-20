@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import styles from "./Header.module.scss";
@@ -9,6 +10,9 @@ import { setConfigurePageDetails } from "../../../../../redux/features/SectionCo
 import { useDispatch, useSelector } from "react-redux";
 import { CurrentUserIsAdmin } from "../../../../../constants/DefineUser";
 import { getCurrentLoggedPromoter } from "../../../../../utils/contentDevelopementUtils";
+import SpServices from "../../../../../services/SPServices/SpServices";
+import { LISTNAMES } from "../../../../../config/config";
+import { useEffect } from "react";
 const arrowBackBtn = require("../../../../../assets/images/svg/arrowBack.svg");
 const locationIcon = require("../../../../../assets/images/svg/locationIcon.svg");
 const editConfigurationImg = require("../../../../../assets/images/svg/taskConfigurationEditIconBlue.svg");
@@ -35,6 +39,8 @@ const Header: React.FC<Props> = ({
   currentDocDetailsData,
   currentDocRole,
 }) => {
+  console.log("documentName: ", documentName);
+  console.log("currentDocDetailsData: ", currentDocDetailsData);
   // route navigator
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -52,6 +58,38 @@ const Header: React.FC<Props> = ({
   const selectSection = (index: number, title: string): any => {
     onChange(index, false, title);
   };
+  let PAtaskID: any;
+  const getPATaskID = async (): Promise<any> => {
+    await SpServices.SPReadItems({
+      Listname: LISTNAMES.MyTasks,
+      Filter: [
+        {
+          FilterKey: "documentDetails",
+          Operator: "eq",
+          FilterValue: currentDocDetailsData?.documentDetailsID,
+        },
+        {
+          FilterKey: "role",
+          Operator: "eq",
+          FilterValue: "Primary Author",
+        },
+      ],
+    })
+      .then((res: any) => {
+        console.log("res: ", res);
+        PAtaskID = res[0]?.ID;
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+  };
+
+  useEffect(() => {
+    if (!currentDocDetailsData?.taskID) {
+      getPATaskID();
+    }
+  }, [currentDocDetailsData?.taskID]);
+
   return (
     <>
       <div className={styles.container}>
@@ -109,7 +147,7 @@ const Header: React.FC<Props> = ({
             endIcon={<img src={locationIcon} alt="track" />}
             onClick={() => selectSection(1, "Document Tracker")}
           />
-          {role === "Primary Author" ? (
+          {role === "Primary Author" || isAdmin ? (
             <DefaultButton
               text={
                 <img
@@ -124,7 +162,7 @@ const Header: React.FC<Props> = ({
               btnType="secondary"
               onClick={async () => {
                 await getUniqueTaskData(
-                  currentDocDetailsData?.taskID,
+                  currentDocDetailsData?.taskID || PAtaskID,
                   dispatch
                 );
                 // await getUniqueSectionsDetails(taskData?.documentDetailsId);

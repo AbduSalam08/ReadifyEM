@@ -18,6 +18,7 @@ import { checkDuplicatesForSDD } from "../../../../utils/SDDUtils";
 import { memo, useEffect } from "react";
 import InfoIcon from "@mui/icons-material/Info";
 import { Fade, Tooltip } from "@mui/material";
+import { CurrentUserIsAdmin } from "../../../../constants/DefineUser";
 
 interface SectionsProps {
   sectionTitle: string;
@@ -39,6 +40,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
   const filteredSection = sections[objKey]?.filter(
     (item: any) => !item?.removed
   );
+  const isAdmin: boolean = CurrentUserIsAdmin();
 
   const handleOnChange = (
     index: number,
@@ -239,7 +241,10 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
           >
             <CustomInput
               value={sectionName}
-              readOnly={section?.readOnlySection || section?.templateSectionID}
+              readOnly={
+                section?.readOnlySection ||
+                (section?.templateSectionID && !isAdmin)
+              }
               autoFocus={section?.readOnlySection ? false : true}
               isValid={!section?.sectionName?.isValid}
               onChange={(value: string) => {
@@ -284,7 +289,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
             <InputSwitch
               checked={sectionSelected}
               className="sectionToggler"
-              disabled={section?.templateSectionID}
+              disabled={section?.templateSectionID && !isAdmin}
               onChange={(e) => {
                 handleOnChange(currentItemIndex, "sectionSelected", e?.value);
               }}
@@ -324,7 +329,8 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
           </div>
         </div>
         {!section?.templateSectionID &&
-          (currentItemIndex !== 0 || sectionType === "appendixSection") && (
+          (currentItemIndex !== 0 || sectionType === "appendixSection") &&
+          !isAdmin && (
             <button
               className={styles.deleteIcon}
               onClick={() => {

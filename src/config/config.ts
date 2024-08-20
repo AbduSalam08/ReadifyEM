@@ -17,6 +17,7 @@ const LISTNAMES = {
   AllDocuments: "AllDocuments",
   PromotedComments: "PromotedComments",
 };
+
 const LIBNAMES = {
   AllDocuments: "AllDocuments",
 };
@@ -35,4 +36,5 @@ const initialPopupLoaders = {
   text: "",
   secondaryText: "",
 };
+
 export { CONFIG, LISTNAMES, initialPopupLoaders, LIBNAMES, GROUPS };
