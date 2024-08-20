@@ -114,7 +114,7 @@ const TaskCard: React.FC<CardProps> = ({
           {btnText}
         </button>
         <div className={styles.dueDateIndicators}>
-          <DueDatePill dueDate={dueDate} />
+          <DueDatePill dueDate={dueDate} roles={roles} />
           <div className={styles.dueDate}>
             <img src={dueDataImg} alt="due date" />
 

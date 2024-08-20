@@ -619,7 +619,7 @@ const SDDTemplates = (): JSX.Element => {
   return (
     <div className={styles.SDDTWrapper}>
       <div className={styles.pageTitleHeader}>
-        <PageTitle text={"Standardized Document Developer Templates"} />
+        <PageTitle text={"Templates"} />
 
         {/* filters section */}
         <div className={styles.filters}>

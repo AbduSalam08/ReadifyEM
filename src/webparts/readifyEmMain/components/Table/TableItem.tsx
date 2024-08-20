@@ -7,6 +7,7 @@ import pdfIcon from "../../../../assets/images/svg/pdfIcon.svg";
 import styles from "./Table.module.scss";
 import StatusPill from "../StatusPill/StatusPill";
 import { CurrentUserIsAdmin } from "../../../../constants/DefineUser";
+import DueDatePill from "../common/DueDatePill/DueDatePill";
 
 interface LibraryItem {
   name: string;
@@ -67,6 +68,7 @@ const TableItem: React.FC<TableItemProps> = ({
           {item.isDraft && <div className={styles.draftPill}>Draft</div>}
         </div>
         {Object.keys(item.fields).map((key: string, i: number) => {
+          console.log("key: ", key);
           return key.toLowerCase() !== "status" ? (
             <div
               className={styles.item}
@@ -74,6 +76,19 @@ const TableItem: React.FC<TableItemProps> = ({
               key={i}
             >
               {item.fields[key] || "-"}
+              {key?.toLowerCase() === "nextreviewdate" && !item.isDraft && (
+                <div
+                  style={{
+                    marginLeft: "10px",
+                  }}
+                >
+                  <DueDatePill
+                    dueDate={item.fields[key]}
+                    roles="Primary Author"
+                    leftText={"D"}
+                  />
+                </div>
+              )}
             </div>
           ) : (
             <div
