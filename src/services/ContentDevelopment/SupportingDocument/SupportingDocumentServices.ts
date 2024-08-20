@@ -141,7 +141,7 @@ const getApprovedDocuments = (documents: any) => {
 };
 
 const convertSupportingDocToTxtFile = (content: any[]): any => {
-  let filterDefinitions = content.filter((obj: any) => !obj.isDeleted);
+  const filterDefinitions = content.filter((obj: any) => !obj.isDeleted);
   let supportingDocTable = "";
 
   supportingDocTable = `<table style="border-collapse: collapse; width: 100%;">
@@ -267,7 +267,7 @@ const submitSupportingDocuments = (
             tempDelArray.length === 0 &&
             tempDelUpdateArray.length === 0
           ) {
-            let supportingDocumentsData = getAllSupportingDocumentsData(
+            const supportingDocumentsData = getAllSupportingDocumentsData(
               sectionId,
               documentId
             );
@@ -306,7 +306,7 @@ const submitSupportingDocuments = (
             tempDelArray.length - 1 === index &&
             tempDelUpdateArray.length === 0
           ) {
-            let supportingDocumentsData = getAllSupportingDocumentsData(
+            const supportingDocumentsData = getAllSupportingDocumentsData(
               sectionId,
               documentId
             );
@@ -343,7 +343,7 @@ const submitSupportingDocuments = (
         .then(async (res: any) => {
           renderCondition = true;
           if (tempDelUpdateArray.length - 1 === index) {
-            let supportingDocumentsData = getAllSupportingDocumentsData(
+            const supportingDocumentsData = getAllSupportingDocumentsData(
               sectionId,
               documentId
             );

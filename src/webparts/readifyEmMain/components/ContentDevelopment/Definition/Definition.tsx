@@ -846,11 +846,8 @@ const Definition: React.FC<Props> = ({
       documentId,
       sectionId
     );
-    const sortedArray = tempSelectedDefinitionArray.sort(
-      (a: any, b: any) => b.ID - a.ID
-    );
-    setSelectedDefinitions(await sortedArray);
-    getMainDefinition(sortedArray);
+    setSelectedDefinitions(await tempSelectedDefinitionArray);
+    getMainDefinition(tempSelectedDefinitionArray);
   };
 
   const onSelectDefinition = (id: number): void => {
