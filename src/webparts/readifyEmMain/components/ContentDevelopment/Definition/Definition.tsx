@@ -47,6 +47,7 @@ import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicke
 import dayjs from "dayjs";
 import { setCDSectionData } from "../../../../../redux/features/ContentDevloperSlice";
 import SpServices from "../../../../../services/SPServices/SpServices";
+import PreviewSection from "../PreviewSection/PreviewSection";
 
 interface Props {
   documentId: number;
@@ -109,6 +110,14 @@ const initialPopupController = [
     popupTitle: "Are you sure want to mark this section as reviewed?",
     popupWidth: "340px",
     popupType: "confirmation",
+    defaultCloseBtn: false,
+    popupData: "",
+  },
+  {
+    open: false,
+    popupTitle: "",
+    popupWidth: "950px",
+    popupType: "custom",
     defaultCloseBtn: false,
     popupData: "",
   },
@@ -690,6 +699,12 @@ const Definition: React.FC<Props> = ({
         />
       </div>,
     ],
+    [],
+    [
+      <div key={1}>
+        <PreviewSection sectionId={sectionId} />
+      </div>,
+    ],
   ];
 
   // array of obj which contains all popup action buttons
@@ -817,6 +832,18 @@ const Definition: React.FC<Props> = ({
         onClick: async () => {
           handleClosePopup(4);
           await promoteSection();
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(5);
         },
       },
     ],
@@ -1172,6 +1199,18 @@ const Definition: React.FC<Props> = ({
               btnType="darkGreyVariant"
               onClick={() => {
                 navigate(-1);
+              }}
+            />
+            <DefaultButton
+              text="Review"
+              btnType="lightGreyVariant"
+              onClick={() => {
+                togglePopupVisibility(
+                  setPopupController,
+                  5,
+                  "open",
+                  "Section review"
+                );
               }}
             />
             {currentDocDetailsData?.version !== "1.0" &&
