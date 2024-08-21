@@ -44,6 +44,7 @@
   flex-direction: column;
   gap: 6px;
   overflow-y: auto;
+  max-height: 66vh;
 }
 .promoteContentContainer {
   display: flex;

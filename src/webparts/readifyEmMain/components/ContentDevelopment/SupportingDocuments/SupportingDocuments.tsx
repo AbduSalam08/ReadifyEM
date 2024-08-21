@@ -47,6 +47,7 @@ import dayjs from "dayjs";
 import { setCDSectionData } from "../../../../../redux/features/ContentDevloperSlice";
 import SpServices from "../../../../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../../../../config/config";
+import PreviewSection from "../PreviewSection/PreviewSection";
 
 interface Props {
   documentId: number;
@@ -101,6 +102,14 @@ const SupportingDocuments: React.FC<Props> = ({
       open: false,
       popupTitle: "",
       popupWidth: "550px",
+      popupType: "custom",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "950px",
       popupType: "custom",
       defaultCloseBtn: false,
       popupData: "",
@@ -355,6 +364,26 @@ const SupportingDocuments: React.FC<Props> = ({
         />
       </div>,
     ],
+    [
+      <div key={1}>
+        <span
+          style={{
+            display: "flex",
+            paddingBottom: "15px",
+            fontSize: "22px",
+            fontFamily: "interMedium, sans-serif",
+          }}
+        >
+          {currentSectionDetails.sectionOrder +
+            ". " +
+            currentSectionDetails.sectionName}
+        </span>
+        <PreviewSection
+          sectionId={currentSectionDetails?.ID}
+          sectionDetails={currentSectionDetails}
+        />
+      </div>,
+    ],
   ];
 
   const popupActions: any[] = [
@@ -458,6 +487,18 @@ const SupportingDocuments: React.FC<Props> = ({
         onClick: async () => {
           // handleClosePopup(2);
           await submitChangeRecord();
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(4);
         },
       },
     ],
@@ -1024,6 +1065,13 @@ const SupportingDocuments: React.FC<Props> = ({
             btnType="darkGreyVariant"
             onClick={() => {
               navigate(-1);
+            }}
+          />
+          <DefaultButton
+            text="Preview"
+            btnType="secondaryBlue"
+            onClick={() => {
+              togglePopupVisibility(setPopupController, 4, "open", "Preview");
             }}
           />
 

@@ -183,7 +183,7 @@ const convertSupportingDocToTxtFile = (content: any[]): any => {
     .replace(/\n/g, "")
     .replace(/\s{2,}/g, " ");
 
-  const blob = new Blob([cleanedTable.toString()], {
+  const blob = new Blob([JSON.stringify(cleanedTable)], {
     type: "text/plain",
   });
   const file: any = new File([blob], "Sample.txt", { type: "text/plain" });

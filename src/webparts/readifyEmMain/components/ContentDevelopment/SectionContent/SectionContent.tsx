@@ -34,6 +34,7 @@ import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicke
 import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
 import dayjs from "dayjs";
 import { setCDSectionData } from "../../../../../redux/features/ContentDevloperSlice";
+import PreviewSection from "../PreviewSection/PreviewSection";
 
 interface IProps {
   sectionNumber: any;
@@ -92,6 +93,14 @@ const SectionContent: React.FC<IProps> = ({
       open: false,
       popupTitle: "",
       popupWidth: "550px",
+      popupType: "custom",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "950px",
       popupType: "custom",
       defaultCloseBtn: false,
       popupData: "",
@@ -366,6 +375,18 @@ const SectionContent: React.FC<IProps> = ({
         },
       },
     ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(4);
+        },
+      },
+    ],
   ];
 
   const popupInputs: any[] = [
@@ -446,6 +467,26 @@ const SectionContent: React.FC<IProps> = ({
           isValid={changeRecordDetails.IsValid}
           errorMsg={changeRecordDetails.ErrorMsg}
           key={3}
+        />
+      </div>,
+    ],
+    [
+      <div key={1}>
+        <span
+          style={{
+            display: "flex",
+            paddingBottom: "15px",
+            fontSize: "22px",
+            fontFamily: "interMedium, sans-serif",
+          }}
+        >
+          {currentSectionDetails.sectionOrder +
+            ". " +
+            currentSectionDetails.sectionName}
+        </span>
+        <PreviewSection
+          sectionId={currentSectionDetails?.ID}
+          sectionDetails={currentSectionDetails}
         />
       </div>,
     ],
@@ -1054,6 +1095,13 @@ const SectionContent: React.FC<IProps> = ({
               btnType="darkGreyVariant"
               onClick={() => {
                 navigate(-1);
+              }}
+            />
+            <DefaultButton
+              text="Preview"
+              btnType="secondaryBlue"
+              onClick={() => {
+                togglePopupVisibility(setPopupController, 4, "open", "Preview");
               }}
             />
 

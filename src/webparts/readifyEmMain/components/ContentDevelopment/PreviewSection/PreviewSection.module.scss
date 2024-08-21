@@ -1,0 +1,18 @@
+.listItem{
+    line-height: 20px;
+    align-items: flex-start!important;
+    font-family: "interRegular", sans-serif !important;
+}
+.noDataFound {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    height: 100px;
+    align-items: center;
+
+    span {
+        color: #adadad;
+        font-size: 14px;
+        font-family: interRegular, sans-serif !important;
+    }
+}
