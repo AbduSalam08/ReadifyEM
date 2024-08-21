@@ -952,7 +952,7 @@ const Definitions = (): JSX.Element => {
                     }));
                   }}
                 />
-                {item.isApproved ? null : (
+                {item?.isApproved ? null : (
                   <DefaultButton
                     disableRipple={true}
                     style={{

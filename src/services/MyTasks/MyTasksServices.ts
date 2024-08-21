@@ -50,6 +50,7 @@ export const getAllTasksList = async (
         pathName: item?.pathName,
         taskDueDate: item?.taskDueDate,
         completed: item?.completed,
+        completedOn: item?.completedOn,
         docVersion: item?.docVersion,
         role: item?.role,
         taskStatus: item?.taskStatus,

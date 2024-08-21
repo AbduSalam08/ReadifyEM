@@ -175,9 +175,9 @@ const MyTasks = (): JSX.Element => {
             filterOptions.filterByTaskDueDate ? (
               <button
                 className={styles.clearFilterBtn}
-                style={{
-                  width: "290px",
-                }}
+                // style={{
+                //   width: "290px",
+                // }}
                 onClick={() => {
                   setFilterOptions((prev: any) => ({
                     ...prev,
@@ -211,6 +211,9 @@ const MyTasks = (): JSX.Element => {
               value={filterOptions.filterByTaskDueDate}
               error={false}
               errorMsg={""}
+              size="240px"
+              minWidth="240px"
+              maxWidth="240px"
             />
 
             <CustomDropDown
