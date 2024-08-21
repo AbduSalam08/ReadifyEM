@@ -11,6 +11,7 @@ export const RoleAuth = async (
   currentUser: any,
   dispatch?: any
 ): Promise<any> => {
+  debugger;
   let currentUserDetails: any;
   let currentUserID: any;
   await sp.web.currentUser
@@ -28,7 +29,8 @@ export const RoleAuth = async (
     .users.get()
     .then((res: any) => {
       const defineUserIsAdmin: any[] = res?.filter((item: any) => {
-        return currentUser?.Email === item?.UserPrincipalName;
+        // return currentUser?.Email === item?.UserPrincipalName;
+        return currentUser?.Email === item?.Email;
       });
 
       // setting the current user details
@@ -42,7 +44,8 @@ export const RoleAuth = async (
       } else {
         currentUserDetails = {
           userName: defineUserIsAdmin[0]?.Title,
-          email: defineUserIsAdmin[0]?.UserPrincipalName,
+          // email: defineUserIsAdmin[0]?.UserPrincipalName,
+          email: defineUserIsAdmin[0]?.Email,
           role: "Admin",
           id: defineUserIsAdmin[0]?.id || currentUserID,
         };

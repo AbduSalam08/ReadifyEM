@@ -21,6 +21,7 @@ const RoleAuthorizationHOC = (): JSX.Element => {
   );
 
   const getRoleAuth = async (): Promise<any> => {
+    debugger;
     const currentUserDetails: any = {
       userName: mainContext?._pageContext?._user?.displayName,
       Email: mainContext?._pageContext?._user?.email,

@@ -43,12 +43,14 @@ export const getLibraryItems = async (): Promise<{
       folder.folders(),
       folder.files(),
     ]);
+    console.log("folders: ", folders);
 
     const folderItems: LibraryItem[] = [];
 
     for (const subFolder of folders) {
+      console.log("subFolder?.UniqueId: ", subFolder?.UniqueId);
       // removing FORMS default folder using its unique ID which is dont needed in out application
-      if (subFolder?.UniqueId !== "da7fc51c-8ee3-49b4-a6fd-0301e0533cc9") {
+      if (subFolder?.UniqueId !== "b6160d32-57c4-47a4-922d-2a6c28fdc986") {
         const subFolderFields = await sp.web
           .getFolderByServerRelativePath(subFolder.ServerRelativeUrl)
           .listItemAllFields.get();
@@ -309,7 +311,6 @@ export const EditFolderAndChangeItemPath = async (
       .expand("ListItemAllFields")
       .get();
 
-    // debugger;
     // Update each file's document path
     for (const file of newFolderFiles) {
       const itemId = file.ListItemAllFields.ID;
