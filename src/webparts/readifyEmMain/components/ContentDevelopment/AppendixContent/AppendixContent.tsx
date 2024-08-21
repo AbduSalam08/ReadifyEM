@@ -454,7 +454,11 @@ const AppendixContent = ({
                     )
                   : (currentDocRole?.reviewer || currentDocRole?.approver) && (
                       <DefaultButton
-                        disabled={sectionLoader}
+                        disabled={
+                          sectionLoader &&
+                          currentDocDetailsData?.documentStatus?.toLowerCase ===
+                            "approved"
+                        }
                         text="Rework"
                         btnType="secondaryRed"
                         onClick={() => {

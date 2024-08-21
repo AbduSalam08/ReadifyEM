@@ -21,6 +21,8 @@ interface DDateInputProps {
   customClass?: string;
   size?: string;
   placeHolder?: string;
+  minWidth?: string;
+  maxWidth?: string;
 }
 
 const DDateInput: React.FC<DDateInputProps> = ({
@@ -40,6 +42,8 @@ const DDateInput: React.FC<DDateInputProps> = ({
   errorMsg = "",
   customClass = "",
   size = "100%",
+  maxWidth,
+  minWidth,
 }) => {
   const getFormattedDate = (date: any | null): any => {
     if (date) {
@@ -66,6 +70,8 @@ const DDateInput: React.FC<DDateInputProps> = ({
       }`}
       style={{
         width: size ? size : "auto",
+        minWidth: minWidth ? minWidth : "auto",
+        maxWidth: maxWidth ? maxWidth : "auto",
       }}
     >
       <div
