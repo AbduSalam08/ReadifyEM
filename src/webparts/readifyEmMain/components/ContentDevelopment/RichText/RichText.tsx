@@ -35,6 +35,7 @@ import { ContentDeveloperStatusLabel } from "../../common/ContentDeveloperStatus
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
 import dayjs from "dayjs";
 import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
+import PreviewSection from "../PreviewSection/PreviewSection";
 
 interface IRichTextProps {
   noActionBtns?: boolean;
@@ -86,6 +87,14 @@ const RichText = ({
       open: false,
       popupTitle: "",
       popupWidth: "550px",
+      popupType: "custom",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "950px",
       popupType: "custom",
       defaultCloseBtn: false,
       popupData: "",
@@ -249,6 +258,26 @@ const RichText = ({
         />
       </div>,
     ],
+    [
+      <div key={1}>
+        <span
+          style={{
+            display: "flex",
+            paddingBottom: "15px",
+            fontSize: "22px",
+            fontFamily: "interMedium, sans-serif",
+          }}
+        >
+          {currentSectionData.sectionOrder +
+            ". " +
+            currentSectionData.sectionName}
+        </span>
+        <PreviewSection
+          sectionId={currentSectionData?.ID}
+          sectionDetails={currentSectionData}
+        />
+      </div>,
+    ],
   ];
 
   const popupActions: any[] = [
@@ -352,6 +381,18 @@ const RichText = ({
         onClick: async () => {
           // handleClosePopup(2);
           await submitChangeRecord();
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(4);
         },
       },
     ],
@@ -745,6 +786,13 @@ const RichText = ({
               btnType="darkGreyVariant"
               onClick={() => {
                 navigate(-1);
+              }}
+            />
+            <DefaultButton
+              text="Preview"
+              btnType="secondaryBlue"
+              onClick={() => {
+                togglePopupVisibility(setPopupController, 4, "open", "Preview");
               }}
             />
 

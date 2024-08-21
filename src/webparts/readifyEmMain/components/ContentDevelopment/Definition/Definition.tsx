@@ -702,7 +702,22 @@ const Definition: React.FC<Props> = ({
     [],
     [
       <div key={1}>
-        <PreviewSection sectionId={sectionId} />
+        <span
+          style={{
+            display: "flex",
+            paddingBottom: "15px",
+            fontSize: "22px",
+            fontFamily: "interMedium, sans-serif",
+          }}
+        >
+          {currentSectionDetails.sectionOrder +
+            ". " +
+            currentSectionDetails.sectionName}
+        </span>
+        <PreviewSection
+          sectionId={sectionId}
+          sectionDetails={currentSectionDetails}
+        />
       </div>,
     ],
   ];
@@ -1202,15 +1217,10 @@ const Definition: React.FC<Props> = ({
               }}
             />
             <DefaultButton
-              text="Review"
-              btnType="lightGreyVariant"
+              text="Preview"
+              btnType="secondaryBlue"
               onClick={() => {
-                togglePopupVisibility(
-                  setPopupController,
-                  5,
-                  "open",
-                  "Section review"
-                );
+                togglePopupVisibility(setPopupController, 5, "open", "Preview");
               }}
             />
             {currentDocDetailsData?.version !== "1.0" &&
