@@ -72,7 +72,7 @@ export const getAllTasksList = async (
     });
 
     const uniqueTasks = Array.from(uniqueTasksMap.values());
-
+    debugger;
     uniqueTasks.forEach((task) => {
       if (
         task.role.toLowerCase() === "primary author" &&

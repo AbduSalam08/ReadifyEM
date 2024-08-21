@@ -34,7 +34,7 @@ const UpdateDefinition = async (
       referenceTitle: formData.referenceTitle,
       referenceAuthorName: formData.referenceAuthorName,
       referenceLink: formData.referenceLink,
-      referenceAuthorId: formData.referenceAuthor[0].Id,
+      // referenceAuthorId: formData.referenceAuthor[0].Id,
     };
 
     await SpServices.SPUpdateItem({
@@ -55,6 +55,7 @@ const UpdateDefinition = async (
         });
       })
       .catch((err) => {
+        console.log("err: ", err);
         setLoaderState({
           isLoading: {
             inprogress: false,

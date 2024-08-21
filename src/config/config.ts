@@ -1,6 +1,8 @@
 const CONFIG = {
-  webURL: "https://chandrudemo.sharepoint.com/sites/ReadifyEM",
-  tenantURL: "https://chandrudemo.sharepoint.com",
+  webURL: "https://mydomain28.sharepoint.com/sites/ReadifyEM",
+  tenantURL: "https://mydomain28.sharepoint.com",
+  // webURL: "https://chandrudemo.sharepoint.com/sites/ReadifyEM",
+  // tenantURL: "https://chandrudemo.sharepoint.com",
 };
 
 const LISTNAMES = {
