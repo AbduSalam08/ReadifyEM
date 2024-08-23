@@ -1,3 +1,328 @@
+// /* eslint-disable no-unused-expressions */
+// // /* eslint-disable @typescript-eslint/no-explicit-any */
+// // import { memo } from "react";
+// // import {
+// //   PeoplePicker,
+// //   PrincipalType,
+// // } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+// // import styles from "./Inputs.module.scss";
+// // import { useSelector } from "react-redux";
+// // import { CONFIG } from "../../../../../config/config";
+
+// // interface Props {
+// //   selectedItem?: any;
+// //   onChange: (value: any[]) => void;
+// //   placeholder?: string;
+// //   personSelectionLimit?: number | any;
+// //   size?: "SM" | "MD" | "XL";
+// //   isValid: boolean;
+// //   errorMsg?: string;
+// //   minWidth?: any;
+// //   noErrorMsg?: boolean; // if true, no error message will be shown
+// // }
+
+// // const CustomPeoplePicker: React.FC<Props> = ({
+// //   onChange,
+// //   placeholder = "User",
+// //   personSelectionLimit,
+// //   selectedItem,
+// //   size,
+// //   isValid,
+// //   errorMsg,
+// //   minWidth,
+// //   noErrorMsg = false,
+// // }) => {
+// //   const multiPeoplePickerStyle = {
+// //     root: {
+// //       minWidth: minWidth ? minWidth : 200,
+// //       background: "rgba(218, 218, 218, 0.29)",
+// //       ".ms-BasePicker-text": {
+// //         height: size === "SM" ? "34px" : size === "MD" ? "32px" : "43px",
+// //         borderRadius: "4px",
+// //         maxHeight: "50px",
+// //         overflowX: "hidden",
+// //         padding: "0px 10px",
+// //         minWidth: minWidth ? minWidth : "290px",
+// //         background: "#fff",
+// //         border: isValid ? "1px solid #ff8585" : "1px solid #adadad50",
+// //         outline: "none",
+// //         fontFamily: "interMedium",
+// //       },
+// //       ".ms-BasePicker-input": {
+// //         height: size === "SM" ? "30px" : size === "MD" ? "30px" : "41px",
+// //         fontFamily: "interMedium",
+// //       },
+// //       ".ms-BasePicker-input::placeholder": {
+// //         fontFamily: "interMedium",
+// //       },
+// //       ".ms-BasePicker-text:after": {
+// //         display: "none",
+// //       },
+// //       ".ms-BasePicker-text:hover": {
+// //         border: isValid ? "1px solid #ff8585" : "1px solid #adadad50",
+// //       },
+// //       ".ms-TooltipHost": {
+// //         fontFamily: "interMedium",
+// //         fontSize: "13px",
+// //         color: "#414141",
+// //       },
+// //       ".ms-PickerPersona-container": {
+// //         background: "#e8e8e8",
+// //       },
+// //       ".ms-PickerItem-removeButton:focus": {
+// //         background: "#555",
+// //       },
+// //     },
+// //   };
+
+// //   const mainContext: any = useSelector(
+// //     (state: any) => state.MainSPContext.value
+// //   );
+
+// //   const handleChange = (items: any[]): void => {
+// //     onChange(items);
+// //   };
+
+// //   const selectedUserItem =
+// //     personSelectionLimit > 1
+// //       ? selectedItem?.map((item: any) => item.secondaryText || item.Email)
+// //       : [selectedItem];
+
+// //   return (
+// //     <>
+// //       <PeoplePicker
+// //         context={mainContext}
+// //         webAbsoluteUrl={CONFIG.webURL}
+// //         personSelectionLimit={personSelectionLimit || 1}
+// //         showtooltip={false}
+// //         ensureUser={true}
+// //         placeholder={placeholder}
+// //         onChange={handleChange}
+// //         styles={multiPeoplePickerStyle}
+// //         principalTypes={[PrincipalType.User]}
+// //         defaultSelectedUsers={selectedUserItem}
+// //         resolveDelay={1000}
+// //       />
+// //       {!noErrorMsg && (
+// //         <p className={isValid ? styles.errorMsg : ""}>{isValid && errorMsg}</p>
+// //       )}
+// //     </>
+// //   );
+// // };
+
+// // export default memo(CustomPeoplePicker);
+
+// /* eslint-disable @typescript-eslint/no-explicit-any */
+// import { memo } from "react";
+// import {
+//   PeoplePicker,
+//   PrincipalType,
+// } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+// import styles from "./Inputs.module.scss";
+// import { useSelector } from "react-redux";
+// import { CONFIG } from "../../../../../config/config";
+
+// interface Props {
+//   selectedItem?: any;
+//   onChange?: (value: any[]) => void;
+//   placeholder?: string;
+//   personSelectionLimit?: number | any;
+//   size?: "SM" | "MD" | "XL";
+//   isValid?: boolean;
+//   errorMsg?: string;
+//   labelText?: string;
+//   withLabel?: boolean;
+//   disabled?: boolean;
+//   readOnly?: boolean;
+//   minWidth?: any;
+//   hideErrMsg?: boolean;
+//   noErrorMsg?: boolean; // if true, no error message will be shown
+//   noBorderInput?: boolean;
+//   maxWidth?: any;
+//   minHeight?: any;
+//   maxHeight?: any;
+//   noRemoveBtn?: boolean;
+//   multiUsers?: boolean;
+//   mandatory?: boolean;
+// }
+
+// const CustomPeoplePicker: React.FC<Props> = ({
+//   onChange,
+//   placeholder = "User",
+//   personSelectionLimit,
+//   selectedItem,
+//   size,
+//   withLabel,
+//   labelText,
+//   disabled,
+//   isValid,
+//   errorMsg,
+//   minWidth,
+//   noErrorMsg = false,
+//   readOnly,
+//   noBorderInput,
+//   maxWidth,
+//   noRemoveBtn,
+//   minHeight,
+//   maxHeight,
+//   mandatory,
+//   multiUsers = false,
+// }) => {
+//   const multiPeoplePickerStyle = {
+//     root: {
+//       minWidth: minWidth ? minWidth : "100%",
+//       maxWidth: maxWidth ? maxWidth : "100%",
+//       background: "rgba(218, 218, 218, 0.29)",
+//       ".ms-BasePicker-text": {
+//         // alignItems: "flex-start",
+//         // maxHeight: "50px",
+//         height: size === "SM" ? "34px" : size === "MD" ? "32px" : "43px",
+//         borderRadius: "4px",
+//         overflowX: "hidden",
+//         padding: "0px 4px",
+//         minHeight: minHeight ? minHeight : "34px",
+//         maxHeight: maxHeight ? maxHeight : "50px",
+//         minWidth: minWidth ? minWidth : "290px",
+//         background: "#fff",
+//         border: isValid
+//           ? "1px solid #ff8585"
+//           : noBorderInput
+//           ? "none"
+//           : "1px solid #adadad50",
+//         outline: "none",
+//         fontFamily: "interMedium",
+//       },
+//       ".ms-BasePicker-input": {
+//         height: size === "SM" ? "30px" : size === "MD" ? "30px" : "41px",
+//         fontFamily: "interMedium",
+//       },
+//       ".ms-BasePicker-input::placeholder": {
+//         fontFamily: "interMedium",
+//       },
+//       ".ms-BasePicker-text:after": {
+//         display: "none",
+//       },
+//       ".ms-BasePicker-text:hover": {
+//         border:
+//           !noBorderInput && isValid
+//             ? "1px solid #ff8585"
+//             : !noBorderInput
+//             ? "1px solid #adadad50"
+//             : "none",
+//       },
+//       ".ms-TooltipHost": {
+//         fontFamily: "interMedium",
+//         fontSize: "13px",
+//         color: "#414141",
+//       },
+//       ".ms-PickerPersona-container": {
+//         background: "#e8e8e8",
+//         maxWidth: "auto",
+//         minWidth: "auto",
+//       },
+//       ".ms-PickerItem-removeButton": {
+//         display: noRemoveBtn ? "none" : "block",
+//       },
+//       ".ms-PickerItem-removeButton:focus": {
+//         background: "#555",
+//       },
+//       ".ms-BasePicker-itemsWrapper": {
+//         height: "100%",
+//         alignItems: "center",
+//         justifyContent: "flex-start",
+//         flexWrap: "nowrap",
+//         gap: "2px",
+//         overflow: "auto",
+//         // padding: "3px 0",
+//       },
+//     },
+//   };
+
+//   const mainContext: any = useSelector(
+//     (state: any) => state.MainSPContext.value
+//   );
+
+//   const handleChange = (items: any[]): void => {
+//     console.log("items: ", items);
+//     const obj = items?.map((item: any) => {
+//       return {
+//         id: item.id,
+//         email: item?.secondaryText,
+//         name: item?.text,
+//       };
+//     });
+//     onChange && onChange(obj);
+//   };
+
+//   const selectedUserItem = (() => {
+//     if (!multiUsers) {
+//       return personSelectionLimit > 1 ? [] : [selectedItem];
+//     } else {
+//       if (personSelectionLimit >= 1) {
+//         return (
+//           selectedItem?.map(
+//             (item: any) => item.secondaryText || item.Email || item.email
+//           ) || []
+//         );
+//       }
+//     }
+
+//     return [selectedItem];
+//   })();
+
+//   return (
+//     <div className={styles.inputMainWrapper}>
+//       <div
+//         className={`${
+//           withLabel
+//             ? styles.p_pickerInputWrapperWithLabel
+//             : styles.p_pickerInputWrapper
+//         } ${disabled ? styles.disabledInput : ""}`}
+//       >
+//         {withLabel && (
+//           <p
+//             className={`${styles.inputLabel} ${
+//               mandatory ? styles.mandatoryField : ""
+//             }`}
+//           >
+//             {labelText}
+//           </p>
+//         )}
+//         <PeoplePicker
+//           context={mainContext}
+//           webAbsoluteUrl={CONFIG.webURL}
+//           //   titleText="Select People"
+//           personSelectionLimit={personSelectionLimit}
+//           showtooltip={false}
+//           ensureUser={true}
+//           placeholder={placeholder}
+//           // peoplePickerCntrlclassName={styles.}
+//           onChange={handleChange}
+//           styles={multiPeoplePickerStyle}
+//           //   showHiddenInUI={true}
+//           principalTypes={[PrincipalType.User]}
+//           defaultSelectedUsers={selectedUserItem}
+//           resolveDelay={1000}
+//           disabled={readOnly}
+//         />
+//       </div>
+
+//       {isValid && !noErrorMsg && (
+//         <p
+//           className={styles.errorMsg}
+//           style={{
+//             textAlign: isValid && !withLabel ? "left" : "right",
+//           }}
+//         >
+//           {errorMsg}
+//         </p>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default memo(CustomPeoplePicker);
+
 /* eslint-disable no-unused-expressions */
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { memo } from "react";
@@ -113,7 +438,8 @@
 // export default memo(CustomPeoplePicker);
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { memo } from "react";
+/* eslint-disable @typescript-eslint/no-var-requires */
+import { memo, useState } from "react";
 import {
   PeoplePicker,
   PrincipalType,
@@ -121,6 +447,11 @@ import {
 import styles from "./Inputs.module.scss";
 import { useSelector } from "react-redux";
 import { CONFIG } from "../../../../../config/config";
+import Popup from "../Popups/Popup";
+import { togglePopupVisibility } from "../../../../../utils/togglePopup";
+// const editConfigurationImg: any = require("../../../../assets/images/svg/taskConfigurationEditIcon.svg");
+// const editConfigurationImg: any = require("../../../../../assets/images/svg/taskConfigurationEditIcon.svg");
+import AddIcon from "@mui/icons-material/Add";
 
 interface Props {
   selectedItem?: any;
@@ -144,6 +475,7 @@ interface Props {
   noRemoveBtn?: boolean;
   multiUsers?: boolean;
   mandatory?: boolean;
+  popupControl?: boolean;
 }
 
 const CustomPeoplePicker: React.FC<Props> = ({
@@ -167,7 +499,29 @@ const CustomPeoplePicker: React.FC<Props> = ({
   maxHeight,
   mandatory,
   multiUsers = false,
+  popupControl,
 }) => {
+  const initialPopupController = [
+    {
+      open: false,
+      popupTitle: "Add New Definition",
+      popupWidth: "550px",
+      popupType: "custom",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+  ];
+
+  // popup view and actions controller
+  const [popupController, setPopupController] = useState(
+    initialPopupController
+  );
+
+  // util for closing popup
+  const handleClosePopup = (index?: any): void => {
+    togglePopupVisibility(setPopupController, index, "close");
+  };
+
   const multiPeoplePickerStyle = {
     root: {
       minWidth: minWidth ? minWidth : "100%",
@@ -182,6 +536,80 @@ const CustomPeoplePicker: React.FC<Props> = ({
         padding: "0px 4px",
         minHeight: minHeight ? minHeight : "34px",
         maxHeight: maxHeight ? maxHeight : "50px",
+        minWidth: minWidth ? minWidth : "290px",
+        maxWidth: maxWidth ? maxWidth : "200px",
+        background: "#fff",
+        border: isValid
+          ? "1px solid #ff8585"
+          : noBorderInput
+          ? "none"
+          : "1px solid #adadad50",
+        outline: "none",
+        fontFamily: "interMedium",
+      },
+      ".ms-Persona-details": {
+        display: multiUsers ? "none" : "block",
+      },
+      ".ms-BasePicker-input": {
+        height: size === "SM" ? "30px" : size === "MD" ? "30px" : "41px",
+        fontFamily: "interMedium",
+        display: popupControl ? "none" : "block",
+      },
+      ".ms-BasePicker-input::placeholder": {
+        fontFamily: "interMedium",
+      },
+      ".ms-BasePicker-text:after": {
+        display: "none",
+      },
+      ".ms-BasePicker-text:hover": {
+        border:
+          !noBorderInput && isValid
+            ? "1px solid #ff8585"
+            : !noBorderInput
+            ? "1px solid #adadad50"
+            : "none",
+      },
+      ".ms-TooltipHost": {
+        fontFamily: "interMedium",
+        fontSize: "13px",
+        color: "#414141",
+      },
+      ".ms-PickerPersona-container": {
+        background: "#e8e8e8",
+        maxWidth: "auto",
+        minWidth: "auto",
+      },
+      ".ms-PickerItem-removeButton": {
+        display: noRemoveBtn || popupControl ? "none" : "block",
+      },
+      ".ms-PickerItem-removeButton:focus": {
+        background: "#555",
+      },
+      ".ms-BasePicker-itemsWrapper": {
+        height: "100%",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        flexWrap: "nowrap",
+        gap: "2px",
+        overflow: "auto",
+        // padding: "3px 0",
+      },
+    },
+  };
+  const popupMultiPeoplePickerStyle = {
+    root: {
+      // minWidth: minWidth ? minWidth : "100%",
+      // maxWidth: maxWidth ? maxWidth : "100%",
+      background: "rgba(218, 218, 218, 0.29)",
+      ".ms-BasePicker-text": {
+        // alignItems: "flex-start",
+        // maxHeight: "50px",
+        // height: size === "SM" ? "34px" : size === "MD" ? "32px" : "43px",
+        borderRadius: "4px",
+        overflowX: "hidden",
+        padding: "10px",
+        // minHeight: minHeight ? minHeight : "34px",
+        // maxHeight: maxHeight ? maxHeight : "50px",
         minWidth: minWidth ? minWidth : "290px",
         background: "#fff",
         border: isValid
@@ -230,7 +658,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
         height: "100%",
         alignItems: "center",
         justifyContent: "flex-start",
-        flexWrap: "nowrap",
+        // flexWrap: "nowrap",
         gap: "2px",
         overflow: "auto",
         // padding: "3px 0",
@@ -270,6 +698,47 @@ const CustomPeoplePicker: React.FC<Props> = ({
     return [selectedItem];
   })();
 
+  // array of obj which contains all popup inputs
+  const popupInputs: any[] = [
+    [
+      <div key={1}>
+        <PeoplePicker
+          context={mainContext}
+          webAbsoluteUrl={CONFIG.webURL}
+          //   titleText="Select People"
+          personSelectionLimit={personSelectionLimit}
+          showtooltip={false}
+          ensureUser={true}
+          placeholder={placeholder}
+          // peoplePickerCntrlclassName={styles.}
+          onChange={handleChange}
+          styles={popupMultiPeoplePickerStyle}
+          //   showHiddenInUI={true}
+          principalTypes={[PrincipalType.User]}
+          defaultSelectedUsers={selectedUserItem}
+          resolveDelay={1000}
+          disabled={readOnly}
+        />
+      </div>,
+    ],
+  ];
+
+  // popup Action state
+  const popupActions: any[] = [
+    [
+      {
+        text: "Close",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(0);
+        },
+      },
+    ],
+  ];
+
   return (
     <div className={styles.inputMainWrapper}>
       <div
@@ -305,6 +774,40 @@ const CustomPeoplePicker: React.FC<Props> = ({
           resolveDelay={1000}
           disabled={readOnly}
         />
+        {popupControl && (
+          // <button
+          //   className={styles.peoplePickerButton}
+          //   type="button"
+          //   onClick={() => {
+          //     togglePopupVisibility(
+          //       setPopupController,
+          //       0,
+          //       "open",
+          //       "Add people"
+          //     );
+          //   }}
+          // >
+          //   <img src={editConfigurationImg} alt="editConfigurationImg" />
+          // </button>
+          <AddIcon
+            onClick={() => {
+              togglePopupVisibility(
+                setPopupController,
+                0,
+                "open",
+                "Add people"
+              );
+            }}
+            sx={{
+              fontSize: "28px",
+              padding: "5px",
+              height: "32px",
+              background: "#160364",
+              color: "#fff",
+              borderRadius: "0px 3px 3px 0px",
+            }}
+          />
+        )}
       </div>
 
       {isValid && !noErrorMsg && (
@@ -317,6 +820,27 @@ const CustomPeoplePicker: React.FC<Props> = ({
           {errorMsg}
         </p>
       )}
+      {popupController?.map((popupData: any, index: number) => (
+        <Popup
+          key={index}
+          // isLoading={definitionsData?.isLoading}
+          PopupType={popupData.popupType}
+          onHide={() =>
+            togglePopupVisibility(setPopupController, index, "close")
+          }
+          popupTitle={
+            popupData.popupType !== "confimation" && popupData.popupTitle
+          }
+          popupActions={popupActions[index]}
+          visibility={popupData.open}
+          content={popupInputs[index]}
+          popupWidth={popupData.popupWidth}
+          defaultCloseBtn={popupData.defaultCloseBtn || false}
+          confirmationTitle={
+            popupData.popupType !== "custom" ? popupData.popupTitle : ""
+          }
+        />
+      ))}
     </div>
   );
 };

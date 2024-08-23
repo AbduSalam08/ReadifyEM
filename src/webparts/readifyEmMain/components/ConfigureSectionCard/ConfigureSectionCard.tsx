@@ -325,6 +325,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
               placeholder={consultantPlaceholder}
               personSelectionLimit={personSelectionLimit}
               multiUsers={true}
+              popupControl={true}
             />
           </div>
         </div>

@@ -27,7 +27,7 @@ const PreviewSection: React.FC<Iprops> = ({ sectionId, sectionDetails }) => {
   }, []);
 
   return (
-    <div>
+    <div className={styles.paraSection}>
       {sectionAttachment !== 0 && sectionAttachment !== "empty" ? (
         typeof sectionAttachment === "string" ? (
           <div dangerouslySetInnerHTML={{ __html: sectionAttachment }} />

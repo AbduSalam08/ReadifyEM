@@ -316,3 +316,19 @@
 .secWidth {
   width: 306px;
 }
+
+.peoplePickerButton {
+  cursor: pointer;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  img {
+    width: 17.5px;
+    height: 17.5px;
+  }
+}
