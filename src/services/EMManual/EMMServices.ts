@@ -17,6 +17,7 @@ import {
 
 export interface LibraryItem {
   ID?: number;
+  fileIDFromList?: number;
   fileID?: number;
   name: string;
   url: string;
@@ -26,6 +27,7 @@ export interface LibraryItem {
   isDraft: boolean;
   sequenceNo: any;
   items?: LibraryItem[];
+  version?: any;
 }
 
 // function to get all items which is folder & files from Library and list
@@ -81,8 +83,8 @@ export const getLibraryItems = async (): Promise<{
     for (const file of files) {
       const fileFields = await sp.web
         .getFileByServerRelativePath(file.ServerRelativeUrl)
-        .select("documentDetails/ID, documentDetails/Title")
-        .expand("documentDetails")
+        .select("documentDetails/ID, documentDetails/Title,fileDetails/ID")
+        .expand("documentDetails,fileDetails")
         .listItemAllFields.get();
 
       let fileItemsFromList: any;
@@ -106,6 +108,7 @@ export const getLibraryItems = async (): Promise<{
       // if its admin role render all files with all status else render only restricted items by its approved status
       folderItems.push({
         ID: fileItemsFromList?.ID,
+        fileIDFromList: fileItemsFromList?.fileDetailsId,
         fileID: fileFields?.ID,
         name: file.Name,
         type: "file",
@@ -113,6 +116,7 @@ export const getLibraryItems = async (): Promise<{
         open: false,
         isDraft: fileItemsFromList?.isDraft,
         sequenceNo: fileItemsFromList?.sequenceNo,
+        version: fileItemsFromList?.documentVersion,
         fields: {
           createdDate: fileItemsFromList?.createdDate,
           nextReviewDate: fileItemsFromList?.nextReviewDate,

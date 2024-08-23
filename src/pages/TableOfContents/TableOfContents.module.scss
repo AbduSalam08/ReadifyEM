@@ -78,3 +78,25 @@
   }
   transition: all 0.2s;
 }
+.versionPill {
+  height: 20px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: "interMedium", sans-serif !important;
+  padding: 5px 11px;
+  letter-spacing: 0.7px;
+  margin: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* box-shadow: 0 1px 5px #00000030; */
+  color: #eff5ff;
+  background: #666666;
+  border: 0;
+}
+.versionPillsWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+}

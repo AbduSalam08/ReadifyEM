@@ -493,7 +493,7 @@ const AppendixContent = ({
                       />
                       <DefaultButton
                         disabled={sectionLoader}
-                        text="Save and Close"
+                        text="Save"
                         btnType="lightGreyVariant"
                         onClick={async () => {
                           await addData();

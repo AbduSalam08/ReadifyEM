@@ -233,7 +233,7 @@ const ContentTypeConfirmation = ({
               }}
             />
             <DefaultButton
-              text="Save and Close"
+              text="Save"
               // disabled={currentSectionData?.contentType}
               btnType="lightGreyVariant"
               onClick={async () => {

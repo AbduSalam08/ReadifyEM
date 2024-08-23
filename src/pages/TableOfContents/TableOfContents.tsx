@@ -23,7 +23,7 @@ import AlertPopup from "../../webparts/readifyEmMain/components/common/Popups/Al
 import { initialPopupLoaders } from "../../config/config";
 import { IPopupLoaders } from "../../interface/MainInterface";
 // import { sp } from "@pnp/sp";
-import { Close } from "@mui/icons-material";
+import { ArrowRightAlt, Close } from "@mui/icons-material";
 // services
 import {
   EditFolderAndChangeItemPath,
@@ -39,8 +39,9 @@ import { filterDataByURL } from "../../utils/NewDocumentUtils";
 import { CurrentUserIsAdmin } from "../../constants/DefineUser";
 import { useNavigate } from "react-router-dom";
 import { getSectionsDetails } from "../../services/ContentDevelopment/CommonServices/CommonServices";
-import { getDocumentRelatedSections } from "../../services/PDFServices/PDFServices";
-import SpServices from "../../services/SPServices/SpServices";
+import { setSectionsAttachments } from "../../redux/features/PDFServicceSlice";
+// import { getDocumentRelatedSections } from "../../services/PDFServices/PDFServices";
+// import SpServices from "../../services/SPServices/SpServices";
 import PDFServiceTemplate from "../../webparts/readifyEmMain/components/Table/PDFServiceTemplate/PDFServiceTemplate";
 // import * as dayjs from "dayjs";
 // utils
@@ -48,7 +49,10 @@ import PDFServiceTemplate from "../../webparts/readifyEmMain/components/Table/PD
 const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
 const contentDeveloperEdit: any = require("../../assets/images/svg/editContentDeveloper.svg");
 const viewDocBtn: any = require("../../assets/images/svg/viewEye.svg");
+const newversionBtn: any = require("../../assets/images/svg/new version.svg");
 import EditIcon from "@mui/icons-material/Edit";
+import dayjs from "dayjs";
+import { getNextVersions } from "../../utils/EMManualUtils";
 // constants
 const initialPopupController = [
   {
@@ -140,17 +144,23 @@ const TableOfContents = (): JSX.Element => {
     useState<IPopupLoaders>(initialPopupLoaders);
 
   // main & all sub screens
-  const [screens, setScreens] = useState({
+  const [screens, setScreens] = useState<{
+    toc: boolean;
+    NewDocument: boolean;
+    pageTitle: any;
+    editDocumentData: any;
+  }>({
     toc: true,
     NewDocument: false,
     pageTitle: "Table Of Content",
     editDocumentData: [],
   });
 
-  const [parsedJSON, setParsedJSON] = useState<any[]>([]);
+  // const [parsedJSON, setParsedJSON] = useState<any[]>([]);
 
   // state to manage all popup data
   const [popupData, setPopupData] = useState<any>(popupInitialData);
+  const [documentId, setDocumentId] = useState<number>(0);
 
   // const [documentPdfURL, setDocumentPdfURL] = useState("");
 
@@ -283,9 +293,9 @@ const TableOfContents = (): JSX.Element => {
       </div>,
     ],
     [
-      <div className={styles.DOCemptyMsg} key={3}>
+      <div key={3}>
         {/* <span>Document is empty.</span> */}
-        <PDFServiceTemplate parsedJSON={parsedJSON} />
+        <PDFServiceTemplate documentId={documentId} />
       </div>,
     ],
     [
@@ -635,6 +645,7 @@ const TableOfContents = (): JSX.Element => {
         startIcon: false,
         onClick: () => {
           togglePopupVisibility(setPopupController, 2, "close");
+          dispatch(setSectionsAttachments([]));
         },
       },
     ],
@@ -675,62 +686,62 @@ const TableOfContents = (): JSX.Element => {
     await LoadTableData(dispatch, setTableData, isAdmin);
   };
 
-  const readTextFileFromTXT = (data: any): void => {
-    // setSectionLoader(true);
-    SpServices.SPReadAttachments({
-      ListName: "SectionDetails",
-      ListID: data.ID,
-      AttachmentName: data?.FileName,
-    })
-      .then((res: any) => {
-        const parsedValue: any = JSON.parse(res);
-        console.log("res: ", res, parsedValue);
-        const sectionDetails = {
-          text: data.sectionName,
-          sectionOrder: data.sectionOrder,
-          value: parsedValue,
-        };
-        // if (typeof parsedValue === "object") {
-        setParsedJSON((prev: any) => {
-          return [...prev, sectionDetails];
-        });
-        //   onChange && onChange([...parsedValue]);
-        //   setSectionLoader(false);
-        // } else {
-        //   setSectionLoader(false);
-        // }
-      })
-      .catch((err: any) => {
-        console.log("err: ", err);
-        // setSectionLoader(false);
-      });
-  };
+  // const readTextFileFromTXT = (data: any): void => {
+  //   // setSectionLoader(true);
+  //   SpServices.SPReadAttachments({
+  //     ListName: "SectionDetails",
+  //     ListID: data.ID,
+  //     AttachmentName: data?.FileName,
+  //   })
+  //     .then((res: any) => {
+  //       const parsedValue: any = JSON.parse(res);
+  //       console.log("res: ", res, parsedValue);
+  //       const sectionDetails = {
+  //         text: data.sectionName,
+  //         sectionOrder: data.sectionOrder,
+  //         value: parsedValue,
+  //       };
+  //       // if (typeof parsedValue === "object") {
+  //       setParsedJSON((prev: any) => {
+  //         return [...prev, sectionDetails];
+  //       });
+  //       //   onChange && onChange([...parsedValue]);
+  //       //   setSectionLoader(false);
+  //       // } else {
+  //       //   setSectionLoader(false);
+  //       // }
+  //     })
+  //     .catch((err: any) => {
+  //       console.log("err: ", err);
+  //       // setSectionLoader(false);
+  //     });
+  // };
 
   // read attachments functions
-  const readSectionAttachments = (): any => {
-    if (AllSectionsAttachments.length !== 0) {
-      AllSectionsAttachments.forEach((item: any, index: number) => {
-        const filteredItem: any = item?.filter(
-          (item: any) => item?.FileName === "Sample.txt"
-        );
-        if (filteredItem.length > 0) {
-          readTextFileFromTXT(filteredItem[0]);
-          // setNewAttachment(false);
-        } else {
-          // setSectionLoader(false);
-        }
-      });
-    }
-  };
+  // const readSectionAttachments = (): any => {
+  //   if (AllSectionsAttachments.length !== 0) {
+  //     AllSectionsAttachments.forEach((item: any, index: number) => {
+  //       const filteredItem: any = item?.filter(
+  //         (item: any) => item?.FileName === "Sample.txt"
+  //       );
+  //       if (filteredItem.length > 0) {
+  //         readTextFileFromTXT(filteredItem[0]);
+  //         // setNewAttachment(false);
+  //       } else {
+  //         // setSectionLoader(false);
+  //       }
+  //     });
+  //   }
+  // };
 
   // lifecycle hooks
   useEffect(() => {
     setMainData();
   }, [dispatch]);
 
-  useEffect(() => {
-    readSectionAttachments();
-  }, [AllSectionsAttachments]);
+  // useEffect(() => {
+  //   readSectionAttachments();
+  // }, [AllSectionsAttachments]);
 
   // template for future use
   // const PDFView = (
@@ -777,6 +788,50 @@ const TableOfContents = (): JSX.Element => {
                 );
               }}
             />
+          )}
+
+          {screens?.pageTitle?.toLowerCase()?.includes("initiate version") ? (
+            screens?.pageTitle?.toLowerCase()?.includes("minor") ? (
+              <div className={styles.versionPillsWrapper}>
+                <div className={styles.versionPill}>
+                  v{screens?.editDocumentData?.version}
+                </div>
+                <ArrowRightAlt
+                  style={{
+                    fontSize: "18px",
+                    color: "#555",
+                  }}
+                />
+                <div className={styles.versionPill}>
+                  v
+                  {
+                    getNextVersions(screens?.editDocumentData?.version)
+                      .minorVersion
+                  }
+                </div>
+              </div>
+            ) : (
+              <div className={styles.versionPillsWrapper}>
+                <div className={styles.versionPill}>
+                  v{screens?.editDocumentData?.version}
+                </div>
+                <ArrowRightAlt
+                  style={{
+                    fontSize: "18px",
+                    color: "#555",
+                  }}
+                />
+                <div className={styles.versionPill}>
+                  v
+                  {
+                    getNextVersions(screens?.editDocumentData?.version)
+                      .majorVersion
+                  }
+                </div>
+              </div>
+            )
+          ) : (
+            ""
           )}
         </div>
 
@@ -867,15 +922,27 @@ const TableOfContents = (): JSX.Element => {
           <Table
             headers={tableData.headers}
             loading={tableData.loading}
+            columns={["createdDate", "nextReviewDate", "status"]}
             filters={filterOptions}
             data={tableData.data}
             actions={true}
             defaultTable={false}
             loadData={setMainData}
             renderActions={(item: any, index: number) => {
+              console.log("item: ", item);
+              const nextReviewDate = dayjs(
+                item?.fields?.nextReviewDate,
+                "DD/MM/YYYY"
+              );
+              const isMinorVersion = dayjs().isBefore(nextReviewDate);
+              const versionType = isMinorVersion ? "minor" : "major";
+              const pageTitle = `${item.name} - Initiate version (${versionType})`;
+
+              const latestDoc = item?.fileIDFromList === item?.fileID;
+
               return (
                 <>
-                  {isAdmin && (
+                  {isAdmin && latestDoc && (
                     <>
                       <DefaultButton
                         disableRipple={true}
@@ -921,7 +988,7 @@ const TableOfContents = (): JSX.Element => {
                             ...prev,
                             NewDocument: true,
                             toc: false,
-                            pageTitle: `Edit Document (${item.name})`,
+                            pageTitle: `${item.name} - Edit Document`,
                             editDocumentData: item,
                           }));
                         }}
@@ -944,9 +1011,32 @@ const TableOfContents = (): JSX.Element => {
                         "open",
                         `View Document - ${item.name}`
                       );
-                      getDocumentRelatedSections(item.ID, dispatch);
+                      // getDocumentRelatedSections(item.ID, dispatch);
+                      setDocumentId(item?.ID);
                     }}
                   />
+                  {isAdmin &&
+                    item?.fields?.status?.toLowerCase() === "approved" &&
+                    latestDoc && (
+                      <DefaultButton
+                        disableRipple={true}
+                        style={{
+                          minWidth: "auto",
+                        }}
+                        btnType={"actionBtn"}
+                        text={<img src={newversionBtn} />}
+                        key={index}
+                        onClick={() => {
+                          setScreens((prev) => ({
+                            ...prev,
+                            NewDocument: true,
+                            toc: false,
+                            pageTitle: pageTitle,
+                            editDocumentData: item,
+                          }));
+                        }}
+                      />
+                    )}
                 </>
               );
             }}
