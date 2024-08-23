@@ -13,6 +13,12 @@ import {
   UpdatePrimaryAuthorTask,
   UpdateTask,
 } from "../MyTasks/MyTasksServices";
+import { validateAndFindDate } from "../../utils/NewDocumentUtils";
+import dayjs from "dayjs";
+import {
+  getNextVersions,
+  replaceVersionInFilename,
+} from "../../utils/EMManualUtils";
 
 // Interface for the properties
 interface IProps {
@@ -22,6 +28,8 @@ interface IProps {
   documentFields?: any;
   setLoaderState: (loaderState: any) => void;
   isDraft?: boolean;
+  initiateNewVersion?: any;
+  docDetails?: any;
 }
 
 // interface for update function props
@@ -42,47 +50,58 @@ const AddNewDocumentToLib = async ({
   documentFields,
   setLoaderState,
   isDraft,
+  initiateNewVersion,
+  docDetails,
 }: IProps): Promise<any> => {
-  debugger;
-  try {
-    setLoaderState({
-      isLoading: {
-        inprogress: true,
-        success: false,
-        error: false,
-      },
-      visibility: true,
-      text: isDraft
-        ? "Saving draft document, please wait..."
-        : "Document creation in progress. Please Wait...",
-    });
+  if (initiateNewVersion) {
+    try {
+      setLoaderState({
+        isLoading: {
+          inprogress: true,
+          success: false,
+          error: false,
+        },
+        visibility: true,
+        text: isDraft
+          ? "Saving draft document, please wait..."
+          : "Document creation in progress. Please Wait...",
+      });
 
-    // Create an empty PDF document
-    const pdfDoc = await PDFDocument.create();
-    pdfDoc.addPage();
-    const pdfBytes = await pdfDoc.save();
+      // Clone the existing PDF file
+      const sourceFileUrl = `${docDetails?.documentPath}/${docDetails?.Title}.pdf`; // Update with your source PDF path
+      const destinationFileUrl = `${replaceVersionInFilename(
+        fileName,
+        docDetails?.documentVersion
+      )}.pdf`;
 
-    // Create a blob from the PDF bytes
-    const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+      // Read the source file's content
+      const fileBuffer = await sp.web
+        .getFileByServerRelativeUrl(sourceFileUrl)
+        .getBuffer();
 
-    // Upload the PDF to the specified SharePoint library
-    if (fileName) {
+      // Upload the file to the destination
       const fileAddResult: any = await sp.web
         .getFolderByServerRelativePath(filePath)
-        .files.addUsingPath(`${fileName}.pdf`, pdfBlob, { Overwrite: true });
+        .files.addUsingPath(destinationFileUrl, fileBuffer, {
+          Overwrite: true,
+        });
 
       // Update metadata for the uploaded file
       const fileItem = await fileAddResult.file.getItem();
+      console.log("fileItem: ", fileItem);
 
       await SpServices.SPUpdateItem({
         ID: fileID,
         Listname: LISTNAMES.DocumentDetails,
         RequestJSON: {
           fileDetailsId: fileItem.ID,
+          Title: trimStartEnd(
+            replaceVersionInFilename(fileName, docDetails?.documentVersion)
+          ),
         },
       })
         .then(async (res: any) => {
-          await AddPrimaryAuthorTask(fileID);
+          await AddPrimaryAuthorTask(fileItem.ID);
           setLoaderState({
             isLoading: {
               inprogress: false,
@@ -111,9 +130,10 @@ const AddNewDocumentToLib = async ({
             visibility: true,
             text: "Unable to create the document.",
             secondaryText:
-              "An unexpected error occured while uploading document, please try again later.",
+              "An unexpected error occurred while uploading document, please try again later.",
           });
         });
+
       // Update fields with metadata
       if (documentFields) {
         for (const element of documentFields) {
@@ -122,32 +142,138 @@ const AddNewDocumentToLib = async ({
           });
         }
       }
+    } catch (error) {
+      console.error("Error creating or uploading PDF: ", error);
 
-      // return true;
+      setLoaderState({
+        isLoading: {
+          inprogress: false,
+          success: false,
+          error: true,
+        },
+        visibility: true,
+        text:
+          error.message.includes("contains invalid characters") ||
+          error.message.includes("potentially dangerous Request")
+            ? "Invalid document name"
+            : "Unable to create the document.",
+        secondaryText:
+          error.message.includes("contains invalid characters") ||
+          error.message.includes("potentially dangerous Request")
+            ? `The document name "${fileName}" contains invalid characters, please use a different name.`
+            : "An unexpected error occurred while uploading document, please try again later.",
+      });
+
+      return false;
     }
-  } catch (error) {
-    console.error("Error creating or uploading PDF: ", error);
+  } else {
+    try {
+      setLoaderState({
+        isLoading: {
+          inprogress: true,
+          success: false,
+          error: false,
+        },
+        visibility: true,
+        text: isDraft
+          ? "Saving draft document, please wait..."
+          : "Document creation in progress. Please Wait...",
+      });
 
-    setLoaderState({
-      isLoading: {
-        inprogress: false,
-        success: false,
-        error: true,
-      },
-      visibility: true,
-      text:
-        error.message.includes("contains invalid characters") ||
-        error.message.includes("potentially dangerous Request")
-          ? "Invalid document name"
-          : "Unable to create the document.",
-      secondaryText:
-        error.message.includes("contains invalid characters") ||
-        error.message.includes("potentially dangerous Request")
-          ? `The document name "${fileName}" contains invalid characters, please use a different name.`
-          : "An unexpected error occured while uploading document, please try again later.",
-    });
+      // Create an empty PDF document
+      const pdfDoc = await PDFDocument.create();
+      pdfDoc.addPage();
+      const pdfBytes = await pdfDoc.save();
 
-    return false;
+      // Create a blob from the PDF bytes
+      const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+
+      // Upload the PDF to the specified SharePoint library
+      if (fileName) {
+        const fileAddResult: any = await sp.web
+          .getFolderByServerRelativePath(filePath)
+          .files.addUsingPath(`${fileName}.pdf`, pdfBlob, {
+            Overwrite: true,
+          });
+
+        // Update metadata for the uploaded file
+        const fileItem = await fileAddResult.file.getItem();
+
+        await SpServices.SPUpdateItem({
+          ID: fileID,
+          Listname: LISTNAMES.DocumentDetails,
+          RequestJSON: {
+            fileDetailsId: fileItem.ID,
+          },
+        })
+          .then(async (res: any) => {
+            await AddPrimaryAuthorTask(fileID);
+            setLoaderState({
+              isLoading: {
+                inprogress: false,
+                success: true,
+                error: false,
+              },
+              visibility: true,
+              text: isDraft
+                ? "Draft saved successfully!"
+                : "New document created successfully!",
+              secondaryText: isDraft
+                ? `The draft document "${fileName}" has been saved successfully!`
+                : `The new document "${fileName}" has been created successfully!`,
+            });
+            return true;
+          })
+          .catch((err: any) => {
+            console.log("err: ", err);
+
+            setLoaderState({
+              isLoading: {
+                inprogress: false,
+                success: false,
+                error: true,
+              },
+              visibility: true,
+              text: "Unable to create the document.",
+              secondaryText:
+                "An unexpected error occured while uploading document, please try again later.",
+            });
+          });
+        // Update fields with metadata
+        if (documentFields) {
+          for (const element of documentFields) {
+            await fileItem.update({
+              [element.key]: element.value,
+            });
+          }
+        }
+
+        // return true;
+      }
+    } catch (error) {
+      console.error("Error creating or uploading PDF: ", error);
+
+      setLoaderState({
+        isLoading: {
+          inprogress: false,
+          success: false,
+          error: true,
+        },
+        visibility: true,
+        text:
+          error.message.includes("contains invalid characters") ||
+          error.message.includes("potentially dangerous Request")
+            ? "Invalid document name"
+            : "Unable to create the document.",
+        secondaryText:
+          error.message.includes("contains invalid characters") ||
+          error.message.includes("potentially dangerous Request")
+            ? `The document name "${fileName}" contains invalid characters, please use a different name.`
+            : "An unexpected error occured while uploading document, please try again later.",
+      });
+
+      return false;
+    }
   }
 };
 
@@ -531,144 +657,366 @@ const UpdateDocument = async (
   changedDocumentPath?: any,
   reorderDoc?: any,
   AllTempatesMainData?: any,
-  prevDocType?: any
+  prevDocType?: any,
+  initiateNewVersion?: boolean,
+  versionChangeType?: string
 ): Promise<any> => {
   debugger;
-  try {
-    setLoaderState({
-      isLoading: {
-        inprogress: true,
-        success: false,
-        error: false,
-      },
-      visibility: true,
-      text: reorderDoc
-        ? "Reordering Documents. Please wait..."
-        : "Document update in progress. Please Wait...",
-    });
-    const docTypeChanged =
-      trimStartEnd(prevDocType) !== trimStartEnd(data[1]?.value);
-    const selectedTemplateID = AllTempatesMainData?.find(
-      (el: any) => el?.templateName === data[1]?.value
-    )?.ID;
-
-    const formData = reorderDoc
-      ? { sequenceNo: data?.sequenceNo }
-      : data?.reduce((acc: any, el: any) => {
-          acc[el.key] =
-            el.key === "approvers" || el.key === "reviewers"
-              ? JSON.stringify(el.value)
-              : el.key === "primaryAuthorId"
-              ? el?.value?.length === 0
-                ? null
-                : el.value[0]?.id
-              : el.key === "Title"
-              ? trimStartEnd(el.value)
-              : el.key === "isDraft"
-              ? isDraft
-              : el.key === "status"
-              ? docTypeChanged && el?.value !== "Not Started" && !isDraft
-                ? "Not Started"
-                : el.value
-              : el.key === "documentTemplateTypeId"
-              ? selectedTemplateID
-              : el.value;
-          return acc;
-        }, {});
-
-    await SpServices.SPUpdateItem({
-      Listname: LISTNAMES.DocumentDetails,
-      ID: DocumentID,
-      RequestJSON: formData,
-    });
-
-    const docStatus: any = data?.filter((el: any) => el?.key === "status")[0]
-      ?.value;
-    console.log("docStatus: ", docStatus);
-
-    if (docTypeChanged && docStatus !== "Not Started") {
-      // const [sectionDetails, myTasks] = await Promise.all([
-      await SpServices.SPReadItems({
-        Listname: LISTNAMES.SectionDetails,
-        Select: "*",
-        Filter: [
-          {
-            FilterKey: "documentOfId",
-            Operator: "eq",
-            FilterValue: DocumentID,
-          },
-        ],
-      }).then(async (sectionDetails: any) => {
-        await SpServices.batchDelete({
-          ListName: LISTNAMES.SectionDetails,
-          responseData: sectionDetails,
-        });
-      });
-
-      await SpServices.SPReadItems({
-        Listname: LISTNAMES.MyTasks,
-        Select: "*",
-        Filter: [
-          {
-            FilterKey: "documentDetailsId",
-            Operator: "eq",
-            FilterValue: DocumentID,
-          },
-        ],
-      }).then(async (myTasks: any) => {
-        await SpServices.batchDelete({
-          ListName: LISTNAMES.MyTasks,
-          responseData: myTasks,
-        });
-      });
-      // ]);
-
-      // console.log("myTasks: ", myTasks);
-      // console.log("sectionDetails: ", sectionDetails);
-
-      // await Promise.all([
-
-      // ]).then(async (res: any) => {
-      await UpdateDocumentInLib({
-        DocumentID,
-        fileID,
-        setLoaderState,
-        isDraft,
-        changedDocumentPath,
-        reorderDoc,
-      });
-      // .catch((err: any) => {
-      //   console.log("err: ", err);
-      // });
-
-      // });
-    } else {
-      await UpdateDocumentInLib({
-        DocumentID,
-        fileID,
-        setLoaderState,
-        isDraft,
-        changedDocumentPath,
-        reorderDoc,
-      });
-    }
-  } catch (err) {
-    console.error("Error updating document:", err);
-    if (
-      err.message !==
-      "Item does not exist. It may have been deleted by another user."
-    ) {
+  if (initiateNewVersion) {
+    try {
       setLoaderState({
-        isLoading: { inprogress: false, success: false, error: true },
+        isLoading: {
+          inprogress: true,
+          success: false,
+          error: false,
+        },
         visibility: true,
-        text: "Unable to update the document.",
-        secondaryText:
-          "An unexpected error occurred while updating document details, please try again later.",
+        text: reorderDoc
+          ? "Reordering Documents. Please wait..."
+          : "Document update in progress. Please Wait...",
       });
+      const currentVersion = data?.filter(
+        (item: any) => item?.key === "documentVersion"
+      )[0];
+      const currentNextReviewDate = data?.filter(
+        (item: any) => item?.key === "reviewRange"
+      )[0];
+      const reviewers = data?.filter(
+        (item: any) => item?.key === "reviewers"
+      )[0];
+      const currentReviewers = [
+        {
+          ...reviewers,
+          value: reviewers?.value?.map((item: any) => ({
+            ...item,
+            status: "pending",
+          })),
+        },
+      ];
+
+      const approvers = data?.filter(
+        (item: any) => item?.key === "approvers"
+      )[0];
+      const currentApprovers = [
+        {
+          ...approvers,
+          value: approvers?.value?.map((item: any) => ({
+            ...item,
+            status: "pending",
+          })),
+        },
+      ];
+
+      const docTypeChanged =
+        trimStartEnd(prevDocType) !== trimStartEnd(data[1]?.value);
+      const selectedTemplateID = AllTempatesMainData?.find(
+        (el: any) => el?.templateName === data[1]?.value
+      )?.ID;
+
+      const newDocVersion =
+        versionChangeType === "minor"
+          ? getNextVersions(currentVersion?.value).minorVersion
+          : versionChangeType === "major"
+          ? getNextVersions(currentVersion?.value).majorVersion
+          : currentVersion?.value;
+
+      const formData = reorderDoc
+        ? { sequenceNo: data?.sequenceNo }
+        : data?.reduce((acc: any, el: any) => {
+            acc[el.key] =
+              el.key === "approvers"
+                ? JSON.stringify(currentApprovers)
+                : el.key === "reviewers"
+                ? JSON.stringify(currentReviewers)
+                : el.key === "primaryAuthorId"
+                ? el?.value?.length === 0
+                  ? null
+                  : el.value[0]?.id
+                : el.key === "Title"
+                ? trimStartEnd(el.value)
+                : el.key === "isDraft"
+                ? isDraft
+                : el.key === "status"
+                ? "Not Started"
+                : el.key === "documentTemplateTypeId"
+                ? selectedTemplateID
+                : el.key === "documentVersion"
+                ? newDocVersion
+                : el.key === "createdDate"
+                ? dayjs(new Date()).format("DD/MM/YYYY")
+                : el.key === "nextReviewDate"
+                ? validateAndFindDate(currentNextReviewDate?.value)
+                : el.value;
+            return acc;
+          }, {});
+
+      console.log("formData: ", formData);
+
+      await SpServices.SPUpdateItem({
+        Listname: LISTNAMES.DocumentDetails,
+        ID: DocumentID,
+        RequestJSON: formData,
+      });
+
+      // const docStatus: any = formData?.filter(
+      //   (el: any) => el?.key === "status"
+      // )[0]?.value;
+      // console.log("docStatus: ", docStatus);
+
+      if (docTypeChanged && formData?.status?.toLowerCase() !== "not started") {
+        // const [sectionDetails, myTasks] = await Promise.all([
+        await SpServices.SPReadItems({
+          Listname: LISTNAMES.SectionDetails,
+          Select: "*",
+          Filter: [
+            {
+              FilterKey: "documentOfId",
+              Operator: "eq",
+              FilterValue: DocumentID,
+            },
+          ],
+        }).then(async (sectionDetails: any) => {
+          await SpServices.batchDelete({
+            ListName: LISTNAMES.SectionDetails,
+            responseData: sectionDetails,
+          });
+        });
+
+        await SpServices.SPReadItems({
+          Listname: LISTNAMES.MyTasks,
+          Select: "*",
+          Filter: [
+            {
+              FilterKey: "documentDetailsId",
+              Operator: "eq",
+              FilterValue: DocumentID,
+            },
+          ],
+        }).then(async (myTasks: any) => {
+          await SpServices.batchDelete({
+            ListName: LISTNAMES.MyTasks,
+            responseData: myTasks,
+          });
+        });
+      }
+      await SpServices.SPReadItemUsingId({
+        Listname: LISTNAMES.DocumentDetails,
+        SelectedId: DocumentID,
+        Select: "*, fileDetails/ID",
+        Expand: "fileDetails",
+      })
+        .then(async (res: any) => {
+          const responseData = res?.[0] || res;
+          const docDetails = res?.[0] || res;
+          const reviewRangeDate = validateAndFindDate(res?.reviewRange);
+          const documentFields = [
+            {
+              key: "documentDetailsId",
+              value: responseData?.Id,
+            },
+            {
+              key: "status",
+              value: responseData?.status,
+            },
+            {
+              key: "isVisible",
+              value: false,
+            },
+            {
+              key: "nextReviewDate",
+              value: reviewRangeDate,
+            },
+            {
+              key: "isDraft",
+              value: isDraft,
+            },
+            {
+              key: "createdDate",
+              value: dayjs(new Date()).format("DD/MM/YYYY"),
+            },
+            {
+              key: "status",
+              value: responseData?.status,
+            },
+            {
+              key: "sequenceNo",
+              value: responseData?.sequenceNo,
+            },
+          ];
+          const filePath = responseData?.documentPath;
+
+          const fileName = responseData?.Title;
+          const fileID = responseData?.ID;
+          if (filePath && fileName && fileID) {
+            await AddNewDocumentToLib({
+              fileName,
+              fileID,
+              filePath,
+              documentFields,
+              setLoaderState,
+              isDraft,
+              initiateNewVersion,
+              docDetails,
+            });
+          } else {
+            console.error("Error: filePath or fileName is undefined");
+          }
+        })
+        .catch((err: any) => {
+          console.log("err: ", err);
+        });
+    } catch (err: any) {
+      console.log("err: ", err);
+      console.error("Error updating document:", err);
+      if (
+        err.message !==
+        "Item does not exist. It may have been deleted by another user."
+      ) {
+        setLoaderState({
+          isLoading: { inprogress: false, success: false, error: true },
+          visibility: true,
+          text: "Unable to update the document.",
+          secondaryText:
+            "An unexpected error occurred while updating document details, please try again later.",
+        });
+      }
+    }
+  } else {
+    try {
+      setLoaderState({
+        isLoading: {
+          inprogress: true,
+          success: false,
+          error: false,
+        },
+        visibility: true,
+        text: reorderDoc
+          ? "Reordering Documents. Please wait..."
+          : "Document update in progress. Please Wait...",
+      });
+      const docTypeChanged =
+        trimStartEnd(prevDocType) !== trimStartEnd(data[1]?.value);
+      const selectedTemplateID = AllTempatesMainData?.find(
+        (el: any) => el?.templateName === data[1]?.value
+      )?.ID;
+
+      const formData = reorderDoc
+        ? { sequenceNo: data?.sequenceNo }
+        : data?.reduce((acc: any, el: any) => {
+            acc[el.key] =
+              el.key === "approvers" || el.key === "reviewers"
+                ? JSON.stringify(el.value)
+                : el.key === "primaryAuthorId"
+                ? el?.value?.length === 0
+                  ? null
+                  : el.value[0]?.id
+                : el.key === "Title"
+                ? trimStartEnd(el.value)
+                : el.key === "isDraft"
+                ? isDraft
+                : el.key === "status"
+                ? docTypeChanged && el?.value !== "Not Started" && !isDraft
+                  ? "Not Started"
+                  : el.value
+                : el.key === "documentTemplateTypeId"
+                ? selectedTemplateID
+                : el.value;
+            return acc;
+          }, {});
+
+      await SpServices.SPUpdateItem({
+        Listname: LISTNAMES.DocumentDetails,
+        ID: DocumentID,
+        RequestJSON: formData,
+      });
+
+      const docStatus: any = data?.filter((el: any) => el?.key === "status")[0]
+        ?.value;
+      console.log("docStatus: ", docStatus);
+
+      if (docTypeChanged && docStatus !== "Not Started") {
+        // const [sectionDetails, myTasks] = await Promise.all([
+        await SpServices.SPReadItems({
+          Listname: LISTNAMES.SectionDetails,
+          Select: "*",
+          Filter: [
+            {
+              FilterKey: "documentOfId",
+              Operator: "eq",
+              FilterValue: DocumentID,
+            },
+          ],
+        }).then(async (sectionDetails: any) => {
+          await SpServices.batchDelete({
+            ListName: LISTNAMES.SectionDetails,
+            responseData: sectionDetails,
+          });
+        });
+
+        await SpServices.SPReadItems({
+          Listname: LISTNAMES.MyTasks,
+          Select: "*",
+          Filter: [
+            {
+              FilterKey: "documentDetailsId",
+              Operator: "eq",
+              FilterValue: DocumentID,
+            },
+          ],
+        }).then(async (myTasks: any) => {
+          await SpServices.batchDelete({
+            ListName: LISTNAMES.MyTasks,
+            responseData: myTasks,
+          });
+        });
+        // ]);
+
+        // console.log("myTasks: ", myTasks);
+        // console.log("sectionDetails: ", sectionDetails);
+
+        // await Promise.all([
+
+        // ]).then(async (res: any) => {
+        await UpdateDocumentInLib({
+          DocumentID,
+          fileID,
+          setLoaderState,
+          isDraft,
+          changedDocumentPath,
+          reorderDoc,
+        });
+        // .catch((err: any) => {
+        //   console.log("err: ", err);
+        // });
+
+        // });
+      } else {
+        await UpdateDocumentInLib({
+          DocumentID,
+          fileID,
+          setLoaderState,
+          isDraft,
+          changedDocumentPath,
+          reorderDoc,
+        });
+      }
+    } catch (err) {
+      console.error("Error updating document:", err);
+      if (
+        err.message !==
+        "Item does not exist. It may have been deleted by another user."
+      ) {
+        setLoaderState({
+          isLoading: { inprogress: false, success: false, error: true },
+          visibility: true,
+          text: "Unable to update the document.",
+          secondaryText:
+            "An unexpected error occurred while updating document details, please try again later.",
+        });
+      }
     }
   }
 };
-
 // function to get all document details
 const GetDocumentDetails = async (
   documentID: number,

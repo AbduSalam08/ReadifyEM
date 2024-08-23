@@ -66,7 +66,7 @@ const NewDocument = ({
     currentValue: "",
     change: false,
   });
-  console.log("currentDocTemplateType: ", currentDocTemplateType);
+
   const EMMTOCAdminData = useSelector(
     (state: any) => state.EMMTableOfContents.adminData
   );
@@ -254,14 +254,31 @@ const NewDocument = ({
   );
 
   // A condition for validating if the current page is edit document or Add document.
-  const isEditDocument = screens.pageTitle
-    .toLowerCase()
-    .includes("edit document");
+  const isEditDocument =
+    screens.pageTitle.toLowerCase().includes("edit document") ||
+    screens?.pageTitle?.toLowerCase()?.includes("initiate version");
 
-  const editPageDocument: any = screens.pageTitle
+  const isInitiateNewVersionOfDocument = screens?.pageTitle
     ?.toLowerCase()
-    ?.split?.("(")[1];
-  const editPageDocumentTitle: any = editPageDocument
+    ?.includes("initiate version");
+
+  const versionChangeType = screens?.pageTitle?.toLowerCase()?.includes("minor")
+    ? "minor"
+    : screens?.pageTitle?.toLowerCase()?.includes("major")
+    ? "major"
+    : "";
+
+  console.log(
+    "isInitiateNewVersionOfDocument: ",
+    isInitiateNewVersionOfDocument
+  );
+
+  // const editPageDocument: any = screens?.pageTitle
+  //   ?.toLowerCase()
+  //   ?.split?.("(")[1];
+  const editPageDocument: any = screens?.editDocumentData?.name;
+
+  const editPageDocumentTitle: any = screens?.editDocumentData?.name
     ?.split(".pdf")[0]
     ?.toLowerCase();
 
@@ -713,7 +730,9 @@ const NewDocument = ({
               : folderPathShallowCopy,
             false,
             AllSDDTemplateData,
-            currentDocTemplateType?.value
+            currentDocTemplateType?.value,
+            isInitiateNewVersionOfDocument,
+            versionChangeType
           );
         } else {
           AddNewDocument(
@@ -815,7 +834,8 @@ const NewDocument = ({
               : folderPathShallowCopy,
             false,
             AllSDDTemplateData,
-            currentDocTemplateType?.value
+            currentDocTemplateType?.value,
+            isInitiateNewVersionOfDocument
           )
         : AddNewDocument(
             updatedFormData,
@@ -874,6 +894,7 @@ const NewDocument = ({
         stepperFormData={stepperFormData}
         stepperInputs={stepperInputs}
         updateForm={isEditDocument}
+        pageProperties={screens}
       />
 
       <div className={styles.stepperFormFooter}>
@@ -912,11 +933,17 @@ const NewDocument = ({
             text={
               activeStep === stepperFormData.length - 1 && !isEditDocument
                 ? "Submit"
-                : activeStep === stepperFormData.length - 1 && isEditDocument
+                : activeStep === stepperFormData.length - 1 &&
+                  screens?.pageTitle?.toLowerCase()?.includes("edit document")
                 ? "Save Changes"
                 : activeStep === stepperFormData.length - 1 &&
                   screens.editDocumentData?.isDraft
                 ? "Save Draft"
+                : activeStep === stepperFormData.length - 1 &&
+                  screens?.pageTitle
+                    ?.toLowerCase()
+                    ?.includes("initiate version")
+                ? "Initiate"
                 : "Next"
             }
             onClick={handleNext}

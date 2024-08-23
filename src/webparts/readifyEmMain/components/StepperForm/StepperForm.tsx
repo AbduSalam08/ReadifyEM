@@ -10,6 +10,7 @@ interface Props {
   stepperFormData: any;
   stepperInputs: any;
   updateForm: boolean;
+  pageProperties: any;
 }
 
 const StepperForm = ({
@@ -17,6 +18,7 @@ const StepperForm = ({
   stepperFormData,
   stepperInputs,
   updateForm,
+  pageProperties,
 }: Props): JSX.Element => {
   return (
     <div className={styles.stepperFormWrapper}>

@@ -1011,7 +1011,7 @@ const SectionContent: React.FC<IProps> = ({
                     />
 
                     <DefaultButton
-                      text="Save and Close"
+                      text="Save"
                       disabled={sectionLoader}
                       btnType="lightGreyVariant"
                       onClick={() => {
@@ -1223,7 +1223,7 @@ const SectionContent: React.FC<IProps> = ({
                         }}
                       />
                       <DefaultButton
-                        text="Save and Close"
+                        text="Save"
                         disabled={sectionLoader}
                         btnType="lightGreyVariant"
                         onClick={async () => {

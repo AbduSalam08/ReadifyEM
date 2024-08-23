@@ -461,6 +461,7 @@ const RichText = ({
 
   // const [newAttachment, setNewAttachment] = useState<boolean>(true);
   const [description, setDescription] = useState<string>("");
+  console.log("description: ", description);
 
   const _handleOnChange = (newText: string): string => {
     setDescription(newText === "<p><br></p>" ? "" : newText);
@@ -915,7 +916,7 @@ const RichText = ({
                         }}
                       />
                       <DefaultButton
-                        text="Save and Close"
+                        text="Save"
                         disabled={sectionLoader}
                         btnType="lightGreyVariant"
                         onClick={async () => {

@@ -1325,7 +1325,7 @@ const Definition: React.FC<Props> = ({
                     currentDocRole?.primaryAuthor) && (
                     <>
                       <DefaultButton
-                        text="Save and Close"
+                        text="Save"
                         btnType="lightGreyVariant"
                         onClick={async () => {
                           await submitSectionDefinition(false);
