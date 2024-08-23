@@ -3,6 +3,14 @@
     align-items: flex-start!important;
     font-family: "interRegular", sans-serif !important;
 }
+.paraSection {
+    img {
+        display: block;
+        width: 50% !important;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
 .noDataFound {
     width: 100%;
     display: flex;
