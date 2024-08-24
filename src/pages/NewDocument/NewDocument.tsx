@@ -206,7 +206,6 @@ const NewDocument = ({
   ];
 
   const [formData, setFormData] = useState<IFormDataItem[]>(initialFormData);
-  console.log("formData: ", formData);
 
   const [stepperFormData, setStepperFormData] = useState<IStepData[]>([
     {

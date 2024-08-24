@@ -83,7 +83,7 @@ export const getLibraryItems = async (): Promise<{
     for (const file of files) {
       const fileFields = await sp.web
         .getFileByServerRelativePath(file.ServerRelativeUrl)
-        .select("documentDetails/ID, documentDetails/Title,fileDetails/ID")
+        .select("*,documentDetails/ID, documentDetails/Title,fileDetails/ID")
         .expand("documentDetails,fileDetails")
         .listItemAllFields.get();
 
@@ -104,25 +104,51 @@ export const getLibraryItems = async (): Promise<{
             return err;
           });
       }
+      console.log(
+        "fileItemsFromList?.ID === fileFields?.ID: ",
+        fileItemsFromList?.fileDetailsId === fileFields?.ID
+      );
+      console.log("fileFields?.ID: ", fileFields?.ID);
+      console.log("fileItemsFromList?.ID: ", fileItemsFromList?.ID);
 
       // if its admin role render all files with all status else render only restricted items by its approved status
-      folderItems.push({
-        ID: fileItemsFromList?.ID,
-        fileIDFromList: fileItemsFromList?.fileDetailsId,
-        fileID: fileFields?.ID,
-        name: file.Name,
-        type: "file",
-        url: file.ServerRelativeUrl,
-        open: false,
-        isDraft: fileItemsFromList?.isDraft,
-        sequenceNo: fileItemsFromList?.sequenceNo,
-        version: fileItemsFromList?.documentVersion,
-        fields: {
-          createdDate: fileItemsFromList?.createdDate,
-          nextReviewDate: fileItemsFromList?.nextReviewDate,
-          status: fileItemsFromList?.status,
-        },
-      });
+      if (fileFields?.ID === fileItemsFromList?.fileDetailsId) {
+        folderItems.push({
+          ID: fileItemsFromList?.ID,
+          fileIDFromList: fileItemsFromList?.fileDetailsId,
+          fileID: fileFields?.ID,
+          name: file.Name,
+          type: "file",
+          url: file.ServerRelativeUrl,
+          open: false,
+          isDraft: fileItemsFromList?.isDraft,
+          sequenceNo: fileItemsFromList?.sequenceNo,
+          version: fileItemsFromList?.documentVersion,
+          fields: {
+            createdDate: fileItemsFromList?.createdDate,
+            nextReviewDate: fileItemsFromList?.nextReviewDate,
+            status: fileItemsFromList?.status,
+          },
+        });
+      } else {
+        folderItems.push({
+          ID: fileItemsFromList?.ID,
+          fileIDFromList: fileItemsFromList?.fileDetailsId,
+          fileID: fileFields?.ID,
+          name: file.Name,
+          type: "file",
+          url: file.ServerRelativeUrl,
+          open: false,
+          isDraft: fileFields?.isDraft,
+          sequenceNo: fileFields?.sequenceNo,
+          version: fileFields?.documentVersion,
+          fields: {
+            createdDate: fileFields?.createdDate,
+            nextReviewDate: fileFields?.nextReviewDate,
+            status: fileFields?.status,
+          },
+        });
+      }
     }
 
     return folderItems;

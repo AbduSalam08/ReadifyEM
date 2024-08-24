@@ -27,6 +27,307 @@ export const AddSections = async (
     docDetails?.taskStatus?.toLowerCase() === "not started";
 
   const templateTitle = formData?.templateDetails?.templateName;
+  if (docDetails?.docVersion !== "1.0") {
+    try {
+      const payloadJSON: any[] = [];
+
+      if (docDetails?.docVersion !== "1.0") {
+        payloadJSON.push({
+          Title: "Change Record",
+          templateTitle: "",
+          sectionOrder: String(formData?.appendixSections?.length),
+          sectionType: "change record",
+          sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+          documentOfId: docDetails?.documentDetailsId,
+          status: "content in progress",
+          isActive: true,
+        });
+      }
+      // if (!noHeader) {
+      //   payloadJSON.push({
+      //     Title: "Header",
+      //     templateTitle: "",
+      //     sectionOrder: "0",
+      //     sectionType: "header section",
+      //     sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+      //     documentOfId: docDetails?.documentDetailsId,
+      //     status: "content in progress",
+      //     isActive: true,
+      //   });
+      // }
+      // if (
+      //   formData?.defaultSections?.some(
+      //     (item: any) =>
+      //       trimStartEnd(item?.sectionName?.value?.toLowerCase()) ===
+      //       "definitions"
+      //   )
+      // ) {
+      //   payloadJSON.push({
+      //     Title: "References",
+      //     templateTitle: "",
+      //     sectionOrder: String(formData?.defaultSections?.length),
+      //     sectionType: "references section",
+      //     sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+      //     documentOfId: docDetails?.documentDetailsId,
+      //     status: "content in progress",
+      //     isActive: true,
+      //   });
+      // }
+      // If none of the conditions are met, payloadJSON will remain an empty array.
+
+      const SATasks: any[] = [];
+      const CONSULTANTSTasks: any[] = [];
+
+      const defaultSectionsData: any[] = formData.defaultSections
+        ?.filter((item: any) => {
+          return item?.sectionSelected && !item?.removed && !item?.ID;
+        })
+        ?.sort((a: any, b: any) => {
+          return a?.sectionOrderNo - b?.sectionOrderNo;
+        })
+        ?.map((item: any, index: number) => {
+          return {
+            ...item,
+            sectionOrderNo: addNewSectionFromUpdate
+              ? item?.sectionOrderNo
+              : String(index + 1),
+          };
+        });
+
+      const appendixSectionsData: any[] = formData.appendixSections
+        ?.filter((item: any) => {
+          return item?.sectionSelected && !item?.removed && !item?.ID;
+        })
+        ?.sort((a: any, b: any) => {
+          return a?.sectionOrderNo - b?.sectionOrderNo;
+        })
+        ?.map((item: any, index: number) => {
+          return {
+            ...item,
+            sectionOrderNo: addNewSectionFromUpdate
+              ? item?.sectionOrderNo
+              : String(index + 1),
+          };
+        });
+
+      [...defaultSectionsData, ...appendixSectionsData]?.forEach(
+        (element: any) => {
+          if (
+            emptyCheck(element?.sectionName?.value) &&
+            element?.sectionSelected
+          ) {
+            payloadJSON.push({
+              Title: element?.sectionName?.value,
+              templateTitle: element?.templateSectionID ? templateTitle : "",
+              sectionOrder: element.sectionOrderNo,
+              sectionAuthorId: element?.sectionAuthor?.value?.[0]?.id,
+              consultantsId: {
+                results: element?.consultants?.value?.map((el: any) => el?.id),
+              },
+              sectionType:
+                element?.sectionType === "defaultSection" ||
+                element?.sectionType === "normalSections"
+                  ? "default section"
+                  : "appendix section",
+              documentOfId: docDetails?.documentDetailsId,
+              status: "content in progress",
+              isActive: element?.sectionSelected,
+              sectionSubmitted: false,
+              lastReviewedBy: "",
+              lastApprovedBy: "",
+            });
+
+            if (element?.sectionAuthor?.value?.[0]?.id) {
+              SATasks.push({
+                taskAssignee: element?.sectionAuthor?.value?.[0]?.id,
+                role: "Section Author",
+                status: "content in progress",
+                sectionName: element?.sectionName?.value,
+              });
+            }
+
+            element?.consultants?.value?.forEach((el: any) => {
+              if (el?.id) {
+                CONSULTANTSTasks.push({
+                  taskAssignee: el?.id,
+                  role: "Consultant",
+                  status: "content in progress",
+                  sectionName: element?.sectionName?.value,
+                });
+              }
+            });
+          }
+        }
+      );
+
+      setLoaderState({
+        isLoading: { inprogress: true, success: false, error: false },
+        visibility: true,
+        text: "Section configuration in progress, please wait...",
+        secondaryText: "",
+      });
+
+      const DocDetailsResponse: any = await SpServices.SPReadItems({
+        Listname: LISTNAMES.DocumentDetails,
+        Select:
+          "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail",
+        Expand: "primaryAuthor, Author",
+        Filter: [
+          { FilterKey: "isDraft", Operator: "eq", FilterValue: "0" },
+          {
+            FilterKey: "ID",
+            Operator: "eq",
+            FilterValue: docDetails?.documentDetailsId,
+          },
+        ],
+      });
+
+      let updateDocDetails: any = null;
+
+      DocDetailsResponse?.map((el: any) => {
+        if (el?.status?.toLowerCase() === "not started") {
+          updateDocDetails = {
+            status: "In Development",
+          };
+        }
+      });
+
+      if (updateDocDetails !== null) {
+        await SpServices.SPUpdateItem({
+          Listname: LISTNAMES.DocumentDetails,
+          ID: DocDetailsResponse[0]?.ID,
+          RequestJSON: updateDocDetails,
+        });
+      }
+
+      const SATasksResponses = SATasks.map(async (taskItem: any) => {
+        await AddTask(
+          docDetails?.documentDetailsId,
+          taskItem,
+          updateDocDetails !== null ? updateDocDetails?.status : null
+        );
+      });
+
+      if (!addNewSectionFromUpdate) {
+        const CONSULTANTSTasksResponses = CONSULTANTSTasks.map(
+          async (taskItem: any) => {
+            await AddTask(
+              docDetails?.documentDetailsId,
+              taskItem,
+              updateDocDetails !== null ? updateDocDetails?.status : null
+            );
+          }
+        );
+        await Promise.all(CONSULTANTSTasksResponses);
+      }
+
+      await Promise.all(SATasksResponses);
+
+      if (payloadJSON?.length > 0) {
+        try {
+          await Promise.all(
+            payloadJSON?.map(async (payload: any) => {
+              try {
+                const mainRes: any = await SpServices.SPAddItem({
+                  Listname: LISTNAMES.SectionDetails,
+                  RequestJSON: payload,
+                });
+
+                if (mainRes?.data?.Title?.toLowerCase() !== "header") {
+                  try {
+                    const res = await SpServices.SPReadItems({
+                      Listname: LISTNAMES.MyTasks,
+                      Select: "*,documentDetails/ID",
+                      Expand: "documentDetails",
+                      Filter: [
+                        {
+                          FilterValue: mainRes?.data?.Title,
+                          FilterKey: "sectionName",
+                          Operator: "eq",
+                        },
+                        {
+                          FilterValue: docDetails?.documentDetailsId,
+                          FilterKey: "documentDetails",
+                          Operator: "eq",
+                        },
+                      ],
+                    });
+
+                    console.log("SPReadItems response: ", res);
+
+                    await Promise.all(
+                      res.map(async (item: any) => {
+                        try {
+                          await SpServices.SPUpdateItem({
+                            Listname: LISTNAMES.MyTasks,
+                            ID: item?.ID,
+                            RequestJSON: {
+                              sectionDetailsId: mainRes?.data?.ID,
+                            },
+                          });
+                          console.log(`Item ${item?.ID} updated successfully.`);
+                        } catch (err) {
+                          console.error(
+                            `Error updating item ${item?.ID}: `,
+                            err
+                          );
+                        }
+                      })
+                    );
+                  } catch (err) {
+                    console.error("Error reading items from MyTasks: ", err);
+                  }
+                }
+              } catch (err) {
+                console.error("Error adding item to SectionDetails: ", err);
+              }
+            })
+          );
+
+          if (isPATaskisNotConfigured) {
+            await SpServices.SPUpdateItem({
+              Listname: LISTNAMES.MyTasks,
+              ID: docDetails?.taskID,
+              RequestJSON: {
+                taskStatus: "In Development",
+                docStatus: "In Development",
+              },
+            });
+          }
+          setLoaderState({
+            isLoading: { inprogress: false, success: true, error: false },
+            visibility: true,
+            text: `Sections configured successfully!`,
+            secondaryText: `The document "${docDetails?.docName}'s" sections have been configured successfully!`,
+          });
+        } catch (err) {
+          setLoaderState({
+            isLoading: { inprogress: false, success: false, error: true },
+            visibility: true,
+            text: "Unable to configure the sections.",
+            secondaryText:
+              "An unexpected error occurred while configuring the sections, please try again later.",
+          });
+        }
+      } else {
+        setLoaderState({
+          isLoading: { inprogress: false, success: false, error: true },
+          visibility: true,
+          text: "At least one section must be selected.",
+          secondaryText:
+            "No sections are selected. Please select at least one section to submit.",
+        });
+      }
+    } catch (err) {
+      setLoaderState({
+        isLoading: { inprogress: false, success: false, error: true },
+        visibility: true,
+        text: "Unable to configure the sections.",
+        secondaryText:
+          "An unexpected error occurred while configuring the sections, please try again later.",
+      });
+    }
+  }
   try {
     // const sectionKeys = ["defaultSections", "appendixSections"];
     // const payloadJSON: any[] =

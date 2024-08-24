@@ -101,7 +101,7 @@ const AddNewDocumentToLib = async ({
         },
       })
         .then(async (res: any) => {
-          await AddPrimaryAuthorTask(fileItem.ID);
+          await AddPrimaryAuthorTask(fileItem.ID, initiateNewVersion);
           setLoaderState({
             isLoading: {
               inprogress: false,
@@ -207,7 +207,7 @@ const AddNewDocumentToLib = async ({
           },
         })
           .then(async (res: any) => {
-            await AddPrimaryAuthorTask(fileID);
+            await AddPrimaryAuthorTask(fileID, initiateNewVersion);
             setLoaderState({
               isLoading: {
                 inprogress: false,

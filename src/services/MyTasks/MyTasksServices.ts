@@ -189,86 +189,176 @@ export const getUniqueTaskData = async (
 };
 
 // functions to add a task for the primary author
-export const AddPrimaryAuthorTask = async (fileID: any): Promise<any> => {
-  // debugger;
-  try {
-    const AllDocResponse: any = await SpServices.SPReadItems({
-      Listname: LISTNAMES.DocumentDetails,
-      Select:
-        "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail, documentTemplateType/Title, documentTemplateType/ID",
-      Expand: "primaryAuthor, Author, documentTemplateType",
-      Filter: [
-        {
-          FilterKey: "isDraft",
-          Operator: "eq",
-          FilterValue: "0",
-        },
-        {
-          FilterKey: "ID",
-          Operator: "eq",
-          FilterValue: fileID,
-        },
-      ],
-    });
-
-    const primaryAuthorTasks: any[] = [];
-
-    AllDocResponse?.forEach((item: any) => {
-      // const reviewers = JSON.parse(item?.reviewers);
-      // const approvers = JSON.parse(item?.approvers);
-
-      const defaultFields: any = {
-        documentDetailsId: item?.ID,
-        docCreatedDate: item?.createdDate,
-        fileDetailsId: item?.fileDetailsId,
-        docName: item.Title,
-        documentTemplateTypeId: item.documentTemplateType?.ID,
-        pathName: item?.documentPath?.split("sites/ReadifyEM/AllDocuments/")[1],
-        taskDueDate: calculateDueDateByRole(item?.createdDate, "document"),
-        completed: false,
-        docVersion: item?.documentVersion,
-        docStatus: item?.status,
-        taskStatus:
-          item?.status?.toLowerCase() === "in development"
-            ? "development in progress"
-            : item?.status,
-      };
-
-      primaryAuthorTasks.push({
-        ...defaultFields,
-        role: "Primary Author",
-        taskAssignedBy: item?.Author?.ID,
-        taskAssignee: item?.primaryAuthor?.ID,
+export const AddPrimaryAuthorTask = async (
+  fileID: any,
+  newVersion?: any
+): Promise<any> => {
+  debugger;
+  if (newVersion) {
+    try {
+      const AllDocResponse: any = await SpServices.SPReadItems({
+        Listname: LISTNAMES.DocumentDetails,
+        Select:
+          "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail, documentTemplateType/Title, documentTemplateType/ID,fileDetails/ID",
+        Expand: "primaryAuthor, Author, documentTemplateType,fileDetails",
+        Filter: [
+          {
+            FilterKey: "isDraft",
+            Operator: "eq",
+            FilterValue: "0",
+          },
+          {
+            FilterKey: "fileDetails",
+            Operator: "eq",
+            FilterValue: fileID,
+          },
+        ],
       });
-    });
 
-    const AllTasks: any[] = [...primaryAuthorTasks];
+      const primaryAuthorTasks: any[] = [];
 
-    const allTaskCalls: any = AllTasks?.map(async (taskItem: any) => {
-      const defaultPayload: any = {
-        Title: taskItem?.docName,
-        pathName: taskItem?.pathName,
-        docCreatedDate: taskItem?.docCreatedDate,
-        documentTemplateTypeId: taskItem?.documentTemplateTypeId,
-        documentDetailsId: taskItem?.documentDetailsId,
-        taskDueDate: taskItem?.taskDueDate,
-        role: taskItem?.role,
-        taskAssignedById: taskItem?.taskAssignedBy,
-        taskAssigneeId: taskItem?.taskAssignee,
-        completed: false,
-        docVersion: taskItem?.docVersion,
-        docStatus: taskItem?.docStatus,
-        taskStatus: taskItem?.taskStatus,
-      };
-      await SpServices.SPAddItem({
-        Listname: LISTNAMES.MyTasks,
-        RequestJSON: defaultPayload,
+      AllDocResponse?.forEach((item: any) => {
+        // const reviewers = JSON.parse(item?.reviewers);
+        // const approvers = JSON.parse(item?.approvers);
+
+        const defaultFields: any = {
+          documentDetailsId: item?.ID,
+          docCreatedDate: item?.createdDate,
+          fileDetailsId: item?.fileDetailsId,
+          docName: item.Title,
+          documentTemplateTypeId: item.documentTemplateType?.ID,
+          pathName: item?.documentPath?.split(
+            "sites/ReadifyEM/AllDocuments/"
+          )[1],
+          taskDueDate: calculateDueDateByRole(item?.createdDate, "document"),
+          completed: false,
+          docVersion: item?.documentVersion,
+          docStatus: item?.status,
+          taskStatus:
+            item?.status?.toLowerCase() === "in development"
+              ? "development in progress"
+              : item?.status,
+        };
+
+        primaryAuthorTasks.push({
+          ...defaultFields,
+          role: "Primary Author",
+          taskAssignedBy: item?.Author?.ID,
+          taskAssignee: item?.primaryAuthor?.ID,
+        });
       });
-    });
 
-    await Promise.all(allTaskCalls);
-  } catch (err: any) {
-    console.log("err: ", err);
+      const AllTasks: any[] = [...primaryAuthorTasks];
+
+      const allTaskCalls: any = AllTasks?.map(async (taskItem: any) => {
+        const defaultPayload: any = {
+          Title: taskItem?.docName,
+          pathName: taskItem?.pathName,
+          docCreatedDate: taskItem?.docCreatedDate,
+          documentTemplateTypeId: taskItem?.documentTemplateTypeId,
+          documentDetailsId: taskItem?.documentDetailsId,
+          taskDueDate: taskItem?.taskDueDate,
+          role: taskItem?.role,
+          taskAssignedById: taskItem?.taskAssignedBy,
+          taskAssigneeId: taskItem?.taskAssignee,
+          completed: false,
+          docVersion: taskItem?.docVersion,
+          docStatus: taskItem?.docStatus,
+          taskStatus: taskItem?.taskStatus,
+          fileDetailsId: taskItem?.fileDetailsId,
+        };
+        await SpServices.SPAddItem({
+          Listname: LISTNAMES.MyTasks,
+          RequestJSON: defaultPayload,
+        });
+      });
+
+      await Promise.all(allTaskCalls);
+    } catch (err: any) {
+      console.log("err: ", err);
+    }
+  } else {
+    try {
+      const AllDocResponse: any = await SpServices.SPReadItems({
+        Listname: LISTNAMES.DocumentDetails,
+        Select:
+          "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail, documentTemplateType/Title, documentTemplateType/ID",
+        Expand: "primaryAuthor, Author, documentTemplateType",
+        Filter: [
+          {
+            FilterKey: "isDraft",
+            Operator: "eq",
+            FilterValue: "0",
+          },
+          {
+            FilterKey: "ID",
+            Operator: "eq",
+            FilterValue: fileID,
+          },
+        ],
+      });
+
+      const primaryAuthorTasks: any[] = [];
+
+      AllDocResponse?.forEach((item: any) => {
+        // const reviewers = JSON.parse(item?.reviewers);
+        // const approvers = JSON.parse(item?.approvers);
+
+        const defaultFields: any = {
+          documentDetailsId: item?.ID,
+          docCreatedDate: item?.createdDate,
+          fileDetailsId: item?.fileDetailsId,
+          docName: item.Title,
+          documentTemplateTypeId: item.documentTemplateType?.ID,
+          pathName: item?.documentPath?.split(
+            "sites/ReadifyEM/AllDocuments/"
+          )[1],
+          taskDueDate: calculateDueDateByRole(item?.createdDate, "document"),
+          completed: false,
+          docVersion: item?.documentVersion,
+          docStatus: item?.status,
+          taskStatus:
+            item?.status?.toLowerCase() === "in development"
+              ? "development in progress"
+              : item?.status,
+        };
+
+        primaryAuthorTasks.push({
+          ...defaultFields,
+          role: "Primary Author",
+          taskAssignedBy: item?.Author?.ID,
+          taskAssignee: item?.primaryAuthor?.ID,
+        });
+      });
+
+      const AllTasks: any[] = [...primaryAuthorTasks];
+
+      const allTaskCalls: any = AllTasks?.map(async (taskItem: any) => {
+        const defaultPayload: any = {
+          Title: taskItem?.docName,
+          pathName: taskItem?.pathName,
+          docCreatedDate: taskItem?.docCreatedDate,
+          documentTemplateTypeId: taskItem?.documentTemplateTypeId,
+          documentDetailsId: taskItem?.documentDetailsId,
+          taskDueDate: taskItem?.taskDueDate,
+          role: taskItem?.role,
+          taskAssignedById: taskItem?.taskAssignedBy,
+          taskAssigneeId: taskItem?.taskAssignee,
+          completed: false,
+          docVersion: taskItem?.docVersion,
+          docStatus: taskItem?.docStatus,
+          taskStatus: taskItem?.taskStatus,
+        };
+        await SpServices.SPAddItem({
+          Listname: LISTNAMES.MyTasks,
+          RequestJSON: defaultPayload,
+        });
+      });
+
+      await Promise.all(allTaskCalls);
+    } catch (err: any) {
+      console.log("err: ", err);
+    }
   }
 };
 

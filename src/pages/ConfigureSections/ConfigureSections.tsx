@@ -241,6 +241,7 @@ const ConfigureSections = (): JSX.Element => {
       dispatch
     );
   };
+  console.log("ConfigurePageDetails: ", ConfigurePageDetails);
 
   // lifecycle hooks
   useEffect(() => {
@@ -266,7 +267,10 @@ const ConfigureSections = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if (ConfigurePageDetails?.pageKey === "update") {
+    if (
+      ConfigurePageDetails?.pageKey === "update" ||
+      ConfigurePageDetails?.pageKey === "version update"
+    ) {
       getAllSectionsData();
       setMainData();
     } else {
@@ -297,6 +301,9 @@ const ConfigureSections = (): JSX.Element => {
             <div className={styles.header}>
               <div className={styles.docTitle}>
                 {currentTaskData?.docName || "-"}
+                <div className={styles.versionPill}>
+                  v{currentTaskData?.docVersion}
+                </div>
               </div>
               <div className={styles.docDetails}>
                 <span>

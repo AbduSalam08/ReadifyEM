@@ -166,11 +166,20 @@ const Header: React.FC<Props> = ({
                   dispatch
                 );
                 // await getUniqueSectionsDetails(taskData?.documentDetailsId);
-                dispatch(
-                  setConfigurePageDetails({
-                    pageKey: "update",
-                  })
-                );
+
+                if (currentDocDetailsData?.documentVersion !== "1.0") {
+                  dispatch(
+                    setConfigurePageDetails({
+                      pageKey: "version update",
+                    })
+                  );
+                } else {
+                  dispatch(
+                    setConfigurePageDetails({
+                      pageKey: "update",
+                    })
+                  );
+                }
 
                 if (isAdmin) {
                   navigate(`/admin/my_tasks/${documentName}/configure`);
