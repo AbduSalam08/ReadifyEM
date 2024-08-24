@@ -36,6 +36,8 @@ import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicke
 import dayjs from "dayjs";
 import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
 import PreviewSection from "../PreviewSection/PreviewSection";
+import CloseIcon from "@mui/icons-material/Close";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 
 interface IRichTextProps {
   noActionBtns?: boolean;
@@ -783,12 +785,37 @@ const RichText = ({
             )}
 
             <DefaultButton
-              text="Close"
+              text={<CloseIcon sx={{ Padding: "0px" }} />}
               btnType="darkGreyVariant"
+              title="Close"
+              onlyIcon={true}
               onClick={() => {
                 navigate(-1);
               }}
             />
+            {!currentSectionData?.sectionSubmitted &&
+              (currentDocRole?.sectionAuthor ||
+                currentDocRole?.primaryAuthor) && (
+                <>
+                  <DefaultButton
+                    text={<RestartAltIcon />}
+                    onlyIcon={true}
+                    title="Reset Content"
+                    disabled={sectionLoader}
+                    btnType="secondaryRed"
+                    onClick={() => {
+                      setSectionData((prev: any) => {
+                        const updatedSections = [...prev];
+                        updatedSections[activeIndex] = {
+                          ...updatedSections[activeIndex],
+                          contentType: "initial",
+                        };
+                        return updatedSections;
+                      });
+                    }}
+                  />
+                </>
+              )}
             <DefaultButton
               text="Preview"
               btnType="secondaryBlue"
@@ -901,21 +928,6 @@ const RichText = ({
                     currentDocRole?.primaryAuthor) && (
                     <>
                       <DefaultButton
-                        text="Reset content"
-                        disabled={sectionLoader}
-                        btnType="secondaryRed"
-                        onClick={() => {
-                          setSectionData((prev: any) => {
-                            const updatedSections = [...prev];
-                            updatedSections[activeIndex] = {
-                              ...updatedSections[activeIndex],
-                              contentType: "initial",
-                            };
-                            return updatedSections;
-                          });
-                        }}
-                      />
-                      <DefaultButton
                         text="Save"
                         disabled={sectionLoader}
                         btnType="lightGreyVariant"
@@ -950,7 +962,9 @@ const RichText = ({
         currentSectionData?.sectionType?.toLowerCase() !==
           "appendix section" && (
           <DefaultButton
-            text="Close"
+            text={<CloseIcon sx={{ Padding: "0px" }} />}
+            title="Close"
+            onlyIcon={true}
             btnType="darkGreyVariant"
             onClick={() => {
               navigate(-1);

@@ -170,14 +170,22 @@ const convertSupportingDocToTxtFile = (content: any[]): any => {
                 </td>
                 <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
                   <a style="word-break: break-all;" href=${
-                    obj.documentLink
+                    obj.documentLink.startsWith("https://")
+                      ? obj.documentLink
+                      : "https://" + obj.documentLink
                   } target="_blank">
-                    ${obj.documentLink}
+                    ${
+                      obj.documentLink.startsWith("https://")
+                        ? obj.documentLink
+                        : "https://" + obj.documentLink
+                    }
                   </a>
                 </td>
               </tr>`;
   });
   supportingDocTable += `</tbody></table>`;
+
+  debugger;
 
   const cleanedTable = supportingDocTable
     .replace(/\n/g, "")

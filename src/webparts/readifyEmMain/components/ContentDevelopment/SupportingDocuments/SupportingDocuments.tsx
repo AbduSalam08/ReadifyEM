@@ -16,6 +16,7 @@ const closeBtn = require("../../../../../assets/images/png/close.png");
 const checkBtn = require("../../../../../assets/images/png/checkmark.png");
 
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
+import CloseIcon from "@mui/icons-material/Close";
 
 import {
   getAllSupportingDocumentsData,
@@ -48,6 +49,7 @@ import { setCDSectionData } from "../../../../../redux/features/ContentDevloperS
 import SpServices from "../../../../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../../../../config/config";
 import PreviewSection from "../PreviewSection/PreviewSection";
+import { validateWebURL } from "../../../../../utils/validations";
 
 interface Props {
   documentId: number;
@@ -672,6 +674,7 @@ const SupportingDocuments: React.FC<Props> = ({
   };
 
   const validation = (index: number) => {
+    debugger;
     const tempSelectedDocuments = [...selectedDocuments];
     if (tempSelectedDocuments[index].documentName === "") {
       tempSelectedDocuments[index].emptyField = "documentName";
@@ -679,6 +682,11 @@ const SupportingDocuments: React.FC<Props> = ({
       setSelectedDocuments([...tempSelectedDocuments]);
       return false;
     } else if (tempSelectedDocuments[index].documentLink === "") {
+      tempSelectedDocuments[index].emptyField = "documentLink";
+      tempSelectedDocuments[index].isValid = true;
+      setSelectedDocuments([...tempSelectedDocuments]);
+      return false;
+    } else if (!validateWebURL(tempSelectedDocuments[index].documentLink)) {
       tempSelectedDocuments[index].emptyField = "documentLink";
       tempSelectedDocuments[index].isValid = true;
       setSelectedDocuments([...tempSelectedDocuments]);
@@ -959,11 +967,15 @@ const SupportingDocuments: React.FC<Props> = ({
                           withLabel
                           labelText="Document Link"
                           isValid={
-                            obj.isValid &&
-                            obj.emptyField === "documentLink" &&
-                            obj.documentLink === ""
+                            obj.isValid && obj.emptyField === "documentLink"
                           }
-                          errorMsg="Please enter document link"
+                          errorMsg={
+                            obj.documentLink === ""
+                              ? "Please enter document link"
+                              : validateWebURL(obj.documentLink)
+                              ? ""
+                              : "Invalid URL"
+                          }
                           topLabel
                         />
                       </div>
@@ -982,11 +994,17 @@ const SupportingDocuments: React.FC<Props> = ({
                           {obj.documentName}
                         </p>
                         <a
-                          href={obj.documentLink}
-                          // target="_blank"
+                          href={
+                            obj.documentLink.startsWith("https://")
+                              ? obj.documentLink
+                              : "https://" + obj.documentLink
+                          }
+                          target="_blank"
                           className={styles.documentLink}
                         >
-                          {obj.documentLink}
+                          {obj.documentLink.startsWith("https://")
+                            ? obj.documentLink
+                            : "https://" + obj.documentLink}
                         </a>
                       </div>
                     )}
@@ -1061,7 +1079,9 @@ const SupportingDocuments: React.FC<Props> = ({
           )}
 
           <DefaultButton
-            text="Close"
+            text={<CloseIcon sx={{ Padding: "0px" }} />}
+            onlyIcon={true}
+            title="Close"
             btnType="darkGreyVariant"
             onClick={() => {
               navigate(-1);

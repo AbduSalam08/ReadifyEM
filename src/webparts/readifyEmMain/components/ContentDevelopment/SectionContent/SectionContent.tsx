@@ -34,6 +34,8 @@ import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicke
 import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
 import dayjs from "dayjs";
 import { setCDSectionData } from "../../../../../redux/features/ContentDevloperSlice";
+import CloseIcon from "@mui/icons-material/Close";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import PreviewSection from "../PreviewSection/PreviewSection";
 
 interface IProps {
@@ -1091,12 +1093,38 @@ const SectionContent: React.FC<IProps> = ({
             )}
 
             <DefaultButton
-              text="Close"
+              text={<CloseIcon />}
               btnType="darkGreyVariant"
+              title="Close"
+              onlyIcon={true}
               onClick={() => {
                 navigate(-1);
               }}
             />
+            {!currentSectionDetails?.sectionSubmitted &&
+              (currentDocRole?.sectionAuthor ||
+                currentDocRole?.primaryAuthor) && (
+                <>
+                  <DefaultButton
+                    text={<RestartAltIcon />}
+                    title="Reset Content"
+                    onlyIcon={true}
+                    disabled={sectionLoader}
+                    btnType="secondaryRed"
+                    onClick={() => {
+                      setSectionData((prev: any) => {
+                        const updatedSections = [...prev];
+                        updatedSections[activeIndex] = {
+                          ...updatedSections[activeIndex],
+                          contentType: "initial",
+                        };
+                        return updatedSections;
+                      });
+                    }}
+                  />
+                </>
+              )}
+
             <DefaultButton
               text="Preview"
               btnType="secondaryBlue"
@@ -1207,7 +1235,7 @@ const SectionContent: React.FC<IProps> = ({
                   (currentDocRole?.sectionAuthor ||
                     currentDocRole?.primaryAuthor) && (
                     <>
-                      <DefaultButton
+                      {/* <DefaultButton
                         text="Reset content"
                         disabled={sectionLoader}
                         btnType="secondaryRed"
@@ -1221,7 +1249,7 @@ const SectionContent: React.FC<IProps> = ({
                             return updatedSections;
                           });
                         }}
-                      />
+                      /> */}
                       <DefaultButton
                         text="Save"
                         disabled={sectionLoader}
@@ -1257,7 +1285,9 @@ const SectionContent: React.FC<IProps> = ({
         currentSectionDetails?.sectionType?.toLowerCase() !==
           "appendix section" && (
           <DefaultButton
-            text="Close"
+            text={<CloseIcon sx={{ Padding: "0px" }} />}
+            title="Close"
+            onlyIcon={true}
             btnType="darkGreyVariant"
             onClick={() => {
               navigate(-1);

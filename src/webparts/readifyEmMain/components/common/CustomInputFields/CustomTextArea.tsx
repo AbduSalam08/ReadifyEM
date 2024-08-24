@@ -25,6 +25,7 @@ interface Props {
   readOnly?: any;
   textAreaWidth?: any;
   noBorderInput?: boolean;
+  onKeyDown?: any;
 }
 
 const CustomTextArea: React.FC<Props> = ({
@@ -39,6 +40,7 @@ const CustomTextArea: React.FC<Props> = ({
   labelText,
   withLabel,
   disabled,
+  onKeyDown,
   inputClassName,
   inputWrapperClassName,
   readOnly,
@@ -80,6 +82,8 @@ const CustomTextArea: React.FC<Props> = ({
           v-model="value1"
           readOnly={readOnly}
           disabled={disabled}
+          onKeyDown={onKeyDown}
+          autoResize
           value={value || ""}
           placeholder={placeholder}
           onChange={(e) => handleChange(e)}
@@ -95,8 +99,12 @@ const CustomTextArea: React.FC<Props> = ({
                 ? "none"
                 : `1px solid #e5e5e5`
             }`,
-            padding: "5px 10px",
+            padding: inputWrapperClassName ? "" : "5px 10px",
+            margin: inputWrapperClassName ? "10px" : "",
             width: textAreaWidth ? textAreaWidth : "100%",
+            minHeight: inputWrapperClassName ? "20px" : "100px",
+            maxHeight: inputWrapperClassName ? "100px" : "100px",
+            height: value !== "" ? "20px" : "auto",
             fontSize: "14px",
             fontFamily: `interMedium, sans-serif`,
           }}

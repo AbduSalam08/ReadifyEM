@@ -16,6 +16,7 @@ import DefaultButton from "../../common/Buttons/DefaultButton";
 import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
 const closeBtn = require("../../../../../assets/images/png/close.png");
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
+import CloseIcon from "@mui/icons-material/Close";
 
 import {
   getAllSectionDefinitions,
@@ -48,6 +49,7 @@ import dayjs from "dayjs";
 import { setCDSectionData } from "../../../../../redux/features/ContentDevloperSlice";
 import SpServices from "../../../../../services/SPServices/SpServices";
 import PreviewSection from "../PreviewSection/PreviewSection";
+import { validateWebURL } from "../../../../../utils/validations";
 
 interface Props {
   documentId: number;
@@ -268,6 +270,11 @@ const Definition: React.FC<Props> = ({
   };
 
   const handleOnChange = (value: string | any, key: string): void => {
+    setDefinitionsData((prev: any) => ({
+      ...prev,
+      IsValid: true,
+      ErrorMsg: "",
+    }));
     if (key === "referenceAuthor") {
       setDefinitionsData((prev: any) => ({
         ...prev,
@@ -286,6 +293,7 @@ const Definition: React.FC<Props> = ({
   };
 
   const validateSections = (): any => {
+    debugger;
     // return true;
     const duplicateCheck = AllDefinitionData.filter((obj: any) => {
       return obj.definitionName === definitionsData.definitionName;
@@ -325,6 +333,12 @@ const Definition: React.FC<Props> = ({
           ErrorMsg: "referenceAuthorName",
         }));
       } else if (definitionsData.referenceLink === "") {
+        setDefinitionsData((prev: any) => ({
+          ...prev,
+          IsValid: false,
+          ErrorMsg: "referenceLink",
+        }));
+      } else if (!validateWebURL(definitionsData.referenceLink)) {
         setDefinitionsData((prev: any) => ({
           ...prev,
           IsValid: false,
@@ -610,11 +624,16 @@ const Definition: React.FC<Props> = ({
             }}
             placeholder="Enter here"
             isValid={
-              definitionsData.referenceLink === "" &&
               !definitionsData.IsValid &&
               definitionsData.ErrorMsg === "referenceLink"
             }
-            errorMsg={"The references Link field is required"}
+            errorMsg={
+              definitionsData.referenceLink === ""
+                ? "The references Link field is required"
+                : validateWebURL(definitionsData.referenceLink)
+                ? ""
+                : "Invalid URL"
+            }
             key={5}
           />
         </div>
@@ -1210,12 +1229,19 @@ const Definition: React.FC<Props> = ({
             )} */}
 
             <DefaultButton
-              text="Close"
+              text={<CloseIcon sx={{ Padding: "0px" }} />}
               btnType="darkGreyVariant"
+              onlyIcon={true}
+              title="Close"
               onClick={() => {
                 navigate(-1);
               }}
             />
+            {/* <CloseIcon
+              onClick={() => {
+                navigate(-1);
+              }}
+            /> */}
             <DefaultButton
               text="Preview"
               btnType="secondaryBlue"

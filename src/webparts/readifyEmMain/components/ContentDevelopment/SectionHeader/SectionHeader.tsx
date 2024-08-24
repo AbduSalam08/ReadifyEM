@@ -134,6 +134,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import styles from "./SectionHeader.module.scss";
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
+import { addSectionConsultants } from "../../../../../services/ContentDevelopment/SectionHeader/SectionHeader";
 
 interface Props {
   documentName: string;
@@ -156,7 +157,12 @@ const SectionHeader: React.FC<Props> = ({
   currentDocRole,
   currentDocDetailsData,
 }) => {
-  console.log("currentDocDetailsData: ", currentDocDetailsData);
+  console.log(
+    "currentDocDetailsData: ",
+    currentDocDetailsData,
+    "activeSectionData",
+    activeSectionData
+  );
   const [authorState, setAuthorState] = useState<any>(sectionAuthor);
   console.log("authorState: ", authorState);
   const [consultantsState, setConsultantsState] = useState<any[]>(consultants);
@@ -173,6 +179,17 @@ const SectionHeader: React.FC<Props> = ({
 
   const handleOnChangeFunction = (value: any): any => {
     console.log("value", value);
+    setConsultantsState(value);
+  };
+
+  const onSubmitFunction = async () => {
+    debugger;
+    await addSectionConsultants(
+      currentDocDetailsData,
+      activeSectionData,
+      consultantsState,
+      currentUserDetails
+    );
   };
 
   return (
@@ -241,19 +258,21 @@ const SectionHeader: React.FC<Props> = ({
                   }
                   selectedItem={consultantsState}
                   onChange={handleOnChangeFunction}
+                  onSubmit={onSubmitFunction}
                   isValid={false}
                   placeholder="Add Reference Author"
-                  readOnly={
-                    currentDocRole.sectionAuthor
-                      ? !currentDocRole.sectionAuthor
-                      : !currentDocRole.primaryAuthor
-                  }
+                  // readOnly={
+                  //   currentDocRole.sectionAuthor
+                  //     ? !currentDocRole.sectionAuthor
+                  //     : !currentDocRole.primaryAuthor
+                  // }
                   noRemoveBtn={
                     currentDocRole.sectionAuthor
                       ? !currentDocRole.sectionAuthor
                       : !currentDocRole.primaryAuthor
                   }
                   multiUsers={true}
+                  popupControl={true}
                   hideErrMsg
                 />
               </div>

@@ -27,6 +27,7 @@ import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import ToastMessage from "../../common/Toast/ToastMessage";
 // import { ChevronRight } from "@mui/icons-material";
 const sampleDocHeaderImg: any = require("../../../../../assets/images/png/imagePlaceholder.png");
+import CloseIcon from "@mui/icons-material/Close";
 
 interface Props {
   sectionDetails: any;
@@ -477,7 +478,9 @@ const SetupHeader: React.FC<Props> = ({
                 }}
               >
                 <DefaultButton
-                  text="Close"
+                  text={<CloseIcon sx={{ Padding: "0px" }} />}
+                  title="Close"
+                  onlyIcon={true}
                   btnType="darkGreyVariant"
                   onClick={() => {
                     navigate(-1);
