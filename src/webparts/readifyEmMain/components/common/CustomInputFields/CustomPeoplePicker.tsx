@@ -456,6 +456,7 @@ import AddIcon from "@mui/icons-material/Add";
 interface Props {
   selectedItem?: any;
   onChange?: (value: any[]) => void;
+  onSubmit?: any;
   placeholder?: string;
   personSelectionLimit?: number | any;
   size?: "SM" | "MD" | "XL";
@@ -480,6 +481,7 @@ interface Props {
 
 const CustomPeoplePicker: React.FC<Props> = ({
   onChange,
+  onSubmit,
   placeholder = "User",
   personSelectionLimit,
   selectedItem,
@@ -499,12 +501,12 @@ const CustomPeoplePicker: React.FC<Props> = ({
   maxHeight,
   mandatory,
   multiUsers = false,
-  popupControl,
+  popupControl = false,
 }) => {
   const initialPopupController = [
     {
       open: false,
-      popupTitle: "Add New Definition",
+      popupTitle: "",
       popupWidth: "550px",
       popupType: "custom",
       defaultCloseBtn: false,
@@ -522,8 +524,24 @@ const CustomPeoplePicker: React.FC<Props> = ({
     togglePopupVisibility(setPopupController, index, "close");
   };
 
+  const selectedUserItem = (() => {
+    if (!multiUsers) {
+      return personSelectionLimit > 1 ? [] : [selectedItem];
+    } else {
+      if (personSelectionLimit >= 1) {
+        return (
+          selectedItem?.map(
+            (item: any) => item.secondaryText || item.Email || item.email
+          ) || []
+        );
+      }
+    }
+    return [selectedItem];
+  })();
+
   const multiPeoplePickerStyle = {
     root: {
+      zIndex: "2",
       minWidth: minWidth ? minWidth : "100%",
       maxWidth: maxWidth ? maxWidth : "100%",
       background: "rgba(218, 218, 218, 0.29)",
@@ -553,7 +571,8 @@ const CustomPeoplePicker: React.FC<Props> = ({
       ".ms-BasePicker-input": {
         height: size === "SM" ? "30px" : size === "MD" ? "30px" : "41px",
         fontFamily: "interMedium",
-        display: popupControl ? "none" : "block",
+        display:
+          popupControl && selectedUserItem?.length !== 0 ? "none" : "block",
       },
       ".ms-BasePicker-input::placeholder": {
         fontFamily: "interMedium",
@@ -580,7 +599,10 @@ const CustomPeoplePicker: React.FC<Props> = ({
         minWidth: "auto",
       },
       ".ms-PickerItem-removeButton": {
-        display: noRemoveBtn || popupControl ? "none" : "block",
+        display:
+          noRemoveBtn || (popupControl && selectedUserItem?.length !== 0)
+            ? "none"
+            : "block",
       },
       ".ms-PickerItem-removeButton:focus": {
         background: "#555",
@@ -681,22 +703,11 @@ const CustomPeoplePicker: React.FC<Props> = ({
     });
     onChange && onChange(obj);
   };
-
-  const selectedUserItem = (() => {
-    if (!multiUsers) {
-      return personSelectionLimit > 1 ? [] : [selectedItem];
-    } else {
-      if (personSelectionLimit >= 1) {
-        return (
-          selectedItem?.map(
-            (item: any) => item.secondaryText || item.Email || item.email
-          ) || []
-        );
-      }
-    }
-
-    return [selectedItem];
-  })();
+  const handleSubmit = (): any => {
+    debugger;
+    onSubmit();
+    handleClosePopup(0);
+  };
 
   // array of obj which contains all popup inputs
   const popupInputs: any[] = [
@@ -736,17 +747,34 @@ const CustomPeoplePicker: React.FC<Props> = ({
           handleClosePopup(0);
         },
       },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleSubmit();
+        },
+      },
     ],
   ];
 
   return (
     <div className={styles.inputMainWrapper}>
       <div
+        style={{ zIndex: popupControl ? "100" : "0" }}
         className={`${
           withLabel
             ? styles.p_pickerInputWrapperWithLabel
             : styles.p_pickerInputWrapper
         } ${disabled ? styles.disabledInput : ""}`}
+        onClick={() => {
+          console.log("clicked");
+          if (popupControl) {
+            togglePopupVisibility(setPopupController, 0, "open", "Add people");
+          }
+        }}
       >
         {withLabel && (
           <p
@@ -774,7 +802,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
           resolveDelay={1000}
           disabled={readOnly}
         />
-        {popupControl && (
+        {popupControl && multiUsers && (
           // <button
           //   className={styles.peoplePickerButton}
           //   type="button"
@@ -799,12 +827,13 @@ const CustomPeoplePicker: React.FC<Props> = ({
               );
             }}
             sx={{
-              fontSize: "28px",
-              padding: "5px",
-              height: "32px",
-              background: "#160364",
-              color: "#fff",
-              borderRadius: "0px 3px 3px 0px",
+              fontSize: "34px",
+              padding: "8px",
+              height: "34px",
+              background: "#0000001f",
+              color: "#555",
+              transform: "translateX(-2px)",
+              borderRadius: "0px 4px 4px 0px",
             }}
           />
         )}

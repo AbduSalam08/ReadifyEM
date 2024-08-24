@@ -102,15 +102,23 @@ const convertReferenceToTxtFile = (content: any[]): any => {
                   ${obj.referenceAuthorName}
                 </td>
                 <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                   <a style="word-break: break-all;" href=${
-                     obj.referenceLink
-                   } target="_blank">
-                    ${obj.referenceLink}
+                   <a style="word-break: break-all;" href="${
+                     obj.referenceLink.startsWith("https://")
+                       ? obj.referenceLink
+                       : "https://" + obj.referenceLink
+                   }" target="_blank">
+                    ${
+                      obj.referenceLink.startsWith("https://")
+                        ? obj.referenceLink
+                        : "https://" + obj.referenceLink
+                    }
                   </a>
                 </td>
               </tr>`;
   });
   referencesTable += `</tbody></table>`;
+
+  debugger;
 
   const cleanedTable = referencesTable
     .replace(/\n/g, "")

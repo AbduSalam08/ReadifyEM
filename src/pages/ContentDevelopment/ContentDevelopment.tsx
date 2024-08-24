@@ -150,8 +150,8 @@ const ContentDevelopment = (): JSX.Element => {
     {
       open: false,
       popupTitle: "",
-      popupWidth: "400px",
-      popupType: "confirmation",
+      popupWidth: "600px",
+      popupType: "custom",
       defaultCloseBtn: false,
       popupData: "",
     },
@@ -836,6 +836,30 @@ const ContentDevelopment = (): JSX.Element => {
         key={2}
       />,
     ],
+    [],
+    [
+      <div key={1}>
+        <CustomTextArea
+          size="MD"
+          labelText="Comments (Optional)"
+          withLabel
+          icon={false}
+          mandatory={false}
+          value={promoteComments.promoteComment}
+          onChange={(value: any) => {
+            setPromoteComments({
+              ...promoteComments,
+              promoteComment: value,
+              IsValid: false,
+            });
+          }}
+          placeholder="Enter Comments..."
+          isValid={promoteComments.IsValid}
+          errorMsg={promoteComments.ErrorMsg}
+          topLabel={true}
+        />
+      </div>,
+    ],
   ];
 
   const popupActions: any[] = [
@@ -908,6 +932,12 @@ const ContentDevelopment = (): JSX.Element => {
         startIcon: false,
         onClick: () => {
           handleClosePopup(5);
+          setPromoteComments({
+            ...promoteComments,
+            promoteComment: "",
+            IsValid: false,
+            ErrorMsg: "",
+          });
         },
       },
       {
@@ -918,9 +948,23 @@ const ContentDevelopment = (): JSX.Element => {
         startIcon: false,
         onClick: async () => {
           handleClosePopup(5);
-
+          if (promoteComments.promoteComment !== "") {
+            debugger;
+            await addPromotedComment(
+              promoteComments.promoteComment,
+              currentDocDetailsData,
+              handleClosePopup,
+              setToastMessage,
+              currentUserDetails
+            );
+            setPromoteComments({
+              ...promoteComments,
+              promoteComment: "",
+              IsValid: false,
+              ErrorMsg: "",
+            });
+          }
           const totalReviewers = currentDocDetailsData?.reviewers?.length;
-
           const changeReviewer: any = currentDocDetailsData?.reviewers?.map(
             (e: any, idx: number) => {
               if (idx === 0) {
@@ -934,7 +978,6 @@ const ContentDevelopment = (): JSX.Element => {
             }
           );
           console.log("changeReviewer: ", changeReviewer);
-
           const payLoad: any = AllSectionsDataMain?.filter(
             (item: any) => item?.sectionType?.toLowerCase() !== "header"
           )?.map((el: any) => {
@@ -943,7 +986,6 @@ const ContentDevelopment = (): JSX.Element => {
               status: `${`Yet to be reviewed (1/${totalReviewers})`}`,
             };
           });
-
           await changeDocStatus(
             currentDocDetailsData?.documentDetailsID,
             "In Review",
@@ -953,9 +995,7 @@ const ContentDevelopment = (): JSX.Element => {
             dispatch,
             false
           );
-
           await changeSectionStatus(payLoad, AllSectionsDataMain, dispatch);
-
           console.log("payLoad: ", payLoad);
           // await submitPromotedComment();
         },
@@ -1228,13 +1268,19 @@ const ContentDevelopment = (): JSX.Element => {
                             setPopupController,
                             5,
                             "open",
-                            "Are you sure you want to promote this document for review?"
+                            "Are you sure to promote this document for review?"
                           );
                         }}
                       />
                     ) : (
                       <DefaultButton
-                        text="Promote"
+                        text={
+                          currentDocRole?.approver &&
+                          currentPromoter?.id ===
+                            currentDocDetailsData?.approvers?.length
+                            ? "Publish"
+                            : "Promote"
+                        }
                         btnType="primary"
                         disabled={!enablePromote()}
                         onClick={() => {

@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { useState } from "react";
 import styles from "./SectionComments.module.scss";
-import CustomInput from "../../common/CustomInputFields/CustomInput";
+// import CustomInput from "../../common/CustomInputFields/CustomInput";
 import CommentCard from "./CommentCard";
 import { ChevronRight } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +15,7 @@ import { initialPopupLoaders } from "../../../../../config/config";
 import { IPopupLoaders } from "../../../../../interface/MainInterface";
 import AlertPopup from "../../common/Popups/AlertPopup/AlertPopup";
 import ToastMessage from "../../common/Toast/ToastMessage";
+import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
 
 interface Props {
   commentsData: any[];
@@ -200,7 +201,7 @@ const SectionComments: React.FC<Props> = ({
           </div>
           {!noCommentInput && (
             <div className={styles.commentsBar}>
-              <CustomInput
+              {/* <CustomInput
                 value={inputComment}
                 // disabled={currentSectionData?.sectionSubmitted}
                 placeholder="Enter your comments here..."
@@ -210,6 +211,21 @@ const SectionComments: React.FC<Props> = ({
                 noBorderInput={true}
                 inputWrapperClassName={styles.commentBoxInput}
                 // submitBtn={true}
+                onKeyDown={(ev: any) => {
+                  if (ev.key === "Enter") {
+                    sendSectionComment();
+                  }
+                }}
+              /> */}
+              <CustomTextArea
+                placeholder="Enter your comments here..."
+                noBorderInput={true}
+                inputWrapperClassName={styles.commentBoxInput}
+                value={inputComment}
+                rows={1}
+                onChange={(value: string) => {
+                  onChangeFunction(value);
+                }}
                 onKeyDown={(ev: any) => {
                   if (ev.key === "Enter") {
                     sendSectionComment();

@@ -21,6 +21,8 @@ interface Props extends ButtonProps {
     | "secondaryBlue"
     | "primaryRed"
     | "actionBtn";
+  onlyIcon?: boolean;
+  title?: string;
 }
 
 const DefaultButton = ({
@@ -29,6 +31,8 @@ const DefaultButton = ({
   endIcon,
   startIcon,
   disabled,
+  title,
+  onlyIcon = false,
   ...rest
 }: Props): JSX.Element => {
   // Define a mapping object for btnType to CSS classes
@@ -52,7 +56,11 @@ const DefaultButton = ({
 
   return (
     <Button
-      className={`${disabled && styles.disabledBtn} ${buttonClass}`}
+      // title="jsnfihdnf"
+      title={title !== "" ? title : ""}
+      className={`${disabled && styles.disabledBtn} ${
+        onlyIcon && styles.onlyIconBtn
+      } ${buttonClass}`}
       variant="outlined"
       {...rest}
       endIcon={endIcon}
