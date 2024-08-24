@@ -107,6 +107,24 @@ export function getNextVersions(currentVersion: string): {
  * @param newVersion - The new version string to replace the existing one (e.g., "1.3").
  * @returns The updated filename with the new version.
  */
+// export function replaceVersionInFilename(
+//   filename: string,
+//   newVersion: string
+// ): string {
+//   const underscoreIndex = filename.lastIndexOf("_");
+
+//   if (underscoreIndex === -1) {
+//     throw new Error("Filename does not contain an underscore.");
+//   }
+
+//   // Extract the part before the underscore and append the new version
+//   const newFilename = `${filename.substring(
+//     0,
+//     underscoreIndex + 1
+//   )}${newVersion}`;
+//   return newFilename;
+// }
+
 export function replaceVersionInFilename(
   filename: string,
   newVersion: string
@@ -114,7 +132,8 @@ export function replaceVersionInFilename(
   const underscoreIndex = filename.lastIndexOf("_");
 
   if (underscoreIndex === -1) {
-    throw new Error("Filename does not contain an underscore.");
+    // No underscore found, append the new version at the end of the filename
+    return `${filename}_${newVersion}`;
   }
 
   // Extract the part before the underscore and append the new version

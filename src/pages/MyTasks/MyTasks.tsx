@@ -46,12 +46,14 @@ const MyTasks = (): JSX.Element => {
   const isAdmin: boolean = CurrentUserIsAdmin();
 
   const myTasksData: any = useSelector((state: any) => state.myTasksData.value);
+  console.log("myTasksData: ", myTasksData);
 
   // main tasks data state
   const [tasksData, setTasksData] = useState({
     loading: false,
     data: [] as any[],
   });
+  console.log("tasksData aaa: ", tasksData);
 
   // state to store the filter properties
   const [filterOptions, setFilterOptions] = useState({
@@ -233,7 +235,11 @@ const MyTasks = (): JSX.Element => {
           </div>
         </div>
       </div>
-
+      {tasksData?.data?.length === 0 && (
+        <div className={`${styles.flexcenter} ${styles.loaderSection}`}>
+          <span className={styles.emptyMsg}>No Tasks found</span>
+        </div>
+      )}
       <div className={styles.cardsSection}>
         {tasksData?.loading ? (
           <div className={`${styles.flexcenter} ${styles.loaderSection}`}>
@@ -250,13 +256,10 @@ const MyTasks = (): JSX.Element => {
               color="inherit"
             />
           </div>
-        ) : tasksData?.data?.length === 0 ? (
-          <div className={`${styles.flexcenter} ${styles.loaderSection}`}>
-            <span className={styles.emptyMsg}>No Tasks found</span>
-          </div>
         ) : (
           tasksData.data?.length !== 0 &&
           tasksData.data?.map((item: any, index: number) => {
+            console.log("item: ", item);
             const isPA = item?.role?.toLowerCase() === "primary author";
 
             const isConfigurationCard: boolean =
@@ -283,6 +286,20 @@ const MyTasks = (): JSX.Element => {
                   // handle the card configuration and card routes here
                   if (isConfigurationCard) {
                     await getUniqueTaskData(item?.taskID, dispatch);
+
+                    if (item?.docVersion !== "1.0") {
+                      dispatch(
+                        setConfigurePageDetails({
+                          pageKey: "version update",
+                        })
+                      );
+                    } else {
+                      dispatch(
+                        setConfigurePageDetails({
+                          pageKey: "add",
+                        })
+                      );
+                    }
 
                     if (isAdmin) {
                       navigate(`/admin/my_tasks/${item?.docName}/configure`);

@@ -43,6 +43,8 @@
     @extend .flexCenter;
     justify-content: space-between;
     .docTitle {
+      @extend .flexCenter;
+      gap: 15px;
       font-size: 17px;
       padding: 8px 25px;
       height: 38px;
@@ -92,4 +94,19 @@
   @extend .flexCenter;
   gap: 5px;
   // margin-right: 10px;
+}
+.versionPill {
+  height: 20px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: "interMedium", sans-serif !important;
+  padding: 5px 8px;
+  letter-spacing: 0.7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* box-shadow: 0 1px 5px #00000030; */
+  color: #eff5ff;
+  background: #666666;
+  border: 0;
 }
