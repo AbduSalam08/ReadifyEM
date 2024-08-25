@@ -105,6 +105,7 @@ const SDDSections = ({
         unqID: null,
         type: objKey,
         isValid: true,
+        isChecked: true,
         value: "",
       };
 
@@ -207,7 +208,7 @@ const SDDSections = ({
         ""
       )}
       <div className={`${styles.sectionWrapper}`}>
-        <div className={styles.header}>
+        {/* <div className={styles.header}>
           <p className={styles.userCount}>{sectionTitle} </p>
           {sectionsData[0]?.type?.toLowerCase() !== "defaultsection" &&
             !viewOnly && (
@@ -219,6 +220,18 @@ const SDDSections = ({
                 />
               </button>
             )}
+        </div> */}
+        <div className={styles.header}>
+          <p className={styles.userCount}>{sectionTitle} </p>
+          {!viewOnly && (
+            <button className={styles.addBtn} onClick={handleAddUser}>
+              <Add
+                sx={{
+                  fontSize: "18px",
+                }}
+              />
+            </button>
+          )}
         </div>
 
         <div className={`${styles.userCardsWrapper} `}>
@@ -238,30 +251,44 @@ const SDDSections = ({
                     {!isNotDefaultSection &&
                     sectionsData[0]?.type?.toLowerCase() ===
                       "defaultsection" ? (
-                      <FormControlLabel
-                        label={user.value}
-                        className="SDDcheckBox"
-                        style={{
-                          paddingLeft: "18px",
-                          fontSize: "14px",
-                          fontFamily: "interRegular, sans-serif",
-                        }}
-                        control={
-                          <Checkbox
-                            checkedIcon={<RadioButtonCheckedIcon />}
-                            icon={<RadioButtonUncheckedIcon />}
-                            key={i}
-                            name={user?.value}
-                            value={user?.sectionSelected}
-                            checked={user?.sectionSelected}
-                            id={user.value}
-                            onChange={(e: any) => {
-                              !viewOnly &&
-                                handleSelectSection(i, e.target.checked);
-                            }}
-                          />
-                        }
-                      />
+                      user.value !== "" && !user.isChecked ? (
+                        <FormControlLabel
+                          label={user.value}
+                          className="SDDcheckBox"
+                          style={{
+                            paddingLeft: "18px",
+                            fontSize: "14px",
+                            fontFamily: "interRegular, sans-serif",
+                          }}
+                          control={
+                            <Checkbox
+                              checkedIcon={<RadioButtonCheckedIcon />}
+                              icon={<RadioButtonUncheckedIcon />}
+                              key={i}
+                              name={user?.value}
+                              value={user?.sectionSelected}
+                              checked={user?.sectionSelected}
+                              id={user.value}
+                              onChange={(e: any) => {
+                                !viewOnly &&
+                                  handleSelectSection(i, e.target.checked);
+                              }}
+                            />
+                          }
+                        />
+                      ) : (
+                        <CustomInput
+                          key={i}
+                          readOnly={viewOnly || false}
+                          size="SM"
+                          icon={false}
+                          onChange={(value: any) => handleChange(i, value)}
+                          value={user?.value}
+                          placeholder="Enter here"
+                          isValid={!user?.isValid}
+                          inputWrapperClassName={`${styles.sectionInput}`}
+                        />
+                      )
                     ) : (
                       <CustomInput
                         key={i}
