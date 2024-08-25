@@ -286,6 +286,7 @@ const UpdateDocumentInLib = async ({
   changedDocumentPath,
   reorderDoc,
 }: IUpdateProps): Promise<any> => {
+  debugger;
   try {
     setLoaderState({
       isLoading: {
@@ -315,7 +316,13 @@ const UpdateDocumentInLib = async ({
           sequenceNo: responseData?.sequenceNo,
         }
       : {
-          FileLeafRef: responseData?.Title,
+          FileLeafRef:
+            responseData?.documentVersion !== "1.0"
+              ? `${replaceVersionInFilename(
+                  responseData?.Title,
+                  responseData?.documentVersion
+                )}.0`
+              : responseData?.Title,
           status: responseData?.status,
           isVisible: false,
           nextReviewDate: responseData?.nextReviewDate,
@@ -327,7 +334,14 @@ const UpdateDocumentInLib = async ({
       await sp.web
         .getFileByServerRelativePath(changedDocumentPath)
         .moveByPath(
-          `${responseData?.documentPath}/${responseData.Title}.pdf`,
+          `${responseData?.documentPath}/${
+            responseData?.documentVersion !== "1.0"
+              ? replaceVersionInFilename(
+                  responseData?.Title,
+                  responseData?.documentVersion
+                )
+              : responseData?.Title
+          }.pdf`,
           false,
           false
         )
@@ -725,9 +739,13 @@ const UpdateDocument = async (
         : data?.reduce((acc: any, el: any) => {
             acc[el.key] =
               el.key === "approvers"
-                ? JSON.stringify(currentApprovers)
+                ? JSON.stringify(
+                    currentApprovers?.flatMap((item: any) => item?.value)
+                  )
                 : el.key === "reviewers"
-                ? JSON.stringify(currentReviewers)
+                ? JSON.stringify(
+                    currentReviewers?.flatMap((item: any) => item?.value)
+                  )
                 : el.key === "primaryAuthorId"
                 ? el?.value?.length === 0
                   ? null
@@ -882,6 +900,7 @@ const UpdateDocument = async (
       }
     }
   } else {
+    debugger;
     try {
       setLoaderState({
         isLoading: {
@@ -900,6 +919,10 @@ const UpdateDocument = async (
         (el: any) => el?.templateName === data[1]?.value
       )?.ID;
 
+      const documentVersion = data?.filter(
+        (item: any) => item?.key === "documentVersion"
+      )[0]?.value;
+
       const formData = reorderDoc
         ? { sequenceNo: data?.sequenceNo }
         : data?.reduce((acc: any, el: any) => {
@@ -911,7 +934,9 @@ const UpdateDocument = async (
                   ? null
                   : el.value[0]?.id
                 : el.key === "Title"
-                ? trimStartEnd(el.value)
+                ? documentVersion !== "1.0"
+                  ? replaceVersionInFilename(el?.value, documentVersion)
+                  : trimStartEnd(el.value)
                 : el.key === "isDraft"
                 ? isDraft
                 : el.key === "status"

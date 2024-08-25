@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -1096,7 +1097,10 @@ const SupportingDocuments: React.FC<Props> = ({
           />
 
           {currentDocDetailsData?.version !== "1.0" &&
-            (currentDocRole?.reviewer || currentDocRole?.approver) && (
+            !currentDocRole?.reviewer &&
+            !currentDocRole?.consultant &&
+            !currentDocRole?.approver &&
+            !currentSectionDetails?.sectionSubmitted && (
               <DefaultButton
                 text="Change record"
                 btnType="primaryGreen"
@@ -1143,8 +1147,8 @@ const SupportingDocuments: React.FC<Props> = ({
                         <DefaultButton
                           text={
                             currentDocRole?.reviewer
-                              ? "Reviewed"
-                              : currentDocRole?.approver && "Approved"
+                              ? "Review"
+                              : currentDocRole?.approver && "Approve"
                           }
                           disabled={
                             currentSectionDetails?.sectionSubmitted &&

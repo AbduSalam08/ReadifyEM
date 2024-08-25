@@ -477,6 +477,7 @@ interface Props {
   multiUsers?: boolean;
   mandatory?: boolean;
   popupControl?: boolean;
+  hasSubmitBtn?: boolean;
 }
 
 const CustomPeoplePicker: React.FC<Props> = ({
@@ -502,6 +503,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
   mandatory,
   multiUsers = false,
   popupControl = false,
+  hasSubmitBtn = false,
 }) => {
   const initialPopupController = [
     {
@@ -555,7 +557,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
         minHeight: minHeight ? minHeight : "34px",
         maxHeight: maxHeight ? maxHeight : "50px",
         minWidth: minWidth ? minWidth : "290px",
-        maxWidth: maxWidth ? maxWidth : "200px",
+        maxWidth: maxWidth ? maxWidth : "100%",
         background: "#fff",
         border: isValid
           ? "1px solid #ff8585"
@@ -704,7 +706,6 @@ const CustomPeoplePicker: React.FC<Props> = ({
     onChange && onChange(obj);
   };
   const handleSubmit = (): any => {
-    debugger;
     onSubmit();
     handleClosePopup(0);
   };
@@ -736,28 +737,41 @@ const CustomPeoplePicker: React.FC<Props> = ({
 
   // popup Action state
   const popupActions: any[] = [
-    [
-      {
-        text: "Close",
-        btnType: "darkGreyVariant",
-        disabled: false,
-        endIcon: false,
-        startIcon: false,
-        onClick: () => {
-          handleClosePopup(0);
-        },
-      },
-      {
-        text: "Submit",
-        btnType: "primary",
-        disabled: false,
-        endIcon: false,
-        startIcon: false,
-        onClick: () => {
-          handleSubmit();
-        },
-      },
-    ],
+    hasSubmitBtn
+      ? [
+          {
+            text: "Close",
+            btnType: "darkGreyVariant",
+            disabled: false,
+            endIcon: false,
+            startIcon: false,
+            onClick: () => {
+              handleClosePopup(0);
+            },
+          },
+          {
+            text: "Submit",
+            btnType: "primary",
+            disabled: false,
+            endIcon: false,
+            startIcon: false,
+            onClick: () => {
+              handleSubmit();
+            },
+          },
+        ]
+      : [
+          {
+            text: "Close",
+            btnType: "darkGreyVariant",
+            disabled: false,
+            endIcon: false,
+            startIcon: false,
+            onClick: () => {
+              handleClosePopup(0);
+            },
+          },
+        ],
   ];
 
   return (
@@ -802,7 +816,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
           resolveDelay={1000}
           disabled={readOnly}
         />
-        {popupControl && multiUsers && (
+        {popupControl && multiUsers && !readOnly && (
           // <button
           //   className={styles.peoplePickerButton}
           //   type="button"

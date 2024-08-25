@@ -1044,6 +1044,8 @@ export const changeDocStatus = async (
   dispatch: any,
   lastPromoter?: any
 ): Promise<any> => {
+  console.log("docDetailsData: ", docDetailsData);
+  debugger;
   let fileID: any;
   let currentDocResponse: any;
 
@@ -1061,12 +1063,13 @@ export const changeDocStatus = async (
     .catch((err: any) => {
       console.log("err: ", err);
     });
+  debugger;
 
   await SpServices.SPUpdateItem({
     Listname: LISTNAMES.DocumentDetails,
     ID: docID,
     RequestJSON: {
-      status: statusName,
+      status: statusName?.toLowerCase() === "approved" ? "Current" : statusName,
       [`${promoteTo}`]: JSON.stringify(promoteToData),
     },
   })
@@ -1080,6 +1083,48 @@ export const changeDocStatus = async (
         });
 
       if (promoteTo === "reviewers" && !lastPromoter) {
+        if (promoteToData?.some((item: any) => item?.status === "completed")) {
+          await SpServices.SPReadItems({
+            Listname: LISTNAMES.MyTasks,
+            Select: "*, documentDetails/ID",
+            Expand: "documentDetails",
+            Filter: [
+              {
+                FilterKey: "documentDetails",
+                Operator: "eq",
+                FilterValue: docID,
+              },
+              {
+                FilterKey: "role",
+                Operator: "eq",
+                FilterValue: "Reviewer",
+              },
+              {
+                FilterKey: "taskAssignee",
+                Operator: "eq",
+                FilterValue:
+                  promoteToData?.filter(
+                    (item: any) => item?.status === "completed"
+                  )[0]?.userData?.id || promoteToData[0]?.userData?.id,
+              },
+            ],
+          })
+            .then(async (res: any) => {
+              if (res) {
+                await SpServices.SPUpdateItem({
+                  Listname: LISTNAMES.MyTasks,
+                  ID: res[0]?.ID,
+                  RequestJSON: {
+                    completed: true,
+                    completedOn: dayjs(new Date()).format("DD/MM/YYYY"),
+                  },
+                });
+              }
+            })
+            .catch((err: any) => {
+              console.log("err: ", err);
+            });
+        }
         await SpServices.SPAddItem({
           Listname: LISTNAMES.MyTasks,
           RequestJSON: {

@@ -539,7 +539,6 @@ const SectionContent: React.FC<IProps> = ({
   const [points, setPoints] = useState<IPoint[]>([
     { text: String(sectionNumber), value: "", class: "I_0" },
   ]);
-  console.log("points: ", points);
 
   const [subPointSequences, setSubPointSequences] = useState<{
     [key: string]: number;
@@ -1134,7 +1133,10 @@ const SectionContent: React.FC<IProps> = ({
             />
 
             {currentDocDetailsData?.version !== "1.0" &&
-              (currentDocRole?.reviewer || currentDocRole?.approver) && (
+              !currentDocRole?.reviewer &&
+              !currentDocRole?.consultant &&
+              !currentDocRole?.approver &&
+              !currentSectionDetails?.sectionSubmitted && (
                 <DefaultButton
                   text="Change record"
                   btnType="primaryGreen"
@@ -1179,8 +1181,8 @@ const SectionContent: React.FC<IProps> = ({
                           <DefaultButton
                             text={
                               currentDocRole?.reviewer
-                                ? "Reviewed"
-                                : currentDocRole?.approver && "Approved"
+                                ? "Review"
+                                : currentDocRole?.approver && "Approv"
                             }
                             disabled={
                               !sectionLoader &&

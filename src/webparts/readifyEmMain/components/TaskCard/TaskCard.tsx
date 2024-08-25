@@ -16,6 +16,7 @@ import { useDispatch } from "react-redux";
 // import { getUniqueSectionsDetails } from "../../../../services/ConfigureSections/ConfigureSectionsServices";
 import { setConfigurePageDetails } from "../../../../redux/features/SectionConfigurationSlice";
 import DueDatePill from "../common/DueDatePill/DueDatePill";
+import { removeVersionFromDocName } from "../../../../utils/formatDocName";
 
 interface CardProps {
   title: string;
@@ -75,9 +76,15 @@ const TaskCard: React.FC<CardProps> = ({
   return !taskData?.completed ? (
     <div className={styles.taskCard}>
       <div className={styles.cardTopSection}>
-        <div className={`${styles.cardIndicator} ${roleClass.badge}`} />
+        <div className={`${styles.cardIndicator} ${roleClass.badge}`}>
+          {taskData?.docVersion !== "1.0" && `version ${taskData?.docVersion}`}
+        </div>
         <div className={styles.cardHeader}>
-          <span className={styles.cardTitle}>{title}</span>
+          <span className={styles.cardTitle}>
+            {taskData?.docVersion !== "1.0"
+              ? removeVersionFromDocName(title)
+              : title}
+          </span>
           <div className={styles.pillRHS}>
             {btnText?.toLowerCase() === "open" && roles === "Primary Author" ? (
               <button
@@ -137,9 +144,15 @@ const TaskCard: React.FC<CardProps> = ({
   ) : (
     <div className={styles.taskCard}>
       <div className={styles.cardTopSection}>
-        <div className={`${styles.cardIndicator} ${roleClass.badge}`} />
+        <div className={`${styles.cardIndicator} ${roleClass.badge}`}>
+          {taskData?.docVersion !== "1.0" && `version ${taskData?.docVersion}`}
+        </div>
         <div className={styles.cardHeader}>
-          <span className={styles.cardTitle}>{title}</span>
+          <span className={styles.cardTitle}>
+            {taskData?.docVersion !== "1.0"
+              ? removeVersionFromDocName(title)
+              : title}
+          </span>
           <div className={styles.pillRHS}>
             {btnText?.toLowerCase() === "open" &&
               roles === "Primary Author" && (

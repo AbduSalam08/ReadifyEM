@@ -40,7 +40,7 @@ export const getAllTasksList = async (
 
     const uniqueTasksMap: Map<string, any> = new Map();
 
-    dataResponse?.forEach((item: any) => {
+    dataResponse?.forEach(async (item: any) => {
       const defaultFields: any = {
         taskID: [item?.ID],
         documentDetailsId: item.documentDetailsId,
@@ -146,6 +146,7 @@ export const getUniqueTaskData = async (
   taskID: any,
   dispatch: any
 ): Promise<any> => {
+  debugger;
   const TASK_ID: any =
     typeof taskID === "object" && taskID?.length !== 0 ? taskID[0] : taskID;
 
@@ -166,6 +167,24 @@ export const getUniqueTaskData = async (
 
   const responseData: any = taskResponse[0];
   console.log("responseData: ", responseData);
+  let fileDetailsID: any;
+
+  await SpServices.SPReadItemUsingId({
+    Listname: LISTNAMES.DocumentDetails,
+    SelectedId: responseData?.documentDetailsId,
+    Select: "*, fileDetails/ID",
+    Expand: "fileDetails",
+  })
+    .then((res: any) => {
+      console.log("res: ", res);
+      const resp = res[0] || res;
+      fileDetailsID = resp?.fileDetailsId;
+    })
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
+
+  console.log("fileDetailsID: ", fileDetailsID);
 
   const uniqueTaskData: any = {
     taskID: responseData?.ID,
@@ -183,6 +202,7 @@ export const getUniqueTaskData = async (
     taskDueDate: responseData?.taskDueDate,
     taskStatus: responseData?.taskStatus,
     docStatus: responseData?.docStatus,
+    fileDetailsID: fileDetailsID,
   };
 
   dispatch && dispatch(setUniqueTasksData(uniqueTaskData));
@@ -249,6 +269,7 @@ export const AddPrimaryAuthorTask = async (
       });
 
       const AllTasks: any[] = [...primaryAuthorTasks];
+      console.log("AllTasks: ", AllTasks);
 
       const allTaskCalls: any = AllTasks?.map(async (taskItem: any) => {
         const defaultPayload: any = {
@@ -265,7 +286,7 @@ export const AddPrimaryAuthorTask = async (
           docVersion: taskItem?.docVersion,
           docStatus: taskItem?.docStatus,
           taskStatus: taskItem?.taskStatus,
-          fileDetailsId: taskItem?.fileDetailsId,
+          // fileDetailsId: taskItem?.fileDetailsId,
         };
         await SpServices.SPAddItem({
           Listname: LISTNAMES.MyTasks,

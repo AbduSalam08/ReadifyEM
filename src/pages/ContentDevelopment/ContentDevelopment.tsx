@@ -364,7 +364,7 @@ const ContentDevelopment = (): JSX.Element => {
     if (currentPromoter?.currentOrder === totalApprovers) {
       await changeDocStatus(
         currentDocDetailsData?.documentDetailsID,
-        "Approved", // Set the document status to Approved
+        "Current", // Set the document status to Approved
         "approvers",
         updatedApprovers,
         currentDocDetailsData,
@@ -389,7 +389,6 @@ const ContentDevelopment = (): JSX.Element => {
   };
 
   const submitPromotedComment = async () => {
-    debugger;
     handleClosePopup(5);
 
     try {
@@ -1228,7 +1227,29 @@ const ContentDevelopment = (): JSX.Element => {
                         disabled={
                           currentPromoter?.status === "completed" ||
                           currentDocDetailsData?.documentStatus?.toLowerCase() ===
-                            "in rework"
+                            "in rework" ||
+                          (currentDocRole.reviewer &&
+                            AllSectionsData?.every(
+                              (item: any) =>
+                                item?.sectionType?.toLowerCase() !==
+                                  "header section" &&
+                                item.sectionType?.toLowerCase() !==
+                                  "references section" &&
+                                item.sectionType?.toLowerCase() !==
+                                  "change record" &&
+                                item?.sectionReviewed
+                            )) ||
+                          (currentDocRole.approver &&
+                            AllSectionsData?.every(
+                              (item: any) =>
+                                item?.sectionType?.toLowerCase() !==
+                                  "header section" &&
+                                item.sectionType?.toLowerCase() !==
+                                  "references section" &&
+                                item.sectionType?.toLowerCase() !==
+                                  "change record" &&
+                                item?.sectionApproved
+                            ))
                         }
                         btnType="secondary"
                         onClick={() => {

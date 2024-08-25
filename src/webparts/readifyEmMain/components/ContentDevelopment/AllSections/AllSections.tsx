@@ -28,7 +28,6 @@ const AllSections: React.FC<Props> = ({
   currentDocDetailsData,
   currentDocRole,
 }) => {
-  console.log("data: ", data);
   const selectSection = (index: number, type: string): any => {
     if (type === "View comments") {
       onChange(index, false, "Promoted Comments");
@@ -206,38 +205,60 @@ const AllSections: React.FC<Props> = ({
                       item?.sectionType !== "references section" && (
                         <div className={styles.sectionList}>
                           {/* <span className={styles.statusSec}>{item.sectionStatus}</span> */}
-                          <StatusPill
-                            status={
-                              item?.sectionStatus
-                                ?.toLowerCase()
-                                ?.includes("yet to be reviewed")
-                                ? "Review in progress"
-                                : item?.sectionStatus
-                                    ?.toLowerCase()
-                                    ?.includes("yet to be approved")
-                                ? "Approval in progress"
-                                : item?.sectionStatus
-                            }
-                            dynamicText={
-                              item?.sectionStatus
-                                ?.toLowerCase()
-                                ?.includes("yet to be reviewed")
-                                ? updateStatusCount(
-                                    item?.sectionStatus,
-                                    currentDocDetailsData?.reviewers?.length
-                                  )
-                                : item?.sectionStatus
-                                    ?.toLowerCase()
-                                    ?.includes("yet to be approved")
-                                ? updateStatusCount(
-                                    item?.sectionStatus,
-                                    currentDocDetailsData?.approvers?.length
-                                  )
-                                : ""
-                            }
-                            size="SM"
-                            ontrackDot={true}
-                          />
+                          {currentDocRole?.approver &&
+                          (item?.sectionApproved ||
+                            currentPromoter?.status?.toLowerCase() ===
+                              "completed") ? (
+                            <StatusPill
+                              status={"submitted"}
+                              dynamicText={"Approved"}
+                              size="SM"
+                              ontrackDot={true}
+                            />
+                          ) : currentDocRole?.reviewer &&
+                            (item?.sectionReviewed ||
+                              currentPromoter?.status?.toLowerCase() ===
+                                "completed") ? (
+                            <StatusPill
+                              status={"submitted"}
+                              dynamicText={"Reviewed"}
+                              size="SM"
+                              ontrackDot={true}
+                            />
+                          ) : (
+                            <StatusPill
+                              status={
+                                item?.sectionStatus
+                                  ?.toLowerCase()
+                                  ?.includes("yet to be reviewed")
+                                  ? "Review in progress"
+                                  : item?.sectionStatus
+                                      ?.toLowerCase()
+                                      ?.includes("yet to be approved")
+                                  ? "Approval in progress"
+                                  : item?.sectionStatus
+                              }
+                              dynamicText={
+                                item?.sectionStatus
+                                  ?.toLowerCase()
+                                  ?.includes("yet to be reviewed")
+                                  ? updateStatusCount(
+                                      item?.sectionStatus,
+                                      currentDocDetailsData?.reviewers?.length
+                                    )
+                                  : item?.sectionStatus
+                                      ?.toLowerCase()
+                                      ?.includes("yet to be approved")
+                                  ? updateStatusCount(
+                                      item?.sectionStatus,
+                                      currentDocDetailsData?.approvers?.length
+                                    )
+                                  : ""
+                              }
+                              size="SM"
+                              ontrackDot={true}
+                            />
+                          )}
                           <div
                             className={styles.flexCenter}
                             style={{

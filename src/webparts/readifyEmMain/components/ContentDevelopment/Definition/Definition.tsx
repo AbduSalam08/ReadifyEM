@@ -1250,7 +1250,10 @@ const Definition: React.FC<Props> = ({
               }}
             />
             {currentDocDetailsData?.version !== "1.0" &&
-              (currentDocRole?.reviewer || currentDocRole?.approver) && (
+              !currentDocRole?.reviewer &&
+              !currentDocRole?.consultant &&
+              !currentDocRole?.approver &&
+              !currentSectionDetails?.sectionSubmitted && (
                 <DefaultButton
                   text="Change record"
                   btnType="primaryGreen"
@@ -1296,8 +1299,8 @@ const Definition: React.FC<Props> = ({
                           <DefaultButton
                             text={
                               currentDocRole?.reviewer
-                                ? "Reviewed"
-                                : currentDocRole?.approver && "Approved"
+                                ? "Review"
+                                : currentDocRole?.approver && "Approv"
                             }
                             disabled={
                               currentSectionDetails?.sectionSubmitted &&

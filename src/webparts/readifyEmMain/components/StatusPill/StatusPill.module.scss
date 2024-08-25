@@ -6,7 +6,7 @@
   --inRework-color: #ffe3e3;
   --inApproval-color: #673ab7;
   --approved-color: #deffe6;
-  --current-color: #ffc107;
+  --current-color: #ece7ff;
   --hidden-color: #607d8b;
   --contentInProgress-color: #fff7e8;
   --contentSubmitted-color: #e8fff3;
@@ -61,7 +61,7 @@
   }
   &.current {
     background-color: var(--current-color);
-    color: black;
+    color: #150387;
   }
   &.hidden {
     background-color: var(--hidden-color);

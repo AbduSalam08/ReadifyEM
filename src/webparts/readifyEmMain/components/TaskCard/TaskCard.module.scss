@@ -24,9 +24,14 @@
     border-top-right-radius: 0;
     border-top-left-radius: 0;
     // background-color: #1068a8;
-    width: 23px;
+    min-width: 23px;
+    color: #fff;
+    font-family: "interSemiBold", sans-serif;
+    font-size: 12px;
+    padding: 0 10px;
     height: 20px;
     margin-bottom: 5px;
+    @extend .flexcenter;
   }
   .cardTopSection {
     @extend .flexcenter;
