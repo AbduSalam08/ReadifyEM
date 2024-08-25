@@ -182,8 +182,7 @@ const SectionHeader: React.FC<Props> = ({
     setConsultantsState(value);
   };
 
-  const onSubmitFunction = async () => {
-    debugger;
+  const onSubmitFunction = async (): Promise<any> => {
     await addSectionConsultants(
       currentDocDetailsData,
       activeSectionData,
@@ -271,6 +270,7 @@ const SectionHeader: React.FC<Props> = ({
                       ? !currentDocRole.sectionAuthor
                       : !currentDocRole.primaryAuthor
                   }
+                  hasSubmitBtn={true}
                   multiUsers={true}
                   popupControl={true}
                   hideErrMsg

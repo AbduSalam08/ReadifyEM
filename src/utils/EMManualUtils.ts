@@ -132,14 +132,15 @@ export function replaceVersionInFilename(
   const underscoreIndex = filename.lastIndexOf("_");
 
   if (underscoreIndex === -1) {
-    // No underscore found, append the new version at the end of the filename
+    // No underscore found, append the new version with an underscore
     return `${filename}_${newVersion}`;
   }
 
-  // Extract the part before the underscore and append the new version
-  const newFilename = `${filename.substring(
-    0,
-    underscoreIndex + 1
-  )}${newVersion}`;
+  // Extract the part before the last underscore
+  const baseName = filename.substring(0, underscoreIndex);
+
+  // Construct the new filename with the new version
+  const newFilename =
+    newVersion !== "1.0" ? `${baseName}_${newVersion}` : baseName;
   return newFilename;
 }

@@ -218,7 +218,7 @@ const SectionComments: React.FC<Props> = ({
                 }}
               /> */}
               <CustomTextArea
-                placeholder="Enter your comments here..."
+                placeholder="Enter your comments"
                 noBorderInput={true}
                 inputWrapperClassName={styles.commentBoxInput}
                 value={inputComment}

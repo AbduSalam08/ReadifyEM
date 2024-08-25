@@ -67,7 +67,6 @@ export const addSectionConsultants = async (
           }));
           await Promise.all(
             newConsultantTasks.map(async (taskItem: any) => {
-              debugger;
               await SpServices.SPAddItem({
                 Listname: LISTNAMES.MyTasks,
                 RequestJSON: {
@@ -83,7 +82,7 @@ export const addSectionConsultants = async (
                   ),
                   documentDetailsId: documentDetails?.documentDetailsID,
                   sectionDetailsId: sectionDetails?.ID,
-                  pathName: documentDetails?.documentPath,
+                  pathName: documentDetails?.documentPath?.split("/").pop(),
                   sectionName: taskItem.sectionName,
                   docStatus: documentDetails.documentStatus,
                   taskAssignedById: currentUserDetails?.id,

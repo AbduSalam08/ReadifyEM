@@ -944,55 +944,59 @@ const TableOfContents = (): JSX.Element => {
                 <>
                   {isAdmin && latestDoc && (
                     <>
-                      <DefaultButton
-                        disableRipple={true}
-                        style={{
-                          minWidth: "auto",
-                        }}
-                        btnType={"actionBtn"}
-                        text={
-                          <img
-                            src={contentDeveloperEdit}
-                            style={{
-                              width: "19px",
-                            }}
-                          />
-                        }
-                        disabled={
-                          item?.fields.status?.toLowerCase() === "not started"
-                        }
-                        key={index}
-                        onClick={() => {
-                          if (isAdmin) {
-                            navigate(
-                              `/admin/my_tasks/${item?.docName}/content_developer`
-                            );
-                            const taskDetails = {
-                              documentDetailsId: item?.ID,
-                              role: "admin",
-                            };
-                            getSectionsDetails(taskDetails, null, dispatch);
+                      {item?.fields?.status?.toLowerCase() !== "current" && (
+                        <DefaultButton
+                          disableRipple={true}
+                          style={{
+                            minWidth: "auto",
+                          }}
+                          btnType={"actionBtn"}
+                          text={
+                            <img
+                              src={contentDeveloperEdit}
+                              style={{
+                                width: "19px",
+                              }}
+                            />
                           }
-                        }}
-                      />
-                      <DefaultButton
-                        disableRipple={true}
-                        style={{
-                          minWidth: "auto",
-                        }}
-                        btnType={"actionBtn"}
-                        text={<img src={editIcon} />}
-                        key={index}
-                        onClick={() => {
-                          setScreens((prev) => ({
-                            ...prev,
-                            NewDocument: true,
-                            toc: false,
-                            pageTitle: `${item.name} - Edit Document`,
-                            editDocumentData: item,
-                          }));
-                        }}
-                      />
+                          disabled={
+                            item?.fields.status?.toLowerCase() === "not started"
+                          }
+                          key={index}
+                          onClick={() => {
+                            if (isAdmin) {
+                              navigate(
+                                `/admin/my_tasks/${item?.docName}/content_developer`
+                              );
+                              const taskDetails = {
+                                documentDetailsId: item?.ID,
+                                role: "admin",
+                              };
+                              getSectionsDetails(taskDetails, null, dispatch);
+                            }
+                          }}
+                        />
+                      )}
+                      {item?.fields?.status?.toLowerCase() !== "current" && (
+                        <DefaultButton
+                          disableRipple={true}
+                          style={{
+                            minWidth: "auto",
+                          }}
+                          btnType={"actionBtn"}
+                          text={<img src={editIcon} />}
+                          key={index}
+                          onClick={() => {
+                            setScreens((prev) => ({
+                              ...prev,
+                              NewDocument: true,
+                              toc: false,
+                              pageTitle: `${item.name} - Edit Document`,
+                              editDocumentData: item,
+                            }));
+                          }}
+                        />
+                      )}
                     </>
                   )}
                   <DefaultButton
@@ -1016,7 +1020,7 @@ const TableOfContents = (): JSX.Element => {
                     }}
                   />
                   {isAdmin &&
-                    item?.fields?.status?.toLowerCase() === "approved" &&
+                    item?.fields?.status?.toLowerCase() === "current" &&
                     latestDoc && (
                       <DefaultButton
                         disableRipple={true}

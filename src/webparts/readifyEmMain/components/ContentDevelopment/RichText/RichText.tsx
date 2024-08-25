@@ -825,7 +825,10 @@ const RichText = ({
             />
 
             {currentDocDetailsData?.version !== "1.0" &&
-              (currentDocRole?.reviewer || currentDocRole?.approver) && (
+              !currentDocRole?.reviewer &&
+              !currentDocRole?.consultant &&
+              !currentDocRole?.approver &&
+              !currentSectionData?.sectionSubmitted && (
                 <DefaultButton
                   text="Change record"
                   btnType="primaryGreen"
@@ -871,8 +874,8 @@ const RichText = ({
                           <DefaultButton
                             text={
                               currentDocRole?.reviewer
-                                ? "Reviewed"
-                                : currentDocRole?.approver && "Approved"
+                                ? "Review"
+                                : currentDocRole?.approver && "Approve"
                             }
                             disabled={
                               !sectionLoader &&

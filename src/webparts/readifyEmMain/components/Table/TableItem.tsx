@@ -8,6 +8,7 @@ import styles from "./Table.module.scss";
 import StatusPill from "../StatusPill/StatusPill";
 import { CurrentUserIsAdmin } from "../../../../constants/DefineUser";
 import DueDatePill from "../common/DueDatePill/DueDatePill";
+import { formatDocNameWithLastVersion } from "../../../../utils/formatDocName";
 
 interface LibraryItem {
   name: string;
@@ -64,7 +65,9 @@ const TableItem: React.FC<TableItemProps> = ({
       >
         <div className={`${styles.item}`} title={item.name || "-"}>
           <img src={pdfIcon} alt={pdfIcon} />
-          <span>{item.name}</span>
+          <span>
+            {formatDocNameWithLastVersion(item.name, item?.version, true)}
+          </span>
           {item.isDraft && <div className={styles.draftPill}>Draft</div>}
         </div>
         {Object.keys(item.fields).map((key: string, i: number) => {
