@@ -264,15 +264,15 @@ const SDDTemplates = (): JSX.Element => {
         errorMsg="Default Section's required."
         key={2}
       />,
-      <SDDSections
-        sectionTitle="New Sections"
-        sectionsData={sectionsData.normalSection}
-        AllSectionsData={sectionsData}
-        objKey={"normalSection"}
-        setSectionsData={setSectionsData}
-        errorMsg="New Sections required."
-        key={4}
-      />,
+      // <SDDSections
+      //   sectionTitle="New Sections"
+      //   sectionsData={sectionsData.normalSection}
+      //   AllSectionsData={sectionsData}
+      //   objKey={"normalSection"}
+      //   setSectionsData={setSectionsData}
+      //   errorMsg="New Sections required."
+      //   key={4}
+      // />,
       <SDDSections
         sectionTitle="Appendix Sections"
         sectionsData={sectionsData.appendixSection}
