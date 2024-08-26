@@ -151,6 +151,7 @@ import {
   setCDHeaderDetails,
   setCDSectionData,
 } from "../redux/features/ContentDevloperSlice";
+import dayjs from "dayjs";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const AddAppendixAttachment = async (
@@ -671,3 +672,55 @@ export const getCurrentLoggedPromoter = (
           );
         })[0];
 };
+
+export async function updateTaskCompletion(
+  sectionName: string,
+  documentOfId: string,
+  type: "active" | "completed"
+): Promise<void> {
+  try {
+    // Read items from SharePoint
+    const res = await SpServices.SPReadItems({
+      Listname: LISTNAMES.MyTasks,
+      Select: "*",
+      Filter: [
+        {
+          FilterKey: "sectionName",
+          Operator: "eq",
+          FilterValue: sectionName,
+        },
+        {
+          FilterKey: "documentDetails",
+          Operator: "eq",
+          FilterValue: documentOfId,
+        },
+      ],
+    });
+
+    console.log("res: ", res);
+    let updatedTaskData;
+    if (type === "active") {
+      // Prepare updated task data
+      updatedTaskData = res?.map((element: any) => ({
+        ID: element?.ID,
+        completed: false,
+        completedOn: "",
+      }));
+    } else {
+      // Prepare updated task data
+      updatedTaskData = res?.map((element: any) => ({
+        ID: element?.ID,
+        completed: true,
+        completedOn: dayjs(new Date()).format("DD/MM/YYYY"),
+      }));
+    }
+
+    // Batch update tasks
+    await SpServices.batchUpdate({
+      ListName: LISTNAMES.MyTasks,
+      responseData: updatedTaskData,
+    });
+  } catch (err) {
+    console.error("Error updating tasks: ", err);
+  }
+}

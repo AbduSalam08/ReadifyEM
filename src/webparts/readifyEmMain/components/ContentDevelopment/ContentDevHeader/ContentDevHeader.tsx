@@ -130,7 +130,9 @@ const Header: React.FC<Props> = ({
                 btnType="primaryGreen"
                 disabled={
                   currentDocDetailsData?.documentStatus?.toLowerCase() !==
-                  "approved"
+                    "approved" ||
+                  currentDocDetailsData?.documentStatus?.toLowerCase() !==
+                    "current"
                 }
                 // endIcon={<img src={locationIcon} alt="track" />}
                 onClick={() =>

@@ -392,7 +392,7 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
                     fontFamily: "interMedium, sans-serif",
                   }}
                 >
-                  Reviewal in progress
+                  Sections submitted
                 </p>
               </>
             ) : sectionsData?.some((item: any) => {
@@ -407,7 +407,7 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
                     fontFamily: "interMedium, sans-serif",
                   }}
                 >
-                  Approval in progress
+                  Sections submitted
                 </p>
               </>
             ) : (

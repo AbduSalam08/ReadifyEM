@@ -127,13 +127,7 @@ const TableOfContents = (): JSX.Element => {
   // main table data state
   const [tableData, setTableData] = useState({
     headers: isAdmin
-      ? [
-          "Document Name",
-          "Created At",
-          "Next Review",
-          "Status",
-          // "Visibility",
-        ]
+      ? ["Document Name", "Created At", "Next Review", "Status", "Visibility"]
       : ["Document Name", "Created At", "Next Review"],
     loading: false,
     data: [] as LibraryItem[],
@@ -922,7 +916,7 @@ const TableOfContents = (): JSX.Element => {
           <Table
             headers={tableData.headers}
             loading={tableData.loading}
-            columns={["createdDate", "nextReviewDate", "status"]}
+            columns={["createdDate", "nextReviewDate", "status", "isVisible"]}
             filters={filterOptions}
             data={tableData.data}
             actions={true}

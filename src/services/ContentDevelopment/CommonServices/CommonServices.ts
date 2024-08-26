@@ -1079,52 +1079,12 @@ export const changeDocStatus = async (
         .getByTitle(LIBNAMES.AllDocuments)
         .items.getById(fileID)
         .update({
-          status: statusName,
+          status:
+            statusName?.toLowerCase() === "current" ? "Approved" : statusName,
+          isVisible: promoteTo === "approvers" && lastPromoter,
         });
 
       if (promoteTo === "reviewers" && !lastPromoter) {
-        if (promoteToData?.some((item: any) => item?.status === "completed")) {
-          await SpServices.SPReadItems({
-            Listname: LISTNAMES.MyTasks,
-            Select: "*, documentDetails/ID",
-            Expand: "documentDetails",
-            Filter: [
-              {
-                FilterKey: "documentDetails",
-                Operator: "eq",
-                FilterValue: docID,
-              },
-              {
-                FilterKey: "role",
-                Operator: "eq",
-                FilterValue: "Reviewer",
-              },
-              {
-                FilterKey: "taskAssignee",
-                Operator: "eq",
-                FilterValue:
-                  promoteToData?.filter(
-                    (item: any) => item?.status === "completed"
-                  )[0]?.userData?.id || promoteToData[0]?.userData?.id,
-              },
-            ],
-          })
-            .then(async (res: any) => {
-              if (res) {
-                await SpServices.SPUpdateItem({
-                  Listname: LISTNAMES.MyTasks,
-                  ID: res[0]?.ID,
-                  RequestJSON: {
-                    completed: true,
-                    completedOn: dayjs(new Date()).format("DD/MM/YYYY"),
-                  },
-                });
-              }
-            })
-            .catch((err: any) => {
-              console.log("err: ", err);
-            });
-        }
         await SpServices.SPAddItem({
           Listname: LISTNAMES.MyTasks,
           RequestJSON: {
@@ -1258,7 +1218,10 @@ export const changeSectionStatus = async (
             sectionRework: false,
           }
         : {
-            sectionStatus: element?.status,
+            sectionStatus:
+              lastPromoter && promoterType === "approver"
+                ? "Approved"
+                : element?.status,
             // [`${promoterTypeKey}`]: true,
             sectionReviewed: true,
             sectionApproved: true,

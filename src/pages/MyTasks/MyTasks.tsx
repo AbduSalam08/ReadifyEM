@@ -78,12 +78,12 @@ const MyTasks = (): JSX.Element => {
   const changeTaskMode = (taskMode: number): void => {
     if (taskMode === 0) {
       const filteredData: any[] = myTasksData?.filter(
-        (task: any) => !task.completed
+        (task: any) => !task.completedAll
       );
       setTasksData({ loading: false, data: filteredData });
     } else {
       const filteredData: any[] = myTasksData?.filter(
-        (task: any) => task.completed
+        (task: any) => task.completedAll
       );
       setTasksData({ loading: false, data: filteredData });
     }
@@ -125,7 +125,7 @@ const MyTasks = (): JSX.Element => {
       })
     );
     const filteredData: any[] = myTasksData?.filter(
-      (task: any) => !task.completed
+      (task: any) => !task.completedAll
     );
     setTasksData({ loading: false, data: filteredData });
   }, [myTasksData]);

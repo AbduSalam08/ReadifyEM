@@ -9,6 +9,9 @@ import StatusPill from "../StatusPill/StatusPill";
 import { CurrentUserIsAdmin } from "../../../../constants/DefineUser";
 import DueDatePill from "../common/DueDatePill/DueDatePill";
 import { formatDocNameWithLastVersion } from "../../../../utils/formatDocName";
+import { InputSwitch } from "primereact/inputswitch";
+import SpServices from "../../../../services/SPServices/SpServices";
+import { LISTNAMES } from "../../../../config/config";
 
 interface LibraryItem {
   name: string;
@@ -45,6 +48,7 @@ const TableItem: React.FC<TableItemProps> = ({
   columns,
 }) => {
   const [data, setData] = useState(tableData);
+  console.log("data: ", data);
   const [isOpen, setIsOpen] = useState(data.open);
   const isAdmin: boolean = CurrentUserIsAdmin();
   useEffect(() => {
@@ -70,39 +74,97 @@ const TableItem: React.FC<TableItemProps> = ({
           </span>
           {item.isDraft && <div className={styles.draftPill}>Draft</div>}
         </div>
+
         {Object.keys(item.fields).map((key: string, i: number) => {
-          console.log("key: ", key);
-          return key.toLowerCase() !== "status" ? (
-            <div
-              className={styles.item}
-              title={item.fields[key] || "-"}
-              key={i}
-            >
-              {item.fields[key] || "-"}
-              {key?.toLowerCase() === "nextreviewdate" && !item.isDraft && (
-                <div
-                  style={{
-                    marginLeft: "10px",
-                  }}
-                >
-                  <DueDatePill
-                    dueDate={item.fields[key]}
-                    roles="Primary Author"
-                    leftText={"D"}
+          const lowerCaseKey = key.toLowerCase();
+          const fieldValue = item.fields[key] || "-";
+
+          if (lowerCaseKey === "status") {
+            return (
+              <div className={styles.item} title={fieldValue} key={i}>
+                <StatusPill
+                  status={
+                    // item.fields.status?.toLowerCase() === "approved" ||
+                    // item.fields.status?.toLowerCase() === "current"&&
+                    //    item.fields.isVisible?
+                    item.fields.status
+                    // : "Hidden"
+                  }
+                  size="MD"
+                />
+              </div>
+            );
+          }
+
+          if (lowerCaseKey === "isvisible") {
+            return (
+              <div className={styles.item} title={fieldValue} key={i}>
+                {(item.fields.status?.toLowerCase() === "approved" ||
+                  item.fields.status?.toLowerCase() === "current") && (
+                  <InputSwitch
+                    checked={item.fields[key]}
+                    className="sectionToggler"
+                    disabled={
+                      item.fields.status?.toLowerCase() !== "approved" &&
+                      item.fields.status?.toLowerCase() !== "current"
+                    }
+                    onChange={async (e) => {
+                      await SpServices.SPUpdateItem({
+                        Listname: LISTNAMES.AllDocuments,
+                        ID: item.fileID,
+                        RequestJSON: {
+                          isVisible: !item.fields.isVisible,
+                        },
+                      });
+                      // Update the local state to reflect the visibility change
+                      const currentItem = data.items?.find(
+                        (el: any) => el?.fileID === item?.fileID
+                      );
+
+                      if (currentItem) {
+                        setData((prev: any) => ({
+                          ...prev,
+                          items: prev.items.map((el: any) =>
+                            el.fileID === item.fileID
+                              ? {
+                                  ...el,
+                                  fields: {
+                                    ...el.fields,
+                                    isVisible: !el.fields.isVisible,
+                                  },
+                                }
+                              : el
+                          ),
+                        }));
+                      }
+                    }}
+                    key={i}
                   />
-                </div>
-              )}
-            </div>
-          ) : (
-            <div
-              className={styles.item}
-              title={item.fields[key] || "-"}
-              key={i}
-            >
-              <StatusPill status={item.fields[key]} size="MD" key={i} />
-            </div>
-          );
+                )}
+              </div>
+            );
+          }
+
+          if (lowerCaseKey !== "status" && lowerCaseKey !== "isvisible") {
+            return (
+              <div className={styles.item} title={fieldValue} key={i}>
+                {fieldValue}
+                {lowerCaseKey === "nextreviewdate" && !item.isDraft && (
+                  <div style={{ marginLeft: "10px" }}>
+                    <DueDatePill
+                      dueDate={item.fields[key]}
+                      roles="Primary Author"
+                      leftText={"D"}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          return null;
         })}
+
         {actions && (
           <div className={styles.actionItem}>{renderActionsForFiles(item)}</div>
         )}
