@@ -42,6 +42,7 @@ import {
   getCurrentLoggedPromoter,
   getCurrentPromoter,
   updateSectionDataLocal,
+  updateTaskCompletion,
 } from "../../../../../utils/contentDevelopementUtils";
 import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
@@ -374,6 +375,11 @@ const Definition: React.FC<Props> = ({
         AllSectionsComments,
         AllSectionsDataMain,
         dispatch
+      );
+      await updateTaskCompletion(
+        currentSectionDetails?.sectionName,
+        currentSectionDetails?.documentOfId,
+        "active"
       );
     } else {
       setRejectedComments({
@@ -993,6 +999,12 @@ const Definition: React.FC<Props> = ({
     );
 
     if (submitCondition) {
+      await updateTaskCompletion(
+        currentSectionDetails?.sectionName,
+        currentSectionDetails?.documentOfId,
+        "completed"
+      );
+
       // getAllSelectedDocuments();
       await updateSectionDetails(
         sectionId,
@@ -1300,7 +1312,7 @@ const Definition: React.FC<Props> = ({
                             text={
                               currentDocRole?.reviewer
                                 ? "Review"
-                                : currentDocRole?.approver && "Approv"
+                                : currentDocRole?.approver && "Approve"
                             }
                             disabled={
                               currentSectionDetails?.sectionSubmitted &&

@@ -75,7 +75,7 @@ export const AddSections = async (
         sectionsToAdd.push({
           Title: "Change Record",
           templateTitle: "",
-          sectionOrder: String(formData?.appendixSections?.length) + 1,
+          sectionOrder: String(formData?.appendixSections?.length + 1),
           sectionType: "change record",
           sectionAuthorId: docDetails?.taskAssignedBy?.ID,
           documentOfId: docDetails?.documentDetailsId,
@@ -108,7 +108,7 @@ export const AddSections = async (
         sectionsToAdd.push({
           Title: "References",
           templateTitle: "",
-          sectionOrder: String(formData?.defaultSections?.length) + 1,
+          sectionOrder: String(formData?.defaultSections?.length + 1),
           sectionType: "references section",
           sectionAuthorId: docDetails?.taskAssignedBy?.ID,
           documentOfId: docDetails?.documentDetailsId,

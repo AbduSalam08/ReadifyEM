@@ -29,6 +29,7 @@ import {
   getCurrentLoggedPromoter,
   getCurrentPromoter,
   updateSectionDataLocal,
+  updateTaskCompletion,
 } from "../../../../../utils/contentDevelopementUtils";
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
 import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
@@ -351,7 +352,7 @@ const SectionContent: React.FC<IProps> = ({
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleClosePopup(2);
+          handleClosePopup(3);
           setChangeRecordDetails({
             ...changeRecordDetails,
             author: sectionChangeRecord.changeRecordAuthor
@@ -514,6 +515,11 @@ const SectionContent: React.FC<IProps> = ({
         AllSectionsComments,
         AllSectionsDataMain,
         dispatch
+      );
+      await updateTaskCompletion(
+        currentSectionDetails?.sectionName,
+        currentSectionDetails?.documentOfId,
+        "active"
       );
     } else {
       setRejectedComments({
@@ -850,6 +856,15 @@ const SectionContent: React.FC<IProps> = ({
     );
     setSectionLoader(true);
     const _file: any = await convertToTxtFile();
+
+    if (submissionType === "submit") {
+      await updateTaskCompletion(
+        currentSectionDetails?.sectionName,
+        currentSectionDetails?.documentOfId,
+        "completed"
+      );
+    }
+
     const updateAttachmentPromise: Promise<any> = await UpdateAttachment(
       ID,
       _file,
@@ -1160,7 +1175,7 @@ const SectionContent: React.FC<IProps> = ({
                       <DefaultButton
                         text="Rework"
                         disabled={
-                          !["in development", "approved"].includes(
+                          !["in development", "in rework", "approved"].includes(
                             currentDocDetailsData?.documentStatus?.toLowerCase()
                           )
                         }

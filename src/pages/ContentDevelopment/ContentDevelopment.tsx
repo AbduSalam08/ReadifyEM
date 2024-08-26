@@ -63,6 +63,7 @@ import SpServices from "../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../config/config";
 import { setCDSectionData } from "../../redux/features/ContentDevloperSlice";
 import References from "../../webparts/readifyEmMain/components/ContentDevelopment/References/References";
+import dayjs from "dayjs";
 
 const Details = {
   sectionName: "Introduction",
@@ -249,6 +250,7 @@ const ContentDevelopment = (): JSX.Element => {
     totalReviewers: number,
     dispatch: any
   ) => {
+    debugger;
     const currentPromoter = getCurrentPromoter(
       currentDocDetailsData?.reviewers
     );
@@ -268,6 +270,52 @@ const ContentDevelopment = (): JSX.Element => {
           }
         }
       );
+
+      if (updatedReviewers?.some((item: any) => item?.status === "completed")) {
+        updatedReviewers?.map(async (el: any) => {
+          if (el?.status === "completed") {
+            await SpServices.SPReadItems({
+              Listname: LISTNAMES.MyTasks,
+              Select: "*, documentDetails/ID",
+              Expand: "documentDetails",
+              Filter: [
+                {
+                  FilterKey: "documentDetails",
+                  Operator: "eq",
+                  FilterValue: currentDocDetailsData?.documentDetailsID,
+                },
+                {
+                  FilterKey: "role",
+                  Operator: "eq",
+                  FilterValue: "Reviewer",
+                },
+                {
+                  FilterKey: "taskAssignee",
+                  Operator: "eq",
+                  FilterValue: el?.userData?.id,
+                },
+              ],
+            })
+              .then(async (res: any) => {
+                if (res) {
+                  res?.map(async (item: any) => {
+                    await SpServices.SPUpdateItem({
+                      Listname: LISTNAMES.MyTasks,
+                      ID: item?.ID,
+                      RequestJSON: {
+                        completed: true,
+                        completedOn: dayjs(new Date()).format("DD/MM/YYYY"),
+                      },
+                    });
+                  });
+                }
+              })
+              .catch((err: any) => {
+                console.log("err: ", err);
+              });
+          }
+        });
+      }
 
       // Check if the current reviewer is the last one
       if (currentPromoter?.currentOrder === totalReviewers) {
@@ -358,6 +406,52 @@ const ContentDevelopment = (): JSX.Element => {
     if (!updatedApprovers) {
       console.error("No active approver found");
       return;
+    }
+
+    if (updatedApprovers?.some((item: any) => item?.status === "completed")) {
+      updatedApprovers?.map(async (el: any) => {
+        if (el?.status === "completed") {
+          await SpServices.SPReadItems({
+            Listname: LISTNAMES.MyTasks,
+            Select: "*, documentDetails/ID",
+            Expand: "documentDetails",
+            Filter: [
+              {
+                FilterKey: "documentDetails",
+                Operator: "eq",
+                FilterValue: currentDocDetailsData?.documentDetailsID,
+              },
+              {
+                FilterKey: "role",
+                Operator: "eq",
+                FilterValue: "Approver",
+              },
+              {
+                FilterKey: "taskAssignee",
+                Operator: "eq",
+                FilterValue: el?.userData?.id,
+              },
+            ],
+          })
+            .then(async (res: any) => {
+              if (res) {
+                res?.map(async (item: any) => {
+                  await SpServices.SPUpdateItem({
+                    Listname: LISTNAMES.MyTasks,
+                    ID: item?.ID,
+                    RequestJSON: {
+                      completed: true,
+                      completedOn: dayjs(new Date()).format("DD/MM/YYYY"),
+                    },
+                  });
+                });
+              }
+            })
+            .catch((err: any) => {
+              console.log("err: ", err);
+            });
+        }
+      });
     }
 
     // If the current approver is the last one, mark the document as Approved
@@ -985,6 +1079,7 @@ const ContentDevelopment = (): JSX.Element => {
               status: `${`Yet to be reviewed (1/${totalReviewers})`}`,
             };
           });
+
           await changeDocStatus(
             currentDocDetailsData?.documentDetailsID,
             "In Review",
@@ -1230,25 +1325,11 @@ const ContentDevelopment = (): JSX.Element => {
                             "in rework" ||
                           (currentDocRole.reviewer &&
                             AllSectionsData?.every(
-                              (item: any) =>
-                                item?.sectionType?.toLowerCase() !==
-                                  "header section" &&
-                                item.sectionType?.toLowerCase() !==
-                                  "references section" &&
-                                item.sectionType?.toLowerCase() !==
-                                  "change record" &&
-                                item?.sectionReviewed
+                              (item: any) => item?.sectionReviewed
                             )) ||
                           (currentDocRole.approver &&
                             AllSectionsData?.every(
-                              (item: any) =>
-                                item?.sectionType?.toLowerCase() !==
-                                  "header section" &&
-                                item.sectionType?.toLowerCase() !==
-                                  "references section" &&
-                                item.sectionType?.toLowerCase() !==
-                                  "change record" &&
-                                item?.sectionApproved
+                              (item: any) => item?.sectionApproved
                             ))
                         }
                         btnType="secondary"

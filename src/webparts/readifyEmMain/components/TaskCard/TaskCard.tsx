@@ -56,6 +56,7 @@ const roleClasses = {
     badge: styles.approverBadge,
   },
 };
+console.log("roleClasses: ", roleClasses);
 
 const TaskCard: React.FC<CardProps> = ({
   title,
@@ -73,10 +74,10 @@ const TaskCard: React.FC<CardProps> = ({
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  return !taskData?.completed ? (
+  return !taskData?.completedAll ? (
     <div className={styles.taskCard}>
       <div className={styles.cardTopSection}>
-        <div className={`${styles.cardIndicator} ${roleClass.badge}`}>
+        <div className={`${styles.cardIndicator} ${roleClass?.badge}`}>
           {taskData?.docVersion !== "1.0" && `version ${taskData?.docVersion}`}
         </div>
         <div className={styles.cardHeader}>
@@ -126,7 +127,7 @@ const TaskCard: React.FC<CardProps> = ({
       </div>
       <div className={styles.cardBottomSection}>
         <button
-          className={`${styles.actionBtn} ${roleClass.button}`}
+          className={`${styles.actionBtn} ${roleClass?.button}`}
           onClick={onClick}
         >
           {btnText}
@@ -144,7 +145,7 @@ const TaskCard: React.FC<CardProps> = ({
   ) : (
     <div className={styles.taskCard}>
       <div className={styles.cardTopSection}>
-        <div className={`${styles.cardIndicator} ${roleClass.badge}`}>
+        <div className={`${styles.cardIndicator} ${roleClass?.badge}`}>
           {taskData?.docVersion !== "1.0" && `version ${taskData?.docVersion}`}
         </div>
         <div className={styles.cardHeader}>
@@ -205,7 +206,7 @@ const TaskCard: React.FC<CardProps> = ({
               }}
             >
               <button
-                className={`${styles.actionBtn} ${roleClass.button}`}
+                className={`${styles.actionBtn} ${roleClass?.button}`}
                 onClick={onClick}
               >
                 {btnText}

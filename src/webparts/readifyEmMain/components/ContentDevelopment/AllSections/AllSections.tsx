@@ -46,6 +46,8 @@ const AllSections: React.FC<Props> = ({
     currentUserDetails
   );
 
+  console.log("currentPromoter: ", currentPromoter);
+
   const updateStatusCount = (itemStatus: string, newCount: number): string => {
     // Check if the status string includes either "review in progress" or "approval in progress"
     if (
@@ -206,9 +208,8 @@ const AllSections: React.FC<Props> = ({
                         <div className={styles.sectionList}>
                           {/* <span className={styles.statusSec}>{item.sectionStatus}</span> */}
                           {currentDocRole?.approver &&
-                          (item?.sectionApproved ||
-                            currentPromoter?.status?.toLowerCase() ===
-                              "completed") ? (
+                          currentPromoter?.status?.toLowerCase() ===
+                            "completed" ? (
                             <StatusPill
                               status={"submitted"}
                               dynamicText={"Approved"}
@@ -216,9 +217,8 @@ const AllSections: React.FC<Props> = ({
                               ontrackDot={true}
                             />
                           ) : currentDocRole?.reviewer &&
-                            (item?.sectionReviewed ||
-                              currentPromoter?.status?.toLowerCase() ===
-                                "completed") ? (
+                            currentPromoter?.status?.toLowerCase() ===
+                              "completed" ? (
                             <StatusPill
                               status={"submitted"}
                               dynamicText={"Reviewed"}

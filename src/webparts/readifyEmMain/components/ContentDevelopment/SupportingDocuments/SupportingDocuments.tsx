@@ -42,6 +42,7 @@ import {
   getCurrentLoggedPromoter,
   getCurrentPromoter,
   updateSectionDataLocal,
+  updateTaskCompletion,
 } from "../../../../../utils/contentDevelopementUtils";
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
 import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
@@ -467,7 +468,7 @@ const SupportingDocuments: React.FC<Props> = ({
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleClosePopup(2);
+          handleClosePopup(3);
           setChangeRecordDetails({
             ...changeRecordDetails,
             author: sectionChangeRecord.changeRecordAuthor
@@ -546,6 +547,11 @@ const SupportingDocuments: React.FC<Props> = ({
         AllSectionsComments,
         AllSectionsDataMain,
         dispatch
+      );
+      await updateTaskCompletion(
+        currentSectionDetails?.sectionName,
+        currentSectionDetails?.documentOfId,
+        "active"
       );
     } else {
       setRejectedComments({
@@ -768,6 +774,11 @@ const SupportingDocuments: React.FC<Props> = ({
       );
       console.log(reRender);
       if (submitCondition) {
+        await updateTaskCompletion(
+          currentSectionDetails?.sectionName,
+          currentSectionDetails?.documentOfId,
+          "completed"
+        );
         // getAllSelectedDocuments();
         await updateSectionDetails(
           sectionId,
@@ -1126,7 +1137,7 @@ const SupportingDocuments: React.FC<Props> = ({
                       text="Rework"
                       // disabled={sectionLoader}
                       disabled={
-                        !["in development", "approved"].includes(
+                        !["in development", "in rework", "approved"].includes(
                           currentDocDetailsData?.documentStatus?.toLowerCase()
                         )
                       }

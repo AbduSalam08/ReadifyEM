@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable no-debugger */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -12,6 +13,136 @@ import SpServices from "../SPServices/SpServices";
 import { sortTasksByDateTime } from "../../utils/MyTasksUtils";
 
 // fn to get all the tasks items
+// export const getAllTasksList = async (
+//   currentUserDetails: any,
+//   setStateData: any,
+//   dispatch?: any
+// ): Promise<any> => {
+//   try {
+//     setStateData &&
+//       setStateData((prev: any) => ({
+//         ...prev,
+//         loading: true,
+//       }));
+
+//     const dataResponse: any = await SpServices.SPReadItems({
+//       Listname: LISTNAMES.MyTasks,
+//       Select:
+//         "*, taskAssignee/ID, taskAssignee/EMail, taskAssignee/Title, taskAssignedBy/ID, taskAssignedBy/EMail, taskAssignedBy/Title, documentDetails/ID, sectionDetails/ID",
+//       Expand: "taskAssignee, taskAssignedBy, documentDetails, sectionDetails",
+//     });
+
+//     const primaryAuthorTasks: any[] = [];
+//     const sectionAuthorTasks: any[] = [];
+//     const consultantsTasks: any[] = [];
+//     const reviewersTasks: any[] = [];
+//     const approversTasks: any[] = [];
+//     const contentInProgressTasks: any[] = [];
+
+//     const uniqueTasksMap: Map<string, any> = new Map();
+
+//     dataResponse?.forEach((item: any) => {
+//       const defaultFields: any = {
+//         taskID: [item?.ID],
+//         documentDetailsId: item.documentDetailsId,
+//         taskAssignedBy: item?.taskAssignedBy,
+//         taskAssignee: [item?.taskAssignee],
+//         docName: item?.Title,
+//         pathName: item?.pathName,
+//         taskDueDate: item?.taskDueDate,
+//         completed: item.completed,
+//         completedOn: item?.completedOn,
+//         docVersion: item?.docVersion,
+//         role: item?.role,
+//         taskStatus: item?.taskStatus,
+//         docStatus: item?.docStatus,
+//         taskCreatedDate: dayjs(item?.Created)?.format("DD/MM/YYYY HH:mm:ss"),
+//       };
+
+//       const taskKey = `${item?.Title}_${item?.role}`;
+
+//       if (uniqueTasksMap.has(taskKey)) {
+//         const existingTask = uniqueTasksMap.get(taskKey);
+//         uniqueTasksMap.set(taskKey, {
+//           ...existingTask,
+//           taskID: [...existingTask.taskID, item?.ID],
+//           taskAssignee: [...existingTask.taskAssignee, item?.taskAssignee],
+//         });
+//       } else {
+//         uniqueTasksMap.set(taskKey, defaultFields);
+//       }
+//     });
+
+//     const uniqueTasks = Array.from(uniqueTasksMap.values());
+
+//     uniqueTasks.forEach((task) => {
+//       if (
+//         task.role.toLowerCase() === "primary author" &&
+//         task.taskAssignee.some(
+//           (assignee: any) => assignee.EMail === currentUserDetails?.email
+//         )
+//       ) {
+//         primaryAuthorTasks.push(task);
+//       }
+//       if (
+//         task.role.toLowerCase() === "section author" &&
+//         task.taskAssignee.some(
+//           (assignee: any) => assignee.EMail === currentUserDetails?.email
+//         )
+//       ) {
+//         sectionAuthorTasks.push(task);
+//       }
+//       if (
+//         task.role.toLowerCase() === "consultant" &&
+//         task.taskAssignee.some(
+//           (assignee: any) => assignee.EMail === currentUserDetails?.email
+//         )
+//       ) {
+//         consultantsTasks.push(task);
+//       }
+//       if (
+//         task.role.toLowerCase() === "reviewer" &&
+//         task.taskAssignee.some(
+//           (assignee: any) => assignee.EMail === currentUserDetails?.email
+//         )
+//       ) {
+//         reviewersTasks.push(task);
+//       }
+//       if (
+//         task.role.toLowerCase() === "approver" &&
+//         task.taskAssignee.some(
+//           (assignee: any) => assignee.EMail === currentUserDetails?.email
+//         )
+//       ) {
+//         approversTasks.push(task);
+//       }
+//     });
+
+//     const AllTasks: any[] = [
+//       ...primaryAuthorTasks,
+//       ...sectionAuthorTasks,
+//       ...consultantsTasks,
+//       ...reviewersTasks,
+//       ...approversTasks,
+//       ...contentInProgressTasks,
+//     ];
+
+//     const sortedTasksData: any[] = sortTasksByDateTime(AllTasks);
+//     console.log("sortedTasksData: ", sortedTasksData);
+
+//     setStateData &&
+//       setStateData((prev: any) => ({
+//         ...prev,
+//         loading: false,
+//         data: AllTasks,
+//       }));
+
+//     dispatch && dispatch(setTasksData(sortedTasksData));
+//   } catch (err: any) {
+//     console.log("err: ", err);
+//   }
+// };
+
 export const getAllTasksList = async (
   currentUserDetails: any,
   setStateData: any,
@@ -31,6 +162,9 @@ export const getAllTasksList = async (
       Expand: "taskAssignee, taskAssignedBy, documentDetails, sectionDetails",
     });
 
+    console.log("dataResponse:", dataResponse);
+    console.log("currentUserDetails.email:", currentUserDetails?.email);
+
     const primaryAuthorTasks: any[] = [];
     const sectionAuthorTasks: any[] = [];
     const consultantsTasks: any[] = [];
@@ -40,79 +174,73 @@ export const getAllTasksList = async (
 
     const uniqueTasksMap: Map<string, any> = new Map();
 
-    dataResponse?.forEach(async (item: any) => {
+    dataResponse?.forEach((item: any) => {
+      // Ensure taskAssignee is an array
+      const assignees = Array.isArray(item?.taskAssignee)
+        ? item?.taskAssignee
+        : item?.taskAssignee
+        ? [item.taskAssignee]
+        : [];
+
+      console.log("Task Assignees:", assignees);
+
+      // Filter out tasks not assigned to the current user
+      if (
+        !assignees.some(
+          (assignee: any) => assignee.EMail === currentUserDetails?.email
+        )
+      ) {
+        return;
+      }
+
       const defaultFields: any = {
         taskID: [item?.ID],
         documentDetailsId: item.documentDetailsId,
         taskAssignedBy: item?.taskAssignedBy,
-        taskAssignee: [item?.taskAssignee],
+        taskAssignee: assignees,
         docName: item?.Title,
         pathName: item?.pathName,
         taskDueDate: item?.taskDueDate,
-        completed: item?.completed,
+        completed: item.completed,
         completedOn: item?.completedOn,
         docVersion: item?.docVersion,
         role: item?.role,
         taskStatus: item?.taskStatus,
         docStatus: item?.docStatus,
         taskCreatedDate: dayjs(item?.Created)?.format("DD/MM/YYYY HH:mm:ss"),
+        completedAll: item.completed,
       };
 
       const taskKey = `${item?.Title}_${item?.role}`;
 
       if (uniqueTasksMap.has(taskKey)) {
         const existingTask = uniqueTasksMap.get(taskKey);
-        uniqueTasksMap.set(taskKey, {
-          ...existingTask,
-          taskID: [...existingTask.taskID, item?.ID],
-          taskAssignee: [...existingTask.taskAssignee, item?.taskAssignee],
-        });
+        existingTask.taskID.push(item?.ID);
+        existingTask.taskAssignee.push(...assignees);
+        existingTask.completedAll = existingTask.completedAll && item.completed;
+
+        uniqueTasksMap.set(taskKey, existingTask);
       } else {
         uniqueTasksMap.set(taskKey, defaultFields);
       }
     });
 
     const uniqueTasks = Array.from(uniqueTasksMap.values());
-    debugger;
+
     uniqueTasks.forEach((task) => {
-      if (
-        task.role.toLowerCase() === "primary author" &&
-        task.taskAssignee.some(
-          (assignee: any) => assignee.EMail === currentUserDetails?.email
-        )
-      ) {
+      if (task.role.toLowerCase() === "primary author") {
         primaryAuthorTasks.push(task);
       }
-      if (
-        task.role.toLowerCase() === "section author" &&
-        task.taskAssignee.some(
-          (assignee: any) => assignee.EMail === currentUserDetails?.email
-        )
-      ) {
+      if (task.role.toLowerCase() === "section author") {
         sectionAuthorTasks.push(task);
       }
-      if (
-        task.role.toLowerCase() === "consultant" &&
-        task.taskAssignee.some(
-          (assignee: any) => assignee.EMail === currentUserDetails?.email
-        )
-      ) {
+      if (task.role.toLowerCase() === "consultant") {
         consultantsTasks.push(task);
       }
-      if (
-        task.role.toLowerCase() === "reviewer" &&
-        task.taskAssignee.some(
-          (assignee: any) => assignee.EMail === currentUserDetails?.email
-        )
-      ) {
+      if (task.role.toLowerCase() === "reviewer") {
         reviewersTasks.push(task);
       }
-      if (
-        task.role.toLowerCase() === "approver" &&
-        task.taskAssignee.some(
-          (assignee: any) => assignee.EMail === currentUserDetails?.email
-        )
-      ) {
+      if (task.role.toLowerCase() === "approver") {
         approversTasks.push(task);
       }
     });
@@ -127,6 +255,7 @@ export const getAllTasksList = async (
     ];
 
     const sortedTasksData: any[] = sortTasksByDateTime(AllTasks);
+    console.log("sortedTasksData: ", sortedTasksData);
 
     setStateData &&
       setStateData((prev: any) => ({

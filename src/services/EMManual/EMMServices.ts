@@ -104,12 +104,6 @@ export const getLibraryItems = async (): Promise<{
             return err;
           });
       }
-      console.log(
-        "fileItemsFromList?.ID === fileFields?.ID: ",
-        fileItemsFromList?.fileDetailsId === fileFields?.ID
-      );
-      console.log("fileFields?.ID: ", fileFields?.ID);
-      console.log("fileItemsFromList?.ID: ", fileItemsFromList?.ID);
 
       // if its admin role render all files with all status else render only restricted items by its approved status
       if (fileFields?.ID === fileItemsFromList?.fileDetailsId) {
@@ -128,6 +122,7 @@ export const getLibraryItems = async (): Promise<{
             createdDate: fileItemsFromList?.createdDate,
             nextReviewDate: fileItemsFromList?.nextReviewDate,
             status: fileItemsFromList?.status,
+            isVisible: fileFields?.isVisible,
           },
         });
       } else {
@@ -146,6 +141,7 @@ export const getLibraryItems = async (): Promise<{
             createdDate: fileFields?.createdDate,
             nextReviewDate: fileFields?.nextReviewDate,
             status: fileFields?.status,
+            isVisible: fileFields?.isVisible,
           },
         });
       }
@@ -240,7 +236,8 @@ const filterData = (
     return (
       filterByStatus === null ||
       (item.type === "file" &&
-        item.fields?.status?.toLowerCase() === filterByStatus?.toLowerCase())
+        item?.fields.isVisible &&
+        filterByStatus?.includes(item.fields?.status?.toLowerCase()))
     );
   };
 
@@ -279,7 +276,9 @@ export const LoadTableData = async (
     setTableData((prevData: any) => ({ ...prevData, loading: true }));
     const { items, DocumentPathOptions } = await getLibraryItems();
     const AdminData: any[] = sortItemsBySequenceNo(items);
-    const UsersData = sortItemsBySequenceNo(filterData(items, "Approved"));
+    const UsersData = sortItemsBySequenceNo(
+      filterData(items, ["approved", "current"])
+    );
 
     setTableData((prevData: any) => ({
       ...prevData,

@@ -29,6 +29,7 @@ import {
   getCurrentLoggedPromoter,
   getCurrentPromoter,
   updateSectionDataLocal,
+  updateTaskCompletion,
 } from "../../../../../utils/contentDevelopementUtils";
 import { setCDSectionData } from "../../../../../redux/features/ContentDevloperSlice";
 import { ContentDeveloperStatusLabel } from "../../common/ContentDeveloperStatusLabel/ContentDeveloperStatusLabel";
@@ -58,6 +59,7 @@ const RichText = ({
   onChange,
   currentDocRole,
 }: IRichTextProps): JSX.Element => {
+  console.log("currentSectionData: ", currentSectionData);
   const dispatch = useDispatch();
 
   const initialPopupController = [
@@ -360,7 +362,7 @@ const RichText = ({
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleClosePopup(2);
+          handleClosePopup(3);
           setChangeRecordDetails({
             ...changeRecordDetails,
             author: sectionChangeRecord.changeRecordAuthor
@@ -515,6 +517,11 @@ const RichText = ({
         AllSectionsDataMain,
         dispatch
       );
+      await updateTaskCompletion(
+        currentSectionData?.sectionName,
+        currentSectionData?.documentOfId,
+        "active"
+      );
     } else {
       setRejectedComments({
         ...rejectedComments,
@@ -560,6 +567,7 @@ const RichText = ({
   };
 
   const addData = async (submissionType?: any): Promise<any> => {
+    debugger;
     togglePopupVisibility(
       setPopupController,
       0,
@@ -569,6 +577,7 @@ const RichText = ({
     setSectionLoader(true);
     let addDataPromises: Promise<any>;
     const _file: any = await convertToTxtFile();
+
     // if (newAttachment) {
     //   addDataPromises = await AddAttachment(
     //     ID,
@@ -577,6 +586,16 @@ const RichText = ({
     //     submissionType === "submit"
     //   );
     // } else {
+    // sectionName
+
+    if (submissionType === "submit") {
+      await updateTaskCompletion(
+        currentSectionData?.sectionName,
+        currentSectionData?.documentOfId,
+        "completed"
+      );
+    }
+
     addDataPromises = await UpdateAttachment(
       ID,
       _file,
@@ -590,6 +609,7 @@ const RichText = ({
     Promise.all([addDataPromises])
       .then((res: any) => {
         setSectionLoader(false);
+
         setToastMessage({
           isShow: true,
           severity: "success",
@@ -853,7 +873,7 @@ const RichText = ({
                       <DefaultButton
                         text="Rework"
                         disabled={
-                          !["in development", "approved"].includes(
+                          !["in development", "in rework", "approved"].includes(
                             currentDocDetailsData?.documentStatus?.toLowerCase()
                           )
                         }
