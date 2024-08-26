@@ -11,6 +11,8 @@ import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import { emptyCheck } from "../../../../utils/validations";
 import ErrorIcon from "@mui/icons-material/Error";
+import { OrderList } from "primereact/orderlist";
+import "./SDDSection.css";
 
 interface Props {
   sectionsData: any;
@@ -35,6 +37,8 @@ const SDDSections = ({
   viewOnly,
   update,
 }: Props): JSX.Element => {
+  console.log(sectionsData, AllSectionsData, sectionTitle, objKey);
+
   const isNotDefaultSection: boolean =
     sectionsData[0]?.type?.toLowerCase() !== "defaultsection";
 
@@ -106,6 +110,8 @@ const SDDSections = ({
         type: objKey,
         isValid: true,
         isChecked: true,
+        sectionSelected: true,
+        isNew: true,
         value: "",
       };
 
@@ -195,6 +201,123 @@ const SDDSections = ({
 
   const hasDuplicates = !viewOnly ? checkDuplicates() : false;
 
+  const SectionRow = (section: any, index: number): JSX.Element => {
+    console.log(section, index);
+    return (
+      <div
+        className={`${styles.usersCard} ${
+          section?.sectionSelected ? styles.checkedUserCard : ""
+        }`}
+        style={{
+          border: !section?.isValid ? "1px solid #ff6d6d" : "",
+        }}
+        key={index}
+      >
+        {!isNotDefaultSection &&
+        sectionsData[0]?.type?.toLowerCase() === "defaultsection" ? (
+          section.value !== "" && !section.isChecked ? (
+            <FormControlLabel
+              label={section.value}
+              className="SDDcheckBox"
+              style={{
+                paddingLeft: "18px",
+                fontSize: "14px",
+                fontFamily: "interRegular, sans-serif",
+              }}
+              control={
+                <Checkbox
+                  checkedIcon={<RadioButtonCheckedIcon />}
+                  icon={<RadioButtonUncheckedIcon />}
+                  key={index}
+                  name={section?.value}
+                  value={section?.sectionSelected}
+                  checked={section?.sectionSelected}
+                  id={section.value}
+                  onChange={(e: any) => {
+                    !viewOnly && handleSelectSection(index, e.target.checked);
+                  }}
+                />
+              }
+            />
+          ) : (
+            <CustomInput
+              key={index}
+              readOnly={viewOnly || false}
+              size="SM"
+              icon={false}
+              onChange={(value: any) => handleChange(index, value)}
+              value={section?.value}
+              placeholder="Enter here"
+              isValid={!section?.isValid}
+              inputWrapperClassName={`${styles.sectionInput}`}
+              autoFocus={true}
+              noErrorMsg={true}
+            />
+          )
+        ) : (
+          <CustomInput
+            key={index}
+            readOnly={viewOnly || false}
+            size="SM"
+            icon={false}
+            onChange={(value: any) => handleChange(index, value)}
+            value={section?.value}
+            placeholder="Enter here"
+            isValid={!section?.isValid}
+            inputWrapperClassName={`${styles.sectionInput}`}
+            autoFocus={true}
+            noErrorMsg={true}
+          />
+        )}
+        {index !== 0 && isNotDefaultSection && !viewOnly && (
+          <Close
+            onClick={() => handleRemoveUser(index)}
+            className={styles.deleteUser}
+          />
+        )}
+
+        {!section.isValid && (
+          <ErrorIcon
+            className={`${
+              !section.isValid ? styles.errorMsgIconActive : styles.errorMsgIcon
+            }`}
+            style={{
+              color: "#C80036",
+              fontSize: "24px",
+            }}
+          />
+        )}
+      </div>
+    );
+  };
+
+  const reOrderSections = (data: any[]): any => {
+    console.log(data);
+
+    let orderSection = data.map((obj: any, index: number) => {
+      return { ...obj, id: index + 1 };
+    });
+    console.log(orderSection);
+    setSectionsData((prev: any) => ({
+      ...prev,
+      [objKey]: orderSection,
+    }));
+
+    // const updateData: any[] = data?.map((item: any, index: number) => {
+    //   return {
+    //     ...item,
+    //     sectionOrderNo: String(index + 1),
+    //   };
+    // });
+
+    // setSections((prev: any) => {
+    //   return {
+    //     ...prev,
+    //     [objKey]: [...updateData],
+    //   };
+    // });
+  };
+
   return (
     <div className={styles.mainWrapper}>
       {((!viewOnly && !AllSectionsData[sectionErrorKey]?.isValid) ||
@@ -236,96 +359,117 @@ const SDDSections = ({
 
         <div className={`${styles.userCardsWrapper} `}>
           {sectionsData?.length !== 0 ? (
-            sectionsData?.map(
-              (user: any, i: number) =>
-                !user?.removed && (
-                  <div
-                    className={`${styles.usersCard} ${
-                      user?.sectionSelected ? styles.checkedUserCard : ""
-                    }`}
-                    style={{
-                      border: !user?.isValid ? "1px solid #ff6d6d" : "",
-                    }}
-                    key={i}
-                  >
-                    {!isNotDefaultSection &&
-                    sectionsData[0]?.type?.toLowerCase() ===
-                      "defaultsection" ? (
-                      user.value !== "" && !user.isChecked ? (
-                        <FormControlLabel
-                          label={user.value}
-                          className="SDDcheckBox"
-                          style={{
-                            paddingLeft: "18px",
-                            fontSize: "14px",
-                            fontFamily: "interRegular, sans-serif",
-                          }}
-                          control={
-                            <Checkbox
-                              checkedIcon={<RadioButtonCheckedIcon />}
-                              icon={<RadioButtonUncheckedIcon />}
-                              key={i}
-                              name={user?.value}
-                              value={user?.sectionSelected}
-                              checked={user?.sectionSelected}
-                              id={user.value}
-                              onChange={(e: any) => {
-                                !viewOnly &&
-                                  handleSelectSection(i, e.target.checked);
-                              }}
-                            />
-                          }
-                        />
-                      ) : (
-                        <CustomInput
-                          key={i}
-                          readOnly={viewOnly || false}
-                          size="SM"
-                          icon={false}
-                          onChange={(value: any) => handleChange(i, value)}
-                          value={user?.value}
-                          placeholder="Enter here"
-                          isValid={!user?.isValid}
-                          inputWrapperClassName={`${styles.sectionInput}`}
-                        />
-                      )
-                    ) : (
-                      <CustomInput
-                        key={i}
-                        readOnly={viewOnly || false}
-                        size="SM"
-                        icon={false}
-                        onChange={(value: any) => handleChange(i, value)}
-                        value={user?.value}
-                        placeholder="Enter here"
-                        isValid={!user?.isValid}
-                        inputWrapperClassName={`${styles.sectionInput}`}
-                      />
-                    )}
-                    {i !== 0 && isNotDefaultSection && !viewOnly && (
-                      <Close
-                        onClick={() => handleRemoveUser(i)}
-                        className={styles.deleteUser}
-                      />
-                    )}
-
-                    {!user.isValid && (
-                      <ErrorIcon
-                        className={`${
-                          !user.isValid
-                            ? styles.errorMsgIconActive
-                            : styles.errorMsgIcon
-                        }`}
-                        style={{
-                          color: "#C80036",
-                          fontSize: "24px",
-                        }}
-                      />
-                    )}
-                  </div>
+            <OrderList
+              className="sectionRowDropList"
+              key={objKey}
+              value={sectionsData}
+              dataKey={"sectionOrderNo"}
+              // itemTemplate={SectionRow}
+              // itemTemplate={(section:any, index:number) => SectionRow(section, index)}
+              itemTemplate={(section) =>
+                SectionRow(
+                  section,
+                  sectionsData.findIndex((s: any) => s === section)
                 )
-            )
+              }
+              dragdrop
+              onChange={(event: any) => {
+                const { value } = event;
+                reOrderSections(value);
+                // handleDrag(objKey, value);
+              }}
+              focusOnHover={false}
+            ></OrderList>
           ) : (
+            // sectionsData?.map(
+            //   (user: any, i: number) =>
+            //     !user?.removed && (
+            //       <div
+            //         className={`${styles.usersCard} ${
+            //           user?.sectionSelected ? styles.checkedUserCard : ""
+            //         }`}
+            //         style={{
+            //           border: !user?.isValid ? "1px solid #ff6d6d" : "",
+            //         }}
+            //         key={i}
+            //       >
+            //         {!isNotDefaultSection &&
+            //         sectionsData[0]?.type?.toLowerCase() ===
+            //           "defaultsection" ? (
+            //           user.value !== "" && !user.isChecked ? (
+            //             <FormControlLabel
+            //               label={user.value}
+            //               className="SDDcheckBox"
+            //               style={{
+            //                 paddingLeft: "18px",
+            //                 fontSize: "14px",
+            //                 fontFamily: "interRegular, sans-serif",
+            //               }}
+            //               control={
+            //                 <Checkbox
+            //                   checkedIcon={<RadioButtonCheckedIcon />}
+            //                   icon={<RadioButtonUncheckedIcon />}
+            //                   key={i}
+            //                   name={user?.value}
+            //                   value={user?.sectionSelected}
+            //                   checked={user?.sectionSelected}
+            //                   id={user.value}
+            //                   onChange={(e: any) => {
+            //                     !viewOnly &&
+            //                       handleSelectSection(i, e.target.checked);
+            //                   }}
+            //                 />
+            //               }
+            //             />
+            //           ) : (
+            //             <CustomInput
+            //               key={i}
+            //               readOnly={viewOnly || false}
+            //               size="SM"
+            //               icon={false}
+            //               onChange={(value: any) => handleChange(i, value)}
+            //               value={user?.value}
+            //               placeholder="Enter here"
+            //               isValid={!user?.isValid}
+            //               inputWrapperClassName={`${styles.sectionInput}`}
+            //             />
+            //           )
+            //         ) : (
+            //           <CustomInput
+            //             key={i}
+            //             readOnly={viewOnly || false}
+            //             size="SM"
+            //             icon={false}
+            //             onChange={(value: any) => handleChange(i, value)}
+            //             value={user?.value}
+            //             placeholder="Enter here"
+            //             isValid={!user?.isValid}
+            //             inputWrapperClassName={`${styles.sectionInput}`}
+            //           />
+            //         )}
+            //         {i !== 0 && isNotDefaultSection && !viewOnly && (
+            //           <Close
+            //             onClick={() => handleRemoveUser(i)}
+            //             className={styles.deleteUser}
+            //           />
+            //         )}
+
+            //         {!user.isValid && (
+            //           <ErrorIcon
+            //             className={`${
+            //               !user.isValid
+            //                 ? styles.errorMsgIconActive
+            //                 : styles.errorMsgIcon
+            //             }`}
+            //             style={{
+            //               color: "#C80036",
+            //               fontSize: "24px",
+            //             }}
+            //           />
+            //         )}
+            //       </div>
+            //     )
+            // )
             <div className={styles.defText}>No sections found</div>
           )}
         </div>
