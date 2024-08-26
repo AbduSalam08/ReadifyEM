@@ -308,16 +308,16 @@ const SDDTemplates = (): JSX.Element => {
         key={2}
         update={true}
       />,
-      <SDDSections
-        sectionTitle="New Sections"
-        sectionsData={sectionsData.normalSection}
-        AllSectionsData={sectionsData}
-        objKey={"normalSection"}
-        setSectionsData={setSectionsData}
-        errorMsg="New Sections required."
-        key={4}
-        update={true}
-      />,
+      // <SDDSections
+      //   sectionTitle="New Sections"
+      //   sectionsData={sectionsData.normalSection}
+      //   AllSectionsData={sectionsData}
+      //   objKey={"normalSection"}
+      //   setSectionsData={setSectionsData}
+      //   errorMsg="New Sections required."
+      //   key={4}
+      //   update={true}
+      // />,
       <SDDSections
         sectionTitle="Appendix Sections"
         sectionsData={sectionsData.appendixSection}
@@ -352,15 +352,15 @@ const SDDTemplates = (): JSX.Element => {
         key={2}
         viewOnly={true}
       />,
-      <SDDSections
-        sectionTitle="New Sections"
-        sectionsData={sectionsData.normalSection}
-        objKey={"normalSection"}
-        setSectionsData={setSectionsData}
-        errorMsg="New Sections required."
-        key={4}
-        viewOnly={true}
-      />,
+      // <SDDSections
+      //   sectionTitle="New Sections"
+      //   sectionsData={sectionsData.normalSection}
+      //   objKey={"normalSection"}
+      //   setSectionsData={setSectionsData}
+      //   errorMsg="New Sections required."
+      //   key={4}
+      //   viewOnly={true}
+      // />,
       <SDDSections
         sectionTitle="Appendix Sections"
         sectionsData={sectionsData.appendixSection}

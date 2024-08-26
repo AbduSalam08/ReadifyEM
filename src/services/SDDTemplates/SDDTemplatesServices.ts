@@ -19,6 +19,9 @@ const AddSDDTemplate = async (
 ): Promise<any> => {
   const templateTitle = formData?.templateName;
 
+  console.log(formData);
+
+  debugger;
   try {
     const getSectionType = (value: string): string => {
       return value === "defaultSection"
@@ -451,7 +454,7 @@ const LoadSectionsTemplateData = async (
     // Initialize arrays for sections
     const defaultSection: any[] = update
       ? defaultTemplates?.map((template: string, index: number) => ({
-          id: index + 1,
+          id: null,
           unqID: null,
           isValid: true,
           type: "defaultSection",
@@ -510,10 +513,19 @@ const LoadSectionsTemplateData = async (
     });
 
     // Order default sections based on predefined order
-    const orderedDefaultSection = defaultSection.sort(
-      (a, b) =>
-        defaultTemplates.indexOf(a.value) - defaultTemplates.indexOf(b.value)
-    );
+    const orderedDefaultSection = defaultSection.sort((a, b) => {
+      // Handle null values by moving them to the end
+      if (a.id === null) return 1;
+      if (b.id === null) return -1;
+
+      // Compare numeric values of the `id`
+      return parseInt(a.id) - parseInt(b.id);
+    });
+    // const orderedDefaultSection = defaultSection.sort(
+    //   (a, b) =>
+    //     defaultTemplates.indexOf(a.value) - defaultTemplates.indexOf(b.value)
+    // );
+    debugger;
     const orderedNormalSection = normalSection.sort((a, b) => a.id - b.id);
     const orderedAppendixSection = appendixSection.sort((a, b) => a.id - b.id);
 

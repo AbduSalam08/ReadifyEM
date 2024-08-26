@@ -118,6 +118,9 @@
   justify-content: flex-start;
   flex-direction: column;
   // gap: 5px;
+  .sectionRowDropList{
+    width: 100%;
+  }
 }
 .sectionInput {
   border: 0 !important;
