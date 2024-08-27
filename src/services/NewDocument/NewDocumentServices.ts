@@ -721,18 +721,22 @@ const UpdateDocument = async (
         },
       ];
 
-      const docTypeChanged =
-        trimStartEnd(prevDocType) !== trimStartEnd(data[1]?.value);
-      const selectedTemplateID = AllTempatesMainData?.find(
-        (el: any) => el?.templateName === data[1]?.value
-      )?.ID;
+      const docTypeChanged = !reorderDoc
+        ? trimStartEnd(prevDocType) !== trimStartEnd(data[1]?.value)
+        : false;
+      const selectedTemplateID = !reorderDoc
+        ? AllTempatesMainData?.find(
+            (el: any) => el?.templateName === data[1]?.value
+          )?.ID
+        : false;
 
-      const newDocVersion =
-        versionChangeType === "minor"
+      const newDocVersion = !reorderDoc
+        ? versionChangeType === "minor"
           ? getNextVersions(currentVersion?.value).minorVersion
           : versionChangeType === "major"
           ? getNextVersions(currentVersion?.value).majorVersion
-          : currentVersion?.value;
+          : currentVersion?.value
+        : false;
 
       const formData = reorderDoc
         ? { sequenceNo: data?.sequenceNo }
@@ -781,7 +785,11 @@ const UpdateDocument = async (
       // )[0]?.value;
       // console.log("docStatus: ", docStatus);
 
-      if (docTypeChanged && formData?.status?.toLowerCase() !== "not started") {
+      if (
+        docTypeChanged &&
+        formData?.status?.toLowerCase() !== "not started" &&
+        !reorderDoc
+      ) {
         // const [sectionDetails, myTasks] = await Promise.all([
         await SpServices.SPReadItems({
           Listname: LISTNAMES.SectionDetails,
@@ -913,15 +921,18 @@ const UpdateDocument = async (
           ? "Reordering Documents. Please wait..."
           : "Document update in progress. Please Wait...",
       });
-      const docTypeChanged =
-        trimStartEnd(prevDocType) !== trimStartEnd(data[1]?.value);
-      const selectedTemplateID = AllTempatesMainData?.find(
-        (el: any) => el?.templateName === data[1]?.value
-      )?.ID;
+      const docTypeChanged = !reorderDoc
+        ? trimStartEnd(prevDocType) !== trimStartEnd(data[1]?.value)
+        : false;
+      const selectedTemplateID = !reorderDoc
+        ? AllTempatesMainData?.find(
+            (el: any) => el?.templateName === data[1]?.value
+          )?.ID
+        : false;
 
-      const documentVersion = data?.filter(
-        (item: any) => item?.key === "documentVersion"
-      )[0]?.value;
+      const documentVersion = !reorderDoc
+        ? data?.filter((item: any) => item?.key === "documentVersion")[0]?.value
+        : "";
 
       const formData = reorderDoc
         ? { sequenceNo: data?.sequenceNo }
@@ -932,7 +943,7 @@ const UpdateDocument = async (
                 : el.key === "primaryAuthorId"
                 ? el?.value?.length === 0
                   ? null
-                  : el.value[0]?.id
+                  : el.value[0]?.id || el.value[0]?.ID
                 : el.key === "Title"
                 ? documentVersion !== "1.0"
                   ? replaceVersionInFilename(el?.value, documentVersion)
@@ -955,11 +966,12 @@ const UpdateDocument = async (
         RequestJSON: formData,
       });
 
-      const docStatus: any = data?.filter((el: any) => el?.key === "status")[0]
-        ?.value;
+      const docStatus: any = !reorderDoc
+        ? data?.filter((el: any) => el?.key === "status")[0]?.value
+        : "";
       console.log("docStatus: ", docStatus);
 
-      if (docTypeChanged && docStatus !== "Not Started") {
+      if (docTypeChanged && docStatus !== "Not Started" && !reorderDoc) {
         // const [sectionDetails, myTasks] = await Promise.all([
         await SpServices.SPReadItems({
           Listname: LISTNAMES.SectionDetails,

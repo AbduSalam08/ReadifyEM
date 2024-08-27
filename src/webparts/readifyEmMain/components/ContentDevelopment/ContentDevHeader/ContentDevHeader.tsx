@@ -122,7 +122,7 @@ const Header: React.FC<Props> = ({
           <StatusPill size="MD" bordered={true} status={documentStatus} />
         </div>
         <div style={{ display: "flex", gap: "10px" }}>
-          {currentDocRole?.approver &&
+          {/* {currentDocRole?.approver &&
             currentApprover?.id ===
               currentDocDetailsData?.approvers?.length && (
               <DefaultButton
@@ -142,7 +142,7 @@ const Header: React.FC<Props> = ({
                   )
                 }
               />
-            )}
+            )} */}
           <DefaultButton
             text="Track"
             btnType="secondary"

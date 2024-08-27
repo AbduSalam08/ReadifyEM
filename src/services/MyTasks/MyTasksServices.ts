@@ -577,6 +577,11 @@ export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
             FilterValue: taskItem.documentDetailsId,
           },
           {
+            FilterKey: "docVersion",
+            Operator: "eq",
+            FilterValue: taskItem.documentVersion,
+          },
+          {
             FilterKey: "role",
             Operator: "eq",
             FilterValue: "Primary Author",
@@ -634,7 +639,7 @@ const createTaskPayload = (taskItem: any): any => ({
   role: taskItem?.role,
   taskAssignedById: taskItem?.taskAssignedBy,
   taskAssigneeId: taskItem?.taskAssignee,
-  completed: false,
+  // completed: false,
   docVersion: taskItem?.docVersion,
   taskStatus: taskItem?.taskStatus,
   docStatus: taskItem?.docStatus,
@@ -770,6 +775,11 @@ export const UpdateTask = async (fileID: any, formData?: any): Promise<any> => {
             Operator: "eq",
             FilterValue: taskItem.documentDetailsId,
           },
+          {
+            FilterKey: "docVersion",
+            Operator: "eq",
+            FilterValue: taskItem.docVersion,
+          },
         ],
       });
 
@@ -784,7 +794,7 @@ export const UpdateTask = async (fileID: any, formData?: any): Promise<any> => {
           role: taskItem?.role,
           taskAssignedById: taskItem?.taskAssignedBy,
           taskAssigneeId: taskItem?.taskAssignee,
-          completed: false,
+          // completed: false,
           docVersion: taskItem?.docVersion,
           // taskStatus: taskItem?.status,
         };

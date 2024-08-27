@@ -8,6 +8,5 @@ const defaultTemplates = [
   "Procedures",
   "Definitions",
   "Supporting Materials",
-  "References",
 ];
 export { defaultTemplates };

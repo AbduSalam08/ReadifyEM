@@ -187,11 +187,11 @@ export const AddSections = async (
             });
 
             if (
-              !element?.templateSectionID ||
-              (!element?.ID &&
-                emptyCheck(element?.sectionName?.value) &&
-                element?.sectionSelected &&
-                !element?.removed)
+              !element?.templateSectionID &&
+              !element?.ID &&
+              emptyCheck(element?.sectionName?.value) &&
+              element?.sectionSelected &&
+              !element?.removed
             ) {
               sectionsToAdd.push(sectionPayload);
             }
@@ -856,8 +856,8 @@ export const updateSections = async (
         Expand: "documentDetails,sectionDetails",
         Filter: [
           {
-            FilterKey: "sectionDetails",
-            FilterValue: section?.ID,
+            FilterKey: "sectionName",
+            FilterValue: section?.sectionName,
             Operator: "eq",
           },
         ],

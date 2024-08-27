@@ -37,6 +37,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
   setSections,
   handleDrag,
 }) => {
+  console.log("sections: ", sections);
   const filteredSection = sections[objKey]?.filter(
     (item: any) => !item?.removed
   );
@@ -329,23 +330,38 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
             />
           </div>
         </div>
-        {!section?.templateSectionID &&
-          (currentItemIndex !== 0 || sectionType === "appendixSection") &&
-          !isAdmin && (
-            <button
-              className={styles.deleteIcon}
-              onClick={() => {
-                if (section?.templateSectionID === null) {
-                  handleDeleteRow(currentItemIndex);
-                } else {
-                  handleOnChange(currentItemIndex, "removed", true);
-                  // handleOnChange(currentItemIndex, "sectionOrderNo", "0");
-                }
-              }}
-            >
-              <DeleteIcon />
-            </button>
-          )}
+        {!isAdmin
+          ? !section?.templateSectionID &&
+            (currentItemIndex !== 0 || sectionType === "appendixSection") && (
+              <button
+                className={styles.deleteIcon}
+                onClick={() => {
+                  if (section?.templateSectionID === null) {
+                    handleDeleteRow(currentItemIndex);
+                  } else {
+                    handleOnChange(currentItemIndex, "removed", true);
+                    // handleOnChange(currentItemIndex, "sectionOrderNo", "0");
+                  }
+                }}
+              >
+                <DeleteIcon />
+              </button>
+            )
+          : (currentItemIndex !== 0 || sectionType === "appendixSection") && (
+              <button
+                className={styles.deleteIcon}
+                onClick={() => {
+                  if (section?.templateSectionID === null) {
+                    handleDeleteRow(currentItemIndex);
+                  } else {
+                    handleOnChange(currentItemIndex, "removed", true);
+                    // handleOnChange(currentItemIndex, "sectionOrderNo", "0");
+                  }
+                }}
+              >
+                <DeleteIcon />
+              </button>
+            )}
       </div>
     );
   };

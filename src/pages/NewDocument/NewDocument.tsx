@@ -57,10 +57,13 @@ const NewDocument = ({
   setMainData,
   screens,
 }: Props): JSX.Element => {
+  console.log("screens: ", screens);
   const dispatch = useDispatch();
   const DocumentPathOptions = useSelector(
     (state: any) => state.EMMTableOfContents.foldersData
   );
+  const [currentDocDetails, setCurrentDocDetails] = useState<any>();
+  const currentDocStatus: any = currentDocDetails?.status?.toLowerCase();
   const [currentDocTemplateType, setCurrentDocTemplateType] = useState({
     value: "",
     currentValue: "",
@@ -504,6 +507,22 @@ const NewDocument = ({
     />,
     <UserList
       key={5}
+      noRemoveBtn={
+        currentDocStatus === "in review" ||
+        currentDocStatus === "in approval" ||
+        currentDocStatus === "in rework"
+      }
+      readOnly={
+        currentDocStatus === "in review" ||
+        currentDocStatus === "in approval" ||
+        currentDocStatus === "in rework"
+      }
+      showAddBtn={
+        currentDocStatus !== "in review" &&
+        currentDocStatus !== "in approval" &&
+        currentDocStatus !== "in rework"
+      }
+      currentDocDetails={currentDocDetails}
       setUsers={setDocUsersList}
       setMainFormData={setFormData}
       formData={formData}
@@ -518,6 +537,16 @@ const NewDocument = ({
     />,
     <UserList
       key={6}
+      noRemoveBtn={
+        currentDocStatus === "in approval" || currentDocStatus === "in rework"
+      }
+      readOnly={
+        currentDocStatus === "in approval" || currentDocStatus === "in rework"
+      }
+      showAddBtn={
+        currentDocStatus !== "in approval" && currentDocStatus !== "in rework"
+      }
+      currentDocDetails={currentDocDetails}
       setUsers={setDocUsersList}
       setMainFormData={setFormData}
       formData={formData}
@@ -878,6 +907,7 @@ const NewDocument = ({
             change: false,
             value: res?.documentTemplateType?.Title,
           }));
+          setCurrentDocDetails(res);
         })
         .catch((err: any) => {
           console.log("err: ", err);
