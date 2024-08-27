@@ -15,6 +15,10 @@ interface Props {
   isValid?: any;
   errorMsg?: string;
   formData: any;
+  currentDocDetails: any;
+  showAddBtn: any;
+  readOnly: any;
+  noRemoveBtn: any;
 }
 
 const UserList = ({
@@ -25,6 +29,10 @@ const UserList = ({
   errorMsg,
   setMainFormData,
   formData,
+  currentDocDetails,
+  showAddBtn,
+  readOnly,
+  noRemoveBtn,
 }: Props): JSX.Element => {
   const objName = userType === "Approvers" ? "approvers" : "reviewers";
 
@@ -82,14 +90,13 @@ const UserList = ({
       [objName]: updatedUsers,
     }));
   };
-
   return (
     <>
       <div className={styles.usersContainer}>
         {users?.map((user: any, i: number) => {
           return (
             <div className={styles.usersCard} key={i}>
-              {i !== 0 && (
+              {i !== 0 && showAddBtn && (
                 <Close
                   onClick={() => handleRemoveUser(i)}
                   className={styles.deleteUser}
@@ -104,13 +111,14 @@ const UserList = ({
                 size="SM"
                 errorMsg={"Field can't be empty"}
                 isValid={!user.isValid}
-                // key={i}
                 selectedItem={
                   user?.userData?.[0]?.secondaryText ||
                   user?.userData?.EMail ||
                   user?.userData?.[0]?.email ||
                   user?.userData?.email
                 }
+                noRemoveBtn={noRemoveBtn}
+                readOnly={readOnly}
                 onChange={(value: any) => {
                   const updatedUsers = users?.map((item: any, index: number) =>
                     index === i
@@ -149,11 +157,13 @@ const UserList = ({
             </div>
           );
         })}
-        <DefaultButton
-          btnType="primaryGreen"
-          text="Add"
-          onClick={handleAddUser}
-        />
+        {showAddBtn && (
+          <DefaultButton
+            btnType="primaryGreen"
+            text="Add"
+            onClick={handleAddUser}
+          />
+        )}
       </div>
       <p className={isValid ? styles.errorMsg : ""}>{isValid && errorMsg}</p>
     </>

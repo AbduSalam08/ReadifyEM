@@ -1172,10 +1172,30 @@ export const changeDocStatus = async (
   //   documentStatus: "In Review",
   // });
 
+  let updatedDOCData: any;
+
+  await SpServices.SPReadItemUsingId({
+    Listname: LISTNAMES.DocumentDetails,
+    SelectedId: docID,
+    Select: "*, fileDetails/ID",
+    Expand: "fileDetails",
+  })
+    .then((res: any) => {
+      console.log("res: ", res);
+      updatedDOCData = res;
+    })
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
+
+  console.log("updatedDOCData: ", updatedDOCData);
+
   dispatch(
     setCDDocDetails({
       ...docDetailsData,
       documentStatus: statusName,
+      reviewers: JSON.parse(updatedDOCData?.reviewers),
+      approvers: JSON.parse(updatedDOCData?.approvers),
       // documentStatus:
       //   promoteTo === "reviewers"
       //     ? "In Review"

@@ -360,7 +360,7 @@ const SDDSections = ({
         <div className={`${styles.userCardsWrapper} `}>
           {sectionsData?.length !== 0 ? (
             <OrderList
-              className="sectionRowDropList"
+              className="SDDsectionRowDropList"
               key={objKey}
               value={sectionsData}
               dataKey={"sectionOrderNo"}

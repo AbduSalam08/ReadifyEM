@@ -84,6 +84,8 @@ const Table: React.FC<ITableProps> = ({
     useState<IPopupLoaders>(initialPopupLoaders);
 
   const handleData = (newData: any): void => {
+    console.log("newData: ", newData);
+    debugger;
     const reorderedItems = newData?.map((e: any, index: number) => {
       return {
         ...e,

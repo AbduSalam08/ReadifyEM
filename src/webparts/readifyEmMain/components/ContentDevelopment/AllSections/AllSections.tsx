@@ -208,17 +208,28 @@ const AllSections: React.FC<Props> = ({
                         <div className={styles.sectionList}>
                           {/* <span className={styles.statusSec}>{item.sectionStatus}</span> */}
                           {currentDocRole?.approver &&
-                          currentPromoter?.status?.toLowerCase() ===
-                            "completed" ? (
+                          (item?.sectionApproved ||
+                            currentPromoter?.status?.toLowerCase() ===
+                              "completed") ? (
                             <StatusPill
                               status={"submitted"}
                               dynamicText={"Approved"}
                               size="SM"
                               ontrackDot={true}
                             />
+                          ) : currentDocRole?.sectionAuthor |
+                              currentDocRole?.consultant &&
+                            item?.sectionSubmitted ? (
+                            <StatusPill
+                              status={"submitted"}
+                              dynamicText={"Submittted"}
+                              size="SM"
+                              ontrackDot={true}
+                            />
                           ) : currentDocRole?.reviewer &&
-                            currentPromoter?.status?.toLowerCase() ===
-                              "completed" ? (
+                            (item?.sectionReviewed ||
+                              currentPromoter?.status?.toLowerCase() ===
+                                "completed") ? (
                             <StatusPill
                               status={"submitted"}
                               dynamicText={"Reviewed"}

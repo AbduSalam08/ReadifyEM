@@ -675,10 +675,26 @@ export const getCurrentLoggedPromoter = (
 
 export async function updateTaskCompletion(
   sectionName: string,
-  documentOfId: string,
+  documentOfId: any,
   type: "active" | "completed"
 ): Promise<void> {
+  debugger;
   try {
+    let currentDocDetailsData: any;
+    await sp.web.lists
+      .getByTitle(LISTNAMES.DocumentDetails)
+      .items.getById(documentOfId)
+      .select("*")
+      .get()
+      .then((res: any) => {
+        console.log("res: ", res);
+        const resp = res[0] || res;
+        currentDocDetailsData = resp;
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+
     // Read items from SharePoint
     const res = await SpServices.SPReadItems({
       Listname: LISTNAMES.MyTasks,
@@ -694,10 +710,16 @@ export async function updateTaskCompletion(
           Operator: "eq",
           FilterValue: documentOfId,
         },
+        {
+          FilterKey: "docVersion",
+          Operator: "eq",
+          FilterValue: currentDocDetailsData?.documentVersion,
+        },
       ],
     });
 
     console.log("res: ", res);
+
     let updatedTaskData;
     if (type === "active") {
       // Prepare updated task data
