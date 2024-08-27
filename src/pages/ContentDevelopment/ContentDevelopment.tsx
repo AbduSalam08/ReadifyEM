@@ -172,6 +172,14 @@ const ContentDevelopment = (): JSX.Element => {
       defaultCloseBtn: false,
       popupData: "",
     },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "400px",
+      popupType: "confirmation",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
   ];
 
   const [initialLoader, setInitialLoader] = useState(true);
@@ -200,9 +208,12 @@ const ContentDevelopment = (): JSX.Element => {
   console.log("AllSectionsData: ", AllSectionsData);
 
   const [toggleCommentSection, setToggleCommentSection] = useState(false);
+  const [checkChanges, setCheckChanges] = useState(false);
+  console.log(checkChanges);
 
   // Active Section Index
   const [activeSection, setActiveSection] = useState<number>(0);
+  const [tempActiveSection, setTempActiveSection] = useState<number>(0);
 
   // Promoted comments state
   const [promoteComments, setPromoteComments] = useState<any>({
@@ -1141,6 +1152,49 @@ const ContentDevelopment = (): JSX.Element => {
         },
       },
     ],
+    [
+      {
+        text: "No",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(8);
+        },
+      },
+      {
+        text: "Yes",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          handleClosePopup(8);
+          setCheckChanges(false);
+          setActiveSection(tempActiveSection);
+          const Comments = getSectionComments(
+            AllSectionsData[tempActiveSection].ID,
+            dispatch
+          );
+          const changeRecordDetails = getSectionChangeRecord(
+            AllSectionsData[tempActiveSection].ID,
+            dispatch
+          );
+          console.log(Comments, changeRecordDetails);
+          debugger;
+          if (
+            AllSectionsData[tempActiveSection].sectionType?.toLowerCase() ===
+            "change record"
+          ) {
+            getAllSectionsChangeRecord(
+              currentDocDetailsData.documentDetailsID,
+              dispatch
+            );
+          }
+        },
+      },
+    ],
   ];
 
   const currentPromoter: any = getCurrentLoggedPromoter(
@@ -1155,21 +1209,34 @@ const ContentDevelopment = (): JSX.Element => {
     popupTitle: string
   ) => {
     if (condition) {
-      setActiveSection(value);
-      const Comments = getSectionComments(AllSectionsData[value].ID, dispatch);
-      const changeRecordDetails = getSectionChangeRecord(
-        AllSectionsData[value].ID,
-        dispatch
-      );
-      console.log(Comments, changeRecordDetails);
-      debugger;
-      if (
-        AllSectionsData[value].sectionType?.toLowerCase() === "change record"
-      ) {
-        getAllSectionsChangeRecord(
-          currentDocDetailsData.documentDetailsID,
+      setTempActiveSection(value);
+      if (checkChanges) {
+        togglePopupVisibility(
+          setPopupController,
+          8,
+          "open",
+          "Discard current changes"
+        );
+      } else {
+        setActiveSection(value);
+        const Comments = getSectionComments(
+          AllSectionsData[value].ID,
           dispatch
         );
+        const changeRecordDetails = getSectionChangeRecord(
+          AllSectionsData[value].ID,
+          dispatch
+        );
+        console.log(Comments, changeRecordDetails);
+        debugger;
+        if (
+          AllSectionsData[value].sectionType?.toLowerCase() === "change record"
+        ) {
+          getAllSectionsChangeRecord(
+            currentDocDetailsData.documentDetailsID,
+            dispatch
+          );
+        }
       }
     } else {
       getPromotedComments(currentDocDetailsData.documentDetailsID, dispatch);
@@ -1221,6 +1288,33 @@ const ContentDevelopment = (): JSX.Element => {
 
     return false;
   };
+
+  let markAsBtnText = "";
+
+  if (
+    currentDocRole.reviewer &&
+    (currentPromoter?.status === "completed" ||
+      AllSectionsData?.every((item: any) => item?.sectionReviewed))
+  ) {
+    // If the role is reviewer and all sections are reviewed
+    markAsBtnText = "Reviewed";
+  } else if (
+    currentDocRole.approver &&
+    (currentPromoter?.status === "completed" ||
+      AllSectionsData?.every((item: any) => item?.sectionApproved))
+  ) {
+    // If the role is approver and all sections are approved
+    markAsBtnText = "Approved";
+  } else {
+    // Default case
+    markAsBtnText = `Mark as all ${
+      currentDocRole.reviewer
+        ? "reviewed"
+        : currentDocRole.approver
+        ? "approved"
+        : "view"
+    }`;
+  }
 
   useEffect(() => {
     setSectionDetails(Details);
@@ -1312,25 +1406,31 @@ const ContentDevelopment = (): JSX.Element => {
                   >
                     {(currentDocRole.reviewer || currentDocRole.approver) && (
                       <DefaultButton
-                        text={`Mark as all ${
-                          currentDocRole.reviewer
-                            ? "reviewed"
-                            : currentDocRole.approver
-                            ? "approved"
-                            : "view"
-                        }`}
+                        text={markAsBtnText}
                         disabled={
                           currentPromoter?.status === "completed" ||
                           currentDocDetailsData?.documentStatus?.toLowerCase() ===
                             "in rework" ||
                           (currentDocRole.reviewer &&
-                            AllSectionsData?.every(
-                              (item: any) => item?.sectionReviewed
-                            )) ||
+                            AllSectionsData?.filter(
+                              (item: any) =>
+                                item?.sectionType?.toLowerCase() !==
+                                  "header section" &&
+                                item?.sectionType?.toLowerCase() !==
+                                  "references section" &&
+                                item?.sectionType?.toLowerCase() !==
+                                  "change record"
+                            )?.every((item: any) => item?.sectionReviewed)) ||
                           (currentDocRole.approver &&
-                            AllSectionsData?.every(
-                              (item: any) => item?.sectionApproved
-                            ))
+                            AllSectionsData?.filter(
+                              (item: any) =>
+                                item?.sectionType?.toLowerCase() !==
+                                  "header section" &&
+                                item?.sectionType?.toLowerCase() !==
+                                  "references section" &&
+                                item?.sectionType?.toLowerCase() !==
+                                  "change record"
+                            )?.every((item: any) => item?.sectionApproved))
                         }
                         btnType="secondary"
                         onClick={() => {
@@ -1359,8 +1459,7 @@ const ContentDevelopment = (): JSX.Element => {
                                 "change record"
                           )?.every((item: any) => item?.sectionSubmitted) &&
                           currentDocDetailsData?.documentStatus?.toLowerCase() ===
-                            "in development" &&
-                          currentPromoter?.status !== "completed"
+                            "in development"
                             ? false
                             : true
                         }
@@ -1555,6 +1654,7 @@ const ContentDevelopment = (): JSX.Element => {
                           noActionBtns={false}
                           ID={AllSectionsData[activeSection]?.ID}
                           currentSectionData={AllSectionsData[activeSection]}
+                          checkChanges={setCheckChanges}
                         />
                       )}
                     </div>

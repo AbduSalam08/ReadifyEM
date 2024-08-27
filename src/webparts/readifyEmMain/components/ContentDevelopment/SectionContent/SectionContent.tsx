@@ -257,7 +257,6 @@ const SectionContent: React.FC<IProps> = ({
           }
         );
         console.log("updatedSections: ", updatedSections);
-
         dispatch(setCDSectionData([...updatedSections]));
       })
       .catch((err: any) => {
@@ -537,6 +536,10 @@ const SectionContent: React.FC<IProps> = ({
     message: "",
     duration: "",
   });
+  const [validation, setValidation] = useState<any>({
+    isValid: true,
+    errorMessage: "",
+  });
 
   const [sectionLoader, setSectionLoader] = useState(true);
 
@@ -564,16 +567,51 @@ const SectionContent: React.FC<IProps> = ({
   };
 
   const handleAddPoint = (): void => {
-    const newPoint = getNextPoint(points[points.length - 1]);
-    setPoints([...points, newPoint]);
+    const hasEmptyValue = points
+      .slice(1)
+      .some((item: any) => item.value === "");
+    if (hasEmptyValue) {
+      setValidation({
+        ...validation,
+        isValid: false,
+        errorMessage: "error message",
+      });
+    } else {
+      setValidation({
+        ...validation,
+        isValid: true,
+        errorMessage: "",
+      });
+      const newPoint = getNextPoint(points[points.length - 1]);
+      setPoints([...points, newPoint]);
+    }
   };
 
   const handleAddSubPoint = (index: number): void => {
     const parentPoint = points[index];
     if (parentPoint.value.trim() === "") {
-      alert(
-        "Please enter a value for the parent point before adding a sub-point."
-      );
+      setValidation({
+        ...validation,
+        isValid: false,
+        errorMessage: "error message",
+      });
+      return;
+    } else {
+      setValidation({
+        ...validation,
+        isValid: true,
+        errorMessage: "",
+      });
+    }
+    const hasEmptyValue = points
+      .slice(1)
+      .some((item: any) => item.value === "");
+    if (hasEmptyValue) {
+      setValidation({
+        ...validation,
+        isValid: false,
+        errorMessage: "error message",
+      });
       return;
     }
     const sequence = subPointSequences[parentPoint.text] || 1;
@@ -675,6 +713,11 @@ const SectionContent: React.FC<IProps> = ({
   });
 
   const handleInputChange = (index: number, value: string): void => {
+    // setValidation({
+    //   ...validation,
+    //   isValid: true,
+    //   errorMessage: "",
+    // });
     const newPoints = [...points];
     newPoints[index].value = value;
     setPoints(newPoints);
@@ -854,6 +897,31 @@ const SectionContent: React.FC<IProps> = ({
       "close",
       "Are you sure want to submit this section?"
     );
+    if (points.length === 1) {
+      setValidation({
+        ...validation,
+        isValid: false,
+        errorMessage: "error message",
+      });
+      return;
+    }
+    const hasEmptyValue = points
+      .slice(1)
+      .some((item: any) => item.value === "");
+    if (hasEmptyValue) {
+      setValidation({
+        ...validation,
+        isValid: false,
+        errorMessage: "error message",
+      });
+      return;
+    } else {
+      setValidation({
+        ...validation,
+        isValid: true,
+        errorMessage: "",
+      });
+    }
     setSectionLoader(true);
     const _file: any = await convertToTxtFile();
 
@@ -905,6 +973,7 @@ const SectionContent: React.FC<IProps> = ({
     if (currentSectionDetails?.contentType === "list") {
       getSectionData();
     }
+    setValidation({ ...validation, isValid: true, errorMessage: "" });
 
     // if (sortedPoints) {
     //   setSectionLoader(false);
@@ -933,21 +1002,26 @@ const SectionContent: React.FC<IProps> = ({
         </div>
       ) : (
         <div className={styles.textPlayGround}>
-          {!currentSectionDetails?.sectionSubmitted && (
-            <DefaultButton
-              btnType="primary"
-              startIcon={
-                <i
-                  className="pi pi-plus-circle"
-                  style={{
-                    fontSize: "12px",
-                  }}
-                />
-              }
-              text={"Add new point"}
-              onClick={handleAddPoint}
-            />
-          )}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            {!currentSectionDetails?.sectionSubmitted && (
+              <DefaultButton
+                btnType="primary"
+                startIcon={
+                  <i
+                    className="pi pi-plus-circle"
+                    style={{
+                      fontSize: "12px",
+                    }}
+                  />
+                }
+                text={"Add new point"}
+                onClick={handleAddPoint}
+              />
+            )}
+            {!validation.isValid && (
+              <p className={styles.errorMsg}>{validation.errorMessage}</p>
+            )}
+          </div>
           {sortedPoints.length > 1 ? (
             sortedPoints?.map((item: any, idx: number) =>
               item?.text !== String(sectionNumber) ? renderPoint(item, idx) : ""
