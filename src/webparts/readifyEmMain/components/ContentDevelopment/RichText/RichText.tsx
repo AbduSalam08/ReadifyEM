@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 // css
@@ -48,6 +48,7 @@ interface IRichTextProps {
   ID?: any;
   onChange?: any;
   currentDocRole?: any;
+  checkChanges?: any;
 }
 
 const RichText = ({
@@ -58,8 +59,9 @@ const RichText = ({
   ID,
   onChange,
   currentDocRole,
+  checkChanges,
 }: IRichTextProps): JSX.Element => {
-  console.log("currentSectionData: ", currentSectionData);
+  const quillRef = useRef<any>(null);
   const dispatch = useDispatch();
 
   const initialPopupController = [
@@ -113,7 +115,6 @@ const RichText = ({
   const currentUserDetails: any = useSelector(
     (state: any) => state?.MainSPContext?.currentUserDetails
   );
-  console.log("currentUserDetails: ", currentUserDetails);
 
   const currentDocDetailsData: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDDocDetails
@@ -465,12 +466,79 @@ const RichText = ({
 
   // const [newAttachment, setNewAttachment] = useState<boolean>(true);
   const [description, setDescription] = useState<string>("");
-  console.log("description: ", description);
+  const [masterDescription, setMasterDescription] = useState<string>("");
 
-  const _handleOnChange = (newText: string): string => {
-    setDescription(newText === "<p><br></p>" ? "" : newText);
-    onChange && onChange(newText === "<p><br></p>" ? "" : newText);
-    return newText;
+  // const _handleOnChange = (newText: string): string => {
+  //   setDescription(newText === "<p><br></p>" ? "" : newText);
+  //   onChange && onChange(newText === "<p><br></p>" ? "" : newText);
+  //   return newText;
+  // };
+
+  const handleChange = async (
+    html: string,
+    delta: any,
+    source: any,
+    editor: any
+  ) => {
+    if (quillRef.current) {
+      const quill = quillRef.current.getEditor();
+      const currentContents = quill.getContents();
+      let cumulativeIndex = 0;
+
+      for (let i = 0; i < currentContents.ops.length; i++) {
+        const op = currentContents.ops[i];
+        if (op.insert && op.insert.image) {
+          const imgSrc = op.insert.image;
+          const response = await fetch(imgSrc);
+          const blob = await response.blob();
+          if (blob.size > 1 * 1024 * 1024) {
+            // 1MB limit
+            // Remove the large image from the editor's content
+            quill.deleteText(cumulativeIndex, 1);
+
+            alert("Image size exceeded 1MB and has been removed.");
+
+            cumulativeIndex -= 1;
+          } else {
+            // Apply the width and height styles to all images with the same src
+            const imageElements = quill.container.querySelectorAll(
+              `img[src="${imgSrc}"]`
+            );
+            imageElements.forEach((imageElement: any) => {
+              imageElement.setAttribute(
+                "style",
+                "width: 50%;display: block; margin-left: auto; margin-right: auto;"
+              );
+            });
+          }
+        }
+
+        // Update the cumulative index for each op
+        cumulativeIndex += op.insert
+          ? typeof op.insert === "string"
+            ? op.insert.length
+            : 1
+          : 0;
+      }
+
+      setDescription(editor.getHTML());
+      onChange && onChange(editor.getHTML());
+      console.log(masterDescription, editor.getHTML());
+
+      if (
+        masterDescription === editor.getHTML() ||
+        masterDescription === description
+      ) {
+        await checkChanges(false);
+      } else {
+        await checkChanges(true);
+      }
+      return editor.getHTML();
+    }
+
+    // setDescription(html === "<p><br></p>" ? "" : html);
+    // onChange && onChange(html === "<p><br></p>" ? "" : html);
+    // return html;
   };
 
   const readTextFileFromTXT = (data: any): void => {
@@ -481,10 +549,10 @@ const RichText = ({
       AttachmentName: data?.FileName,
     })
       .then((res: any) => {
-        console.log("res: ", res);
         const parsedValue: any = res ? JSON.parse(res) : "";
         if (typeof parsedValue === "string") {
           setDescription(parsedValue);
+          setMasterDescription(parsedValue);
           onChange && onChange(parsedValue);
           setSectionLoader(false);
         } else {
@@ -497,7 +565,6 @@ const RichText = ({
   };
 
   const submitRejectedComment = async (): Promise<any> => {
-    console.log(rejectedComments);
     if (rejectedComments.rejectedComment?.trim() !== "") {
       setRejectedComments({
         ...rejectedComments,
@@ -538,7 +605,6 @@ const RichText = ({
       ID: ID,
     })
       .then((res: any) => {
-        console.log("res: ", res);
         const filteredItem: any = res?.filter(
           (item: any) => item?.FileName === "Sample.txt"
         );
@@ -554,7 +620,6 @@ const RichText = ({
       })
       .catch((err) => {
         setSectionLoader(false);
-        console.log(err);
       });
   };
 
@@ -574,6 +639,17 @@ const RichText = ({
       "close",
       "Are you sure want to submit this section?"
     );
+    if (description === "" || description === "<p><br></p>") {
+      setToastMessage({
+        isShow: true,
+        severity: "error",
+        title: "Content Empty",
+        message: "Please enter content.",
+        duration: 3000,
+      });
+      return;
+    }
+
     setSectionLoader(true);
     let addDataPromises: Promise<any>;
     const _file: any = await convertToTxtFile();
@@ -653,10 +729,7 @@ const RichText = ({
       ? currentDocDetailsData?.approvers
       : [];
 
-    console.log("promoters: ", promoters);
-
     const currentPromoter: any = getCurrentPromoter(promoters);
-    console.log("currentPromoter: ", currentPromoter);
 
     const promoterKey: string = currentDocRole?.reviewer
       ? "sectionReviewed"
@@ -699,12 +772,10 @@ const RichText = ({
             },
           }
         );
-        console.log("updatedSections: ", updatedSections);
 
         dispatch(setCDSectionData([...updatedSections]));
       })
       .catch((err: any) => {
-        console.log("err: ", err);
         setSectionLoader(false);
         setToastMessage({
           isShow: true,
@@ -723,8 +794,6 @@ const RichText = ({
     currentUserDetails
   );
 
-  console.log("loggerPromoter: ", loggerPromoter);
-
   useEffect(() => {
     setSectionLoader(true);
     if (currentSectionData?.contentType === "paragraph") {
@@ -733,7 +802,6 @@ const RichText = ({
   }, [ID]);
 
   useEffect(() => {
-    console.log(sectionChangeRecord);
     setChangeRecordDetails({
       ...changeRecordDetails,
       author: sectionChangeRecord.changeRecordAuthor
@@ -758,6 +826,7 @@ const RichText = ({
         </div>
       ) : (
         <ReactQuill
+          ref={quillRef}
           theme="snow"
           modules={modules}
           formats={formats}
@@ -770,9 +839,10 @@ const RichText = ({
           }
           placeholder="Content goes here"
           className="customeRichText"
-          onChange={(text) => {
-            _handleOnChange(text);
-          }}
+          // onChange={(text) => {
+          //   _handleOnChange(text);
+          // }}
+          onChange={handleChange}
         />
       )}
       {!noActionBtns ? (

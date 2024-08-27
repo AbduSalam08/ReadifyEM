@@ -941,7 +941,7 @@ const Definition: React.FC<Props> = ({
               ID: definitionObject.ID,
               definitionTitle: definitionObject.definitionTitle,
               definitionDescription: definitionObject.definitionDescription,
-              referenceAuthor: definitionObject?.referenceAuthor,
+              referenceAuthorName: definitionObject?.referenceAuthorName,
               referenceLink: definitionObject.referenceLink,
               referenceTitle: definitionObject.referenceTitle,
               isSelected: false,
