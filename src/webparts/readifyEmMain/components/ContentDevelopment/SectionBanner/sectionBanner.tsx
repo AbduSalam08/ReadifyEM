@@ -114,6 +114,7 @@ import {
   getHeaderSectionDetails,
 } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { useDispatch, useSelector } from "react-redux";
+import { removeVersionFromDocName } from "../../../../../utils/formatDocName";
 const sampleDocHeaderImg: any = require("../../../../../assets/images/png/imagePlaceholder.png");
 
 interface Props {
@@ -168,7 +169,9 @@ const SectionBanner: React.FC<Props> = ({
           />
         </div>
         <div className={styles.headerText}>
-          <p>{currentDocDetails?.documentName || "-"}</p>
+          <p>
+            {removeVersionFromDocName(currentDocDetails?.documentName) || "-"}
+          </p>
           <span>
             {sectionDetails?.sectionType === "appendix section"
               ? `${

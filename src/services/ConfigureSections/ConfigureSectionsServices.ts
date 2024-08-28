@@ -857,7 +857,12 @@ export const updateSections = async (
         Filter: [
           {
             FilterKey: "sectionName",
-            FilterValue: section?.sectionName,
+            FilterValue: section?.Title,
+            Operator: "eq",
+          },
+          {
+            FilterKey: "documentDetails",
+            FilterValue: section?.Title,
             Operator: "eq",
           },
         ],

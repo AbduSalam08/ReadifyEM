@@ -261,22 +261,20 @@ const SectionHeader: React.FC<Props> = ({
                   isValid={false}
                   placeholder="Add Reference Author"
                   readOnly={
-                    (!currentDocRole.sectionAuthor &&
-                      activeSectionData?.sectionSubmitted) ||
-                    (!currentDocRole.primaryAuthor &&
-                      activeSectionData?.sectionSubmitted)
+                    (!currentDocRole.sectionAuthor ||
+                      !currentDocRole.primaryAuthor) &&
+                    activeSectionData?.sectionSubmitted
                   }
                   noRemoveBtn={
-                    (currentDocRole.sectionAuthor &&
-                      !activeSectionData?.sectionSubmitted) ||
-                    (currentDocRole.primaryAuthor &&
-                      !activeSectionData?.sectionSubmitted)
+                    !(
+                      currentDocRole.sectionAuthor ||
+                      currentDocRole.primaryAuthor
+                    ) && !activeSectionData?.sectionSubmitted
                   }
                   hasSubmitBtn={
-                    (currentDocRole.sectionAuthor &&
-                      !activeSectionData?.sectionSubmitted) ||
-                    (currentDocRole.primaryAuthor &&
-                      !activeSectionData?.sectionSubmitted)
+                    (currentDocRole.sectionAuthor ||
+                      currentDocRole.primaryAuthor) &&
+                    !activeSectionData?.sectionSubmitted
                   }
                   multiUsers={true}
                   popupControl={true}

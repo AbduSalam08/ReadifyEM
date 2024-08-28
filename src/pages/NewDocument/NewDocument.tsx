@@ -210,6 +210,8 @@ const NewDocument = ({
 
   const [formData, setFormData] = useState<IFormDataItem[]>(initialFormData);
 
+  console.log("formData: ", formData);
+
   const [stepperFormData, setStepperFormData] = useState<IStepData[]>([
     {
       step: 1,
@@ -619,8 +621,8 @@ const NewDocument = ({
       // Check for duplicates in userData
       const userDataSet = new Set();
       const hasDuplicates = value.some((e: any) => {
-        if (e.userData) {
-          const userDataString = JSON.stringify(e.userData);
+        if (e?.userData) {
+          const userDataString = JSON.stringify(e?.userData);
           const isDuplicate = userDataSet.has(userDataString);
           userDataSet.add(userDataString);
           return isDuplicate;

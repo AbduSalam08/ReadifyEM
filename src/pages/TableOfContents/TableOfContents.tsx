@@ -128,7 +128,7 @@ const TableOfContents = (): JSX.Element => {
   const [tableData, setTableData] = useState({
     headers: isAdmin
       ? ["Document Name", "Created At", "Next Review", "Status", "Visibility"]
-      : ["Document Name", "Created At", "Next Review"],
+      : ["Document Name", "Created At", "Next Review", "Status"],
     loading: false,
     data: [] as LibraryItem[],
   });
