@@ -26,6 +26,7 @@ import AlertPopup from "../../webparts/readifyEmMain/components/common/Popups/Al
 import { defaultTemplates } from "../../constants/DefaultTemplates";
 // styles
 import styles from "./ConfigureSections.module.scss";
+import { removeVersionFromDocName } from "../../utils/formatDocName";
 const ConfigureSections = (): JSX.Element => {
   // use navigate for routing purpose
   const navigate = useNavigate();
@@ -47,6 +48,7 @@ const ConfigureSections = (): JSX.Element => {
   const ConfigurePageDetails: any = useSelector(
     (state: any) => state.SectionConfiguration?.ConfigurePageDetails
   );
+  console.log("ConfigurePageDetails: ", ConfigurePageDetails);
 
   // const AllSectionsDataConfiguration: any = useSelector(
   //   (state: any) => state.SectionConfiguration?.AllSectionsData
@@ -226,7 +228,11 @@ const ConfigureSections = (): JSX.Element => {
 
   const handleSubmitSection = async (): Promise<any> => {
     if (validateSections(sectionsData)) {
-      if (ConfigurePageDetails?.pageKey === "update") {
+      if (
+        ConfigurePageDetails?.pageKey === "update"
+        // ||
+        // ConfigurePageDetails?.pageKey === "version update"
+      ) {
         await updateSections(sectionsData, setPopupLoaders, currentTaskData);
       } else {
         await AddSections(sectionsData, setPopupLoaders, currentTaskData);
@@ -300,7 +306,7 @@ const ConfigureSections = (): JSX.Element => {
           <div className={styles.dndSectionsWrapper}>
             <div className={styles.header}>
               <div className={styles.docTitle}>
-                {currentTaskData?.docName || "-"}
+                {removeVersionFromDocName(currentTaskData?.docName) || "-"}
                 <div className={styles.versionPill}>
                   v{currentTaskData?.docVersion}
                 </div>

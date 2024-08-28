@@ -579,7 +579,7 @@ export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
           {
             FilterKey: "docVersion",
             Operator: "eq",
-            FilterValue: taskItem.documentVersion,
+            FilterValue: taskItem.docVersion,
           },
           {
             FilterKey: "role",

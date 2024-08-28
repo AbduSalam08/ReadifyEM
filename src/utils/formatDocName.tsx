@@ -57,7 +57,7 @@ export function formatDocNameWithLastVersion(
 
 export function removeVersionFromDocName(docName: string): string {
   // Find the last underscore in the document name
-  const lastUnderscoreIndex = docName.lastIndexOf("_");
+  const lastUnderscoreIndex = docName?.lastIndexOf("_");
 
   if (lastUnderscoreIndex === -1) {
     // If no underscore is found, return the document name as is

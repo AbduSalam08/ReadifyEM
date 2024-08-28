@@ -13,6 +13,7 @@ import { getCurrentLoggedPromoter } from "../../../../../utils/contentDevelopeme
 import SpServices from "../../../../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../../../../config/config";
 import { useEffect } from "react";
+import { removeVersionFromDocName } from "../../../../../utils/formatDocName";
 const arrowBackBtn = require("../../../../../assets/images/svg/arrowBack.svg");
 const locationIcon = require("../../../../../assets/images/svg/locationIcon.svg");
 const editConfigurationImg = require("../../../../../assets/images/svg/taskConfigurationEditIconBlue.svg");
@@ -110,7 +111,7 @@ const Header: React.FC<Props> = ({
                   role && role?.toLowerCase() !== "admin" ? "30px" : "0",
               }}
             >
-              {documentName}
+              {removeVersionFromDocName(documentName)}
             </h3>
             {role && role?.toLowerCase() !== "admin" ? (
               <StatusPill size="SM" roles={role} />
@@ -163,6 +164,11 @@ const Header: React.FC<Props> = ({
               className={styles.editBtnConfig}
               btnType="secondary"
               onClick={async () => {
+                dispatch(
+                  setConfigurePageDetails({
+                    pageKey: "update",
+                  })
+                );
                 await getUniqueTaskData(
                   currentDocDetailsData?.taskID || PAtaskID,
                   dispatch

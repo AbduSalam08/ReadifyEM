@@ -120,11 +120,12 @@ const UserList = ({
                 noRemoveBtn={noRemoveBtn}
                 readOnly={readOnly}
                 onChange={(value: any) => {
+                  console.log("value: ", value);
                   const updatedUsers = users?.map((item: any, index: number) =>
                     index === i
                       ? {
                           ...item,
-                          userData: value,
+                          userData: value[0],
                           status: item?.status || "pending",
                           // ALl status for reviewers and approvers - pending, completed, rework, inprogress
                           isValid: !validateUserData(users[i].userData),

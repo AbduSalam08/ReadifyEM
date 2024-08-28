@@ -892,7 +892,9 @@ const ContentDevelopment = (): JSX.Element => {
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "referenceAuthor");
         }}
-        selectedItem={currentDocDetailsData?.reviewers}
+        selectedItem={currentDocDetailsData?.reviewers?.map(
+          (el: any) => el?.userData
+        )}
         readOnly={true}
         noRemoveBtn={true}
         multiUsers={true}
@@ -911,7 +913,9 @@ const ContentDevelopment = (): JSX.Element => {
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "referenceAuthor");
         }}
-        selectedItem={currentDocDetailsData?.approvers}
+        selectedItem={currentDocDetailsData?.approvers?.map(
+          (el: any) => el?.userData
+        )}
         readOnly={true}
         noRemoveBtn={true}
         multiUsers={true}
@@ -1203,6 +1207,8 @@ const ContentDevelopment = (): JSX.Element => {
     currentUserDetails
   );
 
+  console.log("currentPromoter: ", currentPromoter);
+
   const popuphandleOnChanges = (
     value: number,
     condition: boolean,
@@ -1274,20 +1280,75 @@ const ContentDevelopment = (): JSX.Element => {
           (item: any) => item?.status === "in progress"
         )
       );
-    } else if (
+    }
+    if (
       (isInApproval || isInRework || isApproved) &&
       currentDocRole?.approver
     ) {
       return (
-        sectionsValid &&
-        currentDocDetailsData?.approvers?.some(
-          (item: any) => item?.status === "in progress"
-        )
+        currentPromoter?.status === "completed" ||
+        (sectionsValid &&
+          currentDocDetailsData?.approvers?.some(
+            (item: any) => item?.status === "in progress"
+          ))
       );
     }
 
     return false;
   };
+
+  // const enablePromote = (): boolean => {
+  //   if (!currentDocDetailsData || !AllSectionsData) return false;
+
+  //   const isInReview =
+  //     currentDocDetailsData.documentStatus?.toLowerCase() === "in review";
+  //   const isApproved =
+  //     currentDocDetailsData.documentStatus?.toLowerCase() === "approved";
+  //   const isInApproval =
+  //     currentDocDetailsData.documentStatus?.toLowerCase() === "in approval";
+  //   const isInRework =
+  //     currentDocDetailsData.documentStatus?.toLowerCase() === "in rework";
+
+  //   const sectionsValid = AllSectionsData?.filter(
+  //     (item: any) =>
+  //       item?.sectionType?.toLowerCase() !== "header section" &&
+  //       item?.sectionType?.toLowerCase() !== "change record" &&
+  //       item?.sectionType?.toLowerCase() !== "references section"
+  //   )?.every(
+  //     (item: any) =>
+  //       item?.sectionSubmitted &&
+  //       (isInReview || isInRework
+  //         ? item?.sectionReviewed || currentPromoter?.status === "completed"
+  //         : item?.sectionApproved || currentPromoter?.status === "completed")
+  //   );
+
+  //   // Condition for reviewers
+  //   if ((isInReview || isInRework || isApproved) && currentDocRole?.reviewer) {
+  //     return (
+  //       sectionsValid &&
+  //       currentDocDetailsData?.reviewers?.some(
+  //         (item: any) => item?.status === "in progress"
+  //       )
+  //     );
+  //   }
+
+  //   // Condition for approvers
+  //   if (
+  //     (isInApproval || isInRework || isApproved) &&
+  //     currentDocRole?.approver
+  //   ) {
+  //     return (
+  //       sectionsValid &&
+  //       currentDocDetailsData?.approvers?.some(
+  //         (item: any) => item?.status === "in progress"
+  //       )
+  //     );
+  //   }
+
+  //   return false;
+  // };
+
+  console.log("enablePromote: ", enablePromote());
 
   let markAsBtnText = "";
 
@@ -1593,6 +1654,7 @@ const ContentDevelopment = (): JSX.Element => {
                           documentId={
                             AllSectionsData[activeSection]?.documentOfId
                           }
+                          setCheckChanges={setCheckChanges}
                         />
                       ) : //     : AllSectionsData[
                       //   activeSection
@@ -1622,6 +1684,7 @@ const ContentDevelopment = (): JSX.Element => {
                           documentId={
                             AllSectionsData[activeSection]?.documentOfId
                           }
+                          setCheckChanges={setCheckChanges}
                         />
                       ) : AllSectionsData[activeSection]?.contentType ===
                         "initial" ? (
@@ -1645,6 +1708,7 @@ const ContentDevelopment = (): JSX.Element => {
                           }
                           ID={AllSectionsData[activeSection]?.ID}
                           noActionBtns={false}
+                          setCheckChanges={setCheckChanges}
                         />
                       ) : (
                         <RichText

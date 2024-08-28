@@ -96,7 +96,7 @@ const TableItem: React.FC<TableItemProps> = ({
             );
           }
 
-          if (lowerCaseKey === "isvisible") {
+          if (lowerCaseKey === "isvisible" && isAdmin) {
             return (
               <div className={styles.item} title={fieldValue} key={i}>
                 {(item.fields.status?.toLowerCase() === "approved" ||
@@ -366,7 +366,7 @@ const TableItem: React.FC<TableItemProps> = ({
               <div
                 className={styles.actionItem}
                 style={{
-                  width: "18%",
+                  width: "15%",
                   justifyContent: "center",
                 }}
               >
