@@ -38,6 +38,7 @@ import { setCDSectionData } from "../../../../../redux/features/ContentDevloperS
 import CloseIcon from "@mui/icons-material/Close";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import PreviewSection from "../PreviewSection/PreviewSection";
+import { compareArraysOfObjects } from "../../../../../utils/CommonUtils";
 
 interface IProps {
   sectionNumber: any;
@@ -48,6 +49,7 @@ interface IProps {
   currentSectionDetails?: any;
   onChange?: any;
   currentDocRole?: any;
+  setCheckChanges?: any;
 }
 
 interface IPoint {
@@ -65,6 +67,7 @@ const SectionContent: React.FC<IProps> = ({
   setSectionData,
   onChange,
   currentDocRole,
+  setCheckChanges,
 }) => {
   // confirmation popup controllers
   const initialPopupController = [
@@ -548,6 +551,9 @@ const SectionContent: React.FC<IProps> = ({
   const [points, setPoints] = useState<IPoint[]>([
     { text: String(sectionNumber), value: "", class: "I_0" },
   ]);
+  const [masterPoints, setMasterPoints] = useState<IPoint[]>([
+    { text: String(sectionNumber), value: "", class: "I_0" },
+  ]);
 
   const [subPointSequences, setSubPointSequences] = useState<{
     [key: string]: number;
@@ -566,7 +572,7 @@ const SectionContent: React.FC<IProps> = ({
     return { text: `${parentPoint}.${sequence}`, value: "", class: className };
   };
 
-  const handleAddPoint = (): void => {
+  const handleAddPoint = async (): Promise<void> => {
     const hasEmptyValue = points
       .slice(1)
       .some((item: any) => item.value === "");
@@ -584,10 +590,22 @@ const SectionContent: React.FC<IProps> = ({
       });
       const newPoint = getNextPoint(points[points.length - 1]);
       setPoints([...points, newPoint]);
+
+      const objectsEqual = compareArraysOfObjects(masterPoints, [
+        ...points,
+        newPoint,
+      ]);
+      if (await objectsEqual) {
+        console.log("not Changed");
+        setCheckChanges(false);
+      } else {
+        console.log("Changed");
+        setCheckChanges(true);
+      }
     }
   };
 
-  const handleAddSubPoint = (index: number): void => {
+  const handleAddSubPoint = async (index: number): Promise<void> => {
     const parentPoint = points[index];
     if (parentPoint.value.trim() === "") {
       setValidation({
@@ -614,6 +632,7 @@ const SectionContent: React.FC<IProps> = ({
       });
       return;
     }
+
     const sequence = subPointSequences[parentPoint.text] || 1;
     const newSubPoint = getNextSubPoint(parentPoint.text, sequence);
     const newPoints = [
@@ -627,6 +646,14 @@ const SectionContent: React.FC<IProps> = ({
       [parentPoint.text]: newSequence,
     });
     setPoints(newPoints);
+    const objectsEqual = compareArraysOfObjects(masterPoints, [...newPoints]);
+    if (await objectsEqual) {
+      console.log("not Changed");
+      setCheckChanges(false);
+    } else {
+      console.log("Changed");
+      setCheckChanges(true);
+    }
   };
 
   const renderPoint = (point: IPoint, index: number): JSX.Element => {
@@ -712,7 +739,10 @@ const SectionContent: React.FC<IProps> = ({
     return pointA.length - pointB.length;
   });
 
-  const handleInputChange = (index: number, value: string): void => {
+  const handleInputChange = async (
+    index: number,
+    value: string
+  ): Promise<void> => {
     // setValidation({
     //   ...validation,
     //   isValid: true,
@@ -721,10 +751,18 @@ const SectionContent: React.FC<IProps> = ({
     const newPoints = [...points];
     newPoints[index].value = value;
     setPoints(newPoints);
+    const objectsEqual = compareArraysOfObjects(masterPoints, [...newPoints]);
+    if (await objectsEqual) {
+      console.log("not Changed");
+      setCheckChanges(false);
+    } else {
+      console.log("Changed");
+      setCheckChanges(true);
+    }
     onChange && onChange(newPoints);
   };
 
-  const handleInputClear = (index: number): void => {
+  const handleInputClear = async (index: number): Promise<void> => {
     const pointToRemove = points[index];
     const newPoints = points.filter((_, i) => i !== index);
 
@@ -740,6 +778,14 @@ const SectionContent: React.FC<IProps> = ({
     };
     removeSubPoints(pointToRemove.text);
     setPoints(newPoints);
+    const objectsEqual = compareArraysOfObjects(masterPoints, [...newPoints]);
+    if (await objectsEqual) {
+      console.log("not Changed");
+      setCheckChanges(false);
+    } else {
+      console.log("Changed");
+      setCheckChanges(true);
+    }
     onChange && onChange(newPoints);
   };
 
@@ -842,8 +888,10 @@ const SectionContent: React.FC<IProps> = ({
       .then((res: any) => {
         console.log("res: ", res);
         const parsedValue: any = JSON.parse(res);
+        const tempParsedValue: any = JSON.parse(res);
         if (typeof parsedValue === "object") {
           setPoints([...parsedValue]);
+          setMasterPoints([...tempParsedValue]);
           onChange && onChange([...parsedValue]);
           setSectionLoader(false);
         } else {
@@ -890,6 +938,7 @@ const SectionContent: React.FC<IProps> = ({
   };
 
   const addData = async (submissionType?: any): Promise<any> => {
+    setCheckChanges(false);
     debugger;
     togglePopupVisibility(
       setPopupController,

@@ -14,12 +14,14 @@
     background-color: #eeeeee;
 }
 .paraSection{
-    img{
-        display: block;
-        width: 50%!important;
-        margin-left: auto;
-        margin-right: auto;
-    }
+    img {
+            width: 400px !important;
+            height: 400px !important;
+        }
+    
+        p {
+            line-height: 20px;
+        }
 }
 .listItem {
     line-height: 20px;

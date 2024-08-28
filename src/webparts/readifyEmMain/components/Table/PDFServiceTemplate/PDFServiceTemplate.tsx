@@ -93,16 +93,18 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
               style={{ padding: "10px 0px" }}
               key={index}
             >
-              <span
-                style={{
-                  display: "flex",
-                  paddingBottom: "15px",
-                  fontSize: "22px",
-                  fontFamily: "interMedium, sans-serif",
-                }}
-              >
-                {obj.sectionOrder + ". " + obj.text}
-              </span>
+              {obj.text !== "Header" && (
+                <span
+                  style={{
+                    display: "flex",
+                    paddingBottom: "15px",
+                    fontSize: "22px",
+                    fontFamily: "interMedium, sans-serif",
+                  }}
+                >
+                  {obj.sectionOrder + ". " + obj.text}
+                </span>
+              )}
               {typeof obj.value === "string" ? (
                 <div dangerouslySetInnerHTML={{ __html: obj.value }} />
               ) : (
