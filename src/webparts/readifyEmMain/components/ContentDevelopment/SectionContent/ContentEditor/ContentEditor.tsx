@@ -54,49 +54,6 @@ const ContentEditor: React.FC<EditorProps> = ({
     console.log("editor", editor);
     debugger;
     const quill = quillRef.current.getEditor();
-    // const insertedImages = delta.ops.filter(
-    //   (op: any) => op.insert && op.insert.image
-    // );
-    // if (insertedImages.length > 0) {
-    //   let isImageTooLarge = false;
-
-    //   await insertedImages.forEach((imageOp: any) => {
-    //     const imgSrc = imageOp.insert.image;
-
-    //     // Fetch the image and check its size
-    //     fetch(imgSrc)
-    //       .then((response) => response.blob())
-    //       .then((blob) => {
-    //         if (blob.size > 1 * 1024 * 1024) {
-    //           // 1MB limit
-    //           isImageTooLarge = true;
-
-    //           // Find the index of the large image in the editor
-    //           const currentContents = quill.getContents();
-    //           let indexToDelete = 0;
-
-    //           currentContents.ops.forEach((op: any, index: number) => {
-    //             if (op.insert && op.insert.image === imgSrc) {
-    //               indexToDelete = index;
-    //             }
-    //           });
-
-    //           if (indexToDelete !== -1) {
-    //             // Remove the large image from the editor's content
-    //             quill.deleteText(
-    //               quill.getIndex(currentContents, indexToDelete),
-    //               1
-    //             );
-    //             alert("Image size exceeded 1MB and has been removed.");
-    //           }
-    //         }
-    //       });
-    //   });
-
-    //   if (isImageTooLarge) {
-    //     return;
-    //   }
-    // }
 
     const currentContents = quill.getContents();
     let cumulativeIndex = 0;
@@ -107,11 +64,13 @@ const ContentEditor: React.FC<EditorProps> = ({
         const imgSrc = op.insert.image;
         const response = await fetch(imgSrc);
         const blob = await response.blob();
-        if (blob.size > 1 * 1024 * 1024) {
+        if (blob.size > 1 * 1024 * 1024 || blob.size < 500 * 1024) {
           // 1MB limit
           // Remove the large image from the editor's content
           quill.deleteText(cumulativeIndex, 1);
-          alert("Image size exceeded 1MB and has been removed.");
+          alert(
+            "Image size is either too large (over 1MB) or too small (below 500KB) and has been removed."
+          );
           cumulativeIndex -= 1;
         } else {
           // Get the image element and set its size to 300px by 300px
@@ -119,10 +78,8 @@ const ContentEditor: React.FC<EditorProps> = ({
             `img[src="${imgSrc}"]`
           );
           if (imageElement) {
-            imageElement.style.width = "30%";
-            imageElement.style.display = "block";
-            imageElement.style.marginLeft = "auto";
-            imageElement.style.marginRight = "auto";
+            imageElement.style.width = "400px";
+            imageElement.style.height = "400px";
           }
         }
       }

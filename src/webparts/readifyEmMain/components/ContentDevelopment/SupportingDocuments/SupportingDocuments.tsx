@@ -27,7 +27,6 @@ import {
   updateSectionDetails,
 } from "../../../../../services/ContentDevelopment/SupportingDocument/SupportingDocumentServices";
 import { useNavigate } from "react-router-dom";
-import { isEmpty } from "@microsoft/sp-lodash-subset";
 import ToastMessage from "../../common/Toast/ToastMessage";
 import Popup from "../../common/Popups/Popup";
 import { togglePopupVisibility } from "../../../../../utils/togglePopup";
@@ -52,12 +51,14 @@ import SpServices from "../../../../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../../../../config/config";
 import PreviewSection from "../PreviewSection/PreviewSection";
 import { validateWebURL } from "../../../../../utils/validations";
+import { compareArraysOfObjects } from "../../../../../utils/CommonUtils";
 
 interface Props {
   documentId: number;
   sectionId: number;
   currentSectionDetails: any;
   currentDocRole: any;
+  setCheckChanges?: any;
 }
 interface documentDetails {
   ID: number;
@@ -76,6 +77,7 @@ const SupportingDocuments: React.FC<Props> = ({
   sectionId,
   currentSectionDetails,
   currentDocRole,
+  setCheckChanges,
 }) => {
   const initialPopupController = [
     {
@@ -516,6 +518,7 @@ const SupportingDocuments: React.FC<Props> = ({
   const [selectedDocuments, setSelectedDocuments] = useState<documentDetails[]>(
     []
   );
+  const [masterSupportingDoc, setMasterSupportingDoc] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [toastMessage, setToastMessage] = useState<any>({
     isShow: false,
@@ -524,7 +527,7 @@ const SupportingDocuments: React.FC<Props> = ({
     message: "",
     duration: "",
   });
-  console.log(selectedDocuments);
+  console.log(selectedDocuments, allDocumentsLink);
 
   const submitRejectedComment = async (): Promise<any> => {
     console.log(rejectedComments);
@@ -589,14 +592,18 @@ const SupportingDocuments: React.FC<Props> = ({
       sectionId,
       documentId
     );
+    const tempSortedArray = tempSelectedDocumentsArray.sort(
+      (a: any, b: any) => b.ID - a.ID
+    );
     const sortedArray = tempSelectedDocumentsArray.sort(
       (a: any, b: any) => b.ID - a.ID
     );
     setSelectedDocuments([...sortedArray]);
+    setMasterSupportingDoc([...tempSortedArray]);
     getMainDocumentDeatails([...sortedArray]);
   };
 
-  const onSelectDocument = (id: number): void => {
+  const onSelectDocument = async (id: number): Promise<void> => {
     const tempArray = [...filterDocuments];
     let tempSelectedDocuments = [...selectedDocuments];
     const index = tempArray.findIndex((obj: any) => obj.ID === id);
@@ -613,6 +620,16 @@ const SupportingDocuments: React.FC<Props> = ({
         });
         tempSelectedDocuments[index].isDeleted = false;
         setSelectedDocuments([...tempSelectedDocuments]);
+        const objectsEqual = compareArraysOfObjects(masterSupportingDoc, [
+          ...tempSelectedDocuments,
+        ]);
+        if (await objectsEqual) {
+          console.log("not Changed");
+          setCheckChanges(false);
+        } else {
+          console.log("Changed");
+          setCheckChanges(true);
+        }
       } else {
         setSelectedDocuments((prev: any) => {
           return [
@@ -628,6 +645,27 @@ const SupportingDocuments: React.FC<Props> = ({
             ...prev,
           ];
         });
+        const objectsEqual = compareArraysOfObjects(masterSupportingDoc, [
+          [
+            {
+              ID: selectedDocuments.length + 1,
+              documentName: documentObject.documentName,
+              documentLink: documentObject.FileRef,
+              isSelected: false,
+              isDeleted: false,
+              isNew: false,
+              status: true,
+            },
+            ...selectedDocuments,
+          ],
+        ]);
+        if (await objectsEqual) {
+          console.log("not Changed");
+          setCheckChanges(false);
+        } else {
+          console.log("Changed");
+          setCheckChanges(true);
+        }
       }
     } else {
       const isMatch = selectedDocuments.some(
@@ -644,16 +682,36 @@ const SupportingDocuments: React.FC<Props> = ({
             }
           );
           setSelectedDocuments([...tempSelectedDocuments]);
+          const objectsEqual = compareArraysOfObjects(masterSupportingDoc, [
+            ...tempSelectedDocuments,
+          ]);
+          if (await objectsEqual) {
+            console.log("not Changed");
+            setCheckChanges(false);
+          } else {
+            console.log("Changed");
+            setCheckChanges(true);
+          }
         } else {
           tempSelectedDocuments[index].isDeleted = true;
           setSelectedDocuments([...tempSelectedDocuments]);
+          const objectsEqual = compareArraysOfObjects(masterSupportingDoc, [
+            ...tempSelectedDocuments,
+          ]);
+          if (await objectsEqual) {
+            console.log("not Changed");
+            setCheckChanges(false);
+          } else {
+            console.log("Changed");
+            setCheckChanges(true);
+          }
         }
       }
     }
     setFilterDocuments([...tempArray]);
   };
 
-  const AddNewDocument = (): any => {
+  const AddNewDocument = async (): Promise<any> => {
     const tempArray = selectedDocuments;
     const checkCondition = selectedDocuments.some((obj: any) => obj.isNew);
     if (!checkCondition) {
@@ -669,6 +727,16 @@ const SupportingDocuments: React.FC<Props> = ({
         emptyField: "",
       });
       setSelectedDocuments([...tempArray]);
+      const objectsEqual = compareArraysOfObjects(masterSupportingDoc, [
+        ...tempArray,
+      ]);
+      if (await objectsEqual) {
+        console.log("not Changed");
+        setCheckChanges(false);
+      } else {
+        console.log("Changed");
+        setCheckChanges(true);
+      }
     } else {
       setToastMessage({
         isShow: true,
@@ -712,8 +780,16 @@ const SupportingDocuments: React.FC<Props> = ({
     }
   };
 
-  const removeSupportingDocument = (index: number) => {
+  const removeSupportingDocument = async (index: number) => {
     let tempSelectedDocuments = [...selectedDocuments];
+    debugger;
+    const filterSelectionDefinitions = allDocumentsLink.map((obj: any) => {
+      if (obj.documentName === tempSelectedDocuments[index].documentName) {
+        return { ...obj, isDeleted: true, isSelected: false };
+      } else {
+        return obj;
+      }
+    });
     if (tempSelectedDocuments[index].status) {
       tempSelectedDocuments = tempSelectedDocuments.filter(
         (obj: any, ind: number) => {
@@ -723,7 +799,20 @@ const SupportingDocuments: React.FC<Props> = ({
     } else {
       tempSelectedDocuments[index].isDeleted = true;
     }
+
+    setAllDocumentsLink([...filterSelectionDefinitions]);
     setSelectedDocuments([...tempSelectedDocuments]);
+
+    const objectsEqual = compareArraysOfObjects(masterSupportingDoc, [
+      ...tempSelectedDocuments,
+    ]);
+    if (await objectsEqual) {
+      console.log("not Changed");
+      setCheckChanges(false);
+    } else {
+      console.log("Changed");
+      setCheckChanges(true);
+    }
   };
 
   const documentOnchange = (
@@ -757,6 +846,7 @@ const SupportingDocuments: React.FC<Props> = ({
   );
 
   const submitSupDocuments = async (submitCondition: boolean) => {
+    setCheckChanges(false);
     togglePopupVisibility(
       setPopupController,
       0,
@@ -872,12 +962,12 @@ const SupportingDocuments: React.FC<Props> = ({
               />
               {searchValue?.trim() !== "" && (
                 <div className={styles.filterSecWrapper}>
-                  {isEmpty(allDocumentsLink) ||
-                    (isEmpty(filterDocuments) && (
-                      <div className={styles.noDataFound}>
-                        <span>No data found</span>
-                      </div>
-                    ))}
+                  {(allDocumentsLink.length === 0 ||
+                    filterDocuments.length === 0) && (
+                    <div className={styles.noDataFound}>
+                      <span>No data found</span>
+                    </div>
+                  )}
                   {filterDocuments?.map((obj: any, index: number) => {
                     return (
                       <div

@@ -294,7 +294,7 @@ const SDDSections = ({
   const reOrderSections = (data: any[]): any => {
     console.log(data);
 
-    let orderSection = data.map((obj: any, index: number) => {
+    const orderSection = data.map((obj: any, index: number) => {
       return { ...obj, id: index + 1 };
     });
     console.log(orderSection);

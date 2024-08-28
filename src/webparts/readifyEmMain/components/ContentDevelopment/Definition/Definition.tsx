@@ -51,12 +51,14 @@ import { setCDSectionData } from "../../../../../redux/features/ContentDevloperS
 import SpServices from "../../../../../services/SPServices/SpServices";
 import PreviewSection from "../PreviewSection/PreviewSection";
 import { validateWebURL } from "../../../../../utils/validations";
+import { compareArraysOfObjects } from "../../../../../utils/CommonUtils";
 
 interface Props {
   documentId: number;
   sectionId: number;
   currentSectionDetails?: any;
   currentDocRole?: any;
+  setCheckChanges?: any;
 }
 
 interface IDefinitionDetails {
@@ -131,6 +133,7 @@ const Definition: React.FC<Props> = ({
   sectionId,
   currentSectionDetails,
   currentDocRole,
+  setCheckChanges,
 }) => {
   // redux dispatcher
   const dispatch = useDispatch();
@@ -230,6 +233,7 @@ const Definition: React.FC<Props> = ({
   const [sectionDefinitions, setSectionDefinitions] = useState<any[]>([]);
   const [filterDefinitions, setFilterDefinitions] = useState<any[]>([]);
   const [selectedDefinitions, setSelectedDefinitions] = useState<any[]>([]);
+  const [masterDefinitions, setMasterDefinitions] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [initialLoader, setInitialLoader] = useState(true);
 
@@ -913,11 +917,14 @@ const Definition: React.FC<Props> = ({
       documentId,
       sectionId
     );
+    const masterTempSelectedDefinitionArray: any =
+      await getAllSectionDefinitions(documentId, sectionId);
     setSelectedDefinitions(await tempSelectedDefinitionArray);
+    setMasterDefinitions(await masterTempSelectedDefinitionArray);
     getMainDefinition(tempSelectedDefinitionArray);
   };
 
-  const onSelectDefinition = (id: number): void => {
+  const onSelectDefinition = async (id: number): Promise<void> => {
     const tempArray = filterDefinitions;
     let tempSelectedDocuments = [...selectedDefinitions];
     const index = tempArray.findIndex((obj: any) => obj.ID === id);
@@ -934,6 +941,17 @@ const Definition: React.FC<Props> = ({
         });
         tempSelectedDocuments[index].isDeleted = false;
         setSelectedDefinitions([...tempSelectedDocuments]);
+
+        const objectsEqual = compareArraysOfObjects(masterDefinitions, [
+          ...tempSelectedDocuments,
+        ]);
+        if (await objectsEqual) {
+          console.log("not Changed");
+          setCheckChanges(false);
+        } else {
+          console.log("Changed");
+          setCheckChanges(true);
+        }
       } else {
         setSelectedDefinitions((prev: any) => {
           return [
@@ -952,6 +970,29 @@ const Definition: React.FC<Props> = ({
             ...prev,
           ];
         });
+
+        const objectsEqual = compareArraysOfObjects(masterDefinitions, [
+          {
+            ID: definitionObject.ID,
+            definitionTitle: definitionObject.definitionTitle,
+            definitionDescription: definitionObject.definitionDescription,
+            referenceAuthorName: definitionObject?.referenceAuthorName,
+            referenceLink: definitionObject.referenceLink,
+            referenceTitle: definitionObject.referenceTitle,
+            isSelected: false,
+            isDeleted: false,
+            isNew: false,
+            status: true,
+          },
+          ...selectedDefinitions,
+        ]);
+        if (await objectsEqual) {
+          console.log("not Changed");
+          setCheckChanges(false);
+        } else {
+          console.log("Changed");
+          setCheckChanges(true);
+        }
       }
     } else {
       const isMatch = selectedDefinitions.some(
@@ -970,9 +1011,29 @@ const Definition: React.FC<Props> = ({
             }
           );
           setSelectedDefinitions([...tempSelectedDocuments]);
+          const objectsEqual = compareArraysOfObjects(masterDefinitions, [
+            ...tempSelectedDocuments,
+          ]);
+          if (await objectsEqual) {
+            console.log("not Changed");
+            setCheckChanges(false);
+          } else {
+            console.log("Changed");
+            setCheckChanges(true);
+          }
         } else {
           tempSelectedDocuments[index].isDeleted = true;
           setSelectedDefinitions([...tempSelectedDocuments]);
+          const objectsEqual = compareArraysOfObjects(masterDefinitions, [
+            ...tempSelectedDocuments,
+          ]);
+          if (await objectsEqual) {
+            console.log("not Changed");
+            setCheckChanges(false);
+          } else {
+            console.log("Changed");
+            setCheckChanges(true);
+          }
         }
       }
     }
@@ -982,6 +1043,7 @@ const Definition: React.FC<Props> = ({
   const submitSectionDefinition = async (
     submitCondition: boolean
   ): Promise<any> => {
+    setCheckChanges(false);
     togglePopupVisibility(
       setPopupController,
       2,
@@ -1015,9 +1077,9 @@ const Definition: React.FC<Props> = ({
     }
   };
 
-  const removeDefinition = (index: number): any => {
-    const tempSelectedDocuments = [...selectedDefinitions];
-    tempSelectedDocuments[index].isDeleted = true;
+  const removeDefinition = async (index: number): Promise<any> => {
+    let tempSelectedDocuments = [...selectedDefinitions];
+    // tempSelectedDocuments[index].isDeleted = true;
     const filterSelectionDefinitions = sectionDefinitions.map((obj: any) => {
       if (
         obj.definitionTitle === tempSelectedDocuments[index].definitionTitle
@@ -1027,8 +1089,27 @@ const Definition: React.FC<Props> = ({
         return obj;
       }
     });
+    if (tempSelectedDocuments[index].status) {
+      tempSelectedDocuments = tempSelectedDocuments.filter(
+        (obj: any, ind: number) => {
+          return ind !== index;
+        }
+      );
+    } else {
+      tempSelectedDocuments[index].isDeleted = true;
+    }
     setSectionDefinitions([...filterSelectionDefinitions]);
     setSelectedDefinitions([...tempSelectedDocuments]);
+    const objectsEqual = compareArraysOfObjects(masterDefinitions, [
+      ...tempSelectedDocuments,
+    ]);
+    if (await objectsEqual) {
+      console.log("not Changed");
+      setCheckChanges(false);
+    } else {
+      console.log("Changed");
+      setCheckChanges(true);
+    }
   };
 
   const loggerPromoter: any = getCurrentLoggedPromoter(

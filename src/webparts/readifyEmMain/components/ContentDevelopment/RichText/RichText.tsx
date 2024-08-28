@@ -418,7 +418,7 @@ const RichText = ({
           header: [1, 2, 3, false],
         },
       ],
-      ["bold", "italic", "underline", "strike", "blockquote"],
+      ["bold", "italic", "underline"],
       [
         {
           color: [],
@@ -441,8 +441,8 @@ const RichText = ({
           indent: "+1",
         },
       ],
-      ["link", "image", "video"],
-      ["clean"],
+      ["image"],
+      // ["clean"],
     ],
   };
 
@@ -468,6 +468,8 @@ const RichText = ({
   const [description, setDescription] = useState<string>("");
   const [masterDescription, setMasterDescription] = useState<string>("");
 
+  console.log(masterDescription);
+
   // const _handleOnChange = (newText: string): string => {
   //   setDescription(newText === "<p><br></p>" ? "" : newText);
   //   onChange && onChange(newText === "<p><br></p>" ? "" : newText);
@@ -491,13 +493,13 @@ const RichText = ({
           const imgSrc = op.insert.image;
           const response = await fetch(imgSrc);
           const blob = await response.blob();
-          if (blob.size > 1 * 1024 * 1024) {
+          if (blob.size > 1 * 1024 * 1024 || blob.size < 500 * 1024) {
             // 1MB limit
             // Remove the large image from the editor's content
             quill.deleteText(cumulativeIndex, 1);
-
-            alert("Image size exceeded 1MB and has been removed.");
-
+            alert(
+              "Image size is either too large (over 1MB) or too small (below 500KB) and has been removed."
+            );
             cumulativeIndex -= 1;
           } else {
             // Apply the width and height styles to all images with the same src
@@ -505,10 +507,7 @@ const RichText = ({
               `img[src="${imgSrc}"]`
             );
             imageElements.forEach((imageElement: any) => {
-              imageElement.setAttribute(
-                "style",
-                "width: 50%;display: block; margin-left: auto; margin-right: auto;"
-              );
+              imageElement.setAttribute("style", "width: 400px;height:400px");
             });
           }
         }
@@ -520,19 +519,22 @@ const RichText = ({
             : 1
           : 0;
       }
-
       setDescription(editor.getHTML());
-      onChange && onChange(editor.getHTML());
-      console.log(masterDescription, editor.getHTML());
 
+      const currentHtml = editor.getHTML().trim();
+      const normalizedMasterDescription = masterDescription.trim();
+      const normalizedDescription = description.trim();
+
+      // If the new content matches the initially loaded data (masterDescription), set checkChanges to false
       if (
-        masterDescription === editor.getHTML() ||
-        masterDescription === description
+        currentHtml === normalizedMasterDescription ||
+        normalizedMasterDescription === normalizedDescription
       ) {
         await checkChanges(false);
       } else {
         await checkChanges(true);
       }
+
       return editor.getHTML();
     }
 
@@ -541,9 +543,9 @@ const RichText = ({
     // return html;
   };
 
-  const readTextFileFromTXT = (data: any): void => {
+  const readTextFileFromTXT = async (data: any): Promise<void> => {
     setSectionLoader(true);
-    SpServices.SPReadAttachments({
+    await SpServices.SPReadAttachments({
       ListName: "SectionDetails",
       ListID: ID,
       AttachmentName: data?.FileName,
@@ -632,6 +634,7 @@ const RichText = ({
   };
 
   const addData = async (submissionType?: any): Promise<any> => {
+    checkChanges(false);
     debugger;
     togglePopupVisibility(
       setPopupController,
@@ -825,25 +828,27 @@ const RichText = ({
           <CircularSpinner />
         </div>
       ) : (
-        <ReactQuill
-          ref={quillRef}
-          theme="snow"
-          modules={modules}
-          formats={formats}
-          value={description}
-          readOnly={
-            !currentSectionData?.sectionSubmitted &&
-            (currentDocRole?.sectionAuthor || currentDocRole?.primaryAuthor)
-              ? false
-              : true
-          }
-          placeholder="Content goes here"
-          className="customeRichText"
-          // onChange={(text) => {
-          //   _handleOnChange(text);
-          // }}
-          onChange={handleChange}
-        />
+        description !== "" && (
+          <ReactQuill
+            ref={quillRef}
+            theme="snow"
+            modules={modules}
+            formats={formats}
+            value={description}
+            readOnly={
+              !currentSectionData?.sectionSubmitted &&
+              (currentDocRole?.sectionAuthor || currentDocRole?.primaryAuthor)
+                ? false
+                : true
+            }
+            placeholder="Content goes here"
+            className="customeRichText"
+            // onChange={(text) => {
+            //   _handleOnChange(text);
+            // }}
+            onChange={handleChange}
+          />
+        )
       )}
       {!noActionBtns ? (
         <div
