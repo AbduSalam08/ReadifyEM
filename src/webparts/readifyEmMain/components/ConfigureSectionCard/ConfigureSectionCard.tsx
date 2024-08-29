@@ -383,11 +383,11 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
   };
 
   useEffect(() => {
-    const tempFilteredSectionDetails = filteredSection.sort(
-      (a: any, b: any) => a?.sectionOrderNo - b?.sectionOrderNo
-    );
-    console.log(tempFilteredSectionDetails);
-    reOrderSections(tempFilteredSectionDetails);
+    // const tempFilteredSectionDetails = filteredSection.sort(
+    //   (a: any, b: any) => a?.sectionOrderNo - b?.sectionOrderNo
+    // );
+    // console.log(tempFilteredSectionDetails);
+    reOrderSections(filteredSection);
   }, []);
 
   return (

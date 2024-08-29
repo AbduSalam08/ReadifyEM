@@ -229,8 +229,7 @@ const ConfigureSections = (): JSX.Element => {
     if (validateSections(sectionsData)) {
       if (
         ConfigurePageDetails?.pageKey === "update"
-        // ||
-        // ConfigurePageDetails?.pageKey === "version update"
+        // || ConfigurePageDetails?.pageKey === "version update"
       ) {
         await updateSections(sectionsData, setPopupLoaders, currentTaskData);
       } else {

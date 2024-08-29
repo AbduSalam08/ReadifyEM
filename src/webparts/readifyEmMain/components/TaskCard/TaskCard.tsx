@@ -92,19 +92,19 @@ const TaskCard: React.FC<CardProps> = ({
                 onClick={async () => {
                   await getUniqueTaskData(taskData?.taskID, dispatch);
                   // await getUniqueSectionsDetails(taskData?.documentDetailsId);
-                  if (taskData?.docVersion !== "1.0") {
-                    dispatch(
-                      setConfigurePageDetails({
-                        pageKey: "version update",
-                      })
-                    );
-                  } else {
-                    dispatch(
-                      setConfigurePageDetails({
-                        pageKey: "update",
-                      })
-                    );
-                  }
+                  // if (taskData?.docVersion !== "1.0") {
+                  //   dispatch(
+                  //     setConfigurePageDetails({
+                  //       pageKey: "version update",
+                  //     })
+                  //   );
+                  // } else {
+                  dispatch(
+                    setConfigurePageDetails({
+                      pageKey: "update",
+                    })
+                  );
+                  // }
 
                   if (isAdmin) {
                     navigate(`/admin/my_tasks/${title}/configure`);
