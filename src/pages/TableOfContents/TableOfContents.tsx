@@ -49,7 +49,7 @@ import PDFServiceTemplate from "../../webparts/readifyEmMain/components/Table/PD
 const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
 const contentDeveloperEdit: any = require("../../assets/images/svg/editContentDeveloper.svg");
 const viewDocBtn: any = require("../../assets/images/svg/viewEye.svg");
-const newversionBtn: any = require("../../assets/images/svg/new version.svg");
+const newversionBtn: any = require("../../assets/images/svg/newVersion.svg");
 import EditIcon from "@mui/icons-material/Edit";
 import dayjs from "dayjs";
 import { getNextVersions } from "../../utils/EMManualUtils";

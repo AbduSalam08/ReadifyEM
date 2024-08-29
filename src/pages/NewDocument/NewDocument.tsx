@@ -64,6 +64,7 @@ const NewDocument = ({
     (state: any) => state.EMMTableOfContents.foldersData
   );
   const [currentDocDetails, setCurrentDocDetails] = useState<any>();
+  console.log("currentDocDetails: ", currentDocDetails);
   const currentDocStatus: any = currentDocDetails?.status?.toLowerCase();
   const [currentDocTemplateType, setCurrentDocTemplateType] = useState({
     value: "",
@@ -437,7 +438,13 @@ const NewDocument = ({
       onChange={(value: any) => {
         handleInputChange(value);
       }}
-      disabled={currentDocDetails?.documentVersion !== "1.0"}
+      disabled={
+        currentDocDetails
+          ? currentDocDetails?.documentVersion === "1.0"
+            ? false
+            : true
+          : false
+      }
       value={removeVersionFromDocName(inputValue)}
       placeholder="Enter here"
       isValid={inputError}
@@ -483,6 +490,13 @@ const NewDocument = ({
     <CustomTreeDropDown
       key={3}
       // disabled={currentDocDetails?.documentVersion !== "1.0"}
+      disabled={
+        currentDocDetails
+          ? currentDocDetails?.documentVersion === "1.0"
+            ? false
+            : true
+          : false
+      }
       size="XL"
       onChange={(value: any) => {
         handleInputChange(value);
