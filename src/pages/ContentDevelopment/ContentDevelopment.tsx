@@ -64,6 +64,7 @@ import { LISTNAMES } from "../../config/config";
 import { setCDSectionData } from "../../redux/features/ContentDevloperSlice";
 import References from "../../webparts/readifyEmMain/components/ContentDevelopment/References/References";
 import dayjs from "dayjs";
+import { removeVersionFromDocName } from "../../utils/formatDocName";
 
 const Details = {
   sectionName: "Introduction",
@@ -765,6 +766,7 @@ const ContentDevelopment = (): JSX.Element => {
         noCommentInput={true}
         viewOnly={true}
         promoteComments={true}
+        currentDocDetails={currentDocDetailsData}
       />,
     ],
     [
@@ -780,7 +782,7 @@ const ContentDevelopment = (): JSX.Element => {
         labelText="Document name"
         withLabel
         icon={false}
-        value={currentDocDetailsData?.documentName}
+        value={removeVersionFromDocName(currentDocDetailsData?.documentName)}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "definitionName");
         }}
@@ -1179,6 +1181,7 @@ const ContentDevelopment = (): JSX.Element => {
           setActiveSection(tempActiveSection);
           const Comments = getSectionComments(
             AllSectionsData[tempActiveSection].ID,
+            currentDocDetailsData.version,
             dispatch
           );
           const changeRecordDetails = getSectionChangeRecord(
@@ -1227,6 +1230,7 @@ const ContentDevelopment = (): JSX.Element => {
         setActiveSection(value);
         const Comments = getSectionComments(
           AllSectionsData[value].ID,
+          currentDocDetailsData.version,
           dispatch
         );
         const changeRecordDetails = getSectionChangeRecord(
@@ -1393,6 +1397,7 @@ const ContentDevelopment = (): JSX.Element => {
       setAllSectionsData(AllSectionsDataMain);
       const Comments = getSectionComments(
         AllSectionsDataMain[activeItemsFirstIndex].ID,
+        currentDocDetailsData.version,
         dispatch
       );
       console.log(Comments);
@@ -1763,6 +1768,7 @@ const ContentDevelopment = (): JSX.Element => {
                             // setToggleCommentSection(true);
                           }}
                           promoteComments={false}
+                          currentDocDetails={currentDocDetailsData}
                         />
                       </div>
                     )}

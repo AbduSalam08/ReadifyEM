@@ -439,7 +439,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { memo, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import {
   PeoplePicker,
   PrincipalType,
@@ -505,6 +505,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
   popupControl = false,
   hasSubmitBtn = false,
 }) => {
+  const peoplePickerRef = useRef<any>();
   const initialPopupController = [
     {
       open: false,
@@ -547,6 +548,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
       minWidth: minWidth ? minWidth : "100%",
       maxWidth: maxWidth ? maxWidth : "100%",
       background: "rgba(218, 218, 218, 0.29)",
+      pointerEvents: popupControl && multiUsers ? "none" : "auto",
       ".ms-BasePicker-text": {
         // alignItems: "flex-start",
         // maxHeight: "50px",
@@ -713,7 +715,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
   // array of obj which contains all popup inputs
   const popupInputs: any[] = [
     [
-      <div key={1}>
+      <div key={1} ref={peoplePickerRef}>
         <PeoplePicker
           context={mainContext}
           webAbsoluteUrl={CONFIG.webURL}
@@ -774,10 +776,22 @@ const CustomPeoplePicker: React.FC<Props> = ({
         ],
   ];
 
+  useEffect(() => {
+    setTimeout(() => {
+      debugger;
+      if (peoplePickerRef.current && !readOnly) {
+        const inputElement = peoplePickerRef.current.querySelector("input");
+        if (inputElement) {
+          inputElement.focus();
+        }
+      }
+    }, 100);
+  }, [popupController[0].open]);
+
   return (
     <div className={styles.inputMainWrapper}>
       <div
-        style={{ zIndex: popupControl ? "100" : "0" }}
+        style={{ zIndex: popupControl ? "100" : "0", pointerEvents: "auto" }}
         className={`${
           withLabel
             ? styles.p_pickerInputWrapperWithLabel

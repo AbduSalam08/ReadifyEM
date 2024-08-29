@@ -104,7 +104,7 @@ const CustomTextArea: React.FC<Props> = ({
             width: textAreaWidth ? textAreaWidth : "100%",
             minHeight: inputWrapperClassName ? "20px" : "100px",
             maxHeight: inputWrapperClassName ? "100px" : "100px",
-            height: value !== "" ? "20px" : "auto",
+            height: value === "" ? "20px" : "100px",
             fontSize: "14px",
             fontFamily: `interMedium, sans-serif`,
           }}
