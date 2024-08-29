@@ -120,7 +120,10 @@ export const AddSections = async (
       const getUpdatedSectionsData = (sections: any[], type: string): any =>
         sections
           ?.filter((item: any) => item?.sectionSelected && !item?.removed)
-          ?.sort((a: any, b: any) => a?.sectionOrderNo - b?.sectionOrderNo)
+          ?.sort(
+            (a: any, b: any) =>
+              parseInt(a.sectionOrderNo) - parseInt(b.sectionOrderNo)
+          )
           ?.map((item: any, index: number) => ({
             ...item,
             sectionOrderNo: addNewSectionFromUpdate
@@ -512,7 +515,7 @@ export const AddSections = async (
           return item?.sectionSelected && !item?.removed && !item?.ID;
         })
         ?.sort((a: any, b: any) => {
-          return a?.sectionOrderNo - b?.sectionOrderNo;
+          return parseInt(a.sectionOrderNo) - parseInt(b.sectionOrderNo);
         })
         ?.map((item: any, index: number) => {
           return {
@@ -528,7 +531,7 @@ export const AddSections = async (
           return item?.sectionSelected && !item?.removed && !item?.ID;
         })
         ?.sort((a: any, b: any) => {
-          return a?.sectionOrderNo - b?.sectionOrderNo;
+          return parseInt(a.sectionOrderNo) - parseInt(b.sectionOrderNo);
         })
         ?.map((item: any, index: number) => {
           return {
@@ -776,7 +779,7 @@ export const updateSections = async (
         );
       })
       ?.sort((a: any, b: any) => {
-        return a?.sectionOrderNo - b?.sectionOrderNo;
+        return parseInt(a.sectionOrderNo) - parseInt(b.sectionOrderNo);
       })
       ?.map((item: any, index: number) => {
         return { ...item, sectionOrderNo: String(index + 1) };
@@ -789,7 +792,7 @@ export const updateSections = async (
         );
       })
       ?.sort((a: any, b: any) => {
-        return a?.sectionOrderNo - b?.sectionOrderNo;
+        return parseInt(a.sectionOrderNo) - parseInt(b.sectionOrderNo);
       })
       ?.map((item: any, index: number) => {
         return { ...item, sectionOrderNo: String(index + 1) };
@@ -862,7 +865,7 @@ export const updateSections = async (
           },
           {
             FilterKey: "documentDetails",
-            FilterValue: section?.Title,
+            FilterValue: section?.documentOfId,
             Operator: "eq",
           },
         ],
@@ -1304,15 +1307,15 @@ export const getUniqueSectionsDetails = async (
 
     // Order sections
     const orderedDefaultSection = defaultSection.sort(
-      (a, b) => a.sectionOrderNo - b.sectionOrderNo
+      (a, b) => parseInt(a.sectionOrderNo) - parseInt(b.sectionOrderNo)
     );
 
     const orderedNormalSection = normalSection.sort(
-      (a, b) => a.sectionOrderNo - b.sectionOrderNo
+      (a, b) => parseInt(a.sectionOrderNo) - parseInt(b.sectionOrderNo)
     );
 
     const orderedAppendixSection = appendixSection.sort(
-      (a, b) => a.sectionOrderNo - b.sectionOrderNo
+      (a, b) => parseInt(a.sectionOrderNo) - parseInt(b.sectionOrderNo)
     );
 
     const currentTemplateDetails: any = {

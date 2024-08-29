@@ -6,6 +6,7 @@
 import { memo, useEffect, useState } from "react";
 // import DefaultButton from "../../common/Buttons/DefaultButton";
 import styles from "./PDFServiceTemplate.module.scss";
+import "./PDFServiceTemplate.css";
 // import SpServices from "../../../../../services/SPServices/SpServices";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import { getDocumentRelatedSections } from "../../../../../services/PDFServices/PDFServices";
@@ -14,6 +15,7 @@ interface Iprops {
 }
 
 const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
+  debugger;
   console.log(documentId);
 
   const [allSectionContent, setAllSectionContent] = useState<any[]>([]);

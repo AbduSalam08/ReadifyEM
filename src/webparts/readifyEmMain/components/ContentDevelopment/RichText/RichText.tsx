@@ -442,7 +442,7 @@ const RichText = ({
         },
       ],
       ["image"],
-      // ["clean"],
+      ["clean"],
     ],
   };
 
@@ -491,24 +491,39 @@ const RichText = ({
         const op = currentContents.ops[i];
         if (op.insert && op.insert.image) {
           const imgSrc = op.insert.image;
-          const response = await fetch(imgSrc);
-          const blob = await response.blob();
-          if (blob.size > 1 * 1024 * 1024 || blob.size < 500 * 1024) {
-            // 1MB limit
-            // Remove the large image from the editor's content
-            quill.deleteText(cumulativeIndex, 1);
-            alert(
-              "Image size is either too large (over 1MB) or too small (below 500KB) and has been removed."
-            );
-            cumulativeIndex -= 1;
-          } else {
-            // Apply the width and height styles to all images with the same src
-            const imageElements = quill.container.querySelectorAll(
-              `img[src="${imgSrc}"]`
-            );
-            imageElements.forEach((imageElement: any) => {
-              imageElement.setAttribute("style", "width: 400px;height:400px");
-            });
+          debugger;
+          try {
+            const response = await fetch(imgSrc);
+            const blob = await response.blob();
+            // Check if the image is a GIF using the MIME type
+            if (
+              blob.type === "image/gif" ||
+              blob.type === "text/plain" ||
+              blob.type === "application/pdf"
+            ) {
+              quill.deleteText(cumulativeIndex, 1);
+              alert("GIF images are not allowed and have been removed.");
+              cumulativeIndex -= 1;
+              continue;
+            }
+
+            if (blob.size >= 500 * 1024) {
+              // 1MB limit
+              // Remove the large image from the editor's content
+              quill.deleteText(cumulativeIndex, 1);
+              alert("Image size should be below 500KB.");
+              cumulativeIndex -= 1;
+            } else {
+              // Apply the width and height styles to all images with the same src
+              const imageElements = quill.container.querySelectorAll(
+                `img[src="${imgSrc}"]`
+              );
+              imageElements.forEach((imageElement: any) => {
+                imageElement.setAttribute("style", "width: 400px;height:400px");
+              });
+            }
+          } catch (error) {
+            console.error("Error processing image:", error);
           }
         }
 
@@ -645,9 +660,9 @@ const RichText = ({
     if (description === "" || description === "<p><br></p>") {
       setToastMessage({
         isShow: true,
-        severity: "error",
-        title: "Content Empty",
-        message: "Please enter content.",
+        severity: "warn",
+        title: "Invalid submission!",
+        message: "Please add content to submit a section.",
         duration: 3000,
       });
       return;
@@ -701,7 +716,7 @@ const RichText = ({
         setSectionLoader(false);
         setToastMessage({
           isShow: true,
-          severity: "error",
+          severity: "warn",
           title: "Something went wrong!",
           message:
             "A unexpected error happened while updating! please try again later.",
@@ -828,27 +843,25 @@ const RichText = ({
           <CircularSpinner />
         </div>
       ) : (
-        description !== "" && (
-          <ReactQuill
-            ref={quillRef}
-            theme="snow"
-            modules={modules}
-            formats={formats}
-            value={description}
-            readOnly={
-              !currentSectionData?.sectionSubmitted &&
-              (currentDocRole?.sectionAuthor || currentDocRole?.primaryAuthor)
-                ? false
-                : true
-            }
-            placeholder="Content goes here"
-            className="customeRichText"
-            // onChange={(text) => {
-            //   _handleOnChange(text);
-            // }}
-            onChange={handleChange}
-          />
-        )
+        <ReactQuill
+          ref={quillRef}
+          theme="snow"
+          modules={modules}
+          formats={formats}
+          value={description}
+          readOnly={
+            !currentSectionData?.sectionSubmitted &&
+            (currentDocRole?.sectionAuthor || currentDocRole?.primaryAuthor)
+              ? false
+              : true
+          }
+          placeholder="Content goes here"
+          className="customeRichText"
+          // onChange={(text) => {
+          //   _handleOnChange(text);
+          // }}
+          onChange={handleChange}
+        />
       )}
       {!noActionBtns ? (
         <div
@@ -885,6 +898,7 @@ const RichText = ({
               title="Close"
               onlyIcon={true}
               onClick={() => {
+                checkChanges(false);
                 navigate(-1);
               }}
             />

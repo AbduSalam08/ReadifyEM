@@ -30,6 +30,7 @@ interface Props {
   currentSectionData?: any;
   currentDocRole?: any;
   promoteComments: boolean;
+  currentDocDetails?: any;
 }
 
 const SectionComments: React.FC<Props> = ({
@@ -45,7 +46,10 @@ const SectionComments: React.FC<Props> = ({
   promoteComments,
   currentDocRole,
   currentSectionData,
+  currentDocDetails,
 }) => {
+  console.log(currentDocDetails);
+
   const dispatch = useDispatch();
 
   // popup loaders and messages
@@ -108,6 +112,7 @@ const SectionComments: React.FC<Props> = ({
         sectionDetailsId: sectionId,
         createdById: currentUserDetails.id,
         role: currentDocDetailsData.taskRole,
+        DocumentVersion: currentDocDetails.version,
       };
       const clearInput = await addSectionComment(
         json,
