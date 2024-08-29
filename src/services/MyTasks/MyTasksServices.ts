@@ -148,13 +148,12 @@ export const getAllTasksList = async (
   setStateData: any,
   dispatch?: any
 ): Promise<any> => {
+  setStateData &&
+    setStateData((prev: any) => ({
+      ...prev,
+      loading: true,
+    }));
   try {
-    setStateData &&
-      setStateData((prev: any) => ({
-        ...prev,
-        loading: true,
-      }));
-
     const dataResponse: any = await SpServices.SPReadItems({
       Listname: LISTNAMES.MyTasks,
       Select:
@@ -267,6 +266,11 @@ export const getAllTasksList = async (
     dispatch && dispatch(setTasksData(sortedTasksData));
   } catch (err: any) {
     console.log("err: ", err);
+    setStateData &&
+      setStateData((prev: any) => ({
+        ...prev,
+        loading: false,
+      }));
   }
 };
 

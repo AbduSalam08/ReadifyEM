@@ -145,6 +145,7 @@ const MyTasks = (): JSX.Element => {
     loading: false,
     data: [] as any[],
   });
+  console.log("tasksData: ", tasksData);
 
   const [filterOptions, setFilterOptions] = useState({
     searchTerm: "",
@@ -233,7 +234,7 @@ const MyTasks = (): JSX.Element => {
     const filteredData: any[] = myTasksData?.filter(
       (task: any) => !task.completedAll
     );
-    setTasksData({ loading: false, data: filteredData });
+    setTasksData((prev: any) => ({ ...prev, data: filteredData }));
   }, [myTasksData]);
 
   return (
@@ -351,29 +352,30 @@ const MyTasks = (): JSX.Element => {
           </div>
         </div>
       </div>
-      {tasksData?.data?.length === 0 && (
+      {tasksData?.loading ? (
         <div className={`${styles.flexcenter} ${styles.loaderSection}`}>
-          <span className={styles.emptyMsg}>No Tasks found</span>
+          <CircularProgress
+            sx={{
+              width: "40px",
+              height: "40px",
+              animationDuration: "450ms",
+              color: "#adadad",
+            }}
+            size={"30px"}
+            disableShrink
+            variant="indeterminate"
+            color="inherit"
+          />
         </div>
+      ) : (
+        tasksData?.data?.length === 0 && (
+          <div className={`${styles.flexcenter} ${styles.loaderSection}`}>
+            <span className={styles.emptyMsg}>No Tasks found</span>
+          </div>
+        )
       )}
       <div className={styles.cardsSection}>
-        {tasksData?.loading ? (
-          <div className={`${styles.flexcenter} ${styles.loaderSection}`}>
-            <CircularProgress
-              sx={{
-                width: "40px",
-                height: "40px",
-                animationDuration: "450ms",
-                color: "#adadad",
-              }}
-              size={"30px"}
-              disableShrink
-              variant="indeterminate"
-              color="inherit"
-            />
-          </div>
-        ) : (
-          tasksData.data?.length !== 0 &&
+        {tasksData.data?.length !== 0 &&
           tasksData.data?.map((item: any, index: number) => {
             console.log("item: ", item);
             const isPA = item?.role?.toLowerCase() === "primary author";
@@ -453,8 +455,7 @@ const MyTasks = (): JSX.Element => {
                 title={item?.docName}
               />
             );
-          })
-        )}
+          })}
       </div>
     </div>
   );
