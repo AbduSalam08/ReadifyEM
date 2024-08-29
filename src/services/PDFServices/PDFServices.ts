@@ -115,10 +115,12 @@ const bindHeaderTable = async (
 
   definitionsTable += `<tr>
                 <td style="width: 20%;font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">
+
                   <img style="width:100%;min-width: 75px !important;min-width: 150px !important;height:60px !important" src="${
                     sectionDetails?.base64
                       ? sectionDetails?.base64
                       : base64Image
+
                   }" alt="doc header logo" />
                 </td>
                 <td style="width: 50%;font-size: 13px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">

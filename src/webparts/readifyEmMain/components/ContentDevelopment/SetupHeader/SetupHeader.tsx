@@ -28,6 +28,7 @@ import ToastMessage from "../../common/Toast/ToastMessage";
 // import { ChevronRight } from "@mui/icons-material";
 const sampleDocHeaderImg: any = require("../../../../../assets/images/png/imagePlaceholder.png");
 import CloseIcon from "@mui/icons-material/Close";
+import { removeVersionFromDocName } from "../../../../../utils/formatDocName";
 
 interface Props {
   sectionDetails: any;
@@ -435,7 +436,7 @@ const SetupHeader: React.FC<Props> = ({
           </div>
           <div className={styles.headerDetailsWrapper}>
             <CustomInput
-              value={initialHeaderDetails.headerTitle}
+              value={removeVersionFromDocName(initialHeaderDetails.headerTitle)}
               labelText="Header Title"
               withLabel
               topLabel

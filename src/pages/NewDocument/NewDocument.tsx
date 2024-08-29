@@ -44,6 +44,7 @@ import CustomDropDown from "../../webparts/readifyEmMain/components/common/Custo
 import { LoadTableData } from "../../services/SDDTemplates/SDDTemplatesServices";
 import { togglePopupVisibility } from "../../utils/togglePopup";
 import SpServices from "../../services/SPServices/SpServices";
+import { removeVersionFromDocName } from "../../utils/formatDocName";
 // interfaces
 
 interface Props {
@@ -436,13 +437,15 @@ const NewDocument = ({
       onChange={(value: any) => {
         handleInputChange(value);
       }}
-      value={inputValue}
+      disabled={currentDocDetails?.documentVersion !== "1.0"}
+      value={removeVersionFromDocName(inputValue)}
       placeholder="Enter here"
       isValid={inputError}
       errorMsg={inputErrorMsg}
     />,
     <CustomDropDown
       key={2}
+      // disabled={currentDocDetails?.documentVersion !== "1.0"}
       onChange={(value: string) => {
         if (editPageDocument) {
           if (
@@ -479,6 +482,7 @@ const NewDocument = ({
     />,
     <CustomTreeDropDown
       key={3}
+      // disabled={currentDocDetails?.documentVersion !== "1.0"}
       size="XL"
       onChange={(value: any) => {
         handleInputChange(value);

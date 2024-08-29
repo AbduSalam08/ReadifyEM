@@ -27,33 +27,62 @@ const AddSDDTemplate = async (
       return value === "defaultSection"
         ? "default section"
         : value === "appendixSection"
-        ? "appendix"
+        ? "appendix section"
         : "normal section";
     };
 
-    const sectionKeys = ["defaultSection", "normalSection", "appendixSection"];
+    // const sectionKeys = ["defaultSection", "normalSection", "appendixSection"];
+    const sectionKeys = ["normalSection", "appendixSection"];
 
     const payloadJSON: any[] = [];
 
     sectionKeys.forEach((key) => {
       formData?.[key]?.forEach((element: any) => {
-        if (key !== "defaultSection" && emptyCheck(element.value)) {
+        if (
+          // key !== "defaultSection" &&
+          element?.type !== "defaultSection" &&
+          emptyCheck(element.value) &&
+          formData?.normalSection?.some(
+            (item: any) =>
+              item?.type === "normalSection" ||
+              (item?.type === "defaultSection" && item?.sectionSelected)
+          )
+        ) {
           payloadJSON.push({
             sequenceNo: String(element.id),
             Title: templateTitle,
             sectionName: element.value,
-            sectionType: getSectionType(key),
+            sectionType: getSectionType(element?.type),
             // mainTemplateId: mainListResponse?.data?.Id,
           });
-        } else if (key === "defaultSection" && element.sectionSelected) {
+        } else if (
+          // key !== "defaultSection" &&
+          element?.type === "defaultSection" &&
+          emptyCheck(element.value) &&
+          element.sectionSelected &&
+          formData?.normalSection?.some(
+            (item: any) =>
+              item?.type === "normalSection" ||
+              (item?.type === "defaultSection" && item?.sectionSelected)
+          )
+        ) {
           payloadJSON.push({
             sequenceNo: String(element.id),
             Title: templateTitle,
             sectionName: element.value,
-            sectionType: getSectionType(key),
+            sectionType: getSectionType(element?.type),
             // mainTemplateId: mainListResponse?.data?.Id,
           });
         }
+        // else if (key === "defaultSection" && element.sectionSelected) {
+        //   payloadJSON.push({
+        //     sequenceNo: String(element.id),
+        //     Title: templateTitle,
+        //     sectionName: element.value,
+        //     sectionType: getSectionType(element?.key),
+        //     // mainTemplateId: mainListResponse?.data?.Id,
+        //   });
+        // }
       });
     });
 
@@ -159,21 +188,28 @@ const UpdateSDDTemplate = async (
       : "normal section";
   };
 
-  const sectionKeys = ["defaultSection", "normalSection", "appendixSection"];
+  const sectionKeys = ["normalSection", "appendixSection"];
 
   const payloadJSON: any[] = [];
   sectionKeys.forEach((key) => {
     formData?.[key]?.forEach((element: any) => {
       if (
-        key !== "defaultSection" ||
-        (key === "defaultSection" && element.sectionSelected) ||
-        element?.unqID
+        element?.type !== "defaultSection" ||
+        (element?.type === "defaultSection" && element.sectionSelected) ||
+        (element?.unqID &&
+          formData?.normalSection?.some(
+            (item: any) =>
+              (item?.type === "normalSection" && item?.unqID) ||
+              (item?.type === "defaultSection" &&
+                item?.sectionSelected &&
+                item?.unqID)
+          ))
       ) {
         payloadJSON.push({
           id: element.id,
           Title: templateTitle,
           sectionName: element.value,
-          sectionType: getSectionType(key),
+          sectionType: getSectionType(element?.type),
           unqID: element.unqID,
           sectionSelected: element?.sectionSelected,
           removed: element?.removed,
@@ -425,6 +461,8 @@ const LoadSectionsTemplateData = async (
   update?: boolean,
   dispatch?: any
 ): Promise<any> => {
+  debugger;
+  console.log("sectionsData", sectionsData);
   // Set loading state
   setSectionsData((prev: any) => ({
     ...prev,
@@ -535,7 +573,7 @@ const LoadSectionsTemplateData = async (
         templateName: filteredData[0]?.mainTemplate?.Title,
       },
       defaultSection: orderedDefaultSection,
-      normalSection: orderedNormalSection,
+      normalSection: [...orderedDefaultSection, ...orderedNormalSection],
       appendixSection: orderedAppendixSection,
     };
 
@@ -549,7 +587,7 @@ const LoadSectionsTemplateData = async (
       ...prev,
       templateName: templateName,
       defaultSection: orderedDefaultSection,
-      normalSection: normalSection,
+      normalSection: [...orderedDefaultSection, ...normalSection],
       appendixSection: appendixSection,
       isLoading: false,
     }));
@@ -560,6 +598,125 @@ const LoadSectionsTemplateData = async (
       isLoading: false,
     }));
   }
+
+  // try {
+  //   // Fetch data from SharePoint
+  //   const filteredData: any = await SpServices.SPReadItems({
+  //     Listname: LISTNAMES.SDDTemplates,
+  //     Select: "*,mainTemplate/Title,mainTemplate/Id",
+  //     Expand: "mainTemplate",
+  //     Filter: [
+  //       {
+  //         FilterKey: "mainTemplateId",
+  //         Operator: "eq",
+  //         FilterValue: templateID,
+  //       },
+  //       {
+  //         FilterKey: "isDeleted",
+  //         Operator: "eq",
+  //         FilterValue: "0",
+  //       },
+  //     ],
+  //   });
+
+  //   // Initialize arrays for sections
+  //   const defaultSection: any[] = update
+  //     ? defaultTemplates?.map((template: string) => ({
+  //         id: null,
+  //         unqID: null,
+  //         isValid: true,
+  //         type: "defaultSection",
+  //         value: template,
+  //         sectionSelected: false,
+  //         removed: false,
+  //       }))
+  //     : [];
+
+  //   const mergedSections: any[] = [];
+  //   const appendixSection: any[] = [];
+
+  //   // Process filtered data
+  //   filteredData?.forEach((e: any) => {
+  //     const sectionData = {
+  //       id:
+  //         e?.sequenceNo !== undefined && e?.sequenceNo !== null
+  //           ? e?.sequenceNo
+  //           : e?.ID,
+  //       unqID: e?.ID,
+  //       isValid: true,
+  //       value: e?.sectionName,
+  //     };
+
+  //     if (e?.sectionType?.toLowerCase() === "default section") {
+  //       const existingIndex = defaultSection.findIndex(
+  //         (el: any) => el?.value === e?.sectionName
+  //       );
+
+  //       if (existingIndex !== -1) {
+  //         mergedSections[existingIndex] = {
+  //           ...mergedSections[existingIndex],
+  //           ...sectionData,
+  //           type: "defaultSection",
+  //           sectionSelected: true,
+  //         };
+  //       } else {
+  //         mergedSections.push({
+  //           ...sectionData,
+  //           type: "defaultSection",
+  //           sectionSelected: true,
+  //         });
+  //       }
+  //     } else if (e?.sectionType?.toLowerCase() === "normal section") {
+  //       mergedSections.push({
+  //         ...sectionData,
+  //         type: "normalSection",
+  //         removed: false,
+  //       });
+  //     } else if (e?.sectionType?.toLowerCase() === "appendix") {
+  //       appendixSection.push({
+  //         ...sectionData,
+  //         type: "appendixSection",
+  //         removed: false,
+  //       });
+  //     }
+  //   });
+
+  //   // Order merged sections based on predefined order or ID
+  //   const orderedMergedSections = mergedSections.sort((a, b) => {
+  //     if (a.id === null) return 1;
+  //     if (b.id === null) return -1;
+  //     return parseInt(a.id) - parseInt(b.id);
+  //   });
+
+  //   const orderedAppendixSection = appendixSection.sort((a, b) => a.id - b.id);
+
+  //   const currentTemplateDetails: any = {
+  //     templateDetails: {
+  //       templateID: filteredData[0]?.mainTemplate?.Id,
+  //       templateName: filteredData[0]?.mainTemplate?.Title,
+  //     },
+  //     defaultSectionSection: defaultSection,
+  //     normalSection: orderedMergedSections,
+  //     appendixSection: orderedAppendixSection,
+  //   };
+  //   console.log("currentTemplateDetails", currentTemplateDetails);
+  //   // Dispatch the template details
+  //   if (dispatch) {
+  //     dispatch(setSDDTemplateDetails(currentTemplateDetails));
+  //   }
+
+  //   // Set updated section data
+  //   setSectionsData((prev: any) => ({
+  //     ...prev,
+  //     templateName: templateName,
+  //     defaultSection: defaultSection,
+  //     normalSection: orderedMergedSections,
+  //     appendixSection: orderedAppendixSection,
+  //     isLoading: false,
+  //   }));
+  // } catch (error) {
+  //   console.error("Error fetching and processing sections:", error);
+  // }
 };
 
 export {

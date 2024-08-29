@@ -65,5 +65,5 @@ export function removeVersionFromDocName(docName: string): string {
   }
 
   // Extract the base name, omitting the version and everything after the last underscore
-  return docName.substring(0, lastUnderscoreIndex);
+  return docName?.substring(0, lastUnderscoreIndex);
 }

@@ -368,7 +368,7 @@ const Table: React.FC<ITableProps> = ({
   }, [filters]);
 
   return (
-    <div className={styles.tableWrapper}>
+    <div className={`${styles.tableWrapper} tableWrapper`}>
       <div className={styles.tableHeadersWrapper}>
         {headers?.map((el, i) => (
           <div

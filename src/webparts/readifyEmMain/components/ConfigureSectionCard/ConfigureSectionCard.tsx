@@ -288,7 +288,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
 
           <div className={styles.enableSectionSwitch}>
             <InputSwitch
-              checked={sectionSelected}
+              checked={sectionSelected || section?.isActive}
               className="sectionToggler"
               disabled={section?.templateSectionID && !isAdmin}
               onChange={(e) => {
@@ -383,7 +383,11 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
   };
 
   useEffect(() => {
-    reOrderSections(filteredSection);
+    const tempFilteredSectionDetails = filteredSection.sort(
+      (a: any, b: any) => a?.sectionOrderNo - b?.sectionOrderNo
+    );
+    console.log(tempFilteredSectionDetails);
+    reOrderSections(tempFilteredSectionDetails);
   }, []);
 
   return (
