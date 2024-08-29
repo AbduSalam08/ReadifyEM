@@ -510,7 +510,7 @@ const Definition: React.FC<Props> = ({
             labelText="Name"
             withLabel
             icon={false}
-            mandatory={true}
+            // mandatory={true}
             secWidth="100%"
             value={definitionsData.definitionName}
             isValid={
@@ -541,7 +541,7 @@ const Definition: React.FC<Props> = ({
             labelText="Description"
             withLabel
             icon={false}
-            mandatory={true}
+            // mandatory={true}
             textAreaWidth={"67%"}
             value={definitionsData.definitionDescription}
             onChange={(value: any) => {
@@ -565,7 +565,7 @@ const Definition: React.FC<Props> = ({
             withLabel
             secWidth="100%"
             icon={false}
-            mandatory={true}
+            // mandatory={true}
             value={definitionsData.referenceTitle}
             onChange={(value: any) => {
               handleOnChange(value, "referenceTitle");
@@ -607,7 +607,7 @@ const Definition: React.FC<Props> = ({
             withLabel
             secWidth="100%"
             icon={false}
-            mandatory={true}
+            // mandatory={true}
             value={definitionsData.referenceAuthorName}
             onChange={(value: any) => {
               handleOnChange(value, "referenceAuthorName");
@@ -627,7 +627,7 @@ const Definition: React.FC<Props> = ({
             withLabel
             secWidth="100%"
             icon={false}
-            mandatory={true}
+            // mandatory={true}
             value={definitionsData.referenceLink}
             onChange={(value: any) => {
               handleOnChange(value, "referenceLink");
@@ -655,7 +655,7 @@ const Definition: React.FC<Props> = ({
         labelText="Comments"
         withLabel
         icon={false}
-        mandatory={true}
+        // mandatory={true}
         textAreaWidth={"100%"}
         value={rejectedComments.rejectedComment}
         onChange={(value: any) => {
@@ -709,7 +709,7 @@ const Definition: React.FC<Props> = ({
           withLabel
           topLabel={true}
           icon={false}
-          mandatory={true}
+          // mandatory={true}
           rows={7}
           textAreaWidth={"100%"}
           // textAreaWidth={"67%"}
