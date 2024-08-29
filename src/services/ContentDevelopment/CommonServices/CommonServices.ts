@@ -877,6 +877,7 @@ export const addPromotedComment = async (
     role: documentDetails.taskRole,
     documentDetailsId: documentDetails.documentDetailsID,
     createdById: currentUserDetails.id,
+    DocumentVersion: documentDetails.version,
   };
 
   await SpServices.SPAddItem({

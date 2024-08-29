@@ -349,7 +349,7 @@ const SectionHeader: React.FC<Props> = ({
                   onChange={handleOnChangeFunction}
                   onSubmit={onSubmitFunction}
                   isValid={false}
-                  placeholder="Add Reference Author"
+                  placeholder="Add consultants"
                   readOnly={
                     (!currentDocRole.sectionAuthor ||
                       !currentDocRole.primaryAuthor) &&

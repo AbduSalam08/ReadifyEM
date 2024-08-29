@@ -71,7 +71,11 @@ const getSectionComments = async (
   return tempArray;
 };
 
-const getPromotedComments = async (documentID: number, dispatcher: any) => {
+const getPromotedComments = async (
+  documentID: number,
+  version: string,
+  dispatcher: any
+) => {
   console.log(documentID);
   const tempArray: any[] = [];
   await SpServices.SPReadItems({
@@ -83,6 +87,11 @@ const getPromotedComments = async (documentID: number, dispatcher: any) => {
         FilterKey: "documentDetails",
         Operator: "eq",
         FilterValue: documentID,
+      },
+      {
+        FilterKey: "version",
+        Operator: "eq",
+        FilterValue: version,
       },
     ],
   })

@@ -384,16 +384,20 @@ const AddSectionDefinition = (
             //   text: `Changes updated successfully!`,
             //   secondaryText: `Definitions add/remove updated successfully! `,
             // });
-            const sectionDefinitions = getAllSectionDefinitions(
+            const sectionDefinitions = await getAllSectionDefinitions(
               documentId,
               sectionId
             );
-            const definitions_file: any = await convertDefinitionsToTxtFile(
-              await sectionDefinitions
+            const tempSectionDefinitions = await sectionDefinitions.filter(
+              (obj: any) => !obj.isDeleted
             );
-            AddSectionAttachment(sectionId, definitions_file);
+            console.log("sectionDefinitions", tempSectionDefinitions);
+            const _file: any = await convertDefinitionsToTxtFile(
+              await tempSectionDefinitions
+            );
+            AddSectionAttachment(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
-              await sectionDefinitions
+              await tempSectionDefinitions
             );
             AddReferenceAttachment(documentId, reference_file);
             setToastState({
@@ -435,16 +439,20 @@ const AddSectionDefinition = (
             //   text: `Changes updated successfully!`,
             //   secondaryText: `Definitions add/remove updated successfully! `,
             // });
-            const sectionDefinitions = getAllSectionDefinitions(
+            const sectionDefinitions = await getAllSectionDefinitions(
               documentId,
               sectionId
             );
+            const tempSectionDefinitions = await sectionDefinitions.filter(
+              (obj: any) => !obj.isDeleted
+            );
+            console.log("sectionDefinitions", tempSectionDefinitions);
             const _file: any = await convertDefinitionsToTxtFile(
-              await sectionDefinitions
+              await tempSectionDefinitions
             );
             AddSectionAttachment(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
-              await sectionDefinitions
+              await tempSectionDefinitions
             );
             AddReferenceAttachment(documentId, reference_file);
             setToastState({
@@ -463,7 +471,7 @@ const AddSectionDefinition = (
     });
   }
   if (tempDelUpdateArray.length > 0) {
-    tempDelUpdateArray.forEach((obj: any, index: number) => {
+    tempDelUpdateArray.forEach(async (obj: any, index: number) => {
       const jsonObject = {
         isDeleted: false,
       };
@@ -485,16 +493,20 @@ const AddSectionDefinition = (
             //   text: `Changes updated successfully!`,
             //   secondaryText: `Definitions add/remove updated successfully! `,
             // });
-            const sectionDefinitions = getAllSectionDefinitions(
+            const sectionDefinitions = await getAllSectionDefinitions(
               documentId,
               sectionId
             );
+            const tempSectionDefinitions = await sectionDefinitions.filter(
+              (obj: any) => !obj.isDeleted
+            );
+            console.log("sectionDefinitions", tempSectionDefinitions);
             const _file: any = await convertDefinitionsToTxtFile(
-              await sectionDefinitions
+              await tempSectionDefinitions
             );
             AddSectionAttachment(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
-              await sectionDefinitions
+              await tempSectionDefinitions
             );
             AddReferenceAttachment(documentId, reference_file);
             setToastState({
@@ -569,16 +581,20 @@ const addNewDefinition = async (
             //   text: `Definition created successfully!`,
             //   secondaryText: `The Standardized definition template "${definitionsData?.definitionName}" has been created successfully! `,
             // });
-            const sectionDefinitions = getAllSectionDefinitions(
+            const sectionDefinitions = await getAllSectionDefinitions(
               documentId,
               sectionId
             );
+            const tempSectionDefinitions = await sectionDefinitions.filter(
+              (obj: any) => !obj.isDeleted
+            );
+            console.log("sectionDefinitions", tempSectionDefinitions);
             const _file: any = await convertDefinitionsToTxtFile(
-              await sectionDefinitions
+              await tempSectionDefinitions
             );
             AddSectionAttachment(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
-              await sectionDefinitions
+              await tempSectionDefinitions
             );
             AddReferenceAttachment(documentId, reference_file);
             togglePopupVisibility(setPopupController, 0, "close");

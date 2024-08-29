@@ -708,8 +708,12 @@ const CustomPeoplePicker: React.FC<Props> = ({
     onChange && onChange(obj);
   };
   const handleSubmit = (): any => {
-    onSubmit();
-    handleClosePopup(0);
+    if (selectedUserItem.length !== 0) {
+      onSubmit();
+      handleClosePopup(0);
+    } else {
+      // handleClosePopup(0);
+    }
   };
 
   // array of obj which contains all popup inputs
@@ -754,7 +758,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
           {
             text: "Submit",
             btnType: "primary",
-            disabled: false,
+            disabled: selectedUserItem.length === 0 ? true : false,
             endIcon: false,
             startIcon: false,
             onClick: () => {

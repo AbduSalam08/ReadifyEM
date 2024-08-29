@@ -192,18 +192,23 @@ const Header: React.FC<Props> = ({
                 }
               />
             )} */}
-          <DefaultButton
-            text="Preview Document"
-            btnType="secondary"
-            onClick={() =>
-              togglePopupVisibility(
-                setPopupController,
-                0,
-                "open",
-                "Preview Document"
-              )
-            }
-          />
+
+          {currentDocRole?.reviewer ||
+            currentDocRole?.approver ||
+            (currentDocRole?.primaryAuthor && (
+              <DefaultButton
+                text="Preview Document"
+                btnType="secondary"
+                onClick={() =>
+                  togglePopupVisibility(
+                    setPopupController,
+                    0,
+                    "open",
+                    "Preview Document"
+                  )
+                }
+              />
+            ))}
           <DefaultButton
             text="Track"
             btnType="secondary"
@@ -233,21 +238,26 @@ const Header: React.FC<Props> = ({
                   currentDocDetailsData?.taskID || PAtaskID,
                   dispatch
                 );
+                dispatch(
+                  setConfigurePageDetails({
+                    pageKey: "update",
+                  })
+                );
                 // await getUniqueSectionsDetails(taskData?.documentDetailsId);
 
-                if (currentDocDetailsData?.documentVersion !== "1.0") {
-                  dispatch(
-                    setConfigurePageDetails({
-                      pageKey: "version update",
-                    })
-                  );
-                } else {
-                  dispatch(
-                    setConfigurePageDetails({
-                      pageKey: "update",
-                    })
-                  );
-                }
+                // if (currentDocDetailsData?.documentVersion !== "1.0") {
+                //   dispatch(
+                //     setConfigurePageDetails({
+                //       pageKey: "version update",
+                //     })
+                //   );
+                // } else {
+                //   dispatch(
+                //     setConfigurePageDetails({
+                //       pageKey: "update",
+                //     })
+                //   );
+                // }
 
                 if (isAdmin) {
                   navigate(`/admin/my_tasks/${documentName}/configure`);

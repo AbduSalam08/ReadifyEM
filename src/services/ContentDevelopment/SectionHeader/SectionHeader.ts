@@ -100,7 +100,7 @@ export const addSectionConsultants = async (
           setToastMessageState({
             isShow: true,
             severity: "success",
-            title: "Upadate consultant!",
+            title: "Consultants updated!",
             message: "Consultants updated successfully.",
             duration: 3000,
           });
