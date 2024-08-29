@@ -328,7 +328,7 @@ const Definitions = (): JSX.Element => {
             labelText="Description"
             withLabel
             icon={false}
-            mandatory={true}
+            // mandatory={true}
             textAreaWidth={"67%"}
             value={definitionsData.definitionDescription}
             onChange={(value: any) => {
@@ -470,7 +470,7 @@ const Definitions = (): JSX.Element => {
             labelText="Description"
             withLabel
             icon={false}
-            mandatory={true}
+            // mandatory={true}
             textAreaWidth={"67%"}
             value={definitionsData.definitionDescription}
             onChange={(value: any) => {
