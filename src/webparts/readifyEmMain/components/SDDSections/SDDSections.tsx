@@ -9,7 +9,7 @@ import CustomInput from "../common/CustomInputFields/CustomInput";
 import { FormControlLabel } from "@mui/material";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-import { emptyCheck } from "../../../../utils/validations";
+import { emptyCheck, handleKeyDown } from "../../../../utils/validations";
 import ErrorIcon from "@mui/icons-material/Error";
 import { OrderList } from "primereact/orderlist";
 import "./SDDSection.css";
@@ -39,43 +39,97 @@ const SDDSections = ({
 }: Props): JSX.Element => {
   console.log(sectionsData, AllSectionsData, sectionTitle, objKey);
 
-  const isNotDefaultSection: boolean =
-    sectionsData[0]?.type?.toLowerCase() !== "defaultsection";
+  // const isNotDefaultSection: boolean =
+  //   sectionsData[0]?.type?.toLowerCase() !== "defaultsection";
 
   const sectionErrorKey: string =
     objKey === "normalSection" ? "normalSectionError" : "appendixSectionError";
 
+  // const handleRemoveUser = (index: number): void => {
+  //   const updatedSectionsOnUpdate = sectionsData?.map(
+  //     (data: any, idx: number) => {
+  //       if (update && idx === index) {
+  //         return {
+  //           ...data,
+  //           removed: true,
+  //         };
+  //       } else {
+  //         return data;
+  //       }
+  //     }
+  //   );
+
+  //   const updatedSections = !update
+  //     ? sectionsData.filter((_: any, idx: number) => idx !== index)
+  //     : update && sectionsData[index]?.unqID === null
+  //     ? sectionsData.filter((_: any, idx: number) => idx !== index)
+  //     : [];
+
+  //   setSectionsData((prev: any) => ({
+  //     ...prev,
+  //     [objKey]:
+  //       update && sectionsData[index]?.unqID !== null
+  //         ? updatedSectionsOnUpdate
+  //         : updatedSections,
+  //   }));
+
+  //   const temp: any = update ? updatedSectionsOnUpdate : updatedSections;
+
+  //   // Check for duplicates
+  //   const valuesCount = temp.reduce(
+  //     (acc: Record<string, number>, section: any) => {
+  //       if (!section.removed) {
+  //         acc[section.value] = (acc[section.value] || 0) + 1;
+  //       }
+  //       return acc;
+  //     },
+  //     {}
+  //   );
+
+  //   const isDuplicate = Object.values(valuesCount).some(
+  //     (count: any) => count > 1
+  //   );
+
+  //   setSectionsData((prev: any) => ({
+  //     ...prev,
+  //     [sectionErrorKey]: {
+  //       isValid: !isDuplicate,
+  //       errorMsg: !isDuplicate ? "" : "Duplicate sections found",
+  //     },
+  //   }));
+  // };
+
   const handleRemoveUser = (index: number): void => {
+    // Determine sections update logic based on the update flag and conditions
     const updatedSectionsOnUpdate = sectionsData?.map(
       (data: any, idx: number) => {
         if (update && idx === index) {
+          // Mark the section as removed for update scenarios
           return {
             ...data,
             removed: true,
           };
-        } else {
-          return data;
         }
+        return data;
       }
     );
 
-    const updatedSections = !update
-      ? sectionsData.filter((_: any, idx: number) => idx !== index)
-      : update && sectionsData[index]?.unqID === null
-      ? sectionsData.filter((_: any, idx: number) => idx !== index)
-      : [];
+    // Determine sections filtering logic based on update flag and conditions
+    const updatedSections =
+      !update || (update && sectionsData[index]?.unqID === null)
+        ? sectionsData.filter((_: any, idx: number) => idx !== index)
+        : updatedSectionsOnUpdate;
 
+    // Update state with the modified sections data
     setSectionsData((prev: any) => ({
       ...prev,
-      [objKey]:
-        update && sectionsData[index]?.unqID !== null
-          ? updatedSectionsOnUpdate
-          : updatedSections,
+      [objKey]: updatedSections,
     }));
 
-    const temp: any = update ? updatedSectionsOnUpdate : updatedSections;
+    // Reference to the updated sections for further processing
+    const temp = updatedSections;
 
-    // Check for duplicates
+    // Check for duplicates after removal
     const valuesCount = temp.reduce(
       (acc: Record<string, number>, section: any) => {
         if (!section.removed) {
@@ -86,10 +140,12 @@ const SDDSections = ({
       {}
     );
 
+    // Determine if duplicates exist
     const isDuplicate = Object.values(valuesCount).some(
       (count: any) => count > 1
     );
 
+    // Update validation state based on duplicates found
     setSectionsData((prev: any) => ({
       ...prev,
       [sectionErrorKey]: {
@@ -168,7 +224,8 @@ const SDDSections = ({
     const updatedSections = sectionsData?.map((user: any, idx: number) => ({
       ...user,
       id: idx + 1,
-      type: objKey,
+      type:
+        user?.type?.toLowerCase() !== "defaultsection" ? objKey : user?.type,
     }));
 
     setSectionsData((prev: any) => ({
@@ -178,10 +235,10 @@ const SDDSections = ({
   }, []);
 
   const checkDuplicates = (): boolean => {
-    const allSections = [
-      ...AllSectionsData[objKey],
-      ...AllSectionsData.defaultSection,
-    ];
+    const allSections =
+      objKey?.toLowerCase() === "normalsection"
+        ? [...AllSectionsData[objKey]]
+        : [...AllSectionsData[objKey], ...AllSectionsData.defaultSection];
 
     const valuesCount = allSections.reduce(
       (acc: Record<string, number>, section: any) => {
@@ -213,8 +270,7 @@ const SDDSections = ({
         }}
         key={index}
       >
-        {!isNotDefaultSection &&
-        sectionsData[0]?.type?.toLowerCase() === "defaultsection" ? (
+        {section?.type?.toLowerCase() === "defaultsection" ? (
           section.value !== "" && !section.isChecked ? (
             <FormControlLabel
               label={section.value}
@@ -246,11 +302,16 @@ const SDDSections = ({
               size="SM"
               icon={false}
               onChange={(value: any) => handleChange(index, value)}
+              onKeyDown={(event: any) => {
+                handleKeyDown(event, section?.value, (newValue: string) =>
+                  handleChange(index, newValue)
+                );
+              }}
               value={section?.value}
               placeholder="Enter here"
               isValid={!section?.isValid}
               inputWrapperClassName={`${styles.sectionInput}`}
-              autoFocus={true}
+              autoFocus={!viewOnly && !section?.ID}
               noErrorMsg={true}
             />
           )
@@ -261,15 +322,20 @@ const SDDSections = ({
             size="SM"
             icon={false}
             onChange={(value: any) => handleChange(index, value)}
+            onKeyDown={(event: any) => {
+              handleKeyDown(event, section?.value, (newValue: string) =>
+                handleChange(index, newValue)
+              );
+            }}
             value={section?.value}
             placeholder="Enter here"
             isValid={!section?.isValid}
             inputWrapperClassName={`${styles.sectionInput}`}
-            autoFocus={true}
+            autoFocus={!viewOnly && !section?.ID}
             noErrorMsg={true}
           />
         )}
-        {index !== 0 && isNotDefaultSection && !viewOnly && (
+        {section?.type?.toLowerCase() !== "defaultsection" && !viewOnly && (
           <Close
             onClick={() => handleRemoveUser(index)}
             className={styles.deleteUser}
@@ -320,9 +386,8 @@ const SDDSections = ({
 
   return (
     <div className={styles.mainWrapper}>
-      {((!viewOnly && !AllSectionsData[sectionErrorKey]?.isValid) ||
-        hasDuplicates) &&
-      isNotDefaultSection ? (
+      {(!viewOnly && !AllSectionsData[sectionErrorKey]?.isValid) ||
+      hasDuplicates ? (
         <span className={styles.errorBadge}>
           {AllSectionsData[sectionErrorKey]?.errorMsg ||
             "Duplicate sections found"}
@@ -358,7 +423,7 @@ const SDDSections = ({
         </div>
 
         <div className={`${styles.userCardsWrapper} `}>
-          {sectionsData?.length !== 0 ? (
+          {sectionsData?.filter((item: any) => !item?.removed)?.length !== 0 ? (
             <OrderList
               className="SDDsectionRowDropList"
               key={objKey}
@@ -367,19 +432,20 @@ const SDDSections = ({
               // itemTemplate={SectionRow}
               // itemTemplate={(section:any, index:number) => SectionRow(section, index)}
               itemTemplate={(section) =>
+                !section?.removed &&
                 SectionRow(
                   section,
                   sectionsData.findIndex((s: any) => s === section)
                 )
               }
-              dragdrop
+              dragdrop={!viewOnly}
               onChange={(event: any) => {
                 const { value } = event;
                 reOrderSections(value);
                 // handleDrag(objKey, value);
               }}
               focusOnHover={false}
-            ></OrderList>
+            />
           ) : (
             // sectionsData?.map(
             //   (user: any, i: number) =>

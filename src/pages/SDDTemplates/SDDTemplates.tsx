@@ -117,7 +117,7 @@ const initialSectionsData = {
     isValid: true,
     errorMsg: "",
   },
-  normalSection: normalSections,
+  normalSection: [...defaultSections],
   normalSectionError: {
     isValid: true,
     errorMsg: "",
@@ -133,6 +133,8 @@ const SDDTemplates = (): JSX.Element => {
   const AllSDDTemplateData = useSelector(
     (state: any) => state.SDDTemplatesData.AllSDDTemplates
   );
+
+  console.log("AllSDDTemplateData", AllSDDTemplateData);
   // const AllSDDTemplateDetails = useSelector(
   //   (state: any) => state.SDDTemplatesData.SDDtemplateDetails
   // );
@@ -171,6 +173,8 @@ const SDDTemplates = (): JSX.Element => {
     },
     isLoading: false,
   });
+
+  console.log("sectionsData", sectionsData);
 
   // main state to hable all top filters globally in page
   const [filterOptions, setFilterOptions] = useState({
@@ -257,9 +261,9 @@ const SDDTemplates = (): JSX.Element => {
       />,
       <SDDSections
         sectionTitle="Default Sections"
-        sectionsData={sectionsData.defaultSection}
+        sectionsData={sectionsData.normalSection}
         AllSectionsData={sectionsData}
-        objKey={"defaultSection"}
+        objKey={"normalSection"}
         setSectionsData={setSectionsData}
         errorMsg="Default Section's required."
         key={2}
@@ -300,9 +304,9 @@ const SDDTemplates = (): JSX.Element => {
       />,
       <SDDSections
         sectionTitle="Default Sections"
-        sectionsData={sectionsData.defaultSection}
+        sectionsData={sectionsData.normalSection}
         AllSectionsData={sectionsData}
-        objKey={"defaultSection"}
+        objKey={"normalSection"}
         setSectionsData={setSectionsData}
         errorMsg="Default Section's required."
         key={2}
@@ -345,8 +349,8 @@ const SDDTemplates = (): JSX.Element => {
       />,
       <SDDSections
         sectionTitle="Default Sections"
-        sectionsData={sectionsData.defaultSection}
-        objKey={"defaultSection"}
+        sectionsData={sectionsData.normalSection}
+        objKey={"normalSection"}
         setSectionsData={setSectionsData}
         errorMsg="Default Section's required."
         key={2}
@@ -474,7 +478,6 @@ const SDDTemplates = (): JSX.Element => {
     ]);
     const hasDuplicatesNormalSection = checkDuplicates([
       ...sectionsData.normalSection,
-      ...sectionsData.defaultSection,
     ]);
 
     // validation for duplicate template name

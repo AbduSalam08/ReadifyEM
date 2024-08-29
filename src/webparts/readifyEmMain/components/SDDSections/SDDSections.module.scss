@@ -6,10 +6,11 @@
   justify-content: flex-start;
   flex-direction: column;
   padding: 10px 15px;
+  padding-top: 0;
   border: 1px solid #55555520;
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.01);
-  gap: 10px;
+  // gap: 10px;
   margin: 0;
   // margin-bottom: 15px;
   max-height: 200px;
@@ -94,8 +95,13 @@
 .header {
   width: 100%;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
+  padding: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  background-color: #fcfcfc;
   .userCount {
     color: #414141;
     font-size: 14px;
@@ -118,7 +124,7 @@
   justify-content: flex-start;
   flex-direction: column;
   // gap: 5px;
-  .sectionRowDropList{
+  .sectionRowDropList {
     width: 100%;
   }
 }
@@ -127,8 +133,9 @@
   margin-left: 3px !important;
 }
 .checkedUserCard {
-  border: 0 !important;
-  background-color: #593abb15 !important;
+  border: 1px solid #eee !important;
+  // background-color: #593abb15 !important;
+  background-color: #fff !important;
 }
 .defaultLabel {
   font-size: 14px;

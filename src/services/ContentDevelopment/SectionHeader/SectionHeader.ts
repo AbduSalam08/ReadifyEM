@@ -5,6 +5,8 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
 import { LISTNAMES } from "../../../config/config";
+import { setAllSectionsData } from "../../../redux/features/SectionConfigurationSlice";
+import { updateSectionDataLocal } from "../../../utils/contentDevelopementUtils";
 import { calculateDueDateByRole } from "../../../utils/validations";
 import SpServices from "../../SPServices/SpServices";
 
@@ -12,8 +14,12 @@ export const addSectionConsultants = async (
   documentDetails: any,
   sectionDetails: any,
   consultants: any[],
-  currentUserDetails: any
+  currentUserDetails: any,
+  dispatch: any,
+  AllSectionsDataMain: any,
+  setToastMessageState: any
 ): Promise<any> => {
+  console.log("sectionDetails: ", sectionDetails);
   debugger;
   try {
     // let consultantsData = consultants.map((obj: any) => obj.id);
@@ -91,6 +97,22 @@ export const addSectionConsultants = async (
               });
             })
           );
+          setToastMessageState({
+            isShow: true,
+            severity: "success",
+            title: "Upadate consultant!",
+            message: "Consultants updated successfully.",
+            duration: 3000,
+          });
+
+          const updatedSections = updateSectionDataLocal(
+            AllSectionsDataMain,
+            sectionDetails?.ID,
+            {
+              consultants: consultants,
+            }
+          );
+          dispatch(setAllSectionsData(updatedSections));
         });
         console.log(documentDetails, sectionDetails, consultants);
       })

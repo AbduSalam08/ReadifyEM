@@ -126,7 +126,6 @@ const ConfigureSections = (): JSX.Element => {
     appendixSections: [],
     isLoading: false,
   });
-
   console.log("sectionsData: ", sectionsData);
 
   // main that calls all data
@@ -249,6 +248,23 @@ const ConfigureSections = (): JSX.Element => {
   };
   console.log("ConfigurePageDetails: ", ConfigurePageDetails);
 
+  const hasInvalidDefaultSections = sectionsData?.defaultSections?.some(
+    (item: any) =>
+      !item?.sectionAuthor?.isValid ||
+      !item?.consultants?.isValid ||
+      !item?.sectionName?.isValid
+  );
+
+  const hasInvalidAppendixSections = sectionsData?.appendixSections?.some(
+    (item: any) =>
+      !item?.sectionAuthor?.isValid ||
+      !item?.consultants?.isValid ||
+      !item?.sectionName?.isValid
+  );
+
+  const hasInvalidSections =
+    hasInvalidDefaultSections || hasInvalidAppendixSections;
+
   // lifecycle hooks
   useEffect(() => {
     if (ConfigurePageDetails?.pageKey === "update") {
@@ -275,7 +291,8 @@ const ConfigureSections = (): JSX.Element => {
   useEffect(() => {
     if (
       ConfigurePageDetails?.pageKey === "update" ||
-      ConfigurePageDetails?.pageKey === "version update"
+      ConfigurePageDetails?.pageKey === "version update" ||
+      currentTaskData?.docVersion !== "1.0"
     ) {
       getAllSectionsData();
       setMainData();
@@ -383,13 +400,20 @@ const ConfigureSections = (): JSX.Element => {
                   navigate(-1);
                 }}
               />
-              <DefaultButton
-                btnType="primaryBlue"
-                text={"Save"}
-                onClick={() => {
-                  handleSubmitSection();
-                }}
-              />
+              <div className={styles.flexEnd}>
+                <DefaultButton
+                  btnType="primaryBlue"
+                  text={"Save"}
+                  onClick={() => {
+                    handleSubmitSection();
+                  }}
+                />
+                {hasInvalidSections && (
+                  <p className={styles.errorMsg}>
+                    Please fill out all the fields.
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>

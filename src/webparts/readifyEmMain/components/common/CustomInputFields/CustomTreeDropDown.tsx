@@ -18,6 +18,7 @@ interface Props {
   labelText?: string;
   size?: "SM" | "MD" | "XL";
   customWrapperClass?: any;
+  disabled?: any;
 }
 const CustomTreeDropDown: React.FC<Props> = ({
   value,
@@ -29,6 +30,7 @@ const CustomTreeDropDown: React.FC<Props> = ({
   withLabel,
   labelText,
   customWrapperClass,
+  disabled = false,
   size = "MD",
 }): JSX.Element => {
   const [filterValue, setFilterValue] = useState("");
@@ -61,6 +63,7 @@ const CustomTreeDropDown: React.FC<Props> = ({
           style={{
             padding: "0 10px",
           }}
+          disabled={disabled}
           value={value}
           onChange={(e: any) => {
             onChange(e.value);

@@ -74,11 +74,9 @@ const bindHeaderTable = (sectionDetails: any, docDetails: any) => {
 
   definitionsTable += `<tr>
                 <td style="width: 20%;font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">
-                  <img style="width: 100% !important;height:auto !important" src=${
-                    sectionDetails?.imgURL
-                      ? sectionDetails?.imgURL
-                      : "../../assets/images/png/imagePlaceholder.png"
-                  } alt="doc header logo" />
+                  <img style="width: 100% !important;height:auto !important" src="${
+                    sectionDetails?.imgURL && sectionDetails?.imgURL
+                  }" alt="doc header logo" />
                 </td>
                 <td style="width: 50%;font-size: 13px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;border-right: 0px;">
                   <div>

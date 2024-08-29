@@ -1,3 +1,5 @@
+/* eslint-disable no-debugger */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 // /* eslint-disable @typescript-eslint/no-explicit-any */
 // import styles from "./SectionHeader.module.scss";
 // import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
@@ -131,10 +133,14 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "./SectionHeader.module.scss";
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
 import { addSectionConsultants } from "../../../../../services/ContentDevelopment/SectionHeader/SectionHeader";
+import { LISTNAMES } from "../../../../../config/config";
+// import SpServices from "../../../../../services/SPServices/SpServices";
+import { sp } from "@pnp/sp";
+import ToastMessage from "../../common/Toast/ToastMessage";
 
 interface Props {
   documentName: string;
@@ -157,6 +163,7 @@ const SectionHeader: React.FC<Props> = ({
   currentDocRole,
   currentDocDetailsData,
 }) => {
+  const dispatch = useDispatch();
   console.log(
     "currentDocDetailsData: ",
     currentDocDetailsData,
@@ -164,6 +171,16 @@ const SectionHeader: React.FC<Props> = ({
     activeSectionData
   );
   const [authorState, setAuthorState] = useState<any>(sectionAuthor);
+  // toast message state
+
+  const [toastMessage, setToastMessage] = useState<any>({
+    isShow: false,
+    severity: "",
+    title: "",
+    message: "",
+    duration: "",
+  });
+
   console.log("authorState: ", authorState);
   const [consultantsState, setConsultantsState] = useState<any[]>(consultants);
   console.log("consultantsState: ", consultantsState);
@@ -172,10 +189,10 @@ const SectionHeader: React.FC<Props> = ({
     (state: any) => state?.MainSPContext?.currentUserDetails
   );
 
-  useEffect(() => {
-    setAuthorState(sectionAuthor);
-    setConsultantsState(consultants);
-  }, [sectionAuthor, consultants, activeSectionData?.ID]);
+  // selectors
+  const AllSectionsDataMain: any = useSelector(
+    (state: any) => state.ContentDeveloperData.CDSectionsData
+  );
 
   const handleOnChangeFunction = (value: any): any => {
     console.log("value", value);
@@ -183,16 +200,89 @@ const SectionHeader: React.FC<Props> = ({
   };
 
   const onSubmitFunction = async (): Promise<any> => {
-    await addSectionConsultants(
-      currentDocDetailsData,
-      activeSectionData,
-      consultantsState,
-      currentUserDetails
-    );
+    debugger;
+    if (consultantsState) {
+      if (consultantsState.length !== 0) {
+        console.log("consultantsState: ", consultantsState);
+        addSectionConsultants(
+          currentDocDetailsData,
+          activeSectionData,
+          consultantsState,
+          currentUserDetails,
+          dispatch,
+          AllSectionsDataMain,
+          setToastMessage
+        );
+      } else {
+        setToastMessage({
+          isShow: true,
+          severity: "warn",
+          title: "Empty consultant!",
+          message: "Please select at least one consultant.",
+          duration: 3000,
+        });
+      }
+    } else {
+      console.log("consultantsState is empty");
+      setToastMessage({
+        isShow: true,
+        severity: "warn",
+        title: "Empty consultant!",
+        message: "Please select at least one consultant.",
+        duration: 3000,
+      });
+    }
   };
+
+  const getupdatedAuthors = async (): Promise<any> => {
+    await sp.web.lists
+      .getByTitle(LISTNAMES.SectionDetails)
+      .items.getById(activeSectionData?.ID)
+      .select(
+        "*, sectionAuthor/ID, sectionAuthor/Title,sectionAuthor/EMail, consultants/ID, consultants/Title, consultants/EMail"
+      )
+      .expand("sectionAuthor, consultants")
+      .get()
+      .then((res: any) => {
+        const resp = res[0] || res;
+        const currentSA = {
+          ID: resp?.sectionAuthor?.ID,
+          title: resp?.sectionAuthor?.Title,
+          email: resp?.sectionAuthor?.EMail,
+        };
+        const currentCons = resp?.consultants?.map((item: any) => ({
+          ID: item?.ID,
+          title: item?.Title,
+          email: item?.EMail,
+        }));
+        setConsultantsState(currentCons);
+        setAuthorState(currentSA);
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+  };
+
+  useEffect(() => {
+    getupdatedAuthors();
+  }, []);
+
+  useEffect(() => {
+    getupdatedAuthors();
+    setAuthorState(sectionAuthor);
+    setConsultantsState(consultants);
+  }, [activeSectionData?.ID]);
 
   return (
     <div className={styles.headerContainer}>
+      <ToastMessage
+        severity={toastMessage.severity}
+        title={toastMessage.title}
+        message={toastMessage.message}
+        duration={toastMessage.duration}
+        isShow={toastMessage.isShow}
+        setToastMessage={setToastMessage}
+      />
       <span className={styles.sectionName}>
         {`${
           documentName?.toLowerCase() === "header"

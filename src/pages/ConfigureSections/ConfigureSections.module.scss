@@ -110,3 +110,15 @@
   background: #666666;
   border: 0;
 }
+.errorMsg {
+  font-size: 13px;
+  color: red;
+  font-family: "interMedium", sans-serif !important;
+  margin-top: 5px;
+}
+.flexEnd {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  flex-direction: column;
+}
