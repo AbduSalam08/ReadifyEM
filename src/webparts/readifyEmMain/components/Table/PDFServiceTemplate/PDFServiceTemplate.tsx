@@ -138,6 +138,11 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
                   );
                 })
               )}
+              {allSectionContent.length === 1 && (
+                <div className={styles.noDataFound}>
+                  <span>No content has been developed at this time.</span>
+                </div>
+              )}
             </div>
           );
         })

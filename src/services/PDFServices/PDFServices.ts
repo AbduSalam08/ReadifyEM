@@ -10,6 +10,22 @@ import { CONFIG, LISTNAMES } from "../../config/config";
 import SpServices from "../SPServices/SpServices";
 // const sampleDocHeaderImg: any = require("../../assets/images/png/imagePlaceholder.png");
 
+const findMaxSectionOrder = (arr1: any, arr2: any) => {
+  // Combine both arrays
+  const combinedArray = [...arr1, ...arr2];
+
+  // Find the maximum sectionOrder value
+  const maxOrderObject = combinedArray?.reduce((maxObj, currentObj) => {
+    // Convert sectionOrder to a number for comparison
+    const currentOrder = parseInt(currentObj.sectionOrder, 10);
+    const maxOrder = parseInt(maxObj.sectionOrder, 10);
+
+    return currentOrder > maxOrder ? currentObj : maxObj;
+  });
+
+  return parseInt(maxOrderObject.sectionOrder) + 1;
+};
+
 const readTextFileFromTXT = (
   data: any,
   length: number,
@@ -54,6 +70,15 @@ const readTextFileFromTXT = (
           .sort((a, b) => {
             return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
           });
+        if (referenceSectionArray.length !== 0) {
+          referenceSectionArray[0] = {
+            ...referenceSectionArray[0],
+            sectionOrder: findMaxSectionOrder(
+              defaultSectionsArray,
+              normalSectionsArray
+            ),
+          };
+        }
         const appendixSectionsArray = updatedSections
           ?.filter((obj: any) => obj.sectionType === "appendix section")
           .sort((a, b) => {
@@ -64,11 +89,17 @@ const readTextFileFromTXT = (
           .sort((a, b) => {
             return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
           });
+        if (changeRecordSectionArray.length !== 0) {
+          changeRecordSectionArray[0] = {
+            ...changeRecordSectionArray[0],
+            sectionOrder: 1 + appendixSectionsArray.length,
+          };
+        }
 
         // Sort the updatedSections array by the "sectionOrder" key
-        updatedSections.sort((a, b) => {
-          return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
-        });
+        // updatedSections.sort((a, b) => {
+        //   return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
+        // });
 
         // Return the sorted array to update the state
         return [
@@ -120,7 +151,6 @@ const bindHeaderTable = async (
                     sectionDetails?.base64
                       ? sectionDetails?.base64
                       : base64Image
-
                   }" alt="doc header logo" />
                 </td>
                 <td style="width: 50%;font-size: 13px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">
@@ -304,7 +334,7 @@ export const getDocumentRelatedSections = async (
                         parseInt(a.sectionOrder) - parseInt(b.sectionOrder)
                       );
                     });
-                  const referenceSectionArray = updatedSections
+                  let referenceSectionArray = updatedSections
                     ?.filter(
                       (obj: any) => obj.sectionType === "references section"
                     )
@@ -313,6 +343,17 @@ export const getDocumentRelatedSections = async (
                         parseInt(a.sectionOrder) - parseInt(b.sectionOrder)
                       );
                     });
+                  debugger;
+                  if (referenceSectionArray.length !== 0) {
+                    referenceSectionArray[0] = {
+                      ...referenceSectionArray[0],
+                      sectionOrder:
+                        1 +
+                        headerSectionArray.length +
+                        defaultSectionsArray.length +
+                        normalSectionsArray.length,
+                    };
+                  }
                   const appendixSectionsArray = updatedSections
                     ?.filter(
                       (obj: any) => obj.sectionType === "appendix section"
@@ -322,18 +363,24 @@ export const getDocumentRelatedSections = async (
                         parseInt(a.sectionOrder) - parseInt(b.sectionOrder)
                       );
                     });
-                  const changeRecordSectionArray = updatedSections
+                  let changeRecordSectionArray = updatedSections
                     ?.filter((obj: any) => obj.sectionType === "change record")
                     .sort((a, b) => {
                       return (
                         parseInt(a.sectionOrder) - parseInt(b.sectionOrder)
                       );
                     });
+                  if (changeRecordSectionArray.length !== 0) {
+                    changeRecordSectionArray[0] = {
+                      ...changeRecordSectionArray[0],
+                      sectionOrder: 1 + appendixSectionsArray.length,
+                    };
+                  }
 
                   // Sort the updatedSections array by the "sectionOrder" key
-                  updatedSections.sort((a, b) => {
-                    return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
-                  });
+                  // updatedSections.sort((a, b) => {
+                  //   return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
+                  // });
 
                   // Return the sorted array to update the state
                   return [
@@ -345,6 +392,7 @@ export const getDocumentRelatedSections = async (
                     ...changeRecordSectionArray,
                   ];
                 });
+                setLoader(false);
               }
               const filteredItem: any = item?.filter(
                 (item: any) => item?.FileName === "Sample.txt"

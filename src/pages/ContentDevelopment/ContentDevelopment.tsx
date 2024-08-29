@@ -1249,7 +1249,11 @@ const ContentDevelopment = (): JSX.Element => {
         }
       }
     } else {
-      getPromotedComments(currentDocDetailsData.documentDetailsID, dispatch);
+      getPromotedComments(
+        currentDocDetailsData.documentDetailsID,
+        currentDocDetailsData.version,
+        dispatch
+      );
       togglePopupVisibility(setPopupController, value, "open", popupTitle);
     }
   };
