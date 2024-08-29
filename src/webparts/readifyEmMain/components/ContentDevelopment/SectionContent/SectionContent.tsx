@@ -577,10 +577,17 @@ const SectionContent: React.FC<IProps> = ({
       .slice(1)
       .some((item: any) => item.value === "");
     if (hasEmptyValue) {
-      setValidation({
-        ...validation,
-        isValid: false,
-        errorMessage: "error message",
+      // setValidation({
+      //   ...validation,
+      //   isValid: false,
+      //   errorMessage: "error message",
+      // });
+      setToastMessage({
+        isShow: true,
+        severity: "warn",
+        title: "Empty point!",
+        message: "Please fill in all points before adding a new one.",
+        duration: 3000,
       });
     } else {
       setValidation({
@@ -608,10 +615,17 @@ const SectionContent: React.FC<IProps> = ({
   const handleAddSubPoint = async (index: number): Promise<void> => {
     const parentPoint = points[index];
     if (parentPoint.value.trim() === "") {
-      setValidation({
-        ...validation,
-        isValid: false,
-        errorMessage: "error message",
+      // setValidation({
+      //   ...validation,
+      //   isValid: false,
+      //   errorMessage: "error message",
+      // });
+      setToastMessage({
+        isShow: true,
+        severity: "warn",
+        title: "Empty point!",
+        message: "Please fill in all points before adding a new one.",
+        duration: 3000,
       });
       return;
     } else {
@@ -625,10 +639,17 @@ const SectionContent: React.FC<IProps> = ({
       .slice(1)
       .some((item: any) => item.value === "");
     if (hasEmptyValue) {
-      setValidation({
-        ...validation,
-        isValid: false,
-        errorMessage: "error message",
+      // setValidation({
+      //   ...validation,
+      //   isValid: false,
+      //   errorMessage: "error message",
+      // });
+      setToastMessage({
+        isShow: true,
+        severity: "warn",
+        title: "Empty point!",
+        message: "Please fill in all points before adding a new one.",
+        duration: 3000,
       });
       return;
     }
@@ -947,10 +968,17 @@ const SectionContent: React.FC<IProps> = ({
       "Are you sure want to submit this section?"
     );
     if (points.length === 1) {
-      setValidation({
-        ...validation,
-        isValid: false,
-        errorMessage: "error message",
+      // setValidation({
+      //   ...validation,
+      //   isValid: false,
+      //   errorMessage: "error message",
+      // });
+      setToastMessage({
+        isShow: true,
+        severity: "warn",
+        title: "Invalid submission!",
+        message: "Please add content to submit a section.",
+        duration: 3000,
       });
       return;
     }
@@ -958,10 +986,17 @@ const SectionContent: React.FC<IProps> = ({
       .slice(1)
       .some((item: any) => item.value === "");
     if (hasEmptyValue) {
-      setValidation({
-        ...validation,
-        isValid: false,
-        errorMessage: "error message",
+      // setValidation({
+      //   ...validation,
+      //   isValid: false,
+      //   errorMessage: "error message",
+      // });
+      setToastMessage({
+        isShow: true,
+        severity: "warn",
+        title: "Empty point!",
+        message: "Please fill in all points before adding a new one.",
+        duration: 3000,
       });
       return;
     } else {
@@ -1235,6 +1270,7 @@ const SectionContent: React.FC<IProps> = ({
               title="Close"
               onlyIcon={true}
               onClick={() => {
+                setCheckChanges(false);
                 navigate(-1);
               }}
             />
@@ -1320,7 +1356,7 @@ const SectionContent: React.FC<IProps> = ({
                             text={
                               currentDocRole?.reviewer
                                 ? "Review"
-                                : currentDocRole?.approver && "Approv"
+                                : currentDocRole?.approver && "Approve"
                             }
                             disabled={
                               !sectionLoader &&

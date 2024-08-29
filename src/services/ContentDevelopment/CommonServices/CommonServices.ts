@@ -27,6 +27,7 @@ import {
 export const getSectionsDetails = async (
   taskDetails: any,
   currentUserDetails: any,
+  documentVersion: string,
   dispatcher: any
 ): Promise<any> => {
   const documentDetailsID: number = taskDetails?.documentDetailsId;
@@ -66,6 +67,12 @@ export const getSectionsDetails = async (
                 FilterKey: "sectionDetails",
                 Operator: "eq",
                 FilterValue: item?.ID,
+              },
+
+              {
+                FilterKey: "DocumentVersion",
+                Operator: "eq",
+                FilterValue: documentVersion,
               },
             ],
           });
@@ -932,6 +939,7 @@ export const addRejectedComment = async (
     role: documentDetails.taskRole,
     sectionDetailsId: sectionId,
     createdById: currentUserDetails?.id,
+    DocumentVersion: documentDetails.version,
     isRejectedComment: true,
   };
 
@@ -1309,7 +1317,10 @@ export const getSectionChangeRecord = async (
 const convertToTxtFile = (content: any[]): any => {
   let changeRecordTable = "";
 
-  changeRecordTable = `<table style="border-collapse: collapse; width: 100%;">
+  changeRecordTable = `<div>
+    <span style="display: flex; padding-bottom: 15px; font-size: 22px; font-family: interMedium, sans-serif;">Change Record</span>
+  <div>
+    <table style="border-collapse: collapse; width: 100%;">
         <thead>
           <tr>
             <th style="width: 8%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
@@ -1350,7 +1361,7 @@ const convertToTxtFile = (content: any[]): any => {
                 </td>
               </tr>`;
   });
-  changeRecordTable += `</tbody></table>`;
+  changeRecordTable += `</tbody></table></div></div>`;
 
   const cleanedTable = changeRecordTable
     .replace(/\n/g, "")

@@ -1043,6 +1043,7 @@ const Definition: React.FC<Props> = ({
   const submitSectionDefinition = async (
     submitCondition: boolean
   ): Promise<any> => {
+    debugger;
     setCheckChanges(false);
     togglePopupVisibility(
       setPopupController,
@@ -1050,30 +1051,40 @@ const Definition: React.FC<Props> = ({
       "close",
       "Are you sure want to submit this section?"
     );
-
-    await AddSectionDefinition(
-      [...selectedDefinitions],
-      documentId,
-      sectionId,
-      setPopupLoaders,
-      setToastMessage,
-      setInitialLoader
-    );
-
-    if (submitCondition) {
-      await updateTaskCompletion(
-        currentSectionDetails?.sectionName,
-        currentSectionDetails?.documentOfId,
-        "completed"
-      );
-
-      // getAllSelectedDocuments();
-      await updateSectionDetails(
+    const tempFilterData = selectedDefinitions.filter((obj) => !obj.isDeleted);
+    if (selectedDefinitions.length !== 0 && tempFilterData.length !== 0) {
+      await AddSectionDefinition(
+        [...selectedDefinitions],
+        documentId,
         sectionId,
-        AllSectionsDataMain,
-        dispatch,
-        currentDocDetailsData
+        setPopupLoaders,
+        setToastMessage,
+        setInitialLoader
       );
+
+      if (submitCondition) {
+        await updateTaskCompletion(
+          currentSectionDetails?.sectionName,
+          currentSectionDetails?.documentOfId,
+          "completed"
+        );
+
+        // getAllSelectedDocuments();
+        await updateSectionDetails(
+          sectionId,
+          AllSectionsDataMain,
+          dispatch,
+          currentDocDetailsData
+        );
+      }
+    } else {
+      setToastMessage({
+        isShow: true,
+        severity: "warn",
+        title: "Invalid submission!",
+        message: "Please select/add at least one definition.",
+        duration: 3000,
+      });
     }
   };
 
@@ -1327,6 +1338,7 @@ const Definition: React.FC<Props> = ({
               onlyIcon={true}
               title="Close"
               onClick={() => {
+                setCheckChanges(false);
                 navigate(-1);
               }}
             />
@@ -1372,7 +1384,7 @@ const Definition: React.FC<Props> = ({
                         text="Rework"
                         btnType="secondaryRed"
                         disabled={
-                          !["in development", "approved"].includes(
+                          !["in development", "approved", "in rework"].includes(
                             currentDocDetailsData?.documentStatus?.toLowerCase()
                           )
                         }

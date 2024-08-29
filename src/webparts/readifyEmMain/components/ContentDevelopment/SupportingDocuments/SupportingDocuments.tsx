@@ -855,27 +855,37 @@ const SupportingDocuments: React.FC<Props> = ({
     );
     const checkCondition = selectedDocuments.some((obj: any) => obj.isNew);
     if (!checkCondition) {
-      const reRender: boolean | any = await submitSupportingDocuments(
-        [...selectedDocuments],
-        documentId,
-        sectionId,
-        setToastMessage,
-        getAllSelectedDocuments
-      );
-      console.log(reRender);
-      if (submitCondition) {
-        await updateTaskCompletion(
-          currentSectionDetails?.sectionName,
-          currentSectionDetails?.documentOfId,
-          "completed"
-        );
-        // getAllSelectedDocuments();
-        await updateSectionDetails(
+      if (selectedDocuments.length !== 0) {
+        const reRender: boolean | any = await submitSupportingDocuments(
+          [...selectedDocuments],
+          documentId,
           sectionId,
-          AllSectionsDataMain,
-          dispatch,
-          currentDocDetailsData
+          setToastMessage,
+          getAllSelectedDocuments
         );
+        console.log(reRender);
+        if (submitCondition) {
+          await updateTaskCompletion(
+            currentSectionDetails?.sectionName,
+            currentSectionDetails?.documentOfId,
+            "completed"
+          );
+          // getAllSelectedDocuments();
+          await updateSectionDetails(
+            sectionId,
+            AllSectionsDataMain,
+            dispatch,
+            currentDocDetailsData
+          );
+        }
+      } else {
+        setToastMessage({
+          isShow: true,
+          severity: "warn",
+          title: "Invalid submission!",
+          message: "Please select/add at least one supporting document link.",
+          duration: 3000,
+        });
       }
     } else {
       setToastMessage({
@@ -1186,6 +1196,7 @@ const SupportingDocuments: React.FC<Props> = ({
             title="Close"
             btnType="darkGreyVariant"
             onClick={() => {
+              setCheckChanges(false);
               navigate(-1);
             }}
           />

@@ -53,6 +53,7 @@ const newversionBtn: any = require("../../assets/images/svg/new version.svg");
 import EditIcon from "@mui/icons-material/Edit";
 import dayjs from "dayjs";
 import { getNextVersions } from "../../utils/EMManualUtils";
+import { removeVersionFromDocName } from "../../utils/formatDocName";
 // constants
 const initialPopupController = [
   {
@@ -287,7 +288,7 @@ const TableOfContents = (): JSX.Element => {
       </div>,
     ],
     [
-      <div key={3}>
+      <div key={3} style={{ padding: "5px" }}>
         {/* <span>Document is empty.</span> */}
         <PDFServiceTemplate documentId={documentId} />
       </div>,
@@ -768,7 +769,7 @@ const TableOfContents = (): JSX.Element => {
         className={styles.topTOCHeader}
       >
         <div className={styles.flexcenter}>
-          <PageTitle text={screens.pageTitle} />
+          <PageTitle text={removeVersionFromDocName(screens.pageTitle)} />
           {screens?.toc && (
             <EditIcon
               className={styles.editIcon}
@@ -966,7 +967,12 @@ const TableOfContents = (): JSX.Element => {
                                 documentDetailsId: item?.ID,
                                 role: "admin",
                               };
-                              getSectionsDetails(taskDetails, null, dispatch);
+                              getSectionsDetails(
+                                taskDetails,
+                                null,
+                                item.docVersion,
+                                dispatch
+                              );
                             }
                           }}
                         />
@@ -1007,7 +1013,8 @@ const TableOfContents = (): JSX.Element => {
                         setPopupController,
                         2,
                         "open",
-                        `View Document - ${item.name}`
+                        `Preview Document`
+                        // `Preview Document - ${item.name}`
                       );
                       // getDocumentRelatedSections(item.ID, dispatch);
                       setDocumentId(item?.ID);

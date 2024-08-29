@@ -19,8 +19,13 @@ import { setCDSectionData } from "../../../redux/features/ContentDevloperSlice";
 //   role: string;
 // }
 
-const getSectionComments = async (sectionId: number, dispatcher: any) => {
-  console.log(sectionId);
+const getSectionComments = async (
+  sectionId: number,
+  version: string,
+  dispatcher: any
+) => {
+  debugger;
+  console.log(sectionId, version);
   const tempArray: any[] = [];
   await SpServices.SPReadItems({
     Listname: LISTNAMES.SectionComments,
@@ -31,6 +36,11 @@ const getSectionComments = async (sectionId: number, dispatcher: any) => {
         FilterKey: "sectionDetails",
         Operator: "eq",
         FilterValue: sectionId,
+      },
+      {
+        FilterKey: "DocumentVersion",
+        Operator: "eq",
+        FilterValue: version,
       },
     ],
   })

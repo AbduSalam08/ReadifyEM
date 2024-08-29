@@ -2,6 +2,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import styles from "./Header.module.scss";
+// import Popup from "../../webparts/readifyEmMain/components/common/Popups/Popup";
+import Popup from "../../../components/common/Popups/Popup";
 import DefaultButton from "../../common/Buttons/DefaultButton";
 import StatusPill from "../../StatusPill/StatusPill";
 import { useNavigate } from "react-router-dom";
@@ -12,8 +14,11 @@ import { CurrentUserIsAdmin } from "../../../../../constants/DefineUser";
 import { getCurrentLoggedPromoter } from "../../../../../utils/contentDevelopementUtils";
 import SpServices from "../../../../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../../../../config/config";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { removeVersionFromDocName } from "../../../../../utils/formatDocName";
+import PDFServiceTemplate from "../../Table/PDFServiceTemplate/PDFServiceTemplate";
+import { togglePopupVisibility } from "../../../../../utils/togglePopup";
+import { setSectionsAttachments } from "../../../../../redux/features/PDFServicceSlice";
 const arrowBackBtn = require("../../../../../assets/images/svg/arrowBack.svg");
 const locationIcon = require("../../../../../assets/images/svg/locationIcon.svg");
 const editConfigurationImg = require("../../../../../assets/images/svg/taskConfigurationEditIconBlue.svg");
@@ -40,11 +45,54 @@ const Header: React.FC<Props> = ({
   currentDocDetailsData,
   currentDocRole,
 }) => {
+  const dispatch = useDispatch();
+  const initialPopupController = [
+    {
+      open: false,
+      popupTitle: "View Document",
+      popupWidth: "70vw",
+      popupType: "custom",
+      defaultCloseBtn: true,
+      popupData: [],
+    },
+  ];
+
+  const [popupController, setPopupController] = useState(
+    initialPopupController
+  );
+
+  const popupInputs: any[] = [
+    [
+      <div key={3} style={{ padding: "5px" }}>
+        {/* <span>Document is empty.</span> */}
+        <PDFServiceTemplate
+          documentId={currentDocDetailsData?.documentDetailsID}
+        />
+      </div>,
+    ],
+  ];
+
+  const popupActions: any[] = [
+    [
+      {
+        text: "Close",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          togglePopupVisibility(setPopupController, 0, "close");
+          dispatch(setSectionsAttachments([]));
+        },
+      },
+    ],
+  ];
+
   console.log("documentName: ", documentName);
   console.log("currentDocDetailsData: ", currentDocDetailsData);
   // route navigator
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+
   const isAdmin = CurrentUserIsAdmin();
   const currentUserDetails: any = useSelector(
     (state: any) => state?.MainSPContext?.currentUserDetails
@@ -145,6 +193,18 @@ const Header: React.FC<Props> = ({
               />
             )} */}
           <DefaultButton
+            text="Preview Document"
+            btnType="secondary"
+            onClick={() =>
+              togglePopupVisibility(
+                setPopupController,
+                0,
+                "open",
+                "Preview Document"
+              )
+            }
+          />
+          <DefaultButton
             text="Track"
             btnType="secondary"
             endIcon={<img src={locationIcon} alt="track" />}
@@ -206,6 +266,28 @@ const Header: React.FC<Props> = ({
           />
         </div>
       </div>
+      {popupController?.map((popupData: any, index: number) => (
+        <Popup
+          key={index}
+          // isLoading={AllSectionsData[activeSection]?.isLoading}
+          PopupType={popupData.popupType}
+          onHide={() =>
+            togglePopupVisibility(setPopupController, index, "close")
+          }
+          popupTitle={
+            popupData.popupType !== "confimation" && popupData.popupTitle
+          }
+          popupActions={popupActions[index]}
+          visibility={popupData.open}
+          content={popupInputs[index]}
+          popupWidth={popupData.popupWidth}
+          defaultCloseBtn={popupData.defaultCloseBtn || false}
+          confirmationTitle={
+            popupData.popupType !== "custom" ? popupData.popupTitle : ""
+          }
+          popupHeight={index === 0 ? true : false}
+        />
+      ))}
     </>
   );
 };
