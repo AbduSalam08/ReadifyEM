@@ -23,6 +23,72 @@ const AddSDDTemplate = async (
 
   debugger;
   try {
+    // const getSectionType = (value: string): string => {
+    //   return value === "defaultSection"
+    //     ? "default section"
+    //     : value === "appendixSection"
+    //     ? "appendix section"
+    //     : "normal section";
+    // };
+
+    // // const sectionKeys = ["defaultSection", "normalSection", "appendixSection"];
+    // const sectionKeys = ["normalSection", "appendixSection"];
+
+    // const payloadJSON: any[] = [];
+
+    // sectionKeys.forEach((key) => {
+    //   formData?.[key]?.forEach((element: any) => {
+    //     if (
+    //       key !== "defaultSection" &&
+    //       element?.type !== "defaultSection" &&
+    //       emptyCheck(element.value) &&
+    //       formData?.normalSection?.some(
+    //         (item: any) =>
+    //           item?.type === "normalSection" ||
+    //           (item?.type === "defaultSection" && item?.sectionSelected)
+    //       )
+    //     ) {
+    //       payloadJSON.push({
+    //         sequenceNo: String(element.id),
+    //         Title: templateTitle,
+    //         sectionName: element.value,
+    //         sectionType: getSectionType(element?.type),
+    //         // mainTemplateId: mainListResponse?.data?.Id,
+    //       });
+    //     } else if (
+    //       key !== "defaultSection" &&
+    //       element?.type === "defaultSection" &&
+    //       emptyCheck(element.value) &&
+    //       element.sectionSelected &&
+    //       formData?.normalSection?.some(
+    //         (item: any) =>
+    //           item?.type === "normalSection" ||
+    //           (item?.type === "defaultSection" && item?.sectionSelected)
+    //       )
+    //     ) {
+    //       payloadJSON.push({
+    //         sequenceNo: String(element.id),
+    //         Title: templateTitle,
+    //         sectionName: element.value,
+    //         sectionType: getSectionType(element?.type),
+    //         // mainTemplateId: mainListResponse?.data?.Id,
+    //       });
+    //     } else if (
+    //       key === "appendixSection" &&
+    //       element?.type === "appendixSection" &&
+    //       emptyCheck(element.value)
+    //     ) {
+    //       payloadJSON.push({
+    //         sequenceNo: String(element.id),
+    //         Title: templateTitle,
+    //         sectionName: element.value,
+    //         sectionType: getSectionType(element?.key),
+    //         // mainTemplateId: mainListResponse?.data?.Id,
+    //       });
+    //     }
+    //   });
+    // });
+
     const getSectionType = (value: string): string => {
       return value === "defaultSection"
         ? "default section"
@@ -31,17 +97,19 @@ const AddSDDTemplate = async (
         : "normal section";
     };
 
-    // const sectionKeys = ["defaultSection", "normalSection", "appendixSection"];
+    // Define the section keys to iterate over
     const sectionKeys = ["normalSection", "appendixSection"];
 
     const payloadJSON: any[] = [];
 
     sectionKeys.forEach((key) => {
       formData?.[key]?.forEach((element: any) => {
+        // Check for normal and default sections under normalSection
         if (
-          // key !== "defaultSection" &&
-          element?.type !== "defaultSection" &&
+          key === "normalSection" &&
           emptyCheck(element.value) &&
+          (element?.type === "normalSection" ||
+            (element?.type === "defaultSection" && element.sectionSelected)) &&
           formData?.normalSection?.some(
             (item: any) =>
               item?.type === "normalSection" ||
@@ -55,8 +123,10 @@ const AddSDDTemplate = async (
             sectionType: getSectionType(element?.type),
             // mainTemplateId: mainListResponse?.data?.Id,
           });
-        } else if (
-          // key !== "defaultSection" &&
+        }
+        // Check for default sections within non-default keys that are selected
+        else if (
+          key !== "defaultSection" &&
           element?.type === "defaultSection" &&
           emptyCheck(element.value) &&
           element.sectionSelected &&
@@ -74,15 +144,20 @@ const AddSDDTemplate = async (
             // mainTemplateId: mainListResponse?.data?.Id,
           });
         }
-        // else if (key === "defaultSection" && element.sectionSelected) {
-        //   payloadJSON.push({
-        //     sequenceNo: String(element.id),
-        //     Title: templateTitle,
-        //     sectionName: element.value,
-        //     sectionType: getSectionType(element?.key),
-        //     // mainTemplateId: mainListResponse?.data?.Id,
-        //   });
-        // }
+        // Check for appendix sections under appendixSection key
+        else if (
+          key === "appendixSection" &&
+          element?.type === "appendixSection" &&
+          emptyCheck(element.value)
+        ) {
+          payloadJSON.push({
+            sequenceNo: String(element.id),
+            Title: templateTitle,
+            sectionName: element.value,
+            sectionType: getSectionType(element?.type),
+            // mainTemplateId: mainListResponse?.data?.Id,
+          });
+        }
       });
     });
 
@@ -541,7 +616,10 @@ const LoadSectionsTemplateData = async (
           type: "normalSection",
           removed: false,
         });
-      } else if (e?.sectionType?.toLowerCase() === "appendix") {
+      } else if (
+        e?.sectionType?.toLowerCase() === "appendix" ||
+        e?.sectionType?.toLowerCase() === "appendix section"
+      ) {
         appendixSection.push({
           ...sectionData,
           type: "appendixSection",

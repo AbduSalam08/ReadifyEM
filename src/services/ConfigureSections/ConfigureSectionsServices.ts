@@ -990,11 +990,60 @@ export const updateSections = async (
           })
         );
       } else {
-        await SpServices.SPDeleteItem({
-          Listname: LISTNAMES.SectionDetails,
-          ID: section?.ID,
-        });
+        if (section?.Title?.toLowerCase() === "definitions") {
+          await SpServices.SPDeleteItem({
+            Listname: LISTNAMES.SectionDetails,
+            ID: section?.ID,
+          });
+          debugger;
+          await SpServices.SPReadItems({
+            Listname: LISTNAMES.SectionDetails,
+            Select: "*, documentOf/ID",
+            Expand: "documentOf",
+            Filter: [
+              {
+                FilterKey: "Title",
+                FilterValue: "References",
+                Operator: "eq",
+              },
+              {
+                FilterKey: "documentOf",
+                FilterValue: section?.documentOfId,
+                Operator: "eq",
+              },
+            ],
+          })
+            .then(async (res: any) => {
+              console.log("res: ", res);
+              // Check if res is an array and has more than one item
+              // const items = Array.isArray(res) ? res : [res];
 
+              // // Iterate over the items and delete each one
+              // for (const item of items) {
+              //   if (item?.ID) {
+              //     try {
+              await SpServices.SPDeleteItem({
+                Listname: LISTNAMES.SectionDetails,
+                ID: res[0]?.ID,
+              });
+              //     } catch (error) {
+              //       console.error(
+              //         `Failed to delete item with ID ${item.ID}:`,
+              //         error
+              //       );
+              //     }
+              //   }
+              // }
+            })
+            .catch((error) => {
+              console.error("Error in processing response:", error);
+            });
+        } else {
+          await SpServices.SPDeleteItem({
+            Listname: LISTNAMES.SectionDetails,
+            ID: section?.ID,
+          });
+        }
         // await Promise.all(
         uniqueTaskByResponse.map(async (item: any) => {
           await SpServices.SPDeleteItem({
@@ -1095,6 +1144,7 @@ export const LoadSectionsTemplateData = async (
         },
       ],
     });
+    console.log("filteredData: ", filteredData);
 
     // Initialize arrays for sections
     const defaultSection: any[] = [];
@@ -1105,7 +1155,8 @@ export const LoadSectionsTemplateData = async (
     filteredData?.forEach((e: any, index: number) => {
       const sectionData = {
         templateSectionID: e?.ID || null,
-        sectionOrderNo: String(index + 1),
+        // sectionOrderNo: String(index + 1),
+        sectionOrderNo: e?.sequenceNo,
         sectionName: {
           value: e?.sectionName,
           placeHolder: "Section name",
@@ -1137,7 +1188,10 @@ export const LoadSectionsTemplateData = async (
           ...sectionData,
           sectionType: "normalSection",
         });
-      } else if (e?.sectionType?.toLowerCase() === "appendix") {
+      } else if (
+        e?.sectionType?.toLowerCase() === "appendix" ||
+        e?.sectionType?.toLowerCase() === "appendix section"
+      ) {
         appendixSection.push({
           ...sectionData,
           sectionType: "appendixSection",
@@ -1150,10 +1204,13 @@ export const LoadSectionsTemplateData = async (
       (a, b) =>
         defaultTemplates.indexOf(a.value) - defaultTemplates.indexOf(b.value)
     );
+    const orderedNormalSection = normalSection.sort(
+      (a, b) => a.sectionOrderNo - b.sectionOrderNo
+    );
 
-    const orderedNormalSection = normalSection.sort((a, b) => a.id - b.id);
-
-    const orderedAppendixSection = appendixSection.sort((a, b) => a.id - b.id);
+    const orderedAppendixSection = appendixSection.sort(
+      (a, b) => a.sectionOrderNo - b.sectionOrderNo
+    );
 
     const currentTemplateDetails: any = {
       templateDetails: {
@@ -1169,7 +1226,7 @@ export const LoadSectionsTemplateData = async (
           };
         }
       ),
-      appendixSections: orderedAppendixSection?.map(
+      appendixSections: [...orderedAppendixSection]?.map(
         (item: any, index: number) => {
           return {
             ...item,
