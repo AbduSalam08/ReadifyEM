@@ -89,7 +89,7 @@ const getPromotedComments = async (
         FilterValue: documentID,
       },
       {
-        FilterKey: "version",
+        FilterKey: "DocumentVersion",
         Operator: "eq",
         FilterValue: version,
       },
