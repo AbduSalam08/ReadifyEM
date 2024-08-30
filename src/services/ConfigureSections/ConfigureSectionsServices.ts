@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import dayjs from "dayjs";
 import { LISTNAMES } from "../../config/config";
-import { defaultTemplates } from "../../constants/DefaultTemplates";
+// import { defaultTemplates } from "../../constants/DefaultTemplates";
 import { setSDDTemplateDetails } from "../../redux/features/SDDTemplatesSlice";
 import {
   calculateDueDateByRole,
@@ -1200,12 +1200,17 @@ export const LoadSectionsTemplateData = async (
     });
 
     // Order default sections based on predefined order
-    const orderedDefaultSection = defaultSection.sort(
-      (a, b) =>
-        defaultTemplates.indexOf(a.value) - defaultTemplates.indexOf(b.value)
+    // const orderedDefaultSection = defaultSection.sort(
+    //   (a, b) =>
+    //     defaultTemplates.indexOf(a.value) - defaultTemplates.indexOf(b.value)
+    // );
+    const orderedDefaultSection = defaultSection?.sort(
+      (a: any, b: any) => Number(a?.sectionOrderNo) - Number(b?.sectionOrderNo)
     );
-    const orderedNormalSection = normalSection.sort(
-      (a, b) => a.sectionOrderNo - b.sectionOrderNo
+
+    // const orderedNormalSection = normalSection.sort((a, b) => a.id - b.id);
+    const orderedNormalSection = normalSection?.sort(
+      (a: any, b: any) => Number(a?.sectionOrderNo) - Number(b?.sectionOrderNo)
     );
 
     const orderedAppendixSection = appendixSection.sort(

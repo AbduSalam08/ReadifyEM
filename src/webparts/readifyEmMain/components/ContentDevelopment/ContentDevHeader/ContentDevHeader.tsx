@@ -193,22 +193,22 @@ const Header: React.FC<Props> = ({
               />
             )} */}
 
-          {currentDocRole?.reviewer ||
+          {(currentDocRole?.reviewer ||
             currentDocRole?.approver ||
-            (currentDocRole?.primaryAuthor && (
-              <DefaultButton
-                text="Preview Document"
-                btnType="secondary"
-                onClick={() =>
-                  togglePopupVisibility(
-                    setPopupController,
-                    0,
-                    "open",
-                    "Preview Document"
-                  )
-                }
-              />
-            ))}
+            currentDocRole?.primaryAuthor) && (
+            <DefaultButton
+              text="Preview Document"
+              btnType="secondary"
+              onClick={() =>
+                togglePopupVisibility(
+                  setPopupController,
+                  0,
+                  "open",
+                  "Preview Document"
+                )
+              }
+            />
+          )}
           <DefaultButton
             text="Track"
             btnType="secondary"

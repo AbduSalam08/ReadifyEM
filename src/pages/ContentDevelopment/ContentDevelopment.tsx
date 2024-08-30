@@ -758,7 +758,7 @@ const ContentDevelopment = (): JSX.Element => {
   const popupInputs: any[] = [
     [
       <SectionComments
-        commentsData={sectionDetails.comments}
+        commentsData={AllSectionsData[activeSection].comments}
         currentSectionData={AllSectionsData[activeSection]}
         currentDocRole={currentDocRole}
         isHeader={false}
