@@ -10,20 +10,29 @@ import { CONFIG, LISTNAMES } from "../../config/config";
 import SpServices from "../SPServices/SpServices";
 // const sampleDocHeaderImg: any = require("../../assets/images/png/imagePlaceholder.png");
 
-const findMaxSectionOrder = (arr1: any, arr2: any) => {
+const findMaxSectionOrder = (arr1: any[], arr2: any[]): number => {
   // Combine both arrays
   const combinedArray = [...arr1, ...arr2];
 
+  // If combined array is empty, return 1 as the starting order
+  if (combinedArray.length === 0) return 1;
+
   // Find the maximum sectionOrder value
-  const maxOrderObject = combinedArray?.reduce((maxObj, currentObj) => {
-    // Convert sectionOrder to a number for comparison
-    const currentOrder = parseInt(currentObj.sectionOrder, 10);
-    const maxOrder = parseInt(maxObj.sectionOrder, 10);
+  const maxOrderObject = combinedArray.reduce(
+    (maxObj, currentObj) => {
+      // Check if sectionOrder exists and is a valid number, else set to -Infinity for comparison
+      const currentOrder = parseInt(currentObj.sectionOrder, 10) || -Infinity;
+      const maxOrder = parseInt(maxObj.sectionOrder, 10) || -Infinity;
 
-    return currentOrder > maxOrder ? currentObj : maxObj;
-  });
+      // Return the object with the higher sectionOrder
+      return currentOrder > maxOrder ? currentObj : maxObj;
+    },
+    { sectionOrder: "-Infinity" }
+  ); // Initialize with a default object to prevent errors
 
-  return parseInt(maxOrderObject.sectionOrder) + 1;
+  // Parse the final max section order and increment by 1, ensuring it starts from 1 if no valid max was found
+  const maxOrderValue = parseInt(maxOrderObject.sectionOrder, 10);
+  return isNaN(maxOrderValue) ? 1 : maxOrderValue + 1;
 };
 
 const readTextFileFromTXT = (
