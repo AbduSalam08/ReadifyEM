@@ -916,10 +916,24 @@ const SectionContent: React.FC<IProps> = ({
           onChange && onChange([...parsedValue]);
           setSectionLoader(false);
         } else {
+          setPoints([{ text: String(sectionNumber), value: "", class: "I_0" }]);
+          setMasterPoints([
+            { text: String(sectionNumber), value: "", class: "I_0" },
+          ]);
+          onChange &&
+            onChange([
+              { text: String(sectionNumber), value: "", class: "I_0" },
+            ]);
           setSectionLoader(false);
         }
       })
       .catch((err: any) => {
+        setPoints([{ text: String(sectionNumber), value: "", class: "I_0" }]);
+        setMasterPoints([
+          { text: String(sectionNumber), value: "", class: "I_0" },
+        ]);
+        onChange &&
+          onChange([{ text: String(sectionNumber), value: "", class: "I_0" }]);
         console.log("err: ", err);
         setSectionLoader(false);
       });
@@ -943,10 +957,24 @@ const SectionContent: React.FC<IProps> = ({
           readTextFileFromTXT(filteredItem[0]);
           // setNewAttachment(false);
         } else {
+          setPoints([{ text: String(sectionNumber), value: "", class: "I_0" }]);
+          setMasterPoints([
+            { text: String(sectionNumber), value: "", class: "I_0" },
+          ]);
+          onChange &&
+            onChange([
+              { text: String(sectionNumber), value: "", class: "I_0" },
+            ]);
           setSectionLoader(false);
         }
       })
       .catch((err) => {
+        setPoints([{ text: String(sectionNumber), value: "", class: "I_0" }]);
+        setMasterPoints([
+          { text: String(sectionNumber), value: "", class: "I_0" },
+        ]);
+        onChange &&
+          onChange([{ text: String(sectionNumber), value: "", class: "I_0" }]);
         console.log(err);
         setSectionLoader(false);
       });
@@ -1062,7 +1090,7 @@ const SectionContent: React.FC<IProps> = ({
     // if (sortedPoints) {
     //   setSectionLoader(false);
     // }
-  }, [ID]);
+  }, [ID, currentSectionDetails?.ID]);
 
   useEffect(() => {
     console.log(sectionChangeRecord);

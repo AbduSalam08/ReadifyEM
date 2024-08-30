@@ -481,7 +481,7 @@ const RichText = ({
     delta: any,
     source: any,
     editor: any
-  ) => {
+  ): Promise<any> => {
     if (quillRef.current) {
       const quill = quillRef.current.getEditor();
       const currentContents = quill.getContents();
@@ -577,6 +577,9 @@ const RichText = ({
         }
       })
       .catch((err: any) => {
+        setDescription("");
+        onChange && onChange("");
+        setMasterDescription("");
         console.log("err: ", err);
       });
   };
@@ -632,10 +635,16 @@ const RichText = ({
           readTextFileFromTXT(filteredItem[0]);
           // setNewAttachment(false);
         } else {
+          setDescription("");
+          onChange && onChange("");
+          setMasterDescription("");
           setSectionLoader(false);
         }
       })
       .catch((err) => {
+        setDescription("");
+        onChange && onChange("");
+        setMasterDescription("");
         setSectionLoader(false);
       });
   };
@@ -817,7 +826,7 @@ const RichText = ({
     if (currentSectionData?.contentType === "paragraph") {
       getSectionData();
     }
-  }, [ID]);
+  }, [ID, currentSectionData?.ID]);
 
   useEffect(() => {
     setChangeRecordDetails({
