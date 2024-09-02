@@ -1,9 +1,9 @@
 /* webpart styles reset  */
 .ms-CommandBarItem-link {
-  position: absolute;
+  /* position: absolute;
   top: 500px;
   left: 6px;
-  transform: translate(-53px, 100px);
+  transform: translate(-53px, 100px); */
   z-index: 9999;
 }
 .CanvasComponent.LCS .CanvasZone:not(.CanvasZone--fullWidth) .ControlZone {
@@ -19,9 +19,9 @@
 .CanvasComponent.LCS .CanvasSection-col {
   padding: 0 !important;
 }
-.spAppAndPropertyPanelContainer .sp-appBar {
+/* .spAppAndPropertyPanelContainer .sp-appBar {
   display: none;
-}
+} */
 .CanvasComponent.LCS
   .CanvasSection--read:not(.CanvasSection--fullWidth)
   .ControlZone {
@@ -371,7 +371,7 @@ body {
   position: relative;
   height: calc(100vh - 110px);
   overflow: auto;
-  margin-top: 57px;
+  /* margin-top: 57px; */
   background-color: var(--body-bgcolor);
 }
 
