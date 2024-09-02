@@ -361,47 +361,9 @@ const SectionHeader: React.FC<Props> = ({
                 hideErrMsg
               />
             </div>
-            {!isPrimaryAuthor && (
-              <div className={styles.authors}>
-                <span className={styles.label}>Consultant</span>
-                <CustomPeoplePicker
-                  size="SM"
-                  maxWidth={"200px"}
-                  minWidth={"200px"}
-                  personSelectionLimit={
-                    currentDocRole.sectionAuthor || currentDocRole.primaryAuthor
-                      ? 5
-                      : consultantsState?.length
-                  }
-                  selectedItem={consultantsState}
-                  onChange={handleOnChangeFunction}
-                  onSubmit={onSubmitFunction}
-                  isValid={false}
-                  placeholder="Add consultants"
-                  readOnly={
-                    (!currentDocRole.sectionAuthor ||
-                      !currentDocRole.primaryAuthor) &&
-                    activeSectionData?.sectionSubmitted
-                  }
-                  noRemoveBtn={
-                    !(
-                      currentDocRole.sectionAuthor ||
-                      currentDocRole.primaryAuthor
-                    ) && !activeSectionData?.sectionSubmitted
-                  }
-                  hasSubmitBtn={
-                    (currentDocRole.sectionAuthor ||
-                      currentDocRole.primaryAuthor) &&
-                    !activeSectionData?.sectionSubmitted
-                  }
-                  multiUsers={true}
-                  popupControl={true}
-                  hideErrMsg
-                />
-              </div>
-            )}
-          </div>
-        )}
+          )}
+        </div>
+      )}
       {toastMessage.isShow && (
         <ToastMessage
           severity={toastMessage.severity}

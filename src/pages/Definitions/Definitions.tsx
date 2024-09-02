@@ -26,6 +26,7 @@ import {
 } from "../../services/Definitions/DefinitionServices";
 import { useDispatch, useSelector } from "react-redux";
 import CustomTextArea from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomTextArea";
+import { validateWebURL } from "../../utils/validations";
 // assets
 const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
 const deleteIcon: any = require("../../assets/images/svg/deleteIcon.svg");
@@ -41,6 +42,7 @@ interface IDefinitionDetails {
   definitionDescription: string;
   referenceTitle: string;
   referenceAuthorName: string;
+  yearOfPublish: string;
   referenceAuthor: any[];
   referenceLink: string;
   isApproved: boolean;
@@ -110,6 +112,7 @@ const Definitions = (): JSX.Element => {
     definitionDescription: "",
     referenceTitle: "",
     referenceAuthorName: "",
+    yearOfPublish: "",
     referenceAuthor: [],
     referenceLink: "",
     isApproved: true,
@@ -148,6 +151,7 @@ const Definitions = (): JSX.Element => {
     definitionDescription: "",
     referenceTitle: "",
     referenceAuthorName: "",
+    yearOfPublish: "",
     referenceAuthor: [],
     referenceLink: "",
     isApproved: true,
@@ -188,7 +192,8 @@ const Definitions = (): JSX.Element => {
     // return true;
     const duplicateCheck = AllDefinitionData.filter((obj: any) => {
       return (
-        obj.definitionName === definitionsData.definitionName &&
+        obj.definitionName.toLowerCase().trim() ===
+          definitionsData.definitionName.toLowerCase().trim() &&
         obj.ID !== definitionsData.ID
       );
     });
@@ -226,12 +231,21 @@ const Definitions = (): JSX.Element => {
           IsValid: false,
           ErrorMsg: "referenceAuthorName",
         }));
-      } else if (definitionsData.referenceLink === "") {
-        setDefinitionsData((prev: any) => ({
-          ...prev,
-          IsValid: false,
-          ErrorMsg: "referenceLink",
-        }));
+      } else if (definitionsData.referenceLink !== "") {
+        if (!validateWebURL(definitionsData.referenceLink)) {
+          setDefinitionsData((prev: any) => ({
+            ...prev,
+            IsValid: false,
+            ErrorMsg: "referenceLink",
+          }));
+        } else {
+          setDefinitionsData((prev: any) => ({
+            ...prev,
+            IsValid: true,
+            ErrorMsg: "",
+          }));
+          return true;
+        }
       } else {
         setDefinitionsData((prev: any) => ({
           ...prev,
@@ -406,6 +420,26 @@ const Definitions = (): JSX.Element => {
           />
           <CustomInput
             size="MD"
+            labelText="Year of publish"
+            withLabel
+            secWidth="100%"
+            icon={false}
+            // mandatory={true}
+            value={definitionsData.yearOfPublish}
+            onChange={(value: any) => {
+              handleOnChange(value, "yearOfPublish");
+            }}
+            placeholder="Enter here"
+            isValid={
+              definitionsData.yearOfPublish === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "yearOfPublish"
+            }
+            errorMsg={"The Year of publish field is required"}
+            key={5}
+          />
+          <CustomInput
+            size="MD"
             labelText="Link"
             withLabel
             icon={false}
@@ -415,12 +449,13 @@ const Definitions = (): JSX.Element => {
             }}
             placeholder="Enter here"
             isValid={
-              definitionsData.referenceLink === "" &&
               !definitionsData.IsValid &&
               definitionsData.ErrorMsg === "referenceLink"
             }
-            errorMsg={"The references Link field is required"}
-            key={5}
+            errorMsg={
+              validateWebURL(definitionsData.referenceLink) ? "" : "Invalid URL"
+            }
+            key={6}
           />
         </div>
       </div>,
@@ -547,6 +582,26 @@ const Definitions = (): JSX.Element => {
           />
           <CustomInput
             size="MD"
+            labelText="Year of publish"
+            withLabel
+            secWidth="100%"
+            icon={false}
+            // mandatory={true}
+            value={definitionsData.yearOfPublish}
+            onChange={(value: any) => {
+              handleOnChange(value, "yearOfPublish");
+            }}
+            placeholder="Enter here"
+            isValid={
+              definitionsData.yearOfPublish === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "yearOfPublish"
+            }
+            errorMsg={"The Year of publish field is required"}
+            key={5}
+          />
+          <CustomInput
+            size="MD"
             labelText="Link"
             withLabel
             icon={false}
@@ -556,12 +611,13 @@ const Definitions = (): JSX.Element => {
             }}
             placeholder="Enter here"
             isValid={
-              definitionsData.referenceLink === "" &&
               !definitionsData.IsValid &&
               definitionsData.ErrorMsg === "referenceLink"
             }
-            errorMsg={"The references Link field is required"}
-            key={5}
+            errorMsg={
+              validateWebURL(definitionsData.referenceLink) ? "" : "Invalid URL"
+            }
+            key={6}
           />
         </div>
       </div>,
@@ -666,6 +722,22 @@ const Definitions = (): JSX.Element => {
           />
           <CustomInput
             size="MD"
+            labelText="Year of publish"
+            withLabel
+            secWidth="100%"
+            icon={false}
+            // mandatory={true}
+            value={definitionsData.yearOfPublish}
+            onChange={(value: any) => {
+              handleOnChange(value, "yearOfPublish");
+            }}
+            placeholder="Enter here"
+            readOnly={true}
+            noBorderInput={true}
+            key={5}
+          />
+          <CustomInput
+            size="MD"
             labelText="Link"
             withLabel
             icon={false}
@@ -676,9 +748,9 @@ const Definitions = (): JSX.Element => {
             placeholder="Enter here"
             // isValid={!definitionsData.IsValid}
             // errorMsg={definitionsData.ErrorMsg}
-            key={5}
             readOnly={true}
             noBorderInput={true}
+            key={6}
           />
         </div>
       </div>,

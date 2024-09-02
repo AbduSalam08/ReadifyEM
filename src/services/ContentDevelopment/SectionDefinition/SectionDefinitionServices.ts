@@ -15,6 +15,7 @@ interface definitionDetails {
   definitionDescription: string;
   referenceTitle: string;
   referenceLink: string;
+  yearOfPublish: string;
   referenceAuthorName: any;
   isSectionDefinition: boolean;
   isSelected: boolean;
@@ -91,59 +92,76 @@ const convertDefinitionsToTxtFile = (
   const file: any = new File([blob], "Sample.txt", { type: "text/plain" });
   return file;
 };
-const convertReferenceToTxtFile = (
+export const convertReferenceToTxtFile = (
   content: any[],
   sectionOrder: string
 ): any => {
-  debugger;
-  const filterDefinitions = content.filter((obj: any) => !obj.isDeleted);
-  let referencesTable = "";
-  referencesTable = `<table style="border-collapse: collapse; width: 100%;">
-        <thead>
-          <tr>
-            <th style="width: 10%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-              S.No
-            </th>
-            <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-              Title
-            </th>
-            <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-              Author
-            </th>
-            <th style="width: 50%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-              Link
-            </th>
-          </tr>
-        </thead>
-        <tbody>`;
+  console.log(content);
 
-  filterDefinitions?.forEach((obj: any, index: number) => {
-    referencesTable += `<tr key={${index}}>
-                <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                  ${sectionOrder.toString()}.${index + 1}.
-                </td>
-                <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                  ${obj.referenceTitle}
-                </td>
-                <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                  ${obj.referenceAuthorName}
-                </td>
-                <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                   <a style="word-break: break-all;" href="${
-                     obj.referenceLink.startsWith("https://")
-                       ? obj.referenceLink
-                       : "https://" + obj.referenceLink
-                   }" target="_blank">
-                    ${
-                      obj.referenceLink.startsWith("https://")
-                        ? obj.referenceLink
-                        : "https://" + obj.referenceLink
-                    }
-                  </a>
-                </td>
-              </tr>`;
+  debugger;
+  let referencesTable = "";
+  // referencesTable = `<table style="border-collapse: collapse; width: 100%;">
+  //       <thead>
+  //         <tr>
+  //           <th style="width: 10%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+  //             S.No
+  //           </th>
+  //           <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+  //             Title
+  //           </th>
+  //           <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+  //             Author
+  //           </th>
+  //           <th style="width: 50%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+  //             Link
+  //           </th>
+  //         </tr>
+  //       </thead>
+  //       <tbody>`;
+
+  referencesTable += `<div style="margin-left: 25px;display: flex;flex-wrap:wrap;">`;
+
+  content?.forEach((obj: any, index: number) => {
+    referencesTable += `<p style="width:100%;padding:7px 0px;">${sectionOrder.toString()}.${
+      index + 1
+    }.<span style="margin-left: 5px;">${obj.referenceAuthorName}${". "}${
+      obj.yearOfPublish ? "(" + obj.yearOfPublish + "). " : ""
+    }</span>${
+      obj.referenceLink !== ""
+        ? `<a style="text-decoration: none;font-style: italic;" href="${
+            obj?.referenceLink?.startsWith("https://")
+              ? obj.referenceLink
+              : "https://" + obj.referenceLink
+          }" target="_blank">${obj.referenceTitle}.</a>`
+        : `<span style="font-style: italic;">${obj.referenceTitle}.</span>`
+    }</p>`;
+    // referencesTable += `<tr key={${index}}>
+    //             <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+    //               ${sectionOrder.toString()}.${index + 1}.
+    //             </td>
+    //             <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+    //               ${obj.referenceTitle}
+    //             </td>
+    //             <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+    //               ${obj.referenceAuthorName}
+    //             </td>
+    //             <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+    //  <a style="word-break: break-all;" href="${
+    //    obj.referenceLink.startsWith("https://")
+    //      ? obj.referenceLink
+    //      : "https://" + obj.referenceLink
+    //  }" target="_blank">
+    //                 ${
+    //                   obj.referenceLink.startsWith("https://")
+    //                     ? obj.referenceLink
+    //                     : "https://" + obj.referenceLink
+    //                 }
+    //               </a>
+    //             </td>
+    //           </tr>`;
   });
-  referencesTable += `</tbody></table>`;
+  // referencesTable += `</tbody></table>`;
+  referencesTable += `</div>`;
 
   debugger;
 
@@ -175,11 +193,6 @@ const getAllSectionDefinitions = async (
         Operator: "eq",
         FilterValue: documentId,
       },
-      {
-        FilterKey: "sectionDetails",
-        Operator: "eq",
-        FilterValue: sectionId,
-      },
     ],
   })
     .then((res: any[]) => {
@@ -191,7 +204,8 @@ const getAllSectionDefinitions = async (
           definitionName: item.Title,
           definitionDescription: item.description,
           referenceAuthorName: item.referenceAuthorName,
-          referenceLink: item.referenceLink,
+          yearOfPublish: item.yearOfPublish ? item.yearOfPublish : "",
+          referenceLink: item.referenceLink ? item.referenceLink : "",
           referenceTitle: item.referenceTitle,
           definitionDetailsId: item.definitionDetails.ID,
           isSectionDefinition: item.isSectionDefinition ? true : false,
@@ -199,6 +213,36 @@ const getAllSectionDefinitions = async (
           isNew: false,
           status: false,
           isDeleted: item.isDeleted ? true : false,
+        });
+      });
+    })
+    .catch((err) => console.log(err));
+  const sortedArray = tempArray.sort((a: any, b: any) => b.ID - a.ID);
+  return sortedArray;
+};
+const getAllSectionReferences = async (documentId: number): Promise<any> => {
+  debugger;
+  const tempArray: any[] = [];
+  await SpServices.SPReadItems({
+    Listname: LISTNAMES.sectionReferences,
+    Filter: [
+      {
+        FilterKey: "docDetails",
+        Operator: "eq",
+        FilterValue: documentId,
+      },
+    ],
+  })
+    .then((res: any[]) => {
+      console.log(res);
+
+      res?.forEach((item: any) => {
+        tempArray.push({
+          ID: item.ID,
+          referenceAuthorName: item.referenceAuthorName,
+          referenceLink: item.referenceLink ? item.referenceLink : "",
+          referenceTitle: item.referenceTitle,
+          yearOfPublish: item.yearOfPublish ? item.yearOfPublish : "",
         });
       });
     })
@@ -237,16 +281,11 @@ const getMasterDefinition = async (Data: any) => {
               ID: item.ID,
               definitionName: item.Title,
               definitionDescription: item.description,
-              // referenceAuthor: item?.referenceAuthor
-              //   ? {
-              //       Id: item?.referenceAuthor?.ID,
-              //       Email: item?.referenceAuthor?.EMail,
-              //     }
-              //   : null,
               referenceAuthorName: item?.referenceAuthorName,
-              referenceLink: item.referenceLink,
-              referenceTitle: item.referenceTitle,
-              isSectionDefinition: item.isSectionDefinition ? true : false,
+              yearOfPublish: item?.yearOfPublish ? item?.yearOfPublish : "",
+              referenceLink: item?.referenceLink ? item?.referenceLink : "",
+              referenceTitle: item?.referenceTitle,
+              isSectionDefinition: item?.isSectionDefinition ? true : false,
               isSelected: false,
               isNew: false,
               status: false,
@@ -257,14 +296,9 @@ const getMasterDefinition = async (Data: any) => {
               ID: item.ID,
               definitionName: item.Title,
               definitionDescription: item.description,
-              // referenceAuthor: item?.referenceAuthor
-              //   ? {
-              //       Id: item?.referenceAuthor?.ID,
-              //       Email: item?.referenceAuthor?.EMail,
-              //     }
-              //   : null,
               referenceAuthorName: item?.referenceAuthorName,
-              referenceLink: item.referenceLink,
+              yearOfPublish: item?.yearOfPublish ? item?.yearOfPublish : "",
+              referenceLink: item?.referenceLink ? item?.referenceLink : "",
               referenceTitle: item.referenceTitle,
               isSectionDefinition: item.isSectionDefinition ? true : false,
               isSelected: true,
@@ -279,15 +313,8 @@ const getMasterDefinition = async (Data: any) => {
             definitionName: item.Title,
             definitionDescription: item.description,
             referenceAuthorName: item?.referenceAuthorName,
-            // referenceAuthor: item?.referenceAuthor
-            //   ? [
-            //       {
-            //         Id: item?.referenceAuthor?.ID,
-            //         Email: item?.referenceAuthor?.EMail,
-            //       },
-            //     ]
-            //   : [],
-            referenceLink: item.referenceLink,
+            yearOfPublish: item?.yearOfPublish ? item?.yearOfPublish : "",
+            referenceLink: item?.referenceLink ? item?.referenceLink : "",
             referenceTitle: item.referenceTitle,
             isSectionDefinition: item.isSectionDefinition ? true : false,
             isSelected: false,
@@ -297,9 +324,6 @@ const getMasterDefinition = async (Data: any) => {
           });
         }
       });
-      // setSectionDefinitions([...tempArray]);
-      // setSelectedDefinitions([...tempArray]);
-      // getMasterDefinition();
     })
     .catch((err) => console.log(err));
   return tempArray;
@@ -339,7 +363,6 @@ const AddSectionAttachment = async (sectionId: number, file: any) => {
       })
         .then((res: any) => {
           console.log("res: ", res);
-          // _getData();
         })
         .catch((err: any) => {
           console.log("err: ", err);
@@ -347,7 +370,7 @@ const AddSectionAttachment = async (sectionId: number, file: any) => {
     });
 };
 
-const findReferenceSectionNumber = async (
+export const findReferenceSectionNumber = async (
   AllSectionsDataMain: any[],
   documentId: number
 ): Promise<any> => {
@@ -412,7 +435,7 @@ const findReferenceSectionNumber = async (
   return referenceSectionArray[0].sectionOrder;
 };
 
-const AddReferenceAttachment = async (documentId: number, file: any) => {
+export const AddReferenceAttachment = async (documentId: number, file: any) => {
   debugger;
   await SpServices.SPReadItems({
     Listname: LISTNAMES.SectionDetails,
@@ -465,6 +488,7 @@ const submitSectionDefinitions = async (
         Title: obj.definitionName,
         description: obj.definitionDescription,
         referenceAuthorName: obj.referenceAuthorName,
+        yearOfPublish: obj.yearOfPublish,
         referenceTitle: obj.referenceTitle,
         referenceLink: obj.referenceLink,
         isSectionDefinition: obj.isSectionDefinition ? true : false,
@@ -499,6 +523,7 @@ const submitSectionDefinitions = async (
             const tempSectionDefinitions = await sectionDefinitions.filter(
               (obj: any) => !obj.isDeleted
             );
+            const sectionReferences = await getAllSectionReferences(documentId);
             setSelectedDefinitionsState([...tempSectionDefinitions]);
             setMasterDefinitionsState([...tempSectionDefinitions]);
             console.log("sectionDefinitions", tempSectionDefinitions);
@@ -508,7 +533,7 @@ const submitSectionDefinitions = async (
             );
             AddSectionAttachment(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
-              await tempSectionDefinitions,
+              [...(await tempSectionDefinitions), ...sectionReferences],
               await referenceSectionNumber
             );
             AddReferenceAttachment(documentId, reference_file);
@@ -558,6 +583,7 @@ const submitSectionDefinitions = async (
               documentId,
               sectionId
             );
+            const sectionReferences = await getAllSectionReferences(documentId);
             const tempSectionDefinitions = await sectionDefinitions.filter(
               (obj: any) => !obj.isDeleted
             );
@@ -571,7 +597,7 @@ const submitSectionDefinitions = async (
             debugger;
             AddSectionAttachment(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
-              await tempSectionDefinitions,
+              [...(await tempSectionDefinitions), ...sectionReferences],
               await referenceSectionNumber
             );
             AddReferenceAttachment(documentId, reference_file);
@@ -674,6 +700,7 @@ const addNewDefinition = async (
       description: definitionsData?.definitionDescription,
       referenceTitle: definitionsData.referenceTitle,
       referenceAuthorName: definitionsData.referenceAuthorName,
+      yearOfPublish: definitionsData.yearOfPublish,
       referenceLink: definitionsData.referenceLink,
       isSectionDefinition: true,
       // referenceAuthorId: definitionsData.referenceAuthor[0].Id,
@@ -691,6 +718,7 @@ const addNewDefinition = async (
           // referenceAuthorId: definitionsData.referenceAuthor[0].Id,
           referenceTitle: definitionsData.referenceTitle,
           referenceAuthorName: definitionsData.referenceAuthorName,
+          yearOfPublish: definitionsData.yearOfPublish,
           referenceLink: definitionsData.referenceLink,
           isSectionDefinition: true,
           definitionDetailsId: res?.data?.ID,
@@ -717,6 +745,7 @@ const addNewDefinition = async (
               documentId,
               sectionId
             );
+            const sectionReferences = await getAllSectionReferences(documentId);
             const tempSectionDefinitions = await sectionDefinitions.filter(
               (obj: any) => !obj.isDeleted
             );
@@ -727,7 +756,7 @@ const addNewDefinition = async (
             );
             AddSectionAttachment(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
-              await tempSectionDefinitions,
+              [...(await tempSectionDefinitions), ...sectionReferences],
               await referenceSectionNumber
             );
             AddReferenceAttachment(documentId, reference_file);
@@ -738,6 +767,7 @@ const addNewDefinition = async (
                 definitionName: definitionsData.definitionName,
                 definitionDescription: definitionsData.definitionDescription,
                 referenceAuthorName: definitionsData.referenceAuthorName,
+                yearOfPublish: definitionsData.yearOfPublish,
                 referenceLink: definitionsData.referenceLink,
                 referenceTitle: definitionsData.referenceTitle,
                 definitionDetailsId: res?.data?.ID,
@@ -840,6 +870,7 @@ const updateSectionDefinition = async (
       description: definitionsData?.definitionDescription,
       referenceTitle: definitionsData.referenceTitle,
       referenceAuthorName: definitionsData.referenceAuthorName,
+      yearOfPublish: definitionsData.yearOfPublish,
       referenceLink: definitionsData.referenceLink,
       isSectionDefinition: true,
       // referenceAuthorId: definitionsData.referenceAuthor[0].Id,
@@ -857,6 +888,7 @@ const updateSectionDefinition = async (
           // referenceAuthorId: definitionsData.referenceAuthor[0].Id,
           referenceTitle: definitionsData.referenceTitle,
           referenceAuthorName: definitionsData.referenceAuthorName,
+          yearOfPublish: definitionsData.yearOfPublish,
           referenceLink: definitionsData.referenceLink,
           isSectionDefinition: true,
           // definitionDetailsId: definitionsData.definitionDetailsId,
@@ -873,6 +905,7 @@ const updateSectionDefinition = async (
               documentId,
               sectionId
             );
+            const sectionReferences = await getAllSectionReferences(documentId);
 
             const tempSectionDefinitions = await sectionDefinitions.filter(
               (obj: any) => !obj.isDeleted
@@ -885,7 +918,7 @@ const updateSectionDefinition = async (
             );
             AddSectionAttachment(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
-              await tempSectionDefinitions,
+              [...(await tempSectionDefinitions), ...sectionReferences],
               await referenceSectionNumber
             );
             AddReferenceAttachment(documentId, reference_file);
@@ -901,6 +934,7 @@ const updateSectionDefinition = async (
                     definitionDescription:
                       definitionsData.definitionDescription,
                     referenceAuthorName: definitionsData.referenceAuthorName,
+                    yearOfPublish: definitionsData.yearOfPublish,
                     referenceLink: definitionsData.referenceLink,
                     referenceTitle: definitionsData.referenceTitle,
                     isSectionDefinition: true,

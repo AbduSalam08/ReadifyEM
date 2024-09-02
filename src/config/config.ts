@@ -18,6 +18,7 @@ const LISTNAMES = {
   AppendixHeader: "AppendixHeader",
   AllDocuments: "AllDocuments",
   PromotedComments: "PromotedComments",
+  sectionReferences: "SectionReferences",
 };
 
 const LIBNAMES = {

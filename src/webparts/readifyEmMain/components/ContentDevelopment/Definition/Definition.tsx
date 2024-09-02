@@ -71,6 +71,7 @@ interface IDefinitionDetails {
   definitionDescription: string;
   referenceTitle: string;
   referenceAuthorName: string;
+  yearOfPublish: string;
   referenceAuthor: any[];
   referenceLink: string;
   isSectionDefinition: boolean;
@@ -235,6 +236,7 @@ const Definition: React.FC<Props> = ({
     definitionDescription: "",
     referenceTitle: "",
     referenceAuthorName: "",
+    yearOfPublish: "",
     referenceAuthor: [],
     referenceLink: "",
     isApproved: true,
@@ -247,6 +249,7 @@ const Definition: React.FC<Props> = ({
   const [masterDefinitions, setMasterDefinitions] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [initialLoader, setInitialLoader] = useState(true);
+  const [updateChecker, setUpdateChecker] = useState(true);
 
   console.log(selectedDefinitions, sectionDefinitions, filterDefinitions);
 
@@ -264,6 +267,7 @@ const Definition: React.FC<Props> = ({
     definitionDescription: "",
     referenceTitle: "",
     referenceAuthorName: "",
+    yearOfPublish: "",
     referenceAuthor: [],
     referenceLink: "",
     isApproved: true,
@@ -314,9 +318,12 @@ const Definition: React.FC<Props> = ({
     debugger;
     // return true;
     const duplicateCheck = AllDefinitionData.filter((obj: any) => {
-      return obj.definitionName === definitionsData.definitionName;
+      return (
+        obj.definitionName?.toLowerCase().trim() ===
+        definitionsData?.definitionName.toLowerCase().trim()
+      );
     });
-    if (duplicateCheck.length > 0) {
+    if (duplicateCheck.length > 0 && updateChecker) {
       setDefinitionsData((prev: any) => ({
         ...prev,
         IsValid: false,
@@ -350,18 +357,21 @@ const Definition: React.FC<Props> = ({
           IsValid: false,
           ErrorMsg: "referenceAuthorName",
         }));
-      } else if (definitionsData.referenceLink === "") {
-        setDefinitionsData((prev: any) => ({
-          ...prev,
-          IsValid: false,
-          ErrorMsg: "referenceLink",
-        }));
-      } else if (!validateWebURL(definitionsData.referenceLink)) {
-        setDefinitionsData((prev: any) => ({
-          ...prev,
-          IsValid: false,
-          ErrorMsg: "referenceLink",
-        }));
+      } else if (definitionsData.referenceLink !== "") {
+        if (!validateWebURL(definitionsData.referenceLink)) {
+          setDefinitionsData((prev: any) => ({
+            ...prev,
+            IsValid: false,
+            ErrorMsg: "referenceLink",
+          }));
+        } else {
+          setDefinitionsData((prev: any) => ({
+            ...prev,
+            IsValid: true,
+            ErrorMsg: "",
+          }));
+          return true;
+        }
       } else {
         setDefinitionsData((prev: any) => ({
           ...prev,
@@ -661,6 +671,26 @@ const Definition: React.FC<Props> = ({
           />
           <CustomInput
             size="MD"
+            labelText="Year of publish"
+            withLabel
+            secWidth="100%"
+            icon={false}
+            // mandatory={true}
+            value={definitionsData.yearOfPublish}
+            onChange={(value: any) => {
+              handleOnChange(value, "yearOfPublish");
+            }}
+            placeholder="Enter here"
+            isValid={
+              definitionsData.yearOfPublish === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "yearOfPublish"
+            }
+            errorMsg={"The Year of publish field is required"}
+            key={5}
+          />
+          <CustomInput
+            size="MD"
             labelText="Link"
             withLabel
             secWidth="100%"
@@ -676,13 +706,11 @@ const Definition: React.FC<Props> = ({
               definitionsData.ErrorMsg === "referenceLink"
             }
             errorMsg={
-              definitionsData.referenceLink === ""
-                ? "The references Link field is required"
-                : validateWebURL(definitionsData.referenceLink)
-                ? ""
-                : "Invalid URL"
+              // definitionsData.referenceLink === ""
+              //   ? "The references Link field is required"
+              validateWebURL(definitionsData.referenceLink) ? "" : "Invalid URL"
             }
-            key={5}
+            key={6}
           />
         </div>
       </div>,
@@ -913,6 +941,27 @@ const Definition: React.FC<Props> = ({
           />
           <CustomInput
             size="MD"
+            labelText="Year of publish"
+            withLabel
+            secWidth="100%"
+            icon={false}
+            // mandatory={true}
+            value={definitionsData.yearOfPublish}
+            onChange={(value: any) => {
+              handleOnChange(value, "yearOfPublish");
+            }}
+            placeholder="Enter here"
+            isValid={
+              definitionsData.yearOfPublish === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "yearOfPublish"
+            }
+            errorMsg={"The Year of publish field is required"}
+            readOnly={!definitionsData.isSectionDefinition}
+            key={5}
+          />
+          <CustomInput
+            size="MD"
             labelText="Link"
             withLabel
             secWidth="100%"
@@ -928,14 +977,12 @@ const Definition: React.FC<Props> = ({
               definitionsData.ErrorMsg === "referenceLink"
             }
             errorMsg={
-              definitionsData.referenceLink === ""
-                ? "The references Link field is required"
-                : validateWebURL(definitionsData.referenceLink)
-                ? ""
-                : "Invalid URL"
+              // definitionsData.referenceLink === ""
+              //   ? "The references Link field is required"
+              validateWebURL(definitionsData.referenceLink) ? "" : "Invalid URL"
             }
             readOnly={!definitionsData.isSectionDefinition}
-            key={5}
+            key={6}
           />
         </div>
       </div>,
@@ -1173,6 +1220,7 @@ const Definition: React.FC<Props> = ({
               definitionName: definitionObject.definitionName,
               definitionDescription: definitionObject.definitionDescription,
               referenceAuthorName: definitionObject?.referenceAuthorName,
+              yearOfPublish: definitionObject?.yearOfPublish,
               referenceLink: definitionObject.referenceLink,
               referenceTitle: definitionObject.referenceTitle,
               isSelected: false,
@@ -1190,6 +1238,7 @@ const Definition: React.FC<Props> = ({
             definitionName: definitionObject.definitionName,
             definitionDescription: definitionObject.definitionDescription,
             referenceAuthorName: definitionObject?.referenceAuthorName,
+            yearOfPublish: definitionObject?.yearOfPublish,
             referenceLink: definitionObject.referenceLink,
             referenceTitle: definitionObject.referenceTitle,
             isSelected: false,
@@ -1258,12 +1307,7 @@ const Definition: React.FC<Props> = ({
   ): Promise<any> => {
     debugger;
     setCheckChanges(false);
-    togglePopupVisibility(
-      setPopupController,
-      2,
-      "close",
-      "Are you sure want to submit this section?"
-    );
+    togglePopupVisibility(setPopupController, 2, "close", "");
     const tempFilterData = selectedDefinitions.filter((obj) => !obj.isDeleted);
     if (selectedDefinitions.length !== 0 && tempFilterData.length !== 0) {
       await submitSectionDefinitions(
@@ -1340,6 +1384,7 @@ const Definition: React.FC<Props> = ({
 
   const editDefinition = async (index: number): Promise<any> => {
     console.log(index);
+    setUpdateChecker(false);
     setDefinitionsData(selectedDefinitions[index]);
     togglePopupVisibility(setPopupController, 6, "open");
   };
@@ -1410,6 +1455,7 @@ const Definition: React.FC<Props> = ({
                     text={"New"}
                     size="medium"
                     onClick={() => {
+                      setUpdateChecker(true);
                       togglePopupVisibility(setPopupController, 0, "open");
                       setDefinitionsData(initialDefinitionsData);
                     }}
