@@ -34,6 +34,7 @@ const UpdateDefinition = async (
       referenceTitle: formData.referenceTitle,
       referenceAuthorName: formData.referenceAuthorName,
       referenceLink: formData.referenceLink,
+      yearOfPublish: formData.yearOfPublish,
       // referenceAuthorId: formData.referenceAuthor[0].Id,
     };
 
@@ -228,6 +229,7 @@ const AddDefinition = async (
       referenceTitle: formData.referenceTitle,
       referenceAuthorName: formData.referenceAuthorName,
       referenceLink: formData.referenceLink,
+      yearOfPublish: formData.yearOfPublish,
       isApproved: true,
       // referenceAuthorId: formData.referenceAuthor[0].Id,
     };
@@ -368,6 +370,7 @@ const LoadDefinitionData = async (
               ]
             : [],
           referenceLink: res?.referenceLink ? res.referenceLink : "",
+          yearOfPublish: res?.yearOfPublish ? res.yearOfPublish : "",
           referenceAuthorName: res?.referenceAuthorName
             ? res.referenceAuthorName
             : "",
@@ -388,6 +391,7 @@ const LoadDefinitionData = async (
               ]
             : "",
           referenceLink: res?.referenceLink ? res.referenceLink : "",
+          yearOfPublish: res?.yearOfPublish ? res.yearOfPublish : "",
           referenceAuthorName: res?.referenceAuthorName
             ? res.referenceAuthorName
             : "",
