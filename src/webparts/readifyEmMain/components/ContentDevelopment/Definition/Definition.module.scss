@@ -99,6 +99,7 @@
   border: 1px solid #e2d6d660;
   border-radius: 4px;
   margin-bottom: 10px;
+  cursor: pointer;
   .definitionTitle {
     font-family: "interMedium", sans-serif !important;
     font-size: 14px;
@@ -127,7 +128,7 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 50%;
   background-color: #fff;
-
+  z-index: 100;
   img {
     width: 25px;
     height: 16px;
