@@ -43,6 +43,24 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
   );
   const isAdmin: boolean = CurrentUserIsAdmin();
 
+  // const definitionsAuthors: any = sections[objKey]?.filter(
+  //   (item: any) =>
+  //     item?.sectionType?.toLowerCase() === "defaultsection" &&
+  //     item?.sectionName?.value?.toLowerCase() === "definitions"
+  // )[0];
+
+  // const referenceSectionIndex: number = sections[objKey]?.findIndex(
+  //   (item: any) => {
+  //     // Safely check if sectionType and sectionName exist and match the expected values
+  //     const sectionType = item?.sectionType?.toLowerCase();
+  //     const sectionName = item?.sectionName?.value?.toLowerCase();
+
+  //     return (
+  //       sectionType === "referencessection" && sectionName === "references"
+  //     );
+  //   }
+  // );
+
   const handleOnChange = (
     index: number,
     field: string,
@@ -213,6 +231,11 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
     const consultantPlaceholder = "Consultants";
     const personSelectionLimit = 10;
     const sectionType = section?.sectionType;
+    const referenceSection =
+      section?.sectionType?.toLowerCase() === "referencessection";
+    // const definitionSection =
+    //   section?.sectionType?.toLowerCase() === "defaultsection" &&
+    //   section?.sectionName?.value?.toLowerCase() === "definitions";
 
     const sectionInputPlaceHolder: string =
       sectionType === "defaultSection"
@@ -230,6 +253,8 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
         ? "Easily add and manage definitions within the document."
         : sectionName?.toLowerCase() === "supporting materials"
         ? "Easily select or add documents, system hyperlinks titles for easy access."
+        : sectionName?.toLowerCase() === "references"
+        ? "Easily manage and format references within the document."
         : "";
 
     return (
@@ -258,7 +283,8 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
               value={sectionName}
               readOnly={
                 section?.readOnlySection ||
-                (section?.templateSectionID && !isAdmin)
+                (section?.templateSectionID && !isAdmin) ||
+                referenceSection
               }
               autoFocus={section?.readOnlySection ? false : true}
               isValid={!section?.sectionName?.isValid}
@@ -281,7 +307,8 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
               placeholder={sectionInputPlaceHolder}
             />
             {(sectionName?.toLowerCase() === "supporting materials" ||
-              sectionName?.toLowerCase() === "definitions") && (
+              sectionName?.toLowerCase() === "definitions" ||
+              sectionName?.toLowerCase() === "references") && (
               <Tooltip
                 title={toolTipData}
                 placement="right"
@@ -301,12 +328,55 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
           </span>
 
           <div className={styles.enableSectionSwitch}>
-            <InputSwitch
-              checked={sectionSelected || section?.isActive}
+            {/* <InputSwitch
+              checked={
+                referenceSection
+                  ? !definitionsAuthors?.sectionSelected
+                    ? false
+                    : sectionSelected || section?.isActive
+                  : sectionSelected || section?.isActive
+              }
               className="sectionToggler"
               disabled={section?.templateSectionID && !isAdmin}
               onChange={(e) => {
+                if (definitionSection) {
+                  handleOnChange(currentItemIndex, "sectionSelected", false);
+                  handleOnChange(
+                    referenceSectionIndex,
+                    "sectionSelected",
+                    false
+                  );
+                } else {
+                  handleOnChange(currentItemIndex, "sectionSelected", e?.value);
+                }
+              }}
+            /> */}
+            <InputSwitch
+              checked={
+                // referenceSection
+                //   ? definitionsAuthors?.sectionSelected
+                //     ? sectionSelected || section?.isActive
+                //     : false
+                //   : sectionSelected || section?.isActive
+                sectionSelected || section?.isActive
+              }
+              className="sectionToggler"
+              disabled={
+                // referenceSection
+                //   ? !definitionsAuthors?.sectionSelected
+                //   : !!section?.templateSectionID && !isAdmin
+                !!section?.templateSectionID && !isAdmin
+              }
+              onChange={(e) => {
+                // If it's a definition section, handle both current and reference sections
                 handleOnChange(currentItemIndex, "sectionSelected", e?.value);
+                // if (definitionSection) {
+                //     handleOnChange(
+                //       referenceSectionIndex,
+                //       "sectionSelected",
+                //       e?.value
+                //     );
+                //   }
               }}
             />
           </div>
@@ -315,16 +385,28 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
               isValid={!section?.sectionAuthor.isValid}
               onChange={(value: any) => {
                 handleOnChange(currentItemIndex, "sectionAuthor", value);
+                // if (definitionSection) {
+                //   handleOnChange(referenceSectionIndex, "sectionAuthor", value);
+                // }
               }}
               noErrorMsg={true}
               minWidth={"100%"}
               selectedItem={
+                // referenceSection
+                //   ? definitionsAuthors?.sectionAuthor?.value[0]
+                //       ?.secondaryText ||
+                //     definitionsAuthors?.sectionAuthor?.value[0]?.email
+                //   : section.sectionAuthor?.value[0]?.secondaryText ||
+                //     section.sectionAuthor?.value[0]?.email
                 section.sectionAuthor?.value[0]?.secondaryText ||
                 section.sectionAuthor?.value[0]?.email
               }
               size="SM"
               placeholder={sectionAuthorPlaceholder}
               personSelectionLimit={1}
+              // readOnly={referenceSection}
+              // noRemoveBtn={referenceSection}
+              // disabled={referenceSection}
             />
           </div>
           <div className={styles.consultant}>
@@ -332,21 +414,33 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
               isValid={!section?.consultants.isValid}
               onChange={(value: any) => {
                 handleOnChange(currentItemIndex, "consultants", value);
+                // if (definitionSection) {
+                //   handleOnChange(referenceSectionIndex, "consultants", value);
+                // }
               }}
               noErrorMsg={true}
               minWidth={"100%"}
               size="SM"
-              selectedItem={section.consultants.value}
+              selectedItem={
+                // referenceSection
+                //   ? definitionsAuthors?.consultants?.value
+                //   : section?.consultants?.value
+                section?.consultants?.value
+              }
               placeholder={consultantPlaceholder}
               personSelectionLimit={personSelectionLimit}
               multiUsers={true}
               popupControl={true}
+              // readOnly={referenceSection}
+              // noRemoveBtn={referenceSection}
+              // disabled={referenceSection}
             />
           </div>
         </div>
         {!isAdmin
           ? !section?.templateSectionID &&
             (currentItemIndex !== 0 || sectionType === "appendixSection") && (
+              // !referenceSection && (
               <button
                 className={styles.deleteIcon}
                 onClick={() => {
@@ -362,6 +456,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
               </button>
             )
           : (currentItemIndex !== 0 || sectionType === "appendixSection") && (
+              // !referenceSection && (
               <button
                 className={styles.deleteIcon}
                 onClick={() => {

@@ -28,6 +28,7 @@ const AllSections: React.FC<Props> = ({
   currentDocDetailsData,
   currentDocRole,
 }) => {
+  console.log("data: ", data);
   const selectSection = (index: number, type: string): any => {
     if (type === "View comments") {
       onChange(index, false, "Promoted Comments");
@@ -70,112 +71,109 @@ const AllSections: React.FC<Props> = ({
     return itemStatus;
   };
 
-  return (
-    <div>
-      <div className={styles.sectionHeader}>
-        <span className={styles.sectionsTitle}>All Sections</span>
-        <div
-          className={styles.commentBox}
-          onClick={() => selectSection(0, "View comments")}
-        >
-          comments <img src={commentsIcon} alt="comments icon" />
+  const normalSections: any = data?.filter(
+    (item: any) =>
+      item?.sectionType?.toLowerCase() === "normal section" ||
+      item?.sectionType?.toLowerCase() === "references section" ||
+      item?.sectionType?.toLowerCase() === "change record" ||
+      item?.sectionType?.toLowerCase() === "default section"
+  );
+  const headerSection: any = data?.filter(
+    (item: any) => item?.sectionType?.toLowerCase() === "header section"
+  );
+
+  const appendixSections: any = data?.filter(
+    (item: any) => item?.sectionType?.toLowerCase() === "appendix section"
+  );
+  const renderSection = (item: any, index: number): any => {
+    return (item?.sectionType === "header section" ||
+      item?.sectionType === "change record") &&
+      // ||
+      // item?.sectionType === "references section")
+      currentDocRole?.primaryAuthor ? (
+      <div
+        className={`${styles.sectionVisible} ${
+          activeSection === index ? styles.activeSection : ""
+        }`}
+        key={index}
+        onClick={() => selectSection(index, "Select section")}
+      >
+        <div className={styles.sectionList}>
+          <span className={styles.sectionsName} title={item.sectionName}>
+            {item.sectionName}
+          </span>
         </div>
-      </div>
-      {data?.length > 0 &&
-        data?.map((item: any, index: number) => {
-          return (item?.sectionType === "header section" ||
-            item?.sectionType === "change record" ||
-            item?.sectionType === "references section") &&
-            currentDocRole?.primaryAuthor ? (
+        {item?.sectionType !== "change record" && (
+          // item?.sectionType !== "references section" &&
+          <div className={styles.sectionList}>
+            <span className={styles.assignedText}>Assigned to you</span>
             <div
-              className={`${styles.sectionVisible} ${
-                activeSection === index ? styles.activeSection : ""
-              }`}
-              key={index}
-              onClick={() => selectSection(index, "Select section")}
+              style={{
+                marginLeft: "8px",
+              }}
             >
-              <div className={styles.sectionList}>
-                <span className={styles.sectionsName} title={item.sectionName}>
-                  {item.sectionName}
-                </span>
-              </div>
-              {item?.sectionType !== "change record" &&
-                item?.sectionType !== "references section" && (
-                  <div className={styles.sectionList}>
-                    <span className={styles.assignedText}>Assigned to you</span>
-                    <div
-                      style={{
-                        marginLeft: "8px",
-                      }}
-                    >
-                      <MultiplePeoplePersona
-                        data={[
-                          ...(item.consultants || []),
-                          ...(item.sectionAuthor || []),
-                        ]}
-                      />
-                    </div>
-                  </div>
-                )}
+              <MultiplePeoplePersona
+                data={[
+                  ...(item.consultants || []),
+                  ...(item.sectionAuthor || []),
+                ]}
+              />
             </div>
-          ) : item?.sectionType !== "header section" &&
-            item?.sectionType !== "change record" &&
-            item?.sectionType !== "references section" &&
-            item.sectionPermission ? (
-            <div
-              className={`${styles.sectionVisible} ${
-                activeSection === index ? styles.activeSection : ""
-              }`}
-              key={index}
-              onClick={() => selectSection(index, "Select section")}
-            >
-              <div className={styles.sectionList}>
-                <div className={styles.flexCenter}>
-                  <span
-                    className={styles.sectionsName}
-                    title={item.sectionName}
-                  >
-                    {item.sectionName}
-                  </span>
+          </div>
+        )}
+      </div>
+    ) : item?.sectionType !== "header section" &&
+      item?.sectionType !== "change record" &&
+      // &&
+      // item?.sectionType !== "references section"
+      item.sectionPermission ? (
+      <div
+        className={`${styles.sectionVisible} ${
+          activeSection === index ? styles.activeSection : ""
+        }`}
+        key={index}
+        onClick={() => selectSection(index, "Select section")}
+      >
+        <div className={styles.sectionList}>
+          <div className={styles.flexCenter}>
+            <span className={styles.sectionsName} title={item.sectionName}>
+              {item.sectionName}
+            </span>
 
-                  {(currentDocRole?.reviewer &&
-                    (item?.sectionReviewed ||
-                      currentPromoter?.status?.toLowerCase() ===
-                        "completed")) ||
-                  (currentDocRole?.approver &&
-                    (item?.sectionApproved ||
-                      currentPromoter?.status?.toLowerCase() ===
-                        "completed")) ? (
-                    <div className={styles.verfiedMark}>
-                      <Check
-                        style={{
-                          width: "15px",
-                          color: "#fff",
-                        }}
-                      />
-                    </div>
-                  ) : null}
-                </div>
-
-                {item.commentsCount !== 0 && (
-                  <span className={styles.commentCount}>
-                    {item?.commentsCount && Number(item?.commentsCount) > 9
-                      ? "9+"
-                      : item.commentsCount}
-                  </span>
-                )}
+            {(currentDocRole?.reviewer &&
+              (item?.sectionReviewed ||
+                currentPromoter?.status?.toLowerCase() === "completed")) ||
+            (currentDocRole?.approver &&
+              (item?.sectionApproved ||
+                currentPromoter?.status?.toLowerCase() === "completed")) ? (
+              <div className={styles.verfiedMark}>
+                <Check
+                  style={{
+                    width: "15px",
+                    color: "#fff",
+                  }}
+                />
               </div>
-              {item?.sectionType !== "change record" &&
-                item?.sectionType !== "references section" && (
-                  <>
-                    <div className={styles.sectionList}>
-                      {item?.assignedToUser && (
-                        <span className={styles.assignedText}>
-                          Assigned to you
-                        </span>
-                      )}
+            ) : null}
+          </div>
 
-                      {/* {currentDocRole?.primaryAuthor
+          {item.commentsCount !== 0 && (
+            <span className={styles.commentCount}>
+              {item?.commentsCount && Number(item?.commentsCount) > 9
+                ? "9+"
+                : item.commentsCount}
+            </span>
+          )}
+        </div>
+        {item?.sectionType !== "change record" && (
+          // item?.sectionType !== "references section" &&
+          <>
+            <div className={styles.sectionList}>
+              {item?.assignedToUser && (
+                <span className={styles.assignedText}>Assigned to you</span>
+              )}
+
+              {/* {currentDocRole?.primaryAuthor
                   ? item?.sectionType?.toLowerCase() === "header section" &&
                     currentDocDetailsData?.primaryAuthor?.email ===
                       currentUserDetails?.email && (
@@ -189,160 +187,220 @@ const AllSections: React.FC<Props> = ({
                       </span>
                     )} */}
 
-                      <div
-                        style={{
-                          marginLeft: "8px",
-                        }}
-                      >
-                        <MultiplePeoplePersona
-                          data={[
-                            ...(item.consultants || []),
-                            ...(item.sectionAuthor || []),
-                          ]}
-                        />
-                      </div>
-                    </div>
-                    {item?.sectionType !== "header section" &&
-                      item?.sectionType !== "change record" &&
-                      item?.sectionType !== "references section" && (
-                        <div className={styles.sectionList}>
-                          {/* <span className={styles.statusSec}>{item.sectionStatus}</span> */}
-                          {currentDocRole?.approver &&
-                          (item?.sectionApproved ||
-                            currentPromoter?.status?.toLowerCase() ===
-                              "completed") ? (
-                            <StatusPill
-                              status={"submitted"}
-                              dynamicText={"Approved"}
-                              size="SM"
-                              ontrackDot={true}
-                            />
-                          ) : currentDocRole?.sectionAuthor |
-                              currentDocRole?.consultant &&
-                            item?.sectionSubmitted ? (
-                            <StatusPill
-                              status={"submitted"}
-                              dynamicText={"Submittted"}
-                              size="SM"
-                              ontrackDot={true}
-                            />
-                          ) : currentDocRole?.reviewer &&
-                            (item?.sectionReviewed ||
-                              currentPromoter?.status?.toLowerCase() ===
-                                "completed") ? (
-                            <StatusPill
-                              status={"submitted"}
-                              dynamicText={"Reviewed"}
-                              size="SM"
-                              ontrackDot={true}
-                            />
-                          ) : (
-                            <StatusPill
-                              status={
-                                item?.sectionStatus
-                                  ?.toLowerCase()
-                                  ?.includes("yet to be reviewed")
-                                  ? "Review in progress"
-                                  : item?.sectionStatus
-                                      ?.toLowerCase()
-                                      ?.includes("yet to be approved")
-                                  ? "Approval in progress"
-                                  : item?.sectionStatus
-                              }
-                              dynamicText={
-                                item?.sectionStatus
-                                  ?.toLowerCase()
-                                  ?.includes("yet to be reviewed")
-                                  ? updateStatusCount(
-                                      item?.sectionStatus,
-                                      currentDocDetailsData?.reviewers?.length
-                                    )
-                                  : item?.sectionStatus
-                                      ?.toLowerCase()
-                                      ?.includes("yet to be approved")
-                                  ? updateStatusCount(
-                                      item?.sectionStatus,
-                                      currentDocDetailsData?.approvers?.length
-                                    )
-                                  : ""
-                              }
-                              size="SM"
-                              ontrackDot={true}
-                            />
-                          )}
-                          <div
-                            className={styles.flexCenter}
-                            style={{
-                              marginTop: "5px",
-                            }}
-                          >
-                            <span className={styles.visibleDateSec}>
-                              {item.dueDate}
-                            </span>
-                            <ChevronRight
-                              style={{
-                                color: "#160364",
-                                backgroundColor: "#E2EEFF",
-                                borderRadius: "3px",
-                                fontSize: "17px",
-                                cursor: "pointer",
-                                marginLeft: "10px",
-                              }}
-                            />
-                          </div>
-                        </div>
-                      )}
-                  </>
-                )}
-            </div>
-          ) : item?.sectionType !== "header section" &&
-            item?.sectionType !== "change record" &&
-            item?.sectionType !== "references section" &&
-            !currentDocRole?.primaryAuthor &&
-            !item.sectionPermission ? (
-            <div className={styles.sectionDisabled} key={index}>
-              <div className={styles.sectionList}>
-                <span className={styles.sectionsName} title={item.sectionName}>
-                  {item.sectionName}
-                </span>
-                <span className={styles.disableDateSec}>{item.dueDate}</span>
+              <div
+                style={{
+                  marginLeft: "8px",
+                }}
+              >
+                <MultiplePeoplePersona
+                  data={[
+                    ...(item.consultants || []),
+                    ...(item.sectionAuthor || []),
+                  ]}
+                />
               </div>
             </div>
-          ) : (
-            <div
-              className={`${styles.sectionVisible} ${
-                activeSection === index ? styles.activeSection : ""
-              }`}
-              key={index}
-              onClick={() => selectSection(index, "Select section")}
+            {item?.sectionType !== "header section" &&
+              item?.sectionType !== "change record" && (
+                // item?.sectionType !== "references section" &&
+                <div className={styles.sectionList}>
+                  {/* <span className={styles.statusSec}>{item.sectionStatus}</span> */}
+                  {currentDocRole?.approver &&
+                  (item?.sectionApproved ||
+                    currentPromoter?.status?.toLowerCase() === "completed") ? (
+                    <StatusPill
+                      status={"submitted"}
+                      dynamicText={"Approved"}
+                      size="SM"
+                      ontrackDot={true}
+                    />
+                  ) : currentDocRole?.sectionAuthor |
+                      currentDocRole?.consultant && item?.sectionSubmitted ? (
+                    <StatusPill
+                      status={"submitted"}
+                      dynamicText={"Submittted"}
+                      size="SM"
+                      ontrackDot={true}
+                    />
+                  ) : currentDocRole?.reviewer &&
+                    (item?.sectionReviewed ||
+                      currentPromoter?.status?.toLowerCase() ===
+                        "completed") ? (
+                    <StatusPill
+                      status={"submitted"}
+                      dynamicText={"Reviewed"}
+                      size="SM"
+                      ontrackDot={true}
+                    />
+                  ) : (
+                    <StatusPill
+                      status={
+                        item?.sectionStatus
+                          ?.toLowerCase()
+                          ?.includes("yet to be reviewed")
+                          ? "Review in progress"
+                          : item?.sectionStatus
+                              ?.toLowerCase()
+                              ?.includes("yet to be approved")
+                          ? "Approval in progress"
+                          : item?.sectionStatus
+                      }
+                      dynamicText={
+                        item?.sectionStatus
+                          ?.toLowerCase()
+                          ?.includes("yet to be reviewed")
+                          ? updateStatusCount(
+                              item?.sectionStatus,
+                              currentDocDetailsData?.reviewers?.length
+                            )
+                          : item?.sectionStatus
+                              ?.toLowerCase()
+                              ?.includes("yet to be approved")
+                          ? updateStatusCount(
+                              item?.sectionStatus,
+                              currentDocDetailsData?.approvers?.length
+                            )
+                          : ""
+                      }
+                      size="SM"
+                      ontrackDot={true}
+                    />
+                  )}
+                  <div
+                    className={styles.flexCenter}
+                    style={{
+                      marginTop: "5px",
+                    }}
+                  >
+                    <span className={styles.visibleDateSec}>
+                      {item.dueDate}
+                    </span>
+                    <ChevronRight
+                      style={{
+                        color: "#160364",
+                        backgroundColor: "#E2EEFF",
+                        borderRadius: "3px",
+                        fontSize: "17px",
+                        cursor: "pointer",
+                        marginLeft: "10px",
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+          </>
+        )}
+      </div>
+    ) : item?.sectionType !== "header section" &&
+      item?.sectionType !== "change record" &&
+      // item?.sectionType !== "references section" &&
+      !currentDocRole?.primaryAuthor &&
+      !item.sectionPermission ? (
+      <div className={styles.sectionDisabled} key={index}>
+        <div className={styles.sectionList}>
+          <span className={styles.sectionsName} title={item.sectionName}>
+            {item.sectionName}
+          </span>
+          <span className={styles.disableDateSec}>{item.dueDate}</span>
+        </div>
+      </div>
+    ) : (
+      <div
+        className={`${styles.sectionVisible} ${
+          activeSection === index ? styles.activeSection : ""
+        }`}
+        key={index}
+        onClick={() => selectSection(index, "Select section")}
+      >
+        <div className={styles.sectionList}>
+          <span className={styles.sectionsName} title={item.sectionName}>
+            {item.sectionName}
+          </span>
+        </div>
+        {item?.sectionType !== "change record" && (
+          // item?.sectionType !== "references section" &&
+          <>
+            <div className={styles.sectionList}>
+              <div
+                style={{
+                  marginLeft: "8px",
+                }}
+              >
+                <MultiplePeoplePersona
+                  data={[
+                    ...(item.consultants || []),
+                    ...(item.sectionAuthor || []),
+                  ]}
+                />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <div className={styles.sectionHeader}>
+        <span className={styles.sectionsTitle}>All Sections</span>
+        <div
+          className={styles.commentBox}
+          onClick={() => selectSection(0, "View comments")}
+        >
+          comments <img src={commentsIcon} alt="comments icon" />
+        </div>
+      </div>
+      {data?.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+            gap: "10px",
+            marginTop: "12px",
+          }}
+        >
+          {headerSection?.map((item: any, index: number) => {
+            return renderSection(item, 0);
+          })}
+          {normalSections?.length !== 0 && (
+            <span
+              style={{
+                color: "#787878",
+                fontSize: "14px",
+                margin: "5px 0",
+                fontFamily: "interMedium, sans-serif",
+              }}
+              className={styles.sectionLabel}
             >
-              <div className={styles.sectionList}>
-                <span className={styles.sectionsName} title={item.sectionName}>
-                  {item.sectionName}
-                </span>
-              </div>
-              {item?.sectionType !== "change record" &&
-                item?.sectionType !== "references section" && (
-                  <>
-                    <div className={styles.sectionList}>
-                      <div
-                        style={{
-                          marginLeft: "8px",
-                        }}
-                      >
-                        <MultiplePeoplePersona
-                          data={[
-                            ...(item.consultants || []),
-                            ...(item.sectionAuthor || []),
-                          ]}
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-            </div>
-          );
-        })}
+              Sections
+              <span className={styles.line} />
+            </span>
+          )}
+          {normalSections?.map((item: any, index: number) => {
+            return renderSection(item, Number(item?.sectionOrder));
+          })}
+          {appendixSections?.length !== 0 && (
+            <span
+              style={{
+                color: "#787878",
+                fontSize: "14px",
+                margin: "5px 0",
+                fontFamily: "interMedium, sans-serif",
+              }}
+              className={styles.sectionLabel}
+            >
+              Appendices
+              <span className={styles.line} />
+            </span>
+          )}
+          {appendixSections?.map((item: any, index: number) => {
+            return renderSection(item, Number(item?.sectionOrder));
+          })}
+        </div>
+      )}
     </div>
   );
 };

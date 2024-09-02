@@ -1224,7 +1224,7 @@ const ContentDevelopment = (): JSX.Element => {
           setPopupController,
           8,
           "open",
-          "Discard current changes"
+          "Discard current changes?"
         );
       } else {
         setActiveSection(value);

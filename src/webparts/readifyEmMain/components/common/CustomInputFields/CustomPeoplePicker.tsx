@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 // /* eslint-disable no-unused-expressions */
 // // /* eslint-disable @typescript-eslint/no-explicit-any */
 // // import { memo } from "react";
@@ -804,7 +805,12 @@ const CustomPeoplePicker: React.FC<Props> = ({
         onClick={() => {
           console.log("clicked");
           if (popupControl) {
-            togglePopupVisibility(setPopupController, 0, "open", "Add people");
+            togglePopupVisibility(
+              setPopupController,
+              0,
+              "open",
+              readOnly ? placeholder : "Add people"
+            );
           }
         }}
       >

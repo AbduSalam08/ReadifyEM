@@ -35,7 +35,8 @@
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  margin: 15px 0px;
+  // margin: 15px 0px;
+  margin: 0px;
   padding: 10px;
   border-radius: 8px;
   gap: 5px;
@@ -46,7 +47,8 @@
 .sectionDisabled {
   width: 100%;
   height: 41px;
-  margin: 15px 0px;
+  // margin: 15px 0px;
+  margin: 0px;
   padding: 10px 20px;
   border-radius: 5px;
   background: #adadad33;
@@ -128,4 +130,20 @@
   padding: 0;
   margin-left: 10px;
   transform: translateY(-2px);
+}
+.sectionLabel {
+  position: relative;
+  width: 100%;
+  @extend .flexCenter;
+  justify-content: space-between;
+  gap: 15px;
+  .line {
+    // position: absolute;
+    width: 100%;
+    // -webkit-transform: translate(-50%, -50%);
+    // transform: translate(-50%, -50%);
+    height: 0.3px;
+    background-color: #adadad50;
+    border-radius: 50px;
+  }
 }
