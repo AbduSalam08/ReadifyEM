@@ -228,6 +228,7 @@ const AddDefinition = async (
       referenceTitle: formData.referenceTitle,
       referenceAuthorName: formData.referenceAuthorName,
       referenceLink: formData.referenceLink,
+      isApproved: true,
       // referenceAuthorId: formData.referenceAuthor[0].Id,
     };
 
