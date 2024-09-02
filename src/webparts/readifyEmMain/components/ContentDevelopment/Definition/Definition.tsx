@@ -21,9 +21,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import {
   getAllSectionDefinitions,
   getMasterDefinition,
-  AddSectionDefinition,
+  submitSectionDefinitions,
   addNewDefinition,
   LoadDefinitionTableData,
+  updateSectionDefinition,
 } from "../../../../../services/ContentDevelopment/SectionDefinition/SectionDefinitionServices";
 import { useNavigate } from "react-router-dom";
 import { IPopupLoaders } from "../../../../../interface/MainInterface";
@@ -72,6 +73,7 @@ interface IDefinitionDetails {
   referenceAuthorName: string;
   referenceAuthor: any[];
   referenceLink: string;
+  isSectionDefinition: boolean;
   isApproved: boolean;
   isLoading: boolean;
 }
@@ -122,6 +124,14 @@ const initialPopupController = [
     open: false,
     popupTitle: "",
     popupWidth: "950px",
+    popupType: "custom",
+    defaultCloseBtn: false,
+    popupData: "",
+  },
+  {
+    open: false,
+    popupTitle: "Update Definition",
+    popupWidth: "550px",
     popupType: "custom",
     defaultCloseBtn: false,
     popupData: "",
@@ -228,6 +238,7 @@ const Definition: React.FC<Props> = ({
     referenceAuthor: [],
     referenceLink: "",
     isApproved: true,
+    isSectionDefinition: true,
     isLoading: false,
   };
   const [sectionDefinitions, setSectionDefinitions] = useState<any[]>([]);
@@ -257,7 +268,9 @@ const Definition: React.FC<Props> = ({
     referenceLink: "",
     isApproved: true,
     isLoading: false,
+    isSectionDefinition: true,
   });
+  console.log(definitionsData);
 
   // toast message
 
@@ -397,10 +410,35 @@ const Definition: React.FC<Props> = ({
   const addNewSectionDefinition = async (): Promise<any> => {
     if (validateSections()) {
       // Submit the form
+      setInitialLoader(true);
       await addNewDefinition(
         definitionsData,
+        AllSectionsDataMain,
         documentId,
         sectionId,
+        currentSectionDetails.sectionOrder,
+        setPopupLoaders,
+        setToastMessage,
+        setSelectedDefinitions,
+        setInitialLoader,
+        setPopupController,
+        togglePopupVisibility
+      );
+    } else {
+      console.log("invalid");
+    }
+  };
+
+  const updateSubmitSectionDefinition = async (): Promise<any> => {
+    if (validateSections()) {
+      // Submit the form
+      togglePopupVisibility(setPopupController, 6, "close");
+      await updateSectionDefinition(
+        definitionsData,
+        AllSectionsDataMain,
+        documentId,
+        sectionId,
+        currentSectionDetails.sectionOrder,
         setPopupLoaders,
         setToastMessage,
         setSelectedDefinitions,
@@ -749,6 +787,159 @@ const Definition: React.FC<Props> = ({
         />
       </div>,
     ],
+    [
+      <div key={1} className={styles.defWrapper}>
+        <div key={2} className={styles.referenceWrapper}>
+          <span>Definition</span>
+          <CustomInput
+            size="MD"
+            labelText="Name"
+            withLabel
+            icon={false}
+            // mandatory={true}
+            secWidth="100%"
+            value={definitionsData.definitionName}
+            isValid={
+              definitionsData.definitionName === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "definitionName"
+                ? true
+                : definitionsData.definitionName !== "" &&
+                  definitionsData.IsDuplicate
+                ? true
+                : false
+            }
+            onChange={(value: any) => {
+              handleOnChange(value, "definitionName");
+            }}
+            placeholder="Enter here"
+            // isValid={!definitionsData.IsValid}
+            errorMsg={
+              definitionsData.definitionName !== "" &&
+              definitionsData.IsDuplicate
+                ? definitionsData.ErrorMsg
+                : "The definition name field is required"
+            }
+            readOnly={!definitionsData.isSectionDefinition}
+            key={1}
+          />
+          <CustomTextArea
+            size="MD"
+            labelText="Description"
+            withLabel
+            icon={false}
+            // mandatory={true}
+            textAreaWidth={"67%"}
+            value={definitionsData.definitionDescription}
+            onChange={(value: any) => {
+              handleOnChange(value, "definitionDescription");
+            }}
+            placeholder="Enter Description"
+            isValid={
+              definitionsData.definitionDescription === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "definitionDescription"
+            }
+            errorMsg={"The description field is required"}
+            readOnly={!definitionsData.isSectionDefinition}
+            key={2}
+          />
+        </div>
+        <div key={3} className={styles.referenceWrapper}>
+          <span>References</span>
+          <CustomInput
+            size="MD"
+            labelText="Title"
+            withLabel
+            secWidth="100%"
+            icon={false}
+            // mandatory={true}
+            value={definitionsData.referenceTitle}
+            onChange={(value: any) => {
+              handleOnChange(value, "referenceTitle");
+            }}
+            inputWrapperClassName={styles.referenceInput}
+            placeholder="Enter here"
+            isValid={
+              definitionsData.referenceTitle === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceTitle"
+            }
+            errorMsg={"The references title field is required"}
+            readOnly={!definitionsData.isSectionDefinition}
+            key={3}
+          />
+
+          {/* <CustomPeoplePicker
+            size="MD"
+            minWidth={"265px"}
+            withLabel
+            labelText="Author"
+            mandatory={true}
+            onChange={(value: any) => {
+              handleOnChange(value, "referenceAuthor");
+            }}
+            selectedItem={definitionsData?.referenceAuthor[0]?.Email}
+            placeholder="Add people"
+            isValid={
+              definitionsData.referenceAuthor.length === 0 &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceAuthor"
+            }
+            errorMsg={"The reference author field is required"}
+            key={4}
+          /> */}
+
+          <CustomInput
+            size="MD"
+            labelText="Author"
+            withLabel
+            secWidth="100%"
+            icon={false}
+            // mandatory={true}
+            value={definitionsData.referenceAuthorName}
+            onChange={(value: any) => {
+              handleOnChange(value, "referenceAuthorName");
+            }}
+            placeholder="Enter here"
+            isValid={
+              definitionsData.referenceAuthorName === "" &&
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceAuthorName"
+            }
+            errorMsg={"The reference author field is required"}
+            readOnly={!definitionsData.isSectionDefinition}
+            key={4}
+          />
+          <CustomInput
+            size="MD"
+            labelText="Link"
+            withLabel
+            secWidth="100%"
+            icon={false}
+            // mandatory={true}
+            value={definitionsData.referenceLink}
+            onChange={(value: any) => {
+              handleOnChange(value, "referenceLink");
+            }}
+            placeholder="Enter here"
+            isValid={
+              !definitionsData.IsValid &&
+              definitionsData.ErrorMsg === "referenceLink"
+            }
+            errorMsg={
+              definitionsData.referenceLink === ""
+                ? "The references Link field is required"
+                : validateWebURL(definitionsData.referenceLink)
+                ? ""
+                : "Invalid URL"
+            }
+            readOnly={!definitionsData.isSectionDefinition}
+            key={5}
+          />
+        </div>
+      </div>,
+    ],
   ];
 
   // array of obj which contains all popup action buttons
@@ -812,7 +1003,7 @@ const Definition: React.FC<Props> = ({
       {
         text: "Submit",
         btnType: "primary",
-        disabled: false,
+        disabled: initialLoader ? true : false,
         endIcon: false,
         startIcon: false,
         onClick: async () => {
@@ -881,7 +1072,7 @@ const Definition: React.FC<Props> = ({
     ],
     [
       {
-        text: "Cancel",
+        text: "Close",
         btnType: "darkGreyVariant",
         disabled: false,
         endIcon: false,
@@ -891,13 +1082,35 @@ const Definition: React.FC<Props> = ({
         },
       },
     ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(6);
+        },
+      },
+      {
+        text: "Update",
+        btnType: "primary",
+        disabled: !definitionsData.isSectionDefinition,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          updateSubmitSectionDefinition();
+        },
+      },
+    ],
   ];
 
   const handleSearchOnChange = (value: string): void => {
     setSearchValue(value.trimStart());
     const filterValues = sectionDefinitions?.filter((obj: any) => {
       if (
-        obj.definitionTitle.toLowerCase().includes(value.toLowerCase().trim())
+        obj.definitionName.toLowerCase().includes(value.toLowerCase().trim())
       ) {
         return obj;
       }
@@ -933,11 +1146,11 @@ const Definition: React.FC<Props> = ({
     tempArray[index] = definitionObject;
     if (definitionObject.isSelected) {
       const isMatch = selectedDefinitions.some(
-        (obj: any) => obj.definitionTitle === definitionObject.definitionTitle
+        (obj: any) => obj.definitionName === definitionObject.definitionName
       );
       if (isMatch) {
         const index = tempSelectedDocuments.findIndex((select: any) => {
-          return select.definitionTitle === definitionObject.definitionTitle;
+          return select.definitionName === definitionObject.definitionName;
         });
         tempSelectedDocuments[index].isDeleted = false;
         setSelectedDefinitions([...tempSelectedDocuments]);
@@ -957,7 +1170,7 @@ const Definition: React.FC<Props> = ({
           return [
             {
               ID: definitionObject.ID,
-              definitionTitle: definitionObject.definitionTitle,
+              definitionName: definitionObject.definitionName,
               definitionDescription: definitionObject.definitionDescription,
               referenceAuthorName: definitionObject?.referenceAuthorName,
               referenceLink: definitionObject.referenceLink,
@@ -974,7 +1187,7 @@ const Definition: React.FC<Props> = ({
         const objectsEqual = compareArraysOfObjects(masterDefinitions, [
           {
             ID: definitionObject.ID,
-            definitionTitle: definitionObject.definitionTitle,
+            definitionName: definitionObject.definitionName,
             definitionDescription: definitionObject.definitionDescription,
             referenceAuthorName: definitionObject?.referenceAuthorName,
             referenceLink: definitionObject.referenceLink,
@@ -996,17 +1209,17 @@ const Definition: React.FC<Props> = ({
       }
     } else {
       const isMatch = selectedDefinitions.some(
-        (obj: any) => obj.definitionTitle === definitionObject.definitionTitle
+        (obj: any) => obj.definitionName === definitionObject.definitionName
       );
       if (isMatch) {
         const index = tempSelectedDocuments.findIndex((select: any) => {
-          return select.definitionTitle === definitionObject.definitionTitle;
+          return select.definitionName === definitionObject.definitionName;
         });
         if (tempSelectedDocuments[index].status) {
           tempSelectedDocuments = tempSelectedDocuments.filter(
             (selectedObj: any) => {
               return (
-                selectedObj.definitionTitle !== definitionObject.definitionTitle
+                selectedObj.definitionName !== definitionObject.definitionName
               );
             }
           );
@@ -1053,10 +1266,14 @@ const Definition: React.FC<Props> = ({
     );
     const tempFilterData = selectedDefinitions.filter((obj) => !obj.isDeleted);
     if (selectedDefinitions.length !== 0 && tempFilterData.length !== 0) {
-      await AddSectionDefinition(
+      await submitSectionDefinitions(
         [...selectedDefinitions],
+        AllSectionsDataMain,
         documentId,
         sectionId,
+        currentSectionDetails.sectionOrder,
+        setSelectedDefinitions,
+        setMasterDefinitions,
         setPopupLoaders,
         setToastMessage,
         setInitialLoader
@@ -1092,9 +1309,7 @@ const Definition: React.FC<Props> = ({
     let tempSelectedDocuments = [...selectedDefinitions];
     // tempSelectedDocuments[index].isDeleted = true;
     const filterSelectionDefinitions = sectionDefinitions.map((obj: any) => {
-      if (
-        obj.definitionTitle === tempSelectedDocuments[index].definitionTitle
-      ) {
+      if (obj.definitionName === tempSelectedDocuments[index].definitionName) {
         return { ...obj, isDeleted: true, isSelected: false };
       } else {
         return obj;
@@ -1121,6 +1336,12 @@ const Definition: React.FC<Props> = ({
       console.log("Changed");
       setCheckChanges(true);
     }
+  };
+
+  const editDefinition = async (index: number): Promise<any> => {
+    console.log(index);
+    setDefinitionsData(selectedDefinitions[index]);
+    togglePopupVisibility(setPopupController, 6, "open");
   };
 
   const loggerPromoter: any = getCurrentLoggedPromoter(
@@ -1231,7 +1452,7 @@ const Definition: React.FC<Props> = ({
                               ev.preventDefault();
                             }}
                           >
-                            <span>{obj.definitionTitle}</span>
+                            <span>{obj.definitionName}</span>
                           </div>
                           <div
                             className={styles.description}
@@ -1258,10 +1479,14 @@ const Definition: React.FC<Props> = ({
               {selectedDefinitions?.map((obj: any, index: number) => {
                 return (
                   !obj.isDeleted && (
-                    <div key={index} className={styles.SelectedDefinitionSec}>
+                    <div
+                      key={index}
+                      className={styles.SelectedDefinitionSec}
+                      onClick={() => editDefinition(index)}
+                    >
                       <div style={{ width: "30%" }}>
                         <span className={styles.definitionTitle}>
-                          {obj.definitionTitle}
+                          {obj.definitionName}
                         </span>
                       </div>
                       <div style={{ width: "67%" }}>
@@ -1275,7 +1500,10 @@ const Definition: React.FC<Props> = ({
                           <button className={styles.closeBtn}>
                             <img
                               src={closeBtn}
-                              onClick={() => removeDefinition(index)}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                removeDefinition(index);
+                              }}
                             />
                           </button>
                         )}

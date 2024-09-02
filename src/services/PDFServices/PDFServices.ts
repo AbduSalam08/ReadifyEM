@@ -265,7 +265,7 @@ export const getDocumentRelatedSections = async (
           debugger;
           for (const item of sortedArray) {
             console.log(item.sectionOrder);
-            let attachments = await SpServices.SPGetAttachments({
+            const attachments = await SpServices.SPGetAttachments({
               Listname: LISTNAMES.SectionDetails,
               ID: item.Id,
             });
@@ -343,7 +343,7 @@ export const getDocumentRelatedSections = async (
                         parseInt(a.sectionOrder) - parseInt(b.sectionOrder)
                       );
                     });
-                  let referenceSectionArray = updatedSections
+                  const referenceSectionArray = updatedSections
                     ?.filter(
                       (obj: any) => obj.sectionType === "references section"
                     )
@@ -372,7 +372,7 @@ export const getDocumentRelatedSections = async (
                         parseInt(a.sectionOrder) - parseInt(b.sectionOrder)
                       );
                     });
-                  let changeRecordSectionArray = updatedSections
+                  const changeRecordSectionArray = updatedSections
                     ?.filter((obj: any) => obj.sectionType === "change record")
                     .sort((a, b) => {
                       return (

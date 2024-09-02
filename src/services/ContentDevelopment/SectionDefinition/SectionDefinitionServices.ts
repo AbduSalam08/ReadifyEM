@@ -11,51 +11,75 @@ import SpServices from "../../SPServices/SpServices";
 interface definitionDetails {
   ID: number;
   definitionDetailsId?: number;
-  definitionTitle: string;
+  definitionName: string;
   definitionDescription: string;
   referenceTitle: string;
   referenceLink: string;
   referenceAuthorName: any;
+  isSectionDefinition: boolean;
   isSelected: boolean;
   isNew: boolean;
   status: boolean;
   isDeleted: boolean;
 }
+// const AllSectionsDataMain: any = useSelector(
+//   (state: any) => state.ContentDeveloperData.CDSectionsData
+// );
+// console.log(AllSectionsDataMain);
 
-const convertDefinitionsToTxtFile = (content: any[]): any => {
+const convertDefinitionsToTxtFile = (
+  content: any[],
+  sectionOrder: string
+): any => {
+  debugger;
   const filterDefinitions = content.filter((obj: any) => !obj.isDeleted);
   let definitionsTable = "";
+  definitionsTable = `<div style="margin-left: 25px;display: flex;flex-wrap:wrap;">`;
 
-  definitionsTable = `<table style="border-collapse: collapse; width: 100%;">
-        <thead>
-          <tr>
-            <th style="width: 10%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-              S.No
-            </th>
-            <th style="width: 30%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-              Definition name
-            </th>
-            <th style="width: 60%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>`;
+  // definitionsTable = `<table style="border-collapse: collapse; width: 100%;">
+  //       <thead>
+  //         <tr>
+  //           <th style="width: 10%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+  //             S.No
+  //           </th>
+  //           <th style="width: 30%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+  //             Definition name
+  //           </th>
+  //           <th style="width: 60%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+  //             Description
+  //           </th>
+  //         </tr>
+  //       </thead>
+  //       <tbody>`;
 
   filterDefinitions?.forEach((obj: any, index: number) => {
-    definitionsTable += `<tr key={${index}}>
-                <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                  ${index + 1}
-                </td>
-                <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                  ${obj.definitionTitle}
-                </td>
-                <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                  ${obj.definitionDescription}
-                </td>
-              </tr>`;
+    // definitionsTable += `<tr key={${index}}>
+    //             <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+    //               ${index + 1}
+    //             </td>
+    //             <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+    //               ${obj.definitionName}
+    //             </td>
+    //             <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+    //               ${obj.definitionDescription}
+    //             </td>
+    //           </tr>`;
+    definitionsTable += `<div style="width:100%;display:flex;margin-bottom: 10px;">
+      <p style="width:5%;line-height: 20px;font-weight: 500;font-size: 17px;font-family: interMedium,sans-serif;">${sectionOrder}.${
+      index + 1
+    }.</p>
+      <div style="width: 90%;">
+        <p style="font-family: interMedium,sans-serif;">${
+          obj.definitionName
+        }</p>
+        <span style="line-height: 20px;font-size: 14px;font-family: interRegular,sans-serif;">${
+          obj.definitionDescription
+        }</span>
+      </div>
+    </div>`;
   });
-  definitionsTable += `</tbody></table>`;
+  // definitionsTable += `</tbody></table>`;
+  definitionsTable += `</div>`;
 
   const cleanedTable = definitionsTable
     .replace(/\n/g, "")
@@ -67,10 +91,13 @@ const convertDefinitionsToTxtFile = (content: any[]): any => {
   const file: any = new File([blob], "Sample.txt", { type: "text/plain" });
   return file;
 };
-const convertReferenceToTxtFile = (content: any[]): any => {
+const convertReferenceToTxtFile = (
+  content: any[],
+  sectionOrder: string
+): any => {
+  debugger;
   const filterDefinitions = content.filter((obj: any) => !obj.isDeleted);
   let referencesTable = "";
-
   referencesTable = `<table style="border-collapse: collapse; width: 100%;">
         <thead>
           <tr>
@@ -93,7 +120,7 @@ const convertReferenceToTxtFile = (content: any[]): any => {
   filterDefinitions?.forEach((obj: any, index: number) => {
     referencesTable += `<tr key={${index}}>
                 <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                  ${index + 1}
+                  ${sectionOrder.toString()}.${index + 1}.
                 </td>
                 <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
                   ${obj.referenceTitle}
@@ -161,12 +188,13 @@ const getAllSectionDefinitions = async (
       res?.forEach((item: any) => {
         tempArray.push({
           ID: item.ID,
-          definitionTitle: item.Title,
+          definitionName: item.Title,
           definitionDescription: item.description,
           referenceAuthorName: item.referenceAuthorName,
           referenceLink: item.referenceLink,
           referenceTitle: item.referenceTitle,
           definitionDetailsId: item.definitionDetails.ID,
+          isSectionDefinition: item.isSectionDefinition ? true : false,
           isSelected: false,
           isNew: false,
           status: false,
@@ -207,7 +235,7 @@ const getMasterDefinition = async (Data: any) => {
           if (Data[index].isDeleted) {
             tempArray.push({
               ID: item.ID,
-              definitionTitle: item.Title,
+              definitionName: item.Title,
               definitionDescription: item.description,
               // referenceAuthor: item?.referenceAuthor
               //   ? {
@@ -218,6 +246,7 @@ const getMasterDefinition = async (Data: any) => {
               referenceAuthorName: item?.referenceAuthorName,
               referenceLink: item.referenceLink,
               referenceTitle: item.referenceTitle,
+              isSectionDefinition: item.isSectionDefinition ? true : false,
               isSelected: false,
               isNew: false,
               status: false,
@@ -226,7 +255,7 @@ const getMasterDefinition = async (Data: any) => {
           } else {
             tempArray.push({
               ID: item.ID,
-              definitionTitle: item.Title,
+              definitionName: item.Title,
               definitionDescription: item.description,
               // referenceAuthor: item?.referenceAuthor
               //   ? {
@@ -237,6 +266,7 @@ const getMasterDefinition = async (Data: any) => {
               referenceAuthorName: item?.referenceAuthorName,
               referenceLink: item.referenceLink,
               referenceTitle: item.referenceTitle,
+              isSectionDefinition: item.isSectionDefinition ? true : false,
               isSelected: true,
               isNew: false,
               status: false,
@@ -246,7 +276,7 @@ const getMasterDefinition = async (Data: any) => {
         } else {
           tempArray.push({
             ID: item.ID,
-            definitionTitle: item.Title,
+            definitionName: item.Title,
             definitionDescription: item.description,
             referenceAuthorName: item?.referenceAuthorName,
             // referenceAuthor: item?.referenceAuthor
@@ -259,6 +289,7 @@ const getMasterDefinition = async (Data: any) => {
             //   : [],
             referenceLink: item.referenceLink,
             referenceTitle: item.referenceTitle,
+            isSectionDefinition: item.isSectionDefinition ? true : false,
             isSelected: false,
             isNew: false,
             status: false,
@@ -275,14 +306,16 @@ const getMasterDefinition = async (Data: any) => {
 };
 
 const AddSectionAttachment = async (sectionId: number, file: any) => {
+  console.log(file);
+
   await SpServices.SPDeleteAttachments({
     ListName: LISTNAMES.SectionDetails,
     ListID: sectionId,
     AttachmentName: "Sample.txt",
   })
-    .then((res) => {
+    .then(async (res) => {
       console.log("res:", res);
-      SpServices.SPAddAttachment({
+      await SpServices.SPAddAttachment({
         ListName: LISTNAMES.SectionDetails,
         ListID: sectionId,
         FileName: "Sample.txt",
@@ -296,9 +329,9 @@ const AddSectionAttachment = async (sectionId: number, file: any) => {
           console.log("err: ", err);
         });
     })
-    .catch((err) => {
+    .catch(async (err) => {
       console.log(err);
-      SpServices.SPAddAttachment({
+      await SpServices.SPAddAttachment({
         ListName: LISTNAMES.SectionDetails,
         ListID: sectionId,
         FileName: "Sample.txt",
@@ -313,6 +346,72 @@ const AddSectionAttachment = async (sectionId: number, file: any) => {
         });
     });
 };
+
+const findReferenceSectionNumber = async (
+  AllSectionsDataMain: any[],
+  documentId: number
+): Promise<any> => {
+  const AllSectionData = await SpServices.SPReadItems({
+    Listname: LISTNAMES.SectionDetails,
+    Select: "*",
+    Expand: "AttachmentFiles",
+    Filter: [
+      {
+        FilterKey: "isDeleted",
+        Operator: "eq",
+        FilterValue: 0,
+      },
+      {
+        FilterKey: "documentOf",
+        Operator: "eq",
+        FilterValue: documentId,
+      },
+    ],
+  });
+  console.log(
+    "AllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionData",
+    AllSectionData
+  );
+
+  const tempArray = AllSectionData.filter(
+    (obj: any) => obj.AttachmentFiles.length !== 0
+  );
+
+  console.log(
+    "AllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionData",
+    tempArray
+  );
+  const headerSectionArray = tempArray?.filter(
+    (obj: any) => obj.sectionType === "header section"
+  );
+  const defaultSectionsArray = tempArray
+    ?.filter((obj: any) => obj.sectionType === "default section")
+    .sort((a: any, b: any) => {
+      return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
+    });
+  const normalSectionsArray = tempArray
+    ?.filter((obj: any) => obj.sectionType === "normal section")
+    .sort((a: any, b: any) => {
+      return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
+    });
+  const referenceSectionArray = tempArray
+    ?.filter((obj: any) => obj.sectionType === "references section")
+    .sort((a: any, b: any) => {
+      return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
+    });
+  if (referenceSectionArray.length !== 0) {
+    referenceSectionArray[0] = {
+      ...referenceSectionArray[0],
+      sectionOrder:
+        1 +
+        headerSectionArray.length +
+        defaultSectionsArray.length +
+        normalSectionsArray.length,
+    };
+  }
+  return referenceSectionArray[0].sectionOrder;
+};
+
 const AddReferenceAttachment = async (documentId: number, file: any) => {
   debugger;
   await SpServices.SPReadItems({
@@ -336,30 +435,39 @@ const AddReferenceAttachment = async (documentId: number, file: any) => {
   });
 };
 
-const AddSectionDefinition = (
+const submitSectionDefinitions = async (
   selectedDefinitions: any[],
+  AllSectionsDataMain: any[],
   documentId: number,
   sectionId: number,
+  sectionOrder: string,
+  setSelectedDefinitionsState: any,
+  setMasterDefinitionsState: any,
   setLoaderState: any,
   setToastState: any,
   setInitialLoader: any
 ) => {
   debugger;
   setInitialLoader(true);
+  const referenceSectionNumber = await findReferenceSectionNumber(
+    AllSectionsDataMain,
+    documentId
+  );
   const tempArray: any[] = [...selectedDefinitions];
   const tempAddArray = tempArray.filter((obj: any) => obj.status);
   const tempDelArray = tempArray.filter((obj: any) => obj.isDeleted);
-  const tempDelUpdateArray = tempArray.filter(
-    (obj: any) => !obj.isDeleted && !obj.status
-  );
+  // const tempDelUpdateArray = tempArray.filter(
+  //   (obj: any) => !obj.isDeleted && !obj.status
+  // );
   if (tempAddArray.length > 0) {
     tempAddArray.forEach(async (obj: any, index: number) => {
       const jsonObject = {
-        Title: obj.definitionTitle,
+        Title: obj.definitionName,
         description: obj.definitionDescription,
         referenceAuthorName: obj.referenceAuthorName,
         referenceTitle: obj.referenceTitle,
         referenceLink: obj.referenceLink,
+        isSectionDefinition: obj.isSectionDefinition ? true : false,
         definitionDetailsId: obj.ID,
         sectionDetailsId: sectionId,
         docDetailsId: documentId,
@@ -371,7 +479,7 @@ const AddSectionDefinition = (
         .then(async (res: any) => {
           if (
             tempDelArray.length === 0 &&
-            tempDelUpdateArray.length === 0 &&
+            // tempDelUpdateArray.length === 0 &&
             tempAddArray.length - 1 === index
           ) {
             // setLoaderState({
@@ -391,13 +499,17 @@ const AddSectionDefinition = (
             const tempSectionDefinitions = await sectionDefinitions.filter(
               (obj: any) => !obj.isDeleted
             );
+            setSelectedDefinitionsState([...tempSectionDefinitions]);
+            setMasterDefinitionsState([...tempSectionDefinitions]);
             console.log("sectionDefinitions", tempSectionDefinitions);
             const _file: any = await convertDefinitionsToTxtFile(
-              await tempSectionDefinitions
+              await tempSectionDefinitions,
+              sectionOrder
             );
             AddSectionAttachment(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
-              await tempSectionDefinitions
+              await tempSectionDefinitions,
+              await referenceSectionNumber
             );
             AddReferenceAttachment(documentId, reference_file);
             setToastState({
@@ -415,19 +527,22 @@ const AddSectionDefinition = (
   }
   if (tempDelArray.length > 0) {
     // toast.error("Please select atleast one document to add");
-    tempDelArray.forEach((obj: any, index: number) => {
-      const jsonObject = {
-        isDeleted: true,
-      };
-      SpServices.SPUpdateItem({
+    tempDelArray.forEach(async (obj: any, index: number) => {
+      if (obj.isSectionDefinition) {
+        await SpServices.SPDeleteItem({
+          Listname: LISTNAMES.Definition,
+          ID: obj.definitionDetailsId,
+        });
+      }
+      await SpServices.SPDeleteItem({
         Listname: LISTNAMES.sectionDefinition,
         ID: obj.ID,
-        RequestJSON: jsonObject,
       })
         .then(async (res: any) => {
           if (
-            tempDelUpdateArray.length === 0 &&
-            tempDelArray.length - 1 === index
+            // tempDelUpdateArray.length === 0 &&
+            tempDelArray.length - 1 ===
+            index
           ) {
             // setLoaderState({
             //   isLoading: {
@@ -446,13 +561,18 @@ const AddSectionDefinition = (
             const tempSectionDefinitions = await sectionDefinitions.filter(
               (obj: any) => !obj.isDeleted
             );
+            setSelectedDefinitionsState([...tempSectionDefinitions]);
+            setMasterDefinitionsState([...tempSectionDefinitions]);
             console.log("sectionDefinitions", tempSectionDefinitions);
             const _file: any = await convertDefinitionsToTxtFile(
-              await tempSectionDefinitions
+              await tempSectionDefinitions,
+              sectionOrder
             );
+            debugger;
             AddSectionAttachment(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
-              await tempSectionDefinitions
+              await tempSectionDefinitions,
+              await referenceSectionNumber
             );
             AddReferenceAttachment(documentId, reference_file);
             setToastState({
@@ -470,66 +590,72 @@ const AddSectionDefinition = (
         });
     });
   }
-  if (tempDelUpdateArray.length > 0) {
-    tempDelUpdateArray.forEach(async (obj: any, index: number) => {
-      const jsonObject = {
-        isDeleted: false,
-      };
-      SpServices.SPUpdateItem({
-        Listname: LISTNAMES.sectionDefinition,
-        ID: obj.ID,
-        RequestJSON: jsonObject,
-      })
-        .then(async (res: any) => {
-          console.log(res);
-          if (tempDelUpdateArray.length - 1 === index) {
-            // setLoaderState({
-            //   isLoading: {
-            //     inprogress: false,
-            //     success: true,
-            //     error: false,
-            //   },
-            //   visibility: true,
-            //   text: `Changes updated successfully!`,
-            //   secondaryText: `Definitions add/remove updated successfully! `,
-            // });
-            const sectionDefinitions = await getAllSectionDefinitions(
-              documentId,
-              sectionId
-            );
-            const tempSectionDefinitions = await sectionDefinitions.filter(
-              (obj: any) => !obj.isDeleted
-            );
-            console.log("sectionDefinitions", tempSectionDefinitions);
-            const _file: any = await convertDefinitionsToTxtFile(
-              await tempSectionDefinitions
-            );
-            AddSectionAttachment(sectionId, _file);
-            const reference_file: any = await convertReferenceToTxtFile(
-              await tempSectionDefinitions
-            );
-            AddReferenceAttachment(documentId, reference_file);
-            setToastState({
-              isShow: true,
-              severity: "success",
-              title: "Content updated!",
-              message: "The content has been updated successfully.",
-              duration: 3000,
-            });
-            setInitialLoader(false);
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    });
-  }
+  // if (tempDelUpdateArray.length > 0) {
+  //   tempDelUpdateArray.forEach(async (obj: any, index: number) => {
+  //     const jsonObject = {
+  //       isDeleted: false,
+  //     };
+  //     await SpServices.SPUpdateItem({
+  //       Listname: LISTNAMES.sectionDefinition,
+  //       ID: obj.ID,
+  //       RequestJSON: jsonObject,
+  //     })
+  //       .then(async (res: any) => {
+  //         console.log(res);
+  //         if (tempDelUpdateArray.length - 1 === index) {
+  //           // setLoaderState({
+  //           //   isLoading: {
+  //           //     inprogress: false,
+  //           //     success: true,
+  //           //     error: false,
+  //           //   },
+  //           //   visibility: true,
+  //           //   text: `Changes updated successfully!`,
+  //           //   secondaryText: `Definitions add/remove updated successfully! `,
+  //           // });
+  //           const sectionDefinitions = await getAllSectionDefinitions(
+  //             documentId,
+  //             sectionId
+  //           );
+  //           const tempSectionDefinitions = await sectionDefinitions.filter(
+  //             (obj: any) => !obj.isDeleted
+  //           );
+  //           setSelectedDefinitionsState([...tempSectionDefinitions]);
+  //           setMasterDefinitionsState([...tempSectionDefinitions]);
+  //           console.log("sectionDefinitions", tempSectionDefinitions);
+  //           const _file: any = await convertDefinitionsToTxtFile(
+  //             await tempSectionDefinitions,
+  //             sectionOrder
+  //           );
+  //           AddSectionAttachment(sectionId, _file);
+  //           const reference_file: any = await convertReferenceToTxtFile(
+  //             await tempSectionDefinitions
+  //           );
+  //           AddReferenceAttachment(documentId, reference_file);
+  //           setToastState({
+  //             isShow: true,
+  //             severity: "success",
+  //             title: "Content updated!",
+  //             message: "The content has been updated successfully.",
+  //             duration: 3000,
+  //           });
+  //           setInitialLoader(false);
+  //         }
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+  //   });
+  // }
+  setInitialLoader(false);
 };
 
 const addNewDefinition = async (
   definitionsData: any,
+  AllSectionsDataMain: any[],
   documentId: number,
   sectionId: number,
+  sectionOrder: string,
   setLoaderState: any,
   setToastState: any,
   setSelectedDefinitions: any,
@@ -538,6 +664,10 @@ const addNewDefinition = async (
   togglePopupVisibility: any
 ) => {
   try {
+    const referenceSectionNumber = await findReferenceSectionNumber(
+      AllSectionsDataMain,
+      documentId
+    );
     setInitialLoader(true);
     const payloadJSON = {
       Title: definitionsData?.definitionName,
@@ -545,6 +675,7 @@ const addNewDefinition = async (
       referenceTitle: definitionsData.referenceTitle,
       referenceAuthorName: definitionsData.referenceAuthorName,
       referenceLink: definitionsData.referenceLink,
+      isSectionDefinition: true,
       // referenceAuthorId: definitionsData.referenceAuthor[0].Id,
       isApproved: false,
     };
@@ -561,6 +692,7 @@ const addNewDefinition = async (
           referenceTitle: definitionsData.referenceTitle,
           referenceAuthorName: definitionsData.referenceAuthorName,
           referenceLink: definitionsData.referenceLink,
+          isSectionDefinition: true,
           definitionDetailsId: res?.data?.ID,
           sectionDetailsId: sectionId,
           docDetailsId: documentId,
@@ -569,8 +701,8 @@ const addNewDefinition = async (
           Listname: LISTNAMES.sectionDefinition,
           RequestJSON: jsonObject,
         })
-          .then(async (res: any) => {
-            console.log(res);
+          .then(async (sectionres: any) => {
+            console.log(sectionres);
             // setLoaderState({
             //   isLoading: {
             //     inprogress: false,
@@ -590,22 +722,26 @@ const addNewDefinition = async (
             );
             console.log("sectionDefinitions", tempSectionDefinitions);
             const _file: any = await convertDefinitionsToTxtFile(
-              await tempSectionDefinitions
+              await tempSectionDefinitions,
+              sectionOrder
             );
             AddSectionAttachment(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
-              await tempSectionDefinitions
+              await tempSectionDefinitions,
+              await referenceSectionNumber
             );
             AddReferenceAttachment(documentId, reference_file);
             togglePopupVisibility(setPopupController, 0, "close");
             setSelectedDefinitions((prev: any) => [
               {
-                ID: res.data.ID,
-                definitionTitle: definitionsData.definitionName,
+                ID: sectionres.data.ID,
+                definitionName: definitionsData.definitionName,
                 definitionDescription: definitionsData.definitionDescription,
                 referenceAuthorName: definitionsData.referenceAuthorName,
                 referenceLink: definitionsData.referenceLink,
                 referenceTitle: definitionsData.referenceTitle,
+                definitionDetailsId: res?.data?.ID,
+                isSectionDefinition: true,
                 isDeleted: false,
                 isNew: false,
                 isSelected: false,
@@ -680,6 +816,159 @@ const addNewDefinition = async (
   }
 };
 
+const updateSectionDefinition = async (
+  definitionsData: any,
+  AllSectionsDataMain: any[],
+  documentId: number,
+  sectionId: number,
+  sectionOrder: string,
+  setLoaderState: any,
+  setToastState: any,
+  setSelectedDefinitions: any,
+  setInitialLoader: any,
+  setPopupController: any,
+  togglePopupVisibility: any
+) => {
+  try {
+    const referenceSectionNumber = await findReferenceSectionNumber(
+      AllSectionsDataMain,
+      documentId
+    );
+    setInitialLoader(true);
+    const payloadJSON = {
+      Title: definitionsData?.definitionName,
+      description: definitionsData?.definitionDescription,
+      referenceTitle: definitionsData.referenceTitle,
+      referenceAuthorName: definitionsData.referenceAuthorName,
+      referenceLink: definitionsData.referenceLink,
+      isSectionDefinition: true,
+      // referenceAuthorId: definitionsData.referenceAuthor[0].Id,
+      //  isApproved: false,
+    };
+    await SpServices.SPUpdateItem({
+      Listname: LISTNAMES.Definition,
+      ID: definitionsData.definitionDetailsId,
+      RequestJSON: payloadJSON,
+    })
+      .then(async (res: any) => {
+        const jsonObject = {
+          Title: definitionsData.definitionName,
+          description: definitionsData.definitionDescription,
+          // referenceAuthorId: definitionsData.referenceAuthor[0].Id,
+          referenceTitle: definitionsData.referenceTitle,
+          referenceAuthorName: definitionsData.referenceAuthorName,
+          referenceLink: definitionsData.referenceLink,
+          isSectionDefinition: true,
+          // definitionDetailsId: definitionsData.definitionDetailsId,
+          // sectionDetailsId: sectionId,
+          // docDetailsId: documentId,
+        };
+        await SpServices.SPUpdateItem({
+          Listname: LISTNAMES.sectionDefinition,
+          ID: definitionsData.ID,
+          RequestJSON: jsonObject,
+        })
+          .then(async (res: any) => {
+            const sectionDefinitions = await getAllSectionDefinitions(
+              documentId,
+              sectionId
+            );
+
+            const tempSectionDefinitions = await sectionDefinitions.filter(
+              (obj: any) => !obj.isDeleted
+            );
+            console.log(tempSectionDefinitions);
+            console.log("sectionDefinitions", tempSectionDefinitions);
+            const _file: any = await convertDefinitionsToTxtFile(
+              await tempSectionDefinitions,
+              sectionOrder
+            );
+            AddSectionAttachment(sectionId, _file);
+            const reference_file: any = await convertReferenceToTxtFile(
+              await tempSectionDefinitions,
+              await referenceSectionNumber
+            );
+            AddReferenceAttachment(documentId, reference_file);
+            togglePopupVisibility(setPopupController, 6, "close");
+            // setSelectedDefinitions([...tempSectionDefinitions]);
+            debugger;
+            setSelectedDefinitions((prev: any) => {
+              const tempArray = prev.map((obj: any) => {
+                if (obj.ID === definitionsData.ID) {
+                  return {
+                    ...obj,
+                    definitionName: definitionsData.definitionName,
+                    definitionDescription:
+                      definitionsData.definitionDescription,
+                    referenceAuthorName: definitionsData.referenceAuthorName,
+                    referenceLink: definitionsData.referenceLink,
+                    referenceTitle: definitionsData.referenceTitle,
+                    isSectionDefinition: true,
+                    isDeleted: false,
+                    isNew: false,
+                    isSelected: false,
+                    status: false,
+                  };
+                } else {
+                  return obj;
+                }
+              });
+              return [...tempArray];
+            });
+            setToastState({
+              isShow: true,
+              severity: "success",
+              title: "Definition updated!",
+              message: "Definition has been updated successfully.",
+              duration: 3000,
+            });
+            setInitialLoader(false);
+          })
+          .catch((err: any) => {
+            console.log(err);
+            setLoaderState({
+              isLoading: {
+                inprogress: false,
+                success: false,
+                error: true,
+              },
+              visibility: true,
+              text: "Unable to update the definition.",
+              secondaryText:
+                "An unexpected error occurred while update the definition, please try again later.",
+            });
+          });
+      })
+      .catch((err: any) => {
+        console.log(err);
+        setLoaderState({
+          isLoading: {
+            inprogress: false,
+            success: false,
+            error: true,
+          },
+          visibility: true,
+          text: "Unable to update the definition.",
+          secondaryText:
+            "An unexpected error occurred while update the definition, please try again later.",
+        });
+      });
+  } catch (err) {
+    console.log(err);
+    setLoaderState({
+      isLoading: {
+        inprogress: false,
+        success: false,
+        error: true,
+      },
+      visibility: true,
+      text: "Unable to update the definition.",
+      secondaryText:
+        "An unexpected error occurred while update the definition, please try again later.",
+    });
+  }
+};
+
 // Main function to get all main Definitions
 const fetchTemplates = async (): Promise<{
   allMainTemplateData: any[];
@@ -719,7 +1008,8 @@ const LoadDefinitionTableData = async (dispatch: any): Promise<void> => {
 export {
   getAllSectionDefinitions,
   getMasterDefinition,
-  AddSectionDefinition,
+  submitSectionDefinitions,
   addNewDefinition,
+  updateSectionDefinition,
   LoadDefinitionTableData,
 };

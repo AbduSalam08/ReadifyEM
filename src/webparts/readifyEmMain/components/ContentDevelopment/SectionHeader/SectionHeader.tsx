@@ -296,84 +296,83 @@ const SectionHeader: React.FC<Props> = ({
           ""
         )}
       </span>
-      {activeSectionData?.sectionType?.toLowerCase() !== "change record" &&
-        activeSectionData?.sectionType?.toLowerCase() !==
-          "references section" && (
-          <div style={{ display: "flex", gap: "10px" }}>
+      {activeSectionData?.sectionType?.toLowerCase() !== "change record" && (
+        // activeSectionData?.sectionType?.toLowerCase() !==
+        // "references section" &&
+        <div style={{ display: "flex", gap: "10px" }}>
+          <div className={styles.authors}>
+            <span className={styles.label}>
+              {!isPrimaryAuthor
+                ? `Section Author ${
+                    activeSectionData?.sectionAuthor[0]?.email ===
+                    currentUserDetails?.email
+                      ? "(you)"
+                      : ""
+                  }`
+                : `Primary Author ${
+                    currentDocDetailsData?.primaryAuthor?.email ===
+                    currentUserDetails?.email
+                      ? "(you)"
+                      : ""
+                  }`}
+            </span>
+            <CustomPeoplePicker
+              size="SM"
+              maxWidth={"200px"}
+              minWidth={"200px"}
+              noRemoveBtn={true}
+              selectedItem={
+                !isPrimaryAuthor
+                  ? authorState?.email
+                  : currentDocDetailsData?.primaryAuthor?.email
+              }
+              onChange={handleOnChangeFunction}
+              isValid={false}
+              placeholder="Add Reference Author"
+              readOnly
+              hideErrMsg
+            />
+          </div>
+          {!isPrimaryAuthor && (
             <div className={styles.authors}>
-              <span className={styles.label}>
-                {!isPrimaryAuthor
-                  ? `Section Author ${
-                      activeSectionData?.sectionAuthor[0]?.email ===
-                      currentUserDetails?.email
-                        ? "(you)"
-                        : ""
-                    }`
-                  : `Primary Author ${
-                      currentDocDetailsData?.primaryAuthor?.email ===
-                      currentUserDetails?.email
-                        ? "(you)"
-                        : ""
-                    }`}
-              </span>
+              <span className={styles.label}>Consultant</span>
               <CustomPeoplePicker
                 size="SM"
                 maxWidth={"200px"}
                 minWidth={"200px"}
-                noRemoveBtn={true}
-                selectedItem={
-                  !isPrimaryAuthor
-                    ? authorState?.email
-                    : currentDocDetailsData?.primaryAuthor?.email
+                personSelectionLimit={
+                  currentDocRole.sectionAuthor || currentDocRole.primaryAuthor
+                    ? 5
+                    : consultantsState?.length
                 }
+                selectedItem={consultantsState}
                 onChange={handleOnChangeFunction}
+                onSubmit={onSubmitFunction}
                 isValid={false}
-                placeholder="Add Reference Author"
-                readOnly
+                placeholder="Add consultants"
+                readOnly={
+                  (!currentDocRole.sectionAuthor ||
+                    !currentDocRole.primaryAuthor) &&
+                  activeSectionData?.sectionSubmitted
+                }
+                noRemoveBtn={
+                  !(
+                    currentDocRole.sectionAuthor || currentDocRole.primaryAuthor
+                  ) && !activeSectionData?.sectionSubmitted
+                }
+                hasSubmitBtn={
+                  (currentDocRole.sectionAuthor ||
+                    currentDocRole.primaryAuthor) &&
+                  !activeSectionData?.sectionSubmitted
+                }
+                multiUsers={true}
+                popupControl={true}
                 hideErrMsg
               />
             </div>
-            {!isPrimaryAuthor && (
-              <div className={styles.authors}>
-                <span className={styles.label}>Consultant</span>
-                <CustomPeoplePicker
-                  size="SM"
-                  maxWidth={"200px"}
-                  minWidth={"200px"}
-                  personSelectionLimit={
-                    currentDocRole.sectionAuthor || currentDocRole.primaryAuthor
-                      ? 5
-                      : consultantsState?.length
-                  }
-                  selectedItem={consultantsState}
-                  onChange={handleOnChangeFunction}
-                  onSubmit={onSubmitFunction}
-                  isValid={false}
-                  placeholder="Add consultants"
-                  readOnly={
-                    (!currentDocRole.sectionAuthor ||
-                      !currentDocRole.primaryAuthor) &&
-                    activeSectionData?.sectionSubmitted
-                  }
-                  noRemoveBtn={
-                    !(
-                      currentDocRole.sectionAuthor ||
-                      currentDocRole.primaryAuthor
-                    ) && !activeSectionData?.sectionSubmitted
-                  }
-                  hasSubmitBtn={
-                    (currentDocRole.sectionAuthor ||
-                      currentDocRole.primaryAuthor) &&
-                    !activeSectionData?.sectionSubmitted
-                  }
-                  multiUsers={true}
-                  popupControl={true}
-                  hideErrMsg
-                />
-              </div>
-            )}
-          </div>
-        )}
+          )}
+        </div>
+      )}
     </div>
   );
 };

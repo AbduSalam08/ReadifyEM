@@ -1622,14 +1622,6 @@ const ContentDevelopment = (): JSX.Element => {
                     activeSection
                   ]?.sectionType?.toLowerCase() === "change record" ? (
                   <ChangeRecord />
-                ) : AllSectionsData[
-                    activeSection
-                  ]?.sectionType?.toLowerCase() === "references section" ? (
-                  <References
-                    allSectionsData={AllSectionsData}
-                    documentId={AllSectionsData[activeSection]?.documentOfId}
-                    sectionId={AllSectionsData[activeSection]?.ID}
-                  />
                 ) : (
                   <div
                     style={{
@@ -1665,24 +1657,20 @@ const ContentDevelopment = (): JSX.Element => {
                           }
                           setCheckChanges={setCheckChanges}
                         />
-                      ) : //     : AllSectionsData[
-                      //   activeSection
-                      // ]?.sectionType?.toLowerCase() === "appendix section" ? (
-                      // <AppendixContent
-                      //   currentDocRole={currentDocRole}
-                      //   sectionDetails={AllSectionsData[activeSection]}
-                      //   isLoading={
-                      //     AllSectionsData[activeSection]?.length === 0
-                      //   }
-                      //   contentType={
-                      //     AllSectionsData[activeSection]?.contentType
-                      //   }
-                      //   currentDocDetailsData={currentDocDetailsData}
-                      //   activeIndex={activeSection}
-                      //   setSectionData={setAllSectionsData}
-                      // />
-                      // )
-                      AllSectionsData[
+                      ) : AllSectionsData[
+                          activeSection
+                        ]?.sectionType?.toLowerCase() ===
+                        "references section" ? (
+                        <References
+                          allSectionsData={AllSectionsData}
+                          documentId={
+                            AllSectionsData[activeSection]?.documentOfId
+                          }
+                          sectionId={AllSectionsData[activeSection]?.ID}
+                          currentDocRole={currentDocRole}
+                          currentSectionDetails={AllSectionsData[activeSection]}
+                        />
+                      ) : AllSectionsData[
                           activeSection
                         ]?.sectionName?.toLowerCase() ===
                         "supporting materials" ? (
