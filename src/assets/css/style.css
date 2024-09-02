@@ -1,9 +1,9 @@
 /* webpart styles reset  */
 .ms-CommandBarItem-link {
-  /* position: absolute;
+  position: absolute;
   top: 500px;
   left: 6px;
-  transform: translate(-53px, 100px); */
+  transform: translate(-53px, 100px);
   z-index: 9999;
 }
 .CanvasComponent.LCS .CanvasZone:not(.CanvasZone--fullWidth) .ControlZone {
@@ -19,6 +19,12 @@
 .CanvasComponent.LCS .CanvasSection-col {
   padding: 0 !important;
 }
+/* hide the add webpart button */
+.CanvasComponent.LCS .CanvasToolboxHint {
+  display: none !important;
+}
+/* hide the add webpart button */
+
 /* .spAppAndPropertyPanelContainer .sp-appBar {
   display: none;
 } */
@@ -111,6 +117,8 @@ div[data-automation-id="CanvasZone-SectionContainer"] {
 }
 .mainContent {
   background-color: var(--body-bgcolor) !important;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 }
 /* RESETTING CSS DEFAULT STYLES */
 html,
@@ -371,7 +379,7 @@ body {
   position: relative;
   height: calc(100vh - 110px);
   overflow: auto;
-  /* margin-top: 57px; */
+  margin-top: 57px;
   background-color: var(--body-bgcolor);
 }
 

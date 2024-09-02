@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable prefer-const */
 /* eslint-disable no-dupe-else-if */
 /* eslint-disable no-debugger */
@@ -9,7 +10,7 @@ import { setSDDTemplateDetails } from "../../redux/features/SDDTemplatesSlice";
 import {
   calculateDueDateByRole,
   emptyCheck,
-  trimStartEnd,
+  // trimStartEnd,
 } from "../../utils/validations";
 import { AddTask } from "../MyTasks/MyTasksServices";
 import SpServices from "../SPServices/SpServices";
@@ -35,7 +36,7 @@ export const AddSections = async (
       const sectionsToAdd: any[] = [];
 
       let hasChangeRecord: any;
-      let hasReferences: any;
+      // let hasReferences: any;
       let hasHeader: any;
 
       const sectionItems = await SpServices.SPReadItems({
@@ -54,9 +55,9 @@ export const AddSections = async (
       hasChangeRecord = sectionItems?.filter(
         (item: any) => item?.sectionType?.toLowerCase() === "change record"
       );
-      hasReferences = sectionItems?.filter(
-        (item: any) => item?.sectionType?.toLowerCase() === "references section"
-      );
+      // hasReferences = sectionItems?.filter(
+      //   (item: any) => item?.sectionType?.toLowerCase() === "references section"
+      // );
       hasHeader = sectionItems?.filter(
         (item: any) => item?.sectionType?.toLowerCase() === "header section"
       );
@@ -97,32 +98,32 @@ export const AddSections = async (
         });
       }
 
-      const hasDefinitions = formData?.defaultSections?.filter(
-        (item: any) =>
-          trimStartEnd(item?.sectionName?.value?.toLowerCase()) ===
-          "definitions"
-      );
+      // const hasDefinitions = formData?.defaultSections?.filter(
+      //   (item: any) =>
+      //     trimStartEnd(item?.sectionName?.value?.toLowerCase()) ===
+      //     "definitions"
+      // );
 
-      if (
-        hasDefinitions?.length !== 0 &&
-        hasDefinitions[0]?.sectionSelected &&
-        hasReferences?.length === 0
-      ) {
-        sectionsToAdd.push({
-          Title: "References",
-          templateTitle: "",
-          sectionOrder: String(
-            formData?.defaultSections?.filter(
-              (item: any) => item?.sectionSelected && !item?.removed
-            )?.length + 1
-          ),
-          sectionType: "references section",
-          sectionAuthorId: docDetails?.taskAssignedBy?.ID,
-          documentOfId: docDetails?.documentDetailsId,
-          status: "content in progress",
-          isActive: true,
-        });
-      }
+      // if (
+      //   hasDefinitions?.length !== 0 &&
+      //   hasDefinitions[0]?.sectionSelected &&
+      //   hasReferences?.length === 0
+      // ) {
+      //   sectionsToAdd.push({
+      //     Title: "References",
+      //     templateTitle: "",
+      //     sectionOrder: String(
+      //       formData?.defaultSections?.filter(
+      //         (item: any) => item?.sectionSelected && !item?.removed
+      //       )?.length + 1
+      //     ),
+      //     sectionType: "references section",
+      //     sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+      //     documentOfId: docDetails?.documentDetailsId,
+      //     status: "content in progress",
+      //     isActive: true,
+      //   });
+      // }
 
       const getUpdatedSectionsData = (sections: any[], type: string): any =>
         sections
@@ -441,28 +442,28 @@ export const AddSections = async (
       //     trimStartEnd(item?.sectionName?.value?.toLowerCase()) ===
       //     "definitions"
       // )
-      const hasDefinitions = formData?.defaultSections?.filter(
-        (item: any) =>
-          trimStartEnd(item?.sectionName?.value?.toLowerCase()) ===
-          "definitions"
-      );
+      // const hasDefinitions = formData?.defaultSections?.filter(
+      //   (item: any) =>
+      //     trimStartEnd(item?.sectionName?.value?.toLowerCase()) ===
+      //     "definitions"
+      // );
 
-      if (hasDefinitions?.length !== 0 && hasDefinitions[0]?.sectionSelected) {
-        payloadJSON.push({
-          Title: "References",
-          templateTitle: "",
-          sectionOrder: String(
-            formData?.defaultSections?.filter(
-              (item: any) => item?.sectionSelected && !item?.removed
-            )?.length + 1
-          ),
-          sectionType: "references section",
-          sectionAuthorId: docDetails?.taskAssignedBy?.ID,
-          documentOfId: docDetails?.documentDetailsId,
-          status: "content in progress",
-          isActive: true,
-        });
-      }
+      // if (hasDefinitions?.length !== 0 && hasDefinitions[0]?.sectionSelected) {
+      //   payloadJSON.push({
+      //     Title: "References",
+      //     templateTitle: "",
+      //     sectionOrder: String(
+      //       formData?.defaultSections?.filter(
+      //         (item: any) => item?.sectionSelected && !item?.removed
+      //       )?.length + 1
+      //     ),
+      //     sectionType: "references section",
+      //     sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+      //     documentOfId: docDetails?.documentDetailsId,
+      //     status: "content in progress",
+      //     isActive: true,
+      //   });
+      // }
       // If none of the conditions are met, payloadJSON will remain an empty array.
 
       const SATasks: any[] = [];
@@ -502,6 +503,9 @@ export const AddSections = async (
 
       [...defaultSectionsData, ...appendixSectionsData]?.forEach(
         (element: any) => {
+          const isReferenceSections =
+            element?.sectionName?.value?.toLowerCase() === "references";
+
           if (
             emptyCheck(element?.sectionName?.value) &&
             element?.sectionSelected
@@ -514,11 +518,14 @@ export const AddSections = async (
               consultantsId: {
                 results: element?.consultants?.value?.map((el: any) => el?.id),
               },
-              sectionType:
-                element?.sectionType === "defaultSection" ||
-                element?.sectionType === "normalSections"
-                  ? "default section"
-                  : "appendix section",
+              sectionType: isReferenceSections
+                ? "references section"
+                : (element?.sectionType === "defaultSection" &&
+                    !isReferenceSections) ||
+                  (element?.sectionType === "normalSections" &&
+                    !isReferenceSections)
+                ? "default section"
+                : "appendix section",
               documentOfId: docDetails?.documentDetailsId,
               status: "content in progress",
               isActive: element?.sectionSelected,
@@ -1078,8 +1085,6 @@ export const updateSections = async (
   setLoaderState: any,
   docDetails: any
 ): Promise<any> => {
-  debugger;
-  console.log("docDetails: ", docDetails);
   try {
     const sectionsToUpdate: any[] = [];
     const sectionsToAdd: any[] = [];
@@ -1087,88 +1092,87 @@ export const updateSections = async (
     console.log("sectionsToAdd: ", sectionsToAdd);
 
     // let hasChangeRecord: any;
-    let hasReferences: any;
+    // let hasReferences: any;
     // let hasHeader: any;
 
-    const sectionItems = await SpServices.SPReadItems({
-      Listname: LISTNAMES.SectionDetails,
-      Select: "*, documentOf/ID",
-      Expand: "documentOf",
-      Filter: [
-        {
-          FilterKey: "documentOf",
-          Operator: "eq",
-          FilterValue: docDetails?.documentDetailsId,
-        },
-      ],
-    });
+    // const sectionItems = await SpServices.SPReadItems({
+    //   Listname: LISTNAMES.SectionDetails,
+    //   Select: "*, documentOf/ID",
+    //   Expand: "documentOf",
+    //   Filter: [
+    //     {
+    //       FilterKey: "documentOf",
+    //       Operator: "eq",
+    //       FilterValue: docDetails?.documentDetailsId,
+    //     },
+    //   ],
+    // });
 
-    hasReferences = sectionItems?.filter(
-      (item: any) => item?.sectionType?.toLowerCase() === "references section"
-    );
+    // hasReferences = sectionItems?.filter(
+    //   (item: any) => item?.sectionType?.toLowerCase() === "references section"
+    // );
 
-    const hasDefinitions = formData?.defaultSections?.filter(
-      (item: any) =>
-        trimStartEnd(item?.sectionName?.value?.toLowerCase()) === "definitions"
-    );
+    // const hasDefinitions = formData?.defaultSections?.filter(
+    //   (item: any) =>
+    //     trimStartEnd(item?.sectionName?.value?.toLowerCase()) === "definitions"
+    // );
 
-    if (
-      hasDefinitions?.length !== 0 &&
-      hasDefinitions[0]?.sectionSelected &&
-      hasReferences?.length === 0
-    ) {
-      sectionsToAdd.push({
-        Title: "References",
-        templateTitle: "",
-        sectionOrder: String(
-          formData?.defaultSections?.filter(
-            (item: any) => item?.sectionSelected && !item?.removed
-          )?.length + 1
-        ),
-        sectionType: "references section",
-        sectionAuthorId: docDetails?.taskAssignedBy?.ID,
-        documentOfId: docDetails?.documentDetailsId,
-        status: "content in progress",
-        isActive: true,
-      });
-    } else {
-      // sectionsToUpdate?.push({
-      //   Title: "References",
-      //   templateTitle: formData?.templateDetails?.templateName,
-      //   sectionOrder: String(
-      //     formData?.defaultSections?.filter(
-      //       (item: any) => item?.sectionSelected && !item?.removed
-      //     )?.length + 1
-      //   ),
-      //   sectionType: "references section",
-      //   documentOfId: docDetails?.documentDetailsId,
-      //   ID: hasReferences[0]?.ID,
-      //   // sectionAuthorId: element?.sectionAuthor?.value?.[0]?.id,
-      //   // consultantsId: {
-      //   //   results: element?.consultants?.value?.map((el: any) => el?.id),
-      //   // },
-      //   // status: "content in progress",
-      //   // isActive: element?.sectionSelected,
-      //   // isDeleted: element?.removed,
-      // });
-      await SpServices.SPUpdateItem({
-        Listname: LISTNAMES.SectionDetails,
-        ID: hasReferences[0]?.ID,
-        RequestJSON: {
-          sectionOrder: String(
-            formData?.defaultSections?.filter(
-              (item: any) => item?.sectionSelected && !item?.removed
-            )?.length + 1
-          ),
-        },
-      });
-    }
+    // if (
+    //   hasDefinitions?.length !== 0 &&
+    //   hasDefinitions[0]?.sectionSelected &&
+    //   hasReferences?.length === 0
+    // ) {
+    //   sectionsToAdd.push({
+    //     Title: "References",
+    //     templateTitle: "",
+    //     sectionOrder: String(
+    //       formData?.defaultSections?.filter(
+    //         (item: any) => item?.sectionSelected && !item?.removed
+    //       )?.length + 1
+    //     ),
+    //     sectionType: "references section",
+    //     sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+    //     documentOfId: docDetails?.documentDetailsId,
+    //     status: "content in progress",
+    //     isActive: true,
+    //   });
+    // } else {
+    //   // sectionsToUpdate?.push({
+    //   //   Title: "References",
+    //   //   templateTitle: formData?.templateDetails?.templateName,
+    //   //   sectionOrder: String(
+    //   //     formData?.defaultSections?.filter(
+    //   //       (item: any) => item?.sectionSelected && !item?.removed
+    //   //     )?.length + 1
+    //   //   ),
+    //   //   sectionType: "references section",
+    //   //   documentOfId: docDetails?.documentDetailsId,
+    //   //   ID: hasReferences[0]?.ID,
+    //   //   // sectionAuthorId: element?.sectionAuthor?.value?.[0]?.id,
+    //   //   // consultantsId: {
+    //   //   //   results: element?.consultants?.value?.map((el: any) => el?.id),
+    //   //   // },
+    //   //   // status: "content in progress",
+    //   //   // isActive: element?.sectionSelected,
+    //   //   // isDeleted: element?.removed,
+    //   // });
+    //   await SpServices.SPUpdateItem({
+    //     Listname: LISTNAMES.SectionDetails,
+    //     ID: hasReferences[0]?.ID,
+    //     RequestJSON: {
+    //       sectionOrder: String(
+    //         formData?.defaultSections?.filter(
+    //           (item: any) => item?.sectionSelected && !item?.removed
+    //         )?.length + 1
+    //       ),
+    //     },
+    //   });
+    // }
 
     const defaultSectionsData: any[] = formData.defaultSections
       ?.filter((item: any) => {
         return (
-          (item?.sectionSelected && !item?.removed) ||
-          (item?.ID !== null && !item?.sectionSelected)
+          item?.sectionSelected || (item?.ID !== null && !item?.sectionSelected)
         );
       })
       ?.sort((a: any, b: any) => {
@@ -1181,8 +1185,7 @@ export const updateSections = async (
     const appendixSectionsData: any[] = formData.appendixSections
       ?.filter((item: any) => {
         return (
-          (item?.sectionSelected && !item?.removed) ||
-          (item?.ID !== null && !item?.sectionSelected)
+          item?.sectionSelected || (item?.ID !== null && !item?.sectionSelected)
         );
       })
       ?.sort((a: any, b: any) => {
@@ -1216,6 +1219,7 @@ export const updateSections = async (
           // If element is selected and not removed, find its order within its respective valid section
           if (
             element?.sectionType === "defaultSection" ||
+            element?.sectionType === "referencesSection" ||
             element?.sectionType === "normalSections"
           ) {
             sectionOrder = String(
@@ -1236,6 +1240,7 @@ export const updateSections = async (
           // Assign the next available order number based on the section type
           if (
             element?.sectionType === "defaultSection" ||
+            element?.sectionType === "referencesSection" ||
             element?.sectionType === "normalSections"
           ) {
             sectionOrder = String(nextDefaultOrderNumber);
@@ -1245,7 +1250,8 @@ export const updateSections = async (
             nextAppendixOrderNumber += 1; // Increment for the next appendix section item
           }
         }
-
+        const isReferenceSections =
+          element?.sectionName?.value?.toLowerCase() === "references";
         // Create section payload with the determined order and other properties
         const sectionPayload = {
           Title: element?.sectionName?.value,
@@ -1255,11 +1261,14 @@ export const updateSections = async (
           consultantsId: {
             results: element?.consultants?.value?.map((el: any) => el?.id),
           },
-          sectionType:
-            element?.sectionType === "defaultSection" ||
-            element?.sectionType === "normalSections"
-              ? "default section"
-              : "appendix section",
+          sectionType: isReferenceSections
+            ? "references section"
+            : (element?.sectionType === "defaultSection" &&
+                !isReferenceSections) ||
+              (element?.sectionType === "normalSections" &&
+                !isReferenceSections)
+            ? "default section"
+            : "appendix section",
           documentOfId: docDetails?.documentDetailsId,
           isActive: element?.sectionSelected,
           isDeleted: element?.removed,
@@ -1525,43 +1534,74 @@ export const updateSections = async (
           })
         );
       } else {
-        if (section?.Title?.toLowerCase() === "definitions") {
-          //  await SpServices.SPDeleteItem({
-          //    Listname: LISTNAMES.SectionDetails,
-          //    ID: section?.ID,
-          //  });
-          //  debugger;
-          await SpServices.SPReadItems({
-            Listname: LISTNAMES.SectionDetails,
-            Select: "*, documentOf/ID",
-            Expand: "documentOf",
-            Filter: [
-              {
-                FilterKey: "Title",
-                FilterValue: "References",
-                Operator: "eq",
-              },
-              {
-                FilterKey: "documentOf",
-                FilterValue: section?.documentOfId,
-                Operator: "eq",
-              },
-            ],
-          })
-            .then(async (res: any) => {
-              console.log("res: ", res);
-              await SpServices.SPUpdateItem({
-                Listname: LISTNAMES.SectionDetails,
-                ID: res[0]?.ID,
-                RequestJSON: {
-                  isActive: false,
-                },
-              });
-            })
-            .catch((error) => {
-              console.error("Error in processing response:", error);
-            });
-        }
+        // if (section?.Title?.toLowerCase() === "definitions") {
+        //   //  await SpServices.SPDeleteItem({
+        //   //    Listname: LISTNAMES.SectionDetails,
+        //   //    ID: section?.ID,
+        //   //  });
+        //   //  debugger;
+        //   await SpServices.SPReadItems({
+        //     Listname: LISTNAMES.SectionDetails,
+        //     Select: "*, documentOf/ID",
+        //     Expand: "documentOf",
+        //     Filter: [
+        //       {
+        //         FilterKey: "Title",
+        //         FilterValue: "References",
+        //         Operator: "eq",
+        //       },
+        //       {
+        //         FilterKey: "documentOf",
+        //         FilterValue: section?.documentOfId,
+        //         Operator: "eq",
+        //       },
+        //     ],
+        //   })
+        //     .then(async (res: any) => {
+        //       console.log("res: ", res);
+        //       await SpServices.SPUpdateItem({
+        //         Listname: LISTNAMES.SectionDetails,
+        //         ID: res[0]?.ID,
+        //         RequestJSON: {
+        //           isActive: false,
+        //         },
+        //       });
+        //     })
+        //     .catch((error) => {
+        //       console.error("Error in processing response:", error);
+        //     });
+        // } else {
+        // await SpServices.SPReadItems({
+        //   Listname: LISTNAMES.SectionDetails,
+        //   Select: "*, documentOf/ID",
+        //   Expand: "documentOf",
+        //   Filter: [
+        //     {
+        //       FilterKey: "Title",
+        //       FilterValue: section?.Title,
+        //       Operator: "eq",
+        //     },
+        //     {
+        //       FilterKey: "documentOf",
+        //       FilterValue: section?.documentOfId,
+        //       Operator: "eq",
+        //     },
+        //   ],
+        // })
+        //   .then(async (res: any) => {
+        //     console.log("res: ", res);
+        await SpServices.SPUpdateItem({
+          Listname: LISTNAMES.SectionDetails,
+          ID: section?.ID,
+          RequestJSON: {
+            isActive: false,
+          },
+        });
+        // })
+        // .catch((error) => {
+        //   console.error("Error in processing response:", error);
+        // });
+        // }
         //  else {
         //    await SpServices.SPDeleteItem({
         //      Listname: LISTNAMES.SectionDetails,
@@ -1578,61 +1618,61 @@ export const updateSections = async (
       }
 
       if (section?.isDeleted) {
-        if (section?.Title?.toLowerCase() === "definitions") {
-          await SpServices.SPDeleteItem({
-            Listname: LISTNAMES.SectionDetails,
-            ID: section?.ID,
-          });
-          debugger;
-          await SpServices.SPReadItems({
-            Listname: LISTNAMES.SectionDetails,
-            Select: "*, documentOf/ID",
-            Expand: "documentOf",
-            Filter: [
-              {
-                FilterKey: "Title",
-                FilterValue: "References",
-                Operator: "eq",
-              },
-              {
-                FilterKey: "documentOf",
-                FilterValue: section?.documentOfId,
-                Operator: "eq",
-              },
-            ],
-          })
-            .then(async (res: any) => {
-              console.log("res: ", res);
-              // Check if res is an array and has more than one item
-              const items = Array.isArray(res) ? res : [res];
+        // if (section?.Title?.toLowerCase() === "definitions") {
+        //   await SpServices.SPDeleteItem({
+        //     Listname: LISTNAMES.SectionDetails,
+        //     ID: section?.ID,
+        //   });
+        //   debugger;
+        //   await SpServices.SPReadItems({
+        //     Listname: LISTNAMES.SectionDetails,
+        //     Select: "*, documentOf/ID",
+        //     Expand: "documentOf",
+        //     Filter: [
+        //       {
+        //         FilterKey: "Title",
+        //         FilterValue: "References",
+        //         Operator: "eq",
+        //       },
+        //       {
+        //         FilterKey: "documentOf",
+        //         FilterValue: section?.documentOfId,
+        //         Operator: "eq",
+        //       },
+        //     ],
+        //   })
+        //     .then(async (res: any) => {
+        //       console.log("res: ", res);
+        //       // Check if res is an array and has more than one item
+        //       const items = Array.isArray(res) ? res : [res];
 
-              // // Iterate over the items and delete each one
-              for (const item of items) {
-                if (item?.ID) {
-                  //     try {
-                  await SpServices.SPDeleteItem({
-                    Listname: LISTNAMES.SectionDetails,
-                    ID: res[0]?.ID,
-                  });
-                  //     }
-                  // catch (error) {
-                  //       console.error(
-                  //         `Failed to delete item with ID ${item.ID}:`,
-                  //         error
-                  //       );
-                  //     }
-                }
-              }
-            })
-            .catch((error) => {
-              console.error("Error in processing response:", error);
-            });
-        } else {
-          await SpServices.SPDeleteItem({
-            Listname: LISTNAMES.SectionDetails,
-            ID: section?.ID,
-          });
-        }
+        //       // // Iterate over the items and delete each one
+        //       for (const item of items) {
+        //         if (item?.ID) {
+        //           //     try {
+        //           await SpServices.SPDeleteItem({
+        //             Listname: LISTNAMES.SectionDetails,
+        //             ID: res[0]?.ID,
+        //           });
+        //           //     }
+        //           // catch (error) {
+        //           //       console.error(
+        //           //         `Failed to delete item with ID ${item.ID}:`,
+        //           //         error
+        //           //       );
+        //           //     }
+        //         }
+        //       }
+        //     })
+        //     .catch((error) => {
+        //       console.error("Error in processing response:", error);
+        //     });
+        // } else {
+        await SpServices.SPDeleteItem({
+          Listname: LISTNAMES.SectionDetails,
+          ID: section?.ID,
+        });
+        // }
         // await Promise.all(
         uniqueTaskByResponse.map(async (item: any) => {
           await SpServices.SPDeleteItem({
@@ -1689,6 +1729,7 @@ export const LoadSectionsTemplateData = async (
   setSectionsData: any,
   dispatch?: any
 ): Promise<any> => {
+  debugger;
   // Set loading state
   setSectionsData((prev: any) => ({
     ...prev,
@@ -1714,7 +1755,6 @@ export const LoadSectionsTemplateData = async (
         },
       ],
     });
-    console.log("filteredData: ", filteredData);
 
     // Initialize arrays for sections
     const defaultSection: any[] = [];
@@ -1757,6 +1797,11 @@ export const LoadSectionsTemplateData = async (
         normalSection.push({
           ...sectionData,
           sectionType: "normalSection",
+        });
+      } else if (e?.sectionType?.toLowerCase() === "references section") {
+        normalSection.push({
+          ...sectionData,
+          sectionType: "referencesSection",
         });
       } else if (
         e?.sectionType?.toLowerCase() === "appendix" ||
@@ -1862,7 +1907,6 @@ export const getUniqueSectionsDetails = async (
         // },
       ],
     });
-    console.log("sectionsResponse: ", sectionsResponse);
 
     // Initialize arrays for sections
     const defaultSection: any[] = [];
@@ -1927,6 +1971,11 @@ export const getUniqueSectionsDetails = async (
         appendixSection.push({
           ...sectionData,
           sectionType: "appendixSection",
+        });
+      } else if (e?.sectionType?.toLowerCase() === "references section") {
+        normalSection.push({
+          ...sectionData,
+          sectionType: "referencesSection",
         });
       }
       // else if (e?.sectionType?.toLowerCase() === "change record") {

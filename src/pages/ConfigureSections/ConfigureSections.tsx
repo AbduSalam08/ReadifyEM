@@ -27,6 +27,7 @@ import { defaultTemplates } from "../../constants/DefaultTemplates";
 // styles
 import styles from "./ConfigureSections.module.scss";
 import { removeVersionFromDocName } from "../../utils/formatDocName";
+import { CurrentUserIsAdmin } from "../../constants/DefineUser";
 const ConfigureSections = (): JSX.Element => {
   // use navigate for routing purpose
   const navigate = useNavigate();
@@ -107,6 +108,8 @@ const ConfigureSections = (): JSX.Element => {
   //   appendixSections: [],
   //   isLoading: false,
   // };
+
+  const isAdmin: boolean = CurrentUserIsAdmin();
 
   // state for store section's data
   const [sectionsData, setSectionsData] = useState({
@@ -423,7 +426,10 @@ const ConfigureSections = (): JSX.Element => {
         isLoading={popupLoaders.isLoading}
         onClick={() => {
           setPopupLoaders(initialPopupLoaders);
-          navigate(ConfigurePageDetails?.pageKey === "update" ? -2 : -1);
+          if (isAdmin) {
+            navigate("/admin/my_tasks");
+          }
+          navigate("/user/my_tasks");
         }}
         onHide={() => {
           setPopupLoaders(initialPopupLoaders);

@@ -50,7 +50,7 @@ const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
 const contentDeveloperEdit: any = require("../../assets/images/svg/editContentDeveloper.svg");
 const viewDocBtn: any = require("../../assets/images/svg/viewEye.svg");
 const newversionBtn: any = require("../../assets/images/svg/newVersion.svg");
-import EditIcon from "@mui/icons-material/Edit";
+// import EditIcon from "@mui/icons-material/Edit";
 import dayjs from "dayjs";
 import { getNextVersions } from "../../utils/EMManualUtils";
 import { removeVersionFromDocName } from "../../utils/formatDocName";
@@ -770,7 +770,7 @@ const TableOfContents = (): JSX.Element => {
       >
         <div className={styles.flexcenter}>
           <PageTitle text={removeVersionFromDocName(screens.pageTitle)} />
-          {screens?.toc && (
+          {/* {screens?.toc && (
             <EditIcon
               className={styles.editIcon}
               onClick={() => {
@@ -783,7 +783,7 @@ const TableOfContents = (): JSX.Element => {
                 );
               }}
             />
-          )}
+          )} */}
 
           {screens?.pageTitle?.toLowerCase()?.includes("initiate version") ? (
             screens?.pageTitle?.toLowerCase()?.includes("minor") ? (
