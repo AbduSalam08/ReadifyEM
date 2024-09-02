@@ -203,7 +203,6 @@ const SectionHeader: React.FC<Props> = ({
     debugger;
     if (consultantsState) {
       if (consultantsState.length !== 0) {
-        console.log("consultantsState: ", consultantsState);
         addSectionConsultants(
           currentDocDetailsData,
           activeSectionData,
@@ -275,14 +274,6 @@ const SectionHeader: React.FC<Props> = ({
 
   return (
     <div className={styles.headerContainer}>
-      <ToastMessage
-        severity={toastMessage.severity}
-        title={toastMessage.title}
-        message={toastMessage.message}
-        duration={toastMessage.duration}
-        isShow={toastMessage.isShow}
-        setToastMessage={setToastMessage}
-      />
       <span className={styles.sectionName}>
         {`${
           documentName?.toLowerCase() === "header"
@@ -374,6 +365,16 @@ const SectionHeader: React.FC<Props> = ({
             )}
           </div>
         )}
+      {toastMessage.isShow && (
+        <ToastMessage
+          severity={toastMessage.severity}
+          title={toastMessage.title}
+          message={toastMessage.message}
+          duration={toastMessage.duration}
+          isShow={toastMessage.isShow}
+          setToastMessage={setToastMessage}
+        />
+      )}
     </div>
   );
 };

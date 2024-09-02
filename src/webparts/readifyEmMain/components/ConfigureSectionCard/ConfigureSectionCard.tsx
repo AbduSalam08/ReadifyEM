@@ -180,14 +180,28 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
     });
   };
 
-  const handleDeleteRow = (currentItemIndex: number) => {
-    const filteredData = sections[objKey]?.filter(
-      (item: any, index: number) => {
-        return index !== currentItemIndex;
-      }
-    );
+  // const handleDeleteRow = (currentItemIndex: number) => {
+  //   const filteredData = sections[objKey]?.filter(
+  //     (item: any, index: number) => {
+  //       return index !== currentItemIndex;
+  //     }
+  //   );
 
-    reOrderSections(filteredData);
+  //   reOrderSections(filteredData);
+  // };
+
+  const handleDeleteRow = (currentItemIndex: number) => {
+    // Map through the sections and mark the item at the current index as removed
+    const updatedData = sections[objKey]?.map((item: any, index: number) => {
+      if (index === currentItemIndex) {
+        // Mark the item as removed instead of removing it
+        return { ...item, removed: true };
+      }
+      return item;
+    });
+
+    // Call reOrderSections with the updated data
+    reOrderSections(updatedData);
   };
 
   const hasDuplicates = checkDuplicatesForSDD(sections[objKey]);
