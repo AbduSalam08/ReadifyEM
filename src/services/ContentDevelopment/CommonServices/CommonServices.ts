@@ -23,6 +23,7 @@ import {
   setSectionChangeRecord,
   setSectionComments,
 } from "../../../redux/features/SectionCommentsSlice";
+import { calculateDocDueDateByTerm } from "../../../utils/NewDocumentUtils";
 
 export const getSectionsDetails = async (
   taskDetails: any,
@@ -1078,7 +1079,12 @@ export const changeDocStatus = async (
     Listname: LISTNAMES.DocumentDetails,
     ID: docID,
     RequestJSON: {
-      status: statusName?.toLowerCase() === "approved" ? "Current" : statusName,
+      status:
+        currentDocResponse?.documentVersion !== "1.0" &&
+        (statusName?.toLowerCase() === "approved" ||
+          statusName?.toLowerCase() === "current")
+          ? "Current"
+          : statusName,
       [`${promoteTo}`]: JSON.stringify(promoteToData),
     },
   })
@@ -1146,6 +1152,27 @@ export const changeDocStatus = async (
       }
 
       if (lastPromoter && promoteTo === "approvers") {
+        await SpServices.SPUpdateItem({
+          Listname: LISTNAMES.DocumentDetails,
+          ID: currentDocResponse?.ID,
+          RequestJSON: {
+            nextReviewDate: calculateDocDueDateByTerm(
+              new Date(),
+              currentDocResponse?.reviewRange
+            ),
+          },
+        });
+        await SpServices.SPUpdateItem({
+          Listname: LISTNAMES.AllDocuments,
+          ID: fileID,
+          RequestJSON: {
+            nextReviewDate: calculateDocDueDateByTerm(
+              new Date(),
+              currentDocResponse?.reviewRange
+            ),
+          },
+        });
+
         await SpServices.SPReadItems({
           Listname: LISTNAMES.MyTasks,
           Select: "*, documentDetails/ID",

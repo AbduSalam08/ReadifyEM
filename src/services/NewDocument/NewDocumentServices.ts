@@ -53,6 +53,7 @@ const AddNewDocumentToLib = async ({
   initiateNewVersion,
   docDetails,
 }: IProps): Promise<any> => {
+  debugger;
   if (initiateNewVersion) {
     try {
       setLoaderState({
@@ -453,6 +454,8 @@ const AddNewDocument = async (
   isDraft?: boolean,
   AllTempatesMainData?: any
 ): Promise<any> => {
+  debugger;
+  console.log("data: ", data);
   const selectedTemplateID: any = AllTempatesMainData?.filter(
     (el: any) => el?.templateName === data[1]?.value
   )[0]?.ID;
@@ -467,6 +470,8 @@ const AddNewDocument = async (
         ? trimStartEnd(el.value)
         : el.key === "documentTemplateTypeId"
         ? selectedTemplateID
+        : el.key === "nextReviewDate"
+        ? "Yet to be approved"
         : el.value;
     return acc;
   }, {});
@@ -492,7 +497,8 @@ const AddNewDocument = async (
         },
         {
           key: "nextReviewDate",
-          value: responseData?.nextReviewDate,
+          // value: responseData?.nextReviewDate,
+          value: "Yet to be approved",
         },
         {
           key: "isDraft",
@@ -692,9 +698,9 @@ const UpdateDocument = async (
       const currentVersion = data?.filter(
         (item: any) => item?.key === "documentVersion"
       )[0];
-      const currentNextReviewDate = data?.filter(
-        (item: any) => item?.key === "reviewRange"
-      )[0];
+      // const currentNextReviewDate = data?.filter(
+      //   (item: any) => item?.key === "reviewRange"
+      // )[0];
       const reviewers = data?.filter(
         (item: any) => item?.key === "reviewers"
       )[0];
@@ -767,7 +773,8 @@ const UpdateDocument = async (
                 : el.key === "createdDate"
                 ? dayjs(new Date()).format("DD/MM/YYYY")
                 : el.key === "nextReviewDate"
-                ? validateAndFindDate(currentNextReviewDate?.value)
+                ? // ? validateAndFindDate(currentNextReviewDate?.value)
+                  "Yet to be approved"
                 : el.value;
             return acc;
           }, {});
@@ -956,6 +963,9 @@ const UpdateDocument = async (
                   : el.value
                 : el.key === "documentTemplateTypeId"
                 ? selectedTemplateID
+                : el.key === "nextReviewDate"
+                ? // ? validateAndFindDate(currentNextReviewDate?.value)
+                  "Yet to be approved"
                 : el.value;
             return acc;
           }, {});
