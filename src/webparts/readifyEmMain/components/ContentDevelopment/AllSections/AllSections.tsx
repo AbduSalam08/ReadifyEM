@@ -363,8 +363,9 @@ const AllSections: React.FC<Props> = ({
           }}
         >
           {headerSection?.map((item: any, index: number) => {
-            return renderSection(item, 0);
+            return renderSection(item, index); // No offset needed for headerSection
           })}
+
           {normalSections?.length !== 0 && (
             <span
               style={{
@@ -379,9 +380,12 @@ const AllSections: React.FC<Props> = ({
               <span className={styles.line} />
             </span>
           )}
+
           {normalSections?.map((item: any, index: number) => {
-            return renderSection(item, Number(item?.sectionOrder));
+            // Offset index by the length of headerSection to ensure uniqueness
+            return renderSection(item, headerSection.length + index);
           })}
+
           {appendixSections?.length !== 0 && (
             <span
               style={{
@@ -396,8 +400,13 @@ const AllSections: React.FC<Props> = ({
               <span className={styles.line} />
             </span>
           )}
+
           {appendixSections?.map((item: any, index: number) => {
-            return renderSection(item, Number(item?.sectionOrder));
+            // Offset index by the length of headerSection and normalSections
+            return renderSection(
+              item,
+              headerSection.length + normalSections.length + index
+            );
           })}
         </div>
       )}

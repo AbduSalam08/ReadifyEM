@@ -1382,9 +1382,10 @@ const SectionContent: React.FC<IProps> = ({
                         {
                           <DefaultButton
                             text={
-                              currentDocRole?.reviewer
-                                ? "Review"
-                                : currentDocRole?.approver && "Approve"
+                              // currentDocRole?.reviewer
+                              //   ? "Review"
+                              //   : currentDocRole?.approver && "Approve"
+                              "Approve"
                             }
                             disabled={
                               !sectionLoader &&

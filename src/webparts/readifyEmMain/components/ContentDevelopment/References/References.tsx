@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -990,9 +991,10 @@ const References: React.FC<Props> = ({
                           {
                             <DefaultButton
                               text={
-                                currentDocRole?.reviewer
-                                  ? "Review"
-                                  : currentDocRole?.approver && "Approve"
+                                // currentDocRole?.reviewer
+                                //   ? "Review"
+                                //   : currentDocRole?.approver && "Approve"
+                                "Approve"
                               }
                               disabled={
                                 currentSectionDetails?.sectionSubmitted &&
