@@ -33,7 +33,7 @@ const getSectionRefernces = async (sectionId: number): Promise<any> => {
             referenceTitle: item.referenceTitle,
             referenceAuthorName: item.referenceAuthorName,
             yearOfPublish: item.yearOfPublish,
-            referenceLink: item.referenceLink,
+            referenceLink: item.referenceLink ? item.referenceLink : "",
             IsValid: true,
             ErrorMsg: "",
             IsDuplicate: false,
@@ -226,7 +226,7 @@ const UpdateReference = async (
       togglePopupVisibility(setPopupController, 2, "close");
       const updateReferenceData = allReferencesData.map((obj: any) => {
         if (obj.ID === referenceData.ID) {
-          let referenceDetails = {
+          const referenceDetails = {
             ...obj,
             ...jsonObject,
           };

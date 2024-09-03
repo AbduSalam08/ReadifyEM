@@ -7,9 +7,17 @@ import { memo, useEffect, useState } from "react";
 // import DefaultButton from "../../common/Buttons/DefaultButton";
 import styles from "./PDFServiceTemplate.module.scss";
 import "./PDFServiceTemplate.css";
+// import jsPDF from "jspdf";
+// import pdfMake from "pdfmake";
+// import pdfFonts from "pdfmake/build/vfs_fonts";
+// import pdfMake from "pdfmake/build/pdfmake";
+// import pdfFonts from "pdfmake/build/vfs_fonts";
+// import htmlToPdfmake from "html-to-pdfmake";
 // import SpServices from "../../../../../services/SPServices/SpServices";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import { getDocumentRelatedSections } from "../../../../../services/PDFServices/PDFServices";
+import DefaultButton from "../../common/Buttons/DefaultButton";
+import html2pdf from "html2pdf.js";
 interface Iprops {
   documentId: number;
 }
@@ -88,69 +96,100 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
           <CircularSpinner />
         </div>
       ) : allSectionContent.length > 0 ? (
-        allSectionContent?.map((obj: any, index: number) => {
-          return (
-            <div
-              className={styles.paraSection}
-              style={{ padding: "10px 0px" }}
-              key={index}
-            >
-              {obj.text !== "Header" && (
-                <span
-                  style={{
-                    display: "flex",
-                    paddingBottom: "15px",
-                    fontSize: "22px",
-                    fontFamily: "interMedium, sans-serif",
-                  }}
-                >
-                  {obj.sectionOrder + ". " + obj.text}
-                </span>
-              )}
-              {typeof obj.value === "string" ? (
-                <div dangerouslySetInnerHTML={{ __html: obj.value }} />
-              ) : (
-                obj.value.map((list: any, index: number) => {
-                  const indent = list.text.split(".").length - 1;
-                  console.log(indent);
-                  const marginLeft = (indent + 1 - 1) * 26;
-                  const nestedStyle: React.CSSProperties = {
-                    marginLeft: `${marginLeft}px`,
-                    display: "flex",
-                    alignItems: "center",
-                    paddingBottom: "13px",
-                  };
-                  return (
-                    list.value !== "" && (
-                      <div
-                        className={styles.listItem}
-                        style={nestedStyle}
-                        key={index}
-                      >
-                        <span style={{ marginRight: "10px" }}>{list.text}</span>
-                        <span
-                          dangerouslySetInnerHTML={{
-                            __html: list.value,
-                          }}
-                        />
-                      </div>
-                    )
-                  );
-                })
-              )}
-              {allSectionContent.length === 1 && (
-                <div className={styles.noDataFound}>
-                  <span>No content has been developed at this time.</span>
-                </div>
-              )}
-            </div>
-          );
-        })
+        <div id="divToPrint">
+          {allSectionContent?.map((obj: any, index: number) => {
+            return (
+              <div
+                className={styles.paraSection}
+                style={{ padding: "10px 0px" }}
+                key={index}
+              >
+                {obj.text !== "Header" && (
+                  <span
+                    style={{
+                      display: "flex",
+                      paddingBottom: "15px",
+                      fontSize: "22px",
+                      fontFamily: "interMedium, sans-serif",
+                    }}
+                  >
+                    {obj.sectionOrder + ". " + obj.text}
+                  </span>
+                )}
+                {typeof obj.value === "string" ? (
+                  <div dangerouslySetInnerHTML={{ __html: obj.value }} />
+                ) : (
+                  obj.value.map((list: any, index: number) => {
+                    const indent = list.text.split(".").length - 1;
+                    console.log(indent);
+                    const marginLeft = (indent + 1 - 1) * 26;
+                    const nestedStyle: React.CSSProperties = {
+                      marginLeft: `${marginLeft}px`,
+                      display: "flex",
+                      alignItems: "center",
+                      paddingBottom: "13px",
+                    };
+                    return (
+                      list.value !== "" && (
+                        <div
+                          className={styles.listItem}
+                          style={nestedStyle}
+                          key={index}
+                        >
+                          <span style={{ marginRight: "10px" }}>
+                            {list.text}
+                          </span>
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: list.value,
+                            }}
+                          />
+                        </div>
+                      )
+                    );
+                  })
+                )}
+                {allSectionContent.length === 1 && (
+                  <div className={styles.noDataFound}>
+                    <span>No content has been developed at this time.</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       ) : (
         <div className={styles.noDataFound}>
           <span>No content has been developed at this time.</span>
         </div>
       )}
+      <DefaultButton
+        text="PDF"
+        btnType="secondary"
+        onClick={() => {
+          // const doc = new jsPDF();
+          //get table html
+          const pdfTable: any =
+            document.getElementById("divToPrint")?.innerHTML;
+          //html to pdf format
+          // const html = htmlToPdfmake(pdfTable.innerHTML);
+          // debugger;
+          // const documentDefinition = { content: html };
+          // pdfMake.vfs = pdfFonts.pdfMake.vfs;
+          // pdfMake.createPdf(documentDefinition).open();
+          debugger;
+          html2pdf()
+            .from(pdfTable)
+            .set({
+              margin: 1,
+              filename: "document.pdf",
+              image: { type: "jpeg", quality: 0.98 },
+              html2canvas: { scale: 0.7 },
+              jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+            })
+            .save();
+        }}
+      />
     </>
   );
 };
