@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
-import { LISTNAMES } from "../../../config/config";
+import { CONFIG, LISTNAMES } from "../../../config/config";
 import {
   setCDDocDetails,
   setCDSectionData,
@@ -42,6 +42,8 @@ const getAllSupportingDocumentsData = async (
           ID: obj?.ID,
           documentName: obj?.Title,
           documentLink: obj?.documentLink,
+          sectionId: sectionId,
+          documentId: documentId,
           isSelected: true,
           isNew: false,
           status: false,
@@ -67,11 +69,13 @@ const getDocumentDeatils = async (Data: any[]) => {
       {
         FilterKey: "status",
         Operator: "eq",
-        FilterValue: "Approved",
+        FilterValue: "Current",
       },
     ],
   })
     .then((res: any[]) => {
+      console.log(res);
+      debugger;
       res?.forEach((item: any) => {
         const index = Data.findIndex(
           (obj: any) => obj.documentName === item.Title
@@ -107,83 +111,161 @@ const getDocumentDeatils = async (Data: any[]) => {
   return tempArray;
 };
 
-const getApprovedDocuments = (documents: any) => {
+const getApprovedDocuments = async (Data: any) => {
+  console.log(Data);
   const approvedDocuments: any = [];
-  documents.forEach(async (document: any) => {
-    await SpServices.SPReadItemUsingId({
-      Listname: LISTNAMES.AllDocuments,
-      SelectedId: document.documentId,
-      Select:
-        "*, FileLeafRef, FileRef, FileDirRef, Author/Title, Author/EMail, Author/Id",
-      Expand: "File, Author",
-    })
-      .then((res: any) => {
-        if (res?.File?.ServerRelativeUrl) {
-          const tempDocumentDetails = {
-            ...document,
-            ...res,
+  debugger;
+  // await documents.forEach(async (document: any) => {
+  await SpServices.SPReadItems({
+    Listname: LISTNAMES.AllDocuments,
+    Select:
+      "*, FileLeafRef, FileRef, FileDirRef, Author/Title, Author/EMail, Author/Id",
+    Expand: "File, Author",
+    Filter: [
+      {
+        FilterKey: "status",
+        Operator: "eq",
+        FilterValue: "Approved",
+      },
+    ],
+  })
+    .then((res: any) => {
+      debugger;
+      console.log(res);
+      const tempArray = res?.map((obj: any) => {
+        if (obj?.File?.Name) {
+          return {
+            ID: obj.ID,
+            FileRef: CONFIG.tenantURL + obj.FileRef,
+            documentName: obj.FileLeafRef.replace(".pdf", ""),
           };
-          approvedDocuments.push(tempDocumentDetails);
-          // setAllDocumentsLink((prev: any) => {
-          //   return [...prev, tempDocumentDetails];
-          // });
-          // setFilterDocuments((prev: any) => {
-          //   return [...prev, tempDocumentDetails];
-          // });
         }
-      })
-      .catch((err: any) => {
-        console.log(err);
       });
-  });
-  return approvedDocuments;
+      console.log(tempArray);
+
+      tempArray?.forEach((item: any) => {
+        const index = Data.findIndex(
+          (obj: any) => obj.documentName === item.documentName
+        );
+        if (Data[index]) {
+          if (Data[index].isDeleted) {
+            approvedDocuments.push({
+              ID: item.ID,
+              FileRef: item.FileRef,
+              documentName: item.documentName,
+              isSelected: false,
+            });
+          } else {
+            approvedDocuments.push({
+              ID: item.ID,
+              FileRef: item.FileRef,
+              documentName: item.documentName,
+              isSelected: true,
+            });
+          }
+        } else {
+          approvedDocuments.push({
+            ID: item.ID,
+            FileRef: item.FileRef,
+            documentName: item.documentName,
+            isSelected: false,
+          });
+        }
+      });
+
+      // if (res?.File?.ServerRelativeUrl) {
+      //   const tempDocumentDetails = {
+      //     ...document,
+      //     ...res,
+      //   };
+      //   approvedDocuments.push(tempDocumentDetails);
+      // setAllDocumentsLink((prev: any) => {
+      //   return [...prev, tempDocumentDetails];
+      // });
+      // setFilterDocuments((prev: any) => {
+      //   return [...prev, tempDocumentDetails];
+      // });
+      // }
+    })
+    .catch((err: any) => {
+      console.log(err);
+    });
+  // });
+  return await approvedDocuments;
   // setAllDocumentsLink(approvedDocuments);
 };
 
-const convertSupportingDocToTxtFile = (content: any[]): any => {
-  const filterDefinitions = content.filter((obj: any) => !obj.isDeleted);
+const convertSupportingDocToTxtFile = (
+  content: any[],
+  sectionOrder: number
+): any => {
+  const filterSupportingDocuments = content.filter(
+    (obj: any) => !obj.isDeleted
+  );
   let supportingDocTable = "";
 
-  supportingDocTable = `<table style="border-collapse: collapse; width: 100%;">
-        <thead>
-          <tr>
-            <th style="width: 10%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-              S.No
-            </th>
-            <th style="width: 30%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-              Document name
-            </th>
-            <th style="width: 60%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-              Link
-            </th>
-          </tr>
-        </thead>
-        <tbody>`;
+  // supportingDocTable = `<table style="border-collapse: collapse; width: 100%;">
+  //       <thead>
+  //         <tr>
+  //           <th style="width: 10%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+  //             S.No
+  //           </th>
+  //           <th style="width: 30%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+  //             Document name
+  //           </th>
+  //           <th style="width: 60%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+  //             Link
+  //           </th>
+  //         </tr>
+  //       </thead>
+  //       <tbody>`;
+  supportingDocTable += `<div style="margin-left: 25px;display: flex;flex-wrap:wrap;">`;
 
-  filterDefinitions?.forEach((obj: any, index: number) => {
-    supportingDocTable += `<tr key={${index}}>
-                <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                  ${index + 1}
-                </td>
-                <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                  ${obj.documentName}
-                </td>
-                <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                  <a style="word-break: break-all;" href=${
-                    obj.documentLink.startsWith("https://")
-                      ? obj.documentLink
-                      : "https://" + obj.documentLink
-                  } target="_blank">
-                    ${
-                      obj.documentLink.startsWith("https://")
-                        ? obj.documentLink
-                        : "https://" + obj.documentLink
-                    }
-                  </a>
-                </td>
-              </tr>`;
+  filterSupportingDocuments?.forEach((obj: any, index: number) => {
+    // supportingDocTable += `<tr key={${index}}>
+    //             <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+    //               ${index + 1}
+    //             </td>
+    //             <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+    //               ${obj.documentName}
+    //             </td>
+    //             <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+    // <a style="word-break: break-all;" href=${
+    //   obj.documentLink.startsWith("https://")
+    //     ? obj.documentLink
+    //     : "https://" + obj.documentLink
+    // } target="_blank">
+    //   ${
+    //     obj.documentLink.startsWith("https://")
+    //       ? obj.documentLink
+    //       : "https://" + obj.documentLink
+    //   }
+    // </a>
+    //             </td>
+    //           </tr>`;
+
+    supportingDocTable += `<div style="width:100%;display:flex;margin-bottom: 10px;">
+      <p style="width:5%;line-height: 20px;font-weight: 500;font-size: 17px;font-family: interMedium,sans-serif;">${sectionOrder}.${
+      index + 1
+    }.</p>
+      <div style="width: 95%;">
+        <p style="font-family: interMedium,sans-serif;">${obj.documentName}</p>
+        <a style="word-break: break-all;text-decoration: none;" href=${
+          obj.documentLink.startsWith("https://")
+            ? encodeURI(obj.documentLink)
+            : encodeURI("https://" + obj.documentLink)
+        } target="_blank">
+          ${
+            obj.documentLink.startsWith("https://")
+              ? obj.documentLink
+              : "https://" + obj.documentLink
+          }
+        </a>
+      </div>
+    </div>`;
   });
-  supportingDocTable += `</tbody></table>`;
+  // supportingDocTable += `</tbody></table>`;
+  supportingDocTable += `</div>`;
 
   debugger;
 
@@ -244,7 +326,8 @@ const submitSupportingDocuments = (
   documentId: number,
   sectionId: number,
   setToastState: any,
-  getSelectedFun: any
+  getSelectedFun: any,
+  sectionOrder: number
 ) => {
   debugger;
   let renderCondition: boolean = false;
@@ -280,7 +363,8 @@ const submitSupportingDocuments = (
               documentId
             );
             const supportingDoc_file: any = await convertSupportingDocToTxtFile(
-              await supportingDocumentsData
+              await supportingDocumentsData,
+              sectionOrder
             );
             AddSectionAttachment(sectionId, supportingDoc_file);
             setToastState({
@@ -300,13 +384,9 @@ const submitSupportingDocuments = (
   if (tempDelArray.length > 0) {
     // toast.error("Please select atleast one document to add");
     tempDelArray.forEach((obj: any, index: number) => {
-      const jsonObject = {
-        isDeleted: true,
-      };
-      SpServices.SPUpdateItem({
+      SpServices.SPDeleteItem({
         Listname: "SupportingDocuments",
         ID: obj.ID,
-        RequestJSON: jsonObject,
       })
         .then(async (res: any) => {
           renderCondition = true;
@@ -319,7 +399,8 @@ const submitSupportingDocuments = (
               documentId
             );
             const supportingDoc_file: any = await convertSupportingDocToTxtFile(
-              await supportingDocumentsData
+              await supportingDocumentsData,
+              sectionOrder
             );
             AddSectionAttachment(sectionId, supportingDoc_file);
             setToastState({
@@ -356,7 +437,8 @@ const submitSupportingDocuments = (
               documentId
             );
             const supportingDoc_file: any = await convertSupportingDocToTxtFile(
-              await supportingDocumentsData
+              await supportingDocumentsData,
+              sectionOrder
             );
             AddSectionAttachment(sectionId, supportingDoc_file);
             setToastState({

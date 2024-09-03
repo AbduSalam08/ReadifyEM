@@ -128,8 +128,8 @@ export const convertReferenceToTxtFile = (
       obj.referenceLink !== ""
         ? `<a style="text-decoration: none;font-style: italic;" href="${
             obj?.referenceLink?.startsWith("https://")
-              ? obj.referenceLink
-              : "https://" + obj.referenceLink
+              ? encodeURI(obj.referenceLink)
+              : encodeURI("https://" + obj.referenceLink)
           }" target="_blank">${obj.referenceTitle}.</a>`
         : `<span style="font-style: italic;">${obj.referenceTitle}.</span>`
     }</p>`;
