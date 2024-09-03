@@ -21,7 +21,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import {
   getAllSupportingDocumentsData,
-  getDocumentDeatils,
+  // getDocumentDeatils,
   getApprovedDocuments,
   submitSupportingDocuments,
   updateSectionDetails,
@@ -512,7 +512,7 @@ const SupportingDocuments: React.FC<Props> = ({
 
   // initial definitions data
   const [allDocumentsLink, setAllDocumentsLink] = useState<any[]>([]);
-  const [filterDocuments, setFilterDocuments] = useState<any[]>([]);
+  const [filterDocuments, setFilterDocuments] = useState<any>("");
   console.log("filterDocuments: ", filterDocuments);
   const [loader, setLoader] = useState<boolean>(false);
   const [selectedDocuments, setSelectedDocuments] = useState<documentDetails[]>(
@@ -527,7 +527,7 @@ const SupportingDocuments: React.FC<Props> = ({
     message: "",
     duration: "",
   });
-  console.log(selectedDocuments, allDocumentsLink);
+  console.log(selectedDocuments, allDocumentsLink, masterSupportingDoc);
 
   const submitRejectedComment = async (): Promise<any> => {
     console.log(rejectedComments);
@@ -575,16 +575,18 @@ const SupportingDocuments: React.FC<Props> = ({
     setFilterDocuments(filterValues);
   };
 
-  const getApprovedDocumentsLinks = async (documents: any) => {
-    const approvedDocuments: any = await getApprovedDocuments(documents);
-    setAllDocumentsLink(approvedDocuments);
-  };
-
-  const getMainDocumentDeatails = async (Data: any[]) => {
-    const tempDocumentsDetails: any = await getDocumentDeatils(Data);
-    getApprovedDocumentsLinks(tempDocumentsDetails);
+  const getApprovedDocumentsLinks = async (data: any) => {
+    debugger;
+    const approvedDocuments: any = await getApprovedDocuments(data);
+    setAllDocumentsLink(await approvedDocuments);
     setLoader(false);
   };
+
+  // const getMainDocumentDeatails = async (Data: any[]) => {
+  //   const tempDocumentsDetails: any = await getDocumentDeatils(Data);
+  //   getApprovedDocumentsLinks(await tempDocumentsDetails);
+  //   setLoader(false);
+  // };
 
   const getAllSelectedDocuments = async (): Promise<any> => {
     setLoader(true);
@@ -592,15 +594,14 @@ const SupportingDocuments: React.FC<Props> = ({
       sectionId,
       documentId
     );
-    const tempSortedArray = tempSelectedDocumentsArray.sort(
-      (a: any, b: any) => b.ID - a.ID
-    );
+    const splitArray = [...tempSelectedDocumentsArray];
     const sortedArray = tempSelectedDocumentsArray.sort(
       (a: any, b: any) => b.ID - a.ID
     );
-    setSelectedDocuments([...sortedArray]);
-    setMasterSupportingDoc([...tempSortedArray]);
-    getMainDocumentDeatails([...sortedArray]);
+    const tempSortedArray = splitArray.sort((a: any, b: any) => b.ID - a.ID);
+    setSelectedDocuments(sortedArray);
+    setMasterSupportingDoc(tempSortedArray);
+    getApprovedDocumentsLinks([...sortedArray]);
   };
 
   const onSelectDocument = async (id: number): Promise<void> => {
@@ -801,7 +802,7 @@ const SupportingDocuments: React.FC<Props> = ({
     }
 
     setAllDocumentsLink([...filterSelectionDefinitions]);
-    setSelectedDocuments([...tempSelectedDocuments]);
+    setSelectedDocuments(tempSelectedDocuments);
 
     const objectsEqual = compareArraysOfObjects(masterSupportingDoc, [
       ...tempSelectedDocuments,
@@ -856,14 +857,14 @@ const SupportingDocuments: React.FC<Props> = ({
     const checkCondition = selectedDocuments.some((obj: any) => obj.isNew);
     if (!checkCondition) {
       if (selectedDocuments.length !== 0) {
-        const reRender: boolean | any = await submitSupportingDocuments(
+        await submitSupportingDocuments(
           [...selectedDocuments],
           documentId,
           sectionId,
           setToastMessage,
-          getAllSelectedDocuments
+          getAllSelectedDocuments,
+          currentSectionDetails?.sectionOrder
         );
-        console.log(reRender);
         if (submitCondition) {
           await updateTaskCompletion(
             currentSectionDetails?.sectionName,
@@ -900,6 +901,19 @@ const SupportingDocuments: React.FC<Props> = ({
 
   useEffect(() => {
     getAllSelectedDocuments();
+
+    const closeDiv = (e: any) => {
+      console.log(e);
+
+      if (
+        e?.target.className !== "p-inputtext p-component" &&
+        e?.target?.id !== "sectionSupportingDocumentId"
+      ) {
+        setFilterDocuments("");
+      }
+    };
+    document.body.addEventListener("click", closeDiv);
+    return () => document.body.removeEventListener("click", closeDiv);
   }, []);
 
   useEffect(() => {
@@ -946,6 +960,14 @@ const SupportingDocuments: React.FC<Props> = ({
                   onChange={(value: any) => {
                     handleSearchOnChange(value);
                   }}
+                  onClickFunction={(value: boolean) => {
+                    // handleSearchClick(value);
+                    console.log(value);
+
+                    if (value) {
+                      setFilterDocuments([...allDocumentsLink]);
+                    }
+                  }}
                   secWidth="257px"
                   // clearBtn
                 />
@@ -954,7 +976,10 @@ const SupportingDocuments: React.FC<Props> = ({
                     <img
                       src={closeBtn}
                       alt={"Add Document"}
-                      onClick={() => setSearchValue("")}
+                      onClick={() => {
+                        setFilterDocuments("");
+                        setSearchValue("");
+                      }}
                     />
                   </button>
                 )}
@@ -970,8 +995,11 @@ const SupportingDocuments: React.FC<Props> = ({
                   AddNewDocument();
                 }}
               />
-              {searchValue?.trim() !== "" && (
-                <div className={styles.filterSecWrapper}>
+              {typeof filterDocuments !== "string" && (
+                <div
+                  className={styles.filterSecWrapper}
+                  id="sectionSupportingDocumentId"
+                >
                   {(allDocumentsLink.length === 0 ||
                     filterDocuments.length === 0) && (
                     <div className={styles.noDataFound}>
@@ -987,9 +1015,18 @@ const SupportingDocuments: React.FC<Props> = ({
                             ? styles.filterDefinitionSecSelected
                             : styles.filterDefinitionSec
                         }
+                        onClick={(ev) => {
+                          onSelectDocument(obj.ID);
+                          ev.preventDefault();
+                        }}
+                        id="sectionSupportingDocumentId"
                       >
-                        <div style={{ width: "10%" }}>
+                        <div
+                          style={{ width: "10%" }}
+                          id="sectionSupportingDocumentId"
+                        >
                           <Checkbox
+                            id="sectionSupportingDocumentId"
                             checkedIcon={<RadioButtonCheckedIcon />}
                             icon={<RadioButtonUncheckedIcon />}
                             key={index}
@@ -997,23 +1034,32 @@ const SupportingDocuments: React.FC<Props> = ({
                             //   value={user?.sectionSelected}
                             checked={obj.isSelected}
                             //   id={user.value}
-                            onClick={(ev) => {
-                              onSelectDocument(obj.ID);
-                              ev.preventDefault();
-                            }}
+                            // onClick={(ev) => {
+                            //   onSelectDocument(obj.ID);
+                            //   ev.preventDefault();
+                            // }}
                             size="small"
                           />
                         </div>
                         <div
-                          onClick={(ev) => {
-                            onSelectDocument(obj.ID);
-                          }}
+                          // onClick={(ev) => {
+                          //   onSelectDocument(obj.ID);
+                          // }}
                           className={styles.title}
+                          id="sectionSupportingDocumentId"
                         >
-                          <span>{obj.documentName}</span>
+                          <span id="sectionSupportingDocumentId">
+                            {obj.documentName}
+                          </span>
                         </div>
-                        <div className={styles.description}>
-                          <span>{obj.FileRef}</span>
+                        <div
+                          className={styles.description}
+                          id="sectionSupportingDocumentId"
+                          title={obj.FileRef}
+                        >
+                          <span id="sectionSupportingDocumentId">
+                            {obj.FileRef}
+                          </span>
                         </div>
                         {/* <div className={styles.description}>
                       <span>{obj.description}</span>
@@ -1108,8 +1154,8 @@ const SupportingDocuments: React.FC<Props> = ({
                         <a
                           href={
                             obj.documentLink.startsWith("https://")
-                              ? obj.documentLink
-                              : "https://" + obj.documentLink
+                              ? encodeURI(obj.documentLink)
+                              : encodeURI("https://" + obj.documentLink)
                           }
                           target="_blank"
                           className={styles.documentLink}

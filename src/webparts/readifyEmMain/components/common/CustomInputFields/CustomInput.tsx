@@ -12,6 +12,7 @@ import styles from "./Inputs.module.scss";
 interface Props {
   value: string | number | any;
   onChange?: (value: string | any) => void;
+  onClickFunction?: (value: boolean) => void;
   type?: "text" | "number";
   placeholder?: string;
   icon?: unknown;
@@ -39,6 +40,7 @@ interface Props {
 const CustomInput: React.FC<Props> = ({
   value,
   onChange,
+  onClickFunction,
   type = "text",
   placeholder = "",
   size = "MD",
@@ -125,6 +127,9 @@ const CustomInput: React.FC<Props> = ({
             type={type}
             placeholder={placeholder}
             onChange={handleChange}
+            onClick={() => {
+              onClickFunction && onClickFunction(true);
+            }}
             className={inputClassName}
             style={{
               paddingLeft: icon ? "30px" : "0px",

@@ -108,12 +108,12 @@ const addNewReference = async (
         //   (obj: any) => !obj.isDeleted
         // );
         togglePopupVisibility(setPopupController, 0, "close");
-        allReferencesData.push({
+        allReferencesData.unshift({
           referenceTitle: referenceData.referenceTitle,
           referenceAuthorName: referenceData.referenceAuthorName,
           yearOfPublish: referenceData.yearOfPublish,
           referenceLink: referenceData.referenceLink,
-          //   isSectionDefinition: true,
+          isSectionReferences: true,
           sectionDetailsId: sectionId,
           docDetailsId: documentId,
         });
@@ -128,21 +128,7 @@ const addNewReference = async (
           await referenceSectionNumber
         );
         AddReferenceAttachment(documentId, reference_file);
-        setAllReferencesData((prev: any) => [
-          {
-            ID: referenceRes.data.ID,
-            referenceTitle: referenceData.referenceTitle,
-            referenceAuthorName: referenceData.referenceAuthorName,
-            yearOfPublish: referenceData.yearOfPublish,
-            referenceLink: referenceData.referenceLink,
-            isSectionDefinition: true,
-            isDeleted: false,
-            isNew: false,
-            isSelected: false,
-            status: false,
-          },
-          ...prev,
-        ]);
+        setAllReferencesData([...allReferencesData]);
         setToastState({
           isShow: true,
           severity: "success",

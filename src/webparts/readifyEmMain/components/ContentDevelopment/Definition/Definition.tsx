@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import styles from "./Definition.module.scss";
 import Checkbox from "@mui/material/Checkbox";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
@@ -146,6 +146,8 @@ const Definition: React.FC<Props> = ({
   currentDocRole,
   setCheckChanges,
 }) => {
+  const divRef: any = useRef();
+
   // redux dispatcher
   const dispatch = useDispatch();
 
@@ -244,7 +246,7 @@ const Definition: React.FC<Props> = ({
     isLoading: false,
   };
   const [sectionDefinitions, setSectionDefinitions] = useState<any[]>([]);
-  const [filterDefinitions, setFilterDefinitions] = useState<any[]>([]);
+  const [filterDefinitions, setFilterDefinitions] = useState<any>("");
   const [selectedDefinitions, setSelectedDefinitions] = useState<any[]>([]);
   const [masterDefinitions, setMasterDefinitions] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState("");
@@ -1129,28 +1131,42 @@ const Definition: React.FC<Props> = ({
         },
       },
     ],
-    [
-      {
-        text: "Cancel",
-        btnType: "darkGreyVariant",
-        disabled: false,
-        endIcon: false,
-        startIcon: false,
-        onClick: () => {
-          handleClosePopup(6);
-        },
-      },
-      {
-        text: "Update",
-        btnType: "primary",
-        disabled: !definitionsData.isSectionDefinition,
-        endIcon: false,
-        startIcon: false,
-        onClick: () => {
-          updateSubmitSectionDefinition();
-        },
-      },
-    ],
+
+    definitionsData.isSectionDefinition
+      ? [
+          {
+            text: "Cancel",
+            btnType: "darkGreyVariant",
+            disabled: false,
+            endIcon: false,
+            startIcon: false,
+            onClick: () => {
+              handleClosePopup(6);
+            },
+          },
+          {
+            text: "Update",
+            btnType: "primary",
+            disabled: !definitionsData.isSectionDefinition,
+            endIcon: false,
+            startIcon: false,
+            onClick: () => {
+              updateSubmitSectionDefinition();
+            },
+          },
+        ]
+      : [
+          {
+            text: "Cancel",
+            btnType: "darkGreyVariant",
+            disabled: false,
+            endIcon: false,
+            startIcon: false,
+            onClick: () => {
+              handleClosePopup(6);
+            },
+          },
+        ],
   ];
 
   const handleSearchOnChange = (value: string): void => {
@@ -1386,7 +1402,14 @@ const Definition: React.FC<Props> = ({
     console.log(index);
     setUpdateChecker(false);
     setDefinitionsData(selectedDefinitions[index]);
-    togglePopupVisibility(setPopupController, 6, "open");
+    togglePopupVisibility(
+      setPopupController,
+      6,
+      "open",
+      selectedDefinitions[index].isSectionDefinition
+        ? "Update Definition"
+        : "View Definition"
+    );
   };
 
   const loggerPromoter: any = getCurrentLoggedPromoter(
@@ -1398,6 +1421,19 @@ const Definition: React.FC<Props> = ({
   useEffect(() => {
     getAllSecDefinitions();
     LoadDefinitionTableData(dispatch);
+
+    const closeDiv = (e: any) => {
+      console.log(e);
+
+      if (
+        e?.target.className !== "p-inputtext p-component" &&
+        e?.target?.id !== "sectionDefinitionUniqueId"
+      ) {
+        setFilterDefinitions("");
+      }
+    };
+    document.body.addEventListener("click", closeDiv);
+    return () => document.body.removeEventListener("click", closeDiv);
   }, []);
 
   useEffect(() => {
@@ -1430,7 +1466,7 @@ const Definition: React.FC<Props> = ({
               currentDocRole?.sectionAuthor) && (
               <div className={styles.filterMainWrapper}>
                 <div className={styles.TopFilters}>
-                  <div className={styles.inputmainSec}>
+                  <div ref={divRef} className={styles.inputmainSec}>
                     <CustomInput
                       value={searchValue}
                       secWidth="257px"
@@ -1438,13 +1474,24 @@ const Definition: React.FC<Props> = ({
                       onChange={(value: any) => {
                         handleSearchOnChange(value);
                       }}
+                      onClickFunction={(value: boolean) => {
+                        // handleSearchClick(value);
+                        console.log(value);
+
+                        if (value) {
+                          setFilterDefinitions([...sectionDefinitions]);
+                        }
+                      }}
                     />
                     {searchValue !== "" && (
                       <button className={styles.closeBtn}>
                         <img
                           src={closeBtn}
                           alt={"Add Document"}
-                          onClick={() => setSearchValue("")}
+                          onClick={() => {
+                            setFilterDefinitions("");
+                            setSearchValue("");
+                          }}
                         />
                       </button>
                     )}
@@ -1461,9 +1508,9 @@ const Definition: React.FC<Props> = ({
                     }}
                   />
                 </div>
-                {searchValue !== "" && (
+                {typeof filterDefinitions !== "string" && (
                   <div className={styles.filterSecWrapper}>
-                    {isEmpty(filterDefinitions) && (
+                    {searchValue !== "" && isEmpty(filterDefinitions) && (
                       <div className={styles.noDataFound}>
                         <span>No data found</span>
                       </div>
@@ -1477,34 +1524,49 @@ const Definition: React.FC<Props> = ({
                               ? styles.filterDefinitionSecSelected
                               : styles.filterDefinitionSec
                           }
+                          onClick={(ev) => {
+                            onSelectDefinition(obj.ID);
+                            ev.preventDefault();
+                          }}
+                          id="sectionDefinitionUniqueId"
                         >
-                          <div style={{ width: "10%" }}>
+                          <div
+                            style={{ width: "10%" }}
+                            id="sectionDefinitionUniqueId"
+                          >
                             <Checkbox
+                              id="sectionDefinitionUniqueId"
                               checkedIcon={<RadioButtonCheckedIcon />}
                               icon={<RadioButtonUncheckedIcon />}
                               key={index}
                               checked={obj.isSelected}
-                              onClick={(ev) => {
-                                onSelectDefinition(obj.ID);
-                                ev.preventDefault();
-                              }}
+                              // onClick={(ev) => {
+                              //   onSelectDefinition(obj.ID);
+                              //   ev.preventDefault();
+                              // }}
                             />
                           </div>
                           <div
                             className={styles.title}
                             style={{ width: "30%" }}
-                            onClick={(ev) => {
-                              onSelectDefinition(obj.ID);
-                              ev.preventDefault();
-                            }}
+                            // onClick={(ev) => {
+                            //   onSelectDefinition(obj.ID);
+                            //   ev.preventDefault();
+                            // }}
+                            id="sectionDefinitionUniqueId"
                           >
-                            <span>{obj.definitionName}</span>
+                            <span id="sectionDefinitionUniqueId">
+                              {obj.definitionName}
+                            </span>
                           </div>
                           <div
                             className={styles.description}
                             style={{ width: "60%" }}
+                            id="sectionDefinitionUniqueId"
                           >
-                            <span>{obj.definitionDescription}</span>
+                            <span id="sectionDefinitionUniqueId">
+                              {obj.definitionDescription}
+                            </span>
                           </div>
                         </div>
                       );

@@ -16,6 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { ContentDeveloperStatusLabel } from "../../common/ContentDeveloperStatusLabel/ContentDeveloperStatusLabel";
 import {
   getCurrentLoggedPromoter,
+  getCurrentPromoter,
+  updateSectionDataLocal,
   updateTaskCompletion,
 } from "../../../../../utils/contentDevelopementUtils";
 const closeBtn = require("../../../../../assets/images/png/close.png");
@@ -30,19 +32,22 @@ import {
   UpdateReference,
 } from "../../../../../services/ContentDevelopment/SectionReference/SectionReference";
 import { IPopupLoaders } from "../../../../../interface/MainInterface";
-import { initialPopupLoaders } from "../../../../../config/config";
+import { initialPopupLoaders, LISTNAMES } from "../../../../../config/config";
 import AlertPopup from "../../common/Popups/AlertPopup/AlertPopup";
 import ToastMessage from "../../common/Toast/ToastMessage";
 import PreviewSection from "../PreviewSection/PreviewSection";
 import { updateSectionDetails } from "../../../../../services/ContentDevelopment/SupportingDocument/SupportingDocumentServices";
 import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
 import { addRejectedComment } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
+import SpServices from "../../../../../services/SPServices/SpServices";
+import { setCDSectionData } from "../../../../../redux/features/ContentDevloperSlice";
 interface Props {
   allSectionsData: any;
   documentId: number;
   sectionId: number;
   currentSectionDetails: any;
   currentDocRole: any;
+  setCheckChanges?: any;
 }
 interface IReferenceDetails {
   ID: number | any;
@@ -64,6 +69,7 @@ const References: React.FC<Props> = ({
   sectionId,
   currentSectionDetails,
   currentDocRole,
+  setCheckChanges,
 }) => {
   const dispatch = useDispatch();
   const initialReferenceData = {
@@ -171,6 +177,14 @@ const References: React.FC<Props> = ({
       popupTitle: "",
       popupWidth: "550px",
       popupType: "custom",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "Are you sure want to mark this section as reviewed?",
+      popupWidth: "340px",
+      popupType: "confirmation",
       defaultCloseBtn: false,
       popupData: "",
     },
@@ -326,6 +340,92 @@ const References: React.FC<Props> = ({
         ErrorMsg: "Please enter comments",
       });
     }
+  };
+
+  const docInReview: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in review";
+
+  const docInApproval: boolean =
+    currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
+
+  const promoteSection = async (): Promise<any> => {
+    debugger;
+    togglePopupVisibility(
+      setPopupController,
+      2,
+      "close",
+      "Are you sure want to submit this section?"
+    );
+    setLoader(true);
+
+    const promoters: any = docInReview
+      ? currentDocDetailsData?.reviewers
+      : docInApproval
+      ? currentDocDetailsData?.approvers
+      : [];
+
+    console.log("promoters: ", promoters);
+
+    const currentPromoter: any = getCurrentPromoter(promoters);
+    console.log("currentPromoter: ", currentPromoter);
+
+    const promoterKey: string = currentDocRole?.reviewer
+      ? "sectionReviewed"
+      : currentDocRole?.approver
+      ? "sectionApproved"
+      : "";
+
+    await SpServices.SPUpdateItem({
+      Listname: LISTNAMES.SectionDetails,
+      ID: currentSectionDetails?.ID,
+      RequestJSON: {
+        [`${promoterKey}`]: true,
+        lastReviewedBy: JSON.stringify({
+          currentOrder: currentPromoter?.currentOrder,
+          currentPromoter: currentPromoter?.currentPromoter?.userData,
+          totalPromoters: currentPromoter?.totalPromoters,
+        }),
+      },
+    })
+      .then((res: any) => {
+        setLoader(false);
+        setToastMessage({
+          isShow: true,
+          severity: "success",
+          title: "Content updated!",
+          message: "The content has been updated successfully.",
+          duration: 3000,
+        });
+
+        const updatedSections: any = updateSectionDataLocal(
+          AllSectionsDataMain,
+          currentSectionDetails?.ID,
+          {
+            [`${promoterKey}`]: true,
+            sectionRework: false,
+            lastReviewedBy: {
+              currentOrder: currentPromoter?.currentOrder,
+              currentPromoter: currentPromoter?.userData,
+              totalPromoters: currentPromoter?.totalPromoters,
+            },
+          }
+        );
+        console.log("updatedSections: ", updatedSections);
+
+        dispatch(setCDSectionData([...updatedSections]));
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+        setLoader(false);
+        setToastMessage({
+          isShow: true,
+          severity: "warn",
+          title: "Something went wrong!",
+          message:
+            "A unexpected error happened while updating! please try again later.",
+          duration: 3000,
+        });
+      });
   };
 
   const popupInputs = [
@@ -558,6 +658,7 @@ const References: React.FC<Props> = ({
         key={2}
       />,
     ],
+    [],
   ];
 
   // array of obj which contains all popup action buttons
@@ -667,6 +768,29 @@ const References: React.FC<Props> = ({
         },
       },
     ],
+    [
+      {
+        text: "No",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(5);
+        },
+      },
+      {
+        text: "Yes",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          handleClosePopup(5);
+          await promoteSection();
+        },
+      },
+    ],
   ];
 
   const getReferencesFromDefintions = async () => {
@@ -686,6 +810,8 @@ const References: React.FC<Props> = ({
         );
         console.log(tempArray, sectionReferences);
         setAllReferencesData([...tempArray, ...sectionReferences]);
+      } else {
+        setAllReferencesData([...sectionReferences]);
       }
     });
     setLoader(false);
@@ -697,6 +823,7 @@ const References: React.FC<Props> = ({
   );
 
   const removeReference = (delIndex: number) => {
+    setCheckChanges(true);
     setAllReferencesData((prev) =>
       prev.map((item, index) =>
         index === delIndex ? { ...item, isDeleted: true } : item
@@ -705,8 +832,9 @@ const References: React.FC<Props> = ({
   };
 
   const submitSectionReference = async (condition: boolean) => {
-    setLoader(true);
     if (allReferencesData.length !== 0) {
+      setLoader(true);
+      setCheckChanges(false);
       await submitSectionReferences(
         allReferencesData,
         setAllReferencesData,
@@ -739,6 +867,7 @@ const References: React.FC<Props> = ({
         });
       }
     } else {
+      handleClosePopup(3);
       setToastMessage({
         isShow: true,
         severity: "warn",
@@ -829,8 +958,8 @@ const References: React.FC<Props> = ({
                           <a
                             href={
                               obj.referenceLink?.startsWith("https://")
-                                ? obj.referenceLink
-                                : "https://" + obj.referenceLink
+                                ? encodeURI(obj.referenceLink)
+                                : encodeURI("https://" + obj.referenceLink)
                             }
                             target="_blank"
                             className={styles.referenceLink}
@@ -1009,16 +1138,16 @@ const References: React.FC<Props> = ({
                               }
                               btnType="primary"
                               onClick={() => {
-                                // togglePopupVisibility(
-                                //   setPopupController,
-                                //   4,
-                                //   "open",
-                                //   `Are you sure want to mark this section as ${
-                                //     currentDocRole?.reviewer
-                                //       ? "reviewed"
-                                //       : currentDocRole?.approver && "approved"
-                                //   }?`
-                                // );
+                                togglePopupVisibility(
+                                  setPopupController,
+                                  5,
+                                  "open",
+                                  `Are you sure want to mark this section as ${
+                                    currentDocRole?.reviewer
+                                      ? "reviewed"
+                                      : currentDocRole?.approver && "approved"
+                                  }?`
+                                );
                               }}
                             />
                           }
@@ -1031,14 +1160,14 @@ const References: React.FC<Props> = ({
                                 ? false
                                 : true
                             }
-                            // onClick={() =>
-                            //   togglePopupVisibility(
-                            //     setPopupController,
-                            //     1,
-                            //     "open",
-                            //     "Reason for rejection"
-                            //   )
-                            // }
+                            onClick={() =>
+                              togglePopupVisibility(
+                                setPopupController,
+                                4,
+                                "open",
+                                "Reason for rejection"
+                              )
+                            }
                           />
                         </>
                       )}
