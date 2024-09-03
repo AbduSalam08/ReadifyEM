@@ -32,7 +32,6 @@ const convertDefinitionsToTxtFile = (
   content: any[],
   sectionOrder: string
 ): any => {
-  debugger;
   const filterDefinitions = content.filter((obj: any) => !obj.isDeleted);
   let definitionsTable = "";
   definitionsTable = `<div style="margin-left: 25px;display: flex;flex-wrap:wrap;">`;
@@ -98,7 +97,6 @@ export const convertReferenceToTxtFile = (
 ): any => {
   console.log(content);
 
-  debugger;
   let referencesTable = "";
   // referencesTable = `<table style="border-collapse: collapse; width: 100%;">
   //       <thead>
@@ -163,8 +161,6 @@ export const convertReferenceToTxtFile = (
   // referencesTable += `</tbody></table>`;
   referencesTable += `</div>`;
 
-  debugger;
-
   const cleanedTable = referencesTable
     .replace(/\n/g, "")
     .replace(/\s{2,}/g, " ");
@@ -180,7 +176,6 @@ const getAllSectionDefinitions = async (
   documentId: number,
   sectionId: number
 ): Promise<any> => {
-  debugger;
   const tempArray: definitionDetails[] = [];
   await SpServices.SPReadItems({
     Listname: LISTNAMES.sectionDefinition,
@@ -221,7 +216,6 @@ const getAllSectionDefinitions = async (
   return sortedArray;
 };
 const getAllSectionReferences = async (documentId: number): Promise<any> => {
-  debugger;
   const tempArray: any[] = [];
   await SpServices.SPReadItems({
     Listname: LISTNAMES.sectionReferences,
@@ -396,47 +390,50 @@ export const findReferenceSectionNumber = async (
     AllSectionData
   );
 
+  // const tempArray = AllSectionData.filter(
+  //   (obj: any) => obj.AttachmentFiles.length !== 0
+  // );
   const tempArray = AllSectionData.filter(
-    (obj: any) => obj.AttachmentFiles.length !== 0
+    (obj: any) => obj.sectionType === "references section"
   );
 
-  console.log(
-    "AllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionData",
-    tempArray
-  );
-  const headerSectionArray = tempArray?.filter(
-    (obj: any) => obj.sectionType === "header section"
-  );
-  const defaultSectionsArray = tempArray
-    ?.filter((obj: any) => obj.sectionType === "default section")
-    .sort((a: any, b: any) => {
-      return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
-    });
-  const normalSectionsArray = tempArray
-    ?.filter((obj: any) => obj.sectionType === "normal section")
-    .sort((a: any, b: any) => {
-      return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
-    });
-  const referenceSectionArray = tempArray
-    ?.filter((obj: any) => obj.sectionType === "references section")
-    .sort((a: any, b: any) => {
-      return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
-    });
-  if (referenceSectionArray.length !== 0) {
-    referenceSectionArray[0] = {
-      ...referenceSectionArray[0],
-      sectionOrder:
-        1 +
-        headerSectionArray.length +
-        defaultSectionsArray.length +
-        normalSectionsArray.length,
-    };
-  }
-  return referenceSectionArray[0].sectionOrder;
+  // console.log(
+  //   "AllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionData",
+  //   tempArray
+  // );
+  // const headerSectionArray = tempArray?.filter(
+  //   (obj: any) => obj.sectionType === "header section"
+  // );
+  // const defaultSectionsArray = tempArray
+  //   ?.filter((obj: any) => obj.sectionType === "default section")
+  //   .sort((a: any, b: any) => {
+  //     return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
+  //   });
+  // const normalSectionsArray = tempArray
+  //   ?.filter((obj: any) => obj.sectionType === "normal section")
+  //   .sort((a: any, b: any) => {
+  //     return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
+  //   });
+  // const referenceSectionArray = tempArray
+  //   ?.filter((obj: any) => obj.sectionType === "references section")
+  //   .sort((a: any, b: any) => {
+  //     return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
+  //   });
+  // if (referenceSectionArray.length !== 0) {
+  //   referenceSectionArray[0] = {
+  //     ...referenceSectionArray[0],
+  //     sectionOrder:
+  //       1 +
+  //       headerSectionArray.length +
+  //       defaultSectionsArray.length +
+  //       normalSectionsArray.length,
+  //   };
+  // }
+  debugger;
+  return tempArray.length !== 0 ? tempArray[0].sectionOrder : 1;
 };
 
 export const AddReferenceAttachment = async (documentId: number, file: any) => {
-  debugger;
   await SpServices.SPReadItems({
     Listname: LISTNAMES.SectionDetails,
     Select:
@@ -470,7 +467,6 @@ const submitSectionDefinitions = async (
   setToastState: any,
   setInitialLoader: any
 ) => {
-  debugger;
   setInitialLoader(true);
   const referenceSectionNumber = await findReferenceSectionNumber(
     AllSectionsDataMain,
@@ -594,7 +590,6 @@ const submitSectionDefinitions = async (
               await tempSectionDefinitions,
               sectionOrder
             );
-            debugger;
             AddSectionAttachment(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
               [...(await tempSectionDefinitions), ...sectionReferences],
@@ -690,6 +685,7 @@ const addNewDefinition = async (
   togglePopupVisibility: any
 ) => {
   try {
+    debugger;
     const referenceSectionNumber = await findReferenceSectionNumber(
       AllSectionsDataMain,
       documentId
@@ -924,7 +920,7 @@ const updateSectionDefinition = async (
             AddReferenceAttachment(documentId, reference_file);
             togglePopupVisibility(setPopupController, 6, "close");
             // setSelectedDefinitions([...tempSectionDefinitions]);
-            debugger;
+
             setSelectedDefinitions((prev: any) => {
               const tempArray = prev.map((obj: any) => {
                 if (obj.ID === definitionsData.ID) {

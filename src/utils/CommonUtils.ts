@@ -40,7 +40,7 @@ export const compareArraysOfObjects = async (
     }
 
     // Compare values for each key
-    for (let key of keys1) {
+    for (const key of keys1) {
       if (obj1[key] !== obj2[key]) {
         return false; // Return false if any key-value pair doesn't match
       }
