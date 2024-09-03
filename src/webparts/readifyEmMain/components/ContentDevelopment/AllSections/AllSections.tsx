@@ -75,7 +75,6 @@ const AllSections: React.FC<Props> = ({
     (item: any) =>
       item?.sectionType?.toLowerCase() === "normal section" ||
       item?.sectionType?.toLowerCase() === "references section" ||
-      item?.sectionType?.toLowerCase() === "change record" ||
       item?.sectionType?.toLowerCase() === "default section"
   );
   const headerSection: any = data?.filter(
@@ -83,8 +82,11 @@ const AllSections: React.FC<Props> = ({
   );
 
   const appendixSections: any = data?.filter(
-    (item: any) => item?.sectionType?.toLowerCase() === "appendix section"
+    (item: any) =>
+      item?.sectionType?.toLowerCase() === "appendix section" ||
+      item?.sectionType?.toLowerCase() === "change record"
   );
+
   const renderSection = (item: any, index: number): any => {
     return (item?.sectionType === "header section" ||
       item?.sectionType === "change record") &&

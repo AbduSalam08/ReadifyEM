@@ -1264,7 +1264,7 @@ const ContentDevelopment = (): JSX.Element => {
     const isInReview =
       currentDocDetailsData.documentStatus?.toLowerCase() === "in review";
     const isApproved =
-      currentDocDetailsData.documentStatus?.toLowerCase() === "Approved";
+      currentDocDetailsData.documentStatus?.toLowerCase() === "approved";
     const isInApproval =
       currentDocDetailsData.documentStatus?.toLowerCase() === "in approval";
     const isInRework =
@@ -1273,15 +1273,18 @@ const ContentDevelopment = (): JSX.Element => {
     const sectionsValid = AllSectionsData?.filter(
       (item: any) =>
         item?.sectionType?.toLowerCase() !== "header section" &&
-        item?.sectionType?.toLowerCase() !== "change record" &&
-        item?.sectionType?.toLowerCase() !== "references section"
+        item?.sectionType?.toLowerCase() !== "change record"
     )?.every(
       (item: any) =>
         item?.sectionSubmitted &&
-        (isInReview ? item?.sectionReviewed : item?.sectionApproved)
+        (currentDocRole?.reviewer
+          ? item?.sectionReviewed
+          : currentDocRole?.approver
+          ? item?.sectionApproved
+          : false)
     );
 
-    if ((isInReview || isInRework || isApproved) && currentDocRole?.reviewer) {
+    if (currentDocRole?.reviewer && (isInReview || isInRework || isApproved)) {
       return (
         sectionsValid &&
         currentDocDetailsData?.reviewers?.some(
@@ -1290,15 +1293,14 @@ const ContentDevelopment = (): JSX.Element => {
       );
     }
     if (
-      (isInApproval || isInRework || isApproved) &&
-      currentDocRole?.approver
+      currentDocRole?.approver &&
+      (isInApproval || isInRework || isApproved)
     ) {
       return (
-        currentPromoter?.status === "completed" ||
-        (sectionsValid &&
-          currentDocDetailsData?.approvers?.some(
-            (item: any) => item?.status === "in progress"
-          ))
+        sectionsValid &&
+        currentDocDetailsData?.approvers?.some(
+          (item: any) => item?.status === "in progress"
+        )
       );
     }
 
@@ -1355,8 +1357,6 @@ const ContentDevelopment = (): JSX.Element => {
 
   //   return false;
   // };
-
-  console.log("enablePromote: ", enablePromote());
 
   let markAsBtnText = "";
 
@@ -1487,8 +1487,6 @@ const ContentDevelopment = (): JSX.Element => {
                                 item?.sectionType?.toLowerCase() !==
                                   "header section" &&
                                 item?.sectionType?.toLowerCase() !==
-                                  "references section" &&
-                                item?.sectionType?.toLowerCase() !==
                                   "change record"
                             )?.every((item: any) => item?.sectionReviewed)) ||
                           (currentDocRole.approver &&
@@ -1496,8 +1494,6 @@ const ContentDevelopment = (): JSX.Element => {
                               (item: any) =>
                                 item?.sectionType?.toLowerCase() !==
                                   "header section" &&
-                                item?.sectionType?.toLowerCase() !==
-                                  "references section" &&
                                 item?.sectionType?.toLowerCase() !==
                                   "change record"
                             )?.every((item: any) => item?.sectionApproved))
@@ -1523,8 +1519,6 @@ const ContentDevelopment = (): JSX.Element => {
                             (item: any) =>
                               item?.sectionType?.toLowerCase() !==
                                 "header section" &&
-                              item?.sectionType?.toLowerCase() !==
-                                "references section" &&
                               item?.sectionType?.toLowerCase() !==
                                 "change record"
                           )?.every((item: any) => item?.sectionSubmitted) &&
@@ -1669,6 +1663,7 @@ const ContentDevelopment = (): JSX.Element => {
                           sectionId={AllSectionsData[activeSection]?.ID}
                           currentDocRole={currentDocRole}
                           currentSectionDetails={AllSectionsData[activeSection]}
+                          setCheckChanges={setCheckChanges}
                         />
                       ) : AllSectionsData[
                           activeSection

@@ -105,7 +105,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
 
       const checkDuplicatesForSDD = (sections: any[]): boolean => {
         const sectionNames = sections
-          .filter((section) => section.sectionSelected)
+          .filter((section) => section.sectionSelected && !section?.removed)
           .map((section) => section.sectionName.value.trim());
         const uniqueNames = new Set(sectionNames);
         return sectionNames.length !== uniqueNames.size;

@@ -149,17 +149,28 @@ const TableItem: React.FC<TableItemProps> = ({
           if (lowerCaseKey !== "status" && lowerCaseKey !== "isvisible") {
             return (
               <div className={styles.item} title={fieldValue} key={i}>
-                {fieldValue}
+                {!item.fields[key]
+                  ?.toLowerCase()
+                  ?.includes("yet to be approved") && fieldValue}
                 {lowerCaseKey === "nextreviewdate" && !item.isDraft && (
                   <div style={{ marginLeft: "10px" }}>
                     {item.fields[key] &&
-                      trimStartEnd(item.fields[key])?.trim() && (
-                        <DueDatePill
-                          dueDate={item.fields[key]}
-                          roles="Primary Author"
-                          leftText={"D"}
-                        />
-                      )}
+                    !item.fields[key]
+                      ?.toLowerCase()
+                      ?.includes("yet to be approved") &&
+                    trimStartEnd(item.fields[key])?.trim() ? (
+                      <DueDatePill
+                        dueDate={item.fields[key]}
+                        roles="Primary Author"
+                        leftText={"D"}
+                      />
+                    ) : (
+                      <StatusPill
+                        status="Hidden"
+                        size="SM"
+                        dynamicText={item.fields[key]}
+                      />
+                    )}
                   </div>
                 )}
               </div>
@@ -273,6 +284,7 @@ const TableItem: React.FC<TableItemProps> = ({
                 <div
                   className={styles.actionItem}
                   style={{
+                    width: "29%",
                     justifyContent: "center",
                   }}
                 >
@@ -370,7 +382,7 @@ const TableItem: React.FC<TableItemProps> = ({
               <div
                 className={styles.actionItem}
                 style={{
-                  width: "15%",
+                  width: "15.5%",
                   justifyContent: "center",
                 }}
               >
