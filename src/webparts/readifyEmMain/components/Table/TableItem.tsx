@@ -12,6 +12,7 @@ import { formatDocNameWithLastVersion } from "../../../../utils/formatDocName";
 import { InputSwitch } from "primereact/inputswitch";
 import SpServices from "../../../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../../../config/config";
+import { trimStartEnd } from "../../../../utils/validations";
 
 interface LibraryItem {
   name: string;
@@ -151,11 +152,14 @@ const TableItem: React.FC<TableItemProps> = ({
                 {fieldValue}
                 {lowerCaseKey === "nextreviewdate" && !item.isDraft && (
                   <div style={{ marginLeft: "10px" }}>
-                    <DueDatePill
-                      dueDate={item.fields[key]}
-                      roles="Primary Author"
-                      leftText={"D"}
-                    />
+                    {item.fields[key] &&
+                      trimStartEnd(item.fields[key])?.trim() && (
+                        <DueDatePill
+                          dueDate={item.fields[key]}
+                          roles="Primary Author"
+                          leftText={"D"}
+                        />
+                      )}
                   </div>
                 )}
               </div>

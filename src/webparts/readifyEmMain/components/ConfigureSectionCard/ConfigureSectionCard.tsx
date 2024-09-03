@@ -231,8 +231,8 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
     const consultantPlaceholder = "Consultants";
     const personSelectionLimit = 10;
     const sectionType = section?.sectionType;
-    const referenceSection =
-      section?.sectionType?.toLowerCase() === "referencessection";
+    // const referenceSection =
+    //   section?.sectionType?.toLowerCase() === "referencessection";
     // const definitionSection =
     //   section?.sectionType?.toLowerCase() === "defaultsection" &&
     //   section?.sectionName?.value?.toLowerCase() === "definitions";
@@ -283,8 +283,7 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
               value={sectionName}
               readOnly={
                 section?.readOnlySection ||
-                (section?.templateSectionID && !isAdmin) ||
-                referenceSection
+                (section?.templateSectionID && !isAdmin)
               }
               autoFocus={section?.readOnlySection ? false : true}
               isValid={!section?.sectionName?.isValid}

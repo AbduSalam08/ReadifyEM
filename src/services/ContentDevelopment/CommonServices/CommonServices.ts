@@ -54,7 +54,6 @@ export const getSectionsDetails = async (
       ],
     });
 
-    console.log("sectionsResponse: ", sectionsResponse);
     const sectionData: any[] = await Promise.all(
       sectionsResponse.map(async (item: any) => {
         try {
@@ -194,20 +193,21 @@ export const getSectionsDetails = async (
       ?.filter(
         (elem1: any) =>
           elem1?.sectionType?.toLowerCase() === "default section" ||
-          elem1?.sectionType?.toLowerCase() === "header section"
-      )
-      ?.sort(
-        (elem1: any, elem2: any) => elem1?.sectionOrder - elem2?.sectionOrder
-      );
-
-    const sortReferneceSection: any = sectionData
-      ?.filter(
-        (elem1: any) =>
+          elem1?.sectionType?.toLowerCase() === "header section" ||
           elem1?.sectionType?.toLowerCase() === "references section"
       )
       ?.sort(
         (elem1: any, elem2: any) => elem1?.sectionOrder - elem2?.sectionOrder
       );
+
+    // const sortReferneceSection: any = sectionData
+    //   ?.filter(
+    //     (elem1: any) =>
+    //       elem1?.sectionType?.toLowerCase() === "references section"
+    //   )
+    //   ?.sort(
+    //     (elem1: any, elem2: any) => elem1?.sectionOrder - elem2?.sectionOrder
+    //   );
 
     const sortAppendixSectionsByOrderNo: any = sectionData
       ?.filter(
@@ -277,7 +277,7 @@ export const getSectionsDetails = async (
     dispatcher(
       setCDSectionData([
         ...sortDefaultSectionsByOrderNo,
-        ...sortReferneceSection,
+        // ...sortReferneceSection,
         ...sortAppendixSectionsByOrderNo,
         ...sortLastAppendixSectionsByOrderNo,
       ])

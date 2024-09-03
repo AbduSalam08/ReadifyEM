@@ -991,9 +991,10 @@ const RichText = ({
                         {
                           <DefaultButton
                             text={
-                              currentDocRole?.reviewer
-                                ? "Review"
-                                : currentDocRole?.approver && "Approve"
+                              // currentDocRole?.reviewer
+                              //   ? "Review"
+                              //   : currentDocRole?.approver && "Approve"
+                              "Approve"
                             }
                             disabled={
                               !sectionLoader &&

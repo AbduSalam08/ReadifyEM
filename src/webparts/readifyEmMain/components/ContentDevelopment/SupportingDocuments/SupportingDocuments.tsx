@@ -1258,9 +1258,10 @@ const SupportingDocuments: React.FC<Props> = ({
                       {
                         <DefaultButton
                           text={
-                            currentDocRole?.reviewer
-                              ? "Review"
-                              : currentDocRole?.approver && "Approve"
+                            // currentDocRole?.reviewer
+                            //   ? "Review"
+                            //   : currentDocRole?.approver && "Approve"
+                            "Approve"
                           }
                           disabled={
                             currentSectionDetails?.sectionSubmitted &&
