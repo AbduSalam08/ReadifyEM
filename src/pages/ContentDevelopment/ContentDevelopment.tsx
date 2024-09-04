@@ -1218,34 +1218,37 @@ const ContentDevelopment = (): JSX.Element => {
     popupTitle: string
   ) => {
     if (condition) {
-      setTempActiveSection(value);
-      if (checkChanges) {
-        togglePopupVisibility(
-          setPopupController,
-          8,
-          "open",
-          "Discard current changes?"
-        );
-      } else {
-        setActiveSection(value);
-        const Comments = getSectionComments(
-          AllSectionsData[value].ID,
-          currentDocDetailsData.version,
-          dispatch
-        );
-        const changeRecordDetails = getSectionChangeRecord(
-          AllSectionsData[value].ID,
-          dispatch
-        );
-        console.log(Comments, changeRecordDetails);
-        debugger;
-        if (
-          AllSectionsData[value].sectionType?.toLowerCase() === "change record"
-        ) {
-          getAllSectionsChangeRecord(
-            currentDocDetailsData.documentDetailsID,
+      if (tempActiveSection !== value) {
+        setTempActiveSection(value);
+        if (checkChanges) {
+          togglePopupVisibility(
+            setPopupController,
+            8,
+            "open",
+            "Discard current changes?"
+          );
+        } else {
+          setActiveSection(value);
+          const Comments = getSectionComments(
+            AllSectionsData[value].ID,
+            currentDocDetailsData.version,
             dispatch
           );
+          const changeRecordDetails = getSectionChangeRecord(
+            AllSectionsData[value].ID,
+            dispatch
+          );
+          console.log(Comments, changeRecordDetails);
+          debugger;
+          if (
+            AllSectionsData[value].sectionType?.toLowerCase() ===
+            "change record"
+          ) {
+            getAllSectionsChangeRecord(
+              currentDocDetailsData.documentDetailsID,
+              dispatch
+            );
+          }
         }
       }
     } else {
