@@ -172,7 +172,15 @@ export const AddSections = async (
               // sectionType: element?.sectionType,
               sectionType: isReferenceSections
                 ? "references section"
-                : element?.sectionType,
+                : (element?.sectionType === "defaultSection" &&
+                    !isReferenceSections) ||
+                  (element?.sectionType === "normalSection" &&
+                    !isReferenceSections)
+                ? "default section"
+                : element?.sectionType === "appendixSection" &&
+                  !isReferenceSections
+                ? "appendix section"
+                : "default section" || element?.sectionType,
               documentOfId: docDetails?.documentDetailsId,
               isActive: element?.sectionSelected && !element?.removed,
               ID: element?.ID,
@@ -526,7 +534,15 @@ export const AddSections = async (
               },
               sectionType: isReferenceSections
                 ? "references section"
-                : element?.sectionType,
+                : (element?.sectionType === "defaultSection" &&
+                    !isReferenceSections) ||
+                  (element?.sectionType === "normalSection" &&
+                    !isReferenceSections)
+                ? "default section"
+                : element?.sectionType === "appendixSection" &&
+                  !isReferenceSections
+                ? "appendix section"
+                : "default section" || element?.sectionType,
               documentOfId: docDetails?.documentDetailsId,
               status: "content in progress",
               isActive: element?.sectionSelected,
@@ -740,84 +756,6 @@ export const updateSections = async (
     const allPayload: any[] = [];
     console.log("sectionsToAdd: ", sectionsToAdd);
 
-    // let hasChangeRecord: any;
-    // let hasReferences: any;
-    // let hasHeader: any;
-
-    // const sectionItems = await SpServices.SPReadItems({
-    //   Listname: LISTNAMES.SectionDetails,
-    //   Select: "*, documentOf/ID",
-    //   Expand: "documentOf",
-    //   Filter: [
-    //     {
-    //       FilterKey: "documentOf",
-    //       Operator: "eq",
-    //       FilterValue: docDetails?.documentDetailsId,
-    //     },
-    //   ],
-    // });
-
-    // hasReferences = sectionItems?.filter(
-    //   (item: any) => item?.sectionType?.toLowerCase() === "references section"
-    // );
-
-    // const hasDefinitions = formData?.defaultSections?.filter(
-    //   (item: any) =>
-    //     trimStartEnd(item?.sectionName?.value?.toLowerCase()) === "definitions"
-    // );
-
-    // if (
-    //   hasDefinitions?.length !== 0 &&
-    //   hasDefinitions[0]?.sectionSelected &&
-    //   hasReferences?.length === 0
-    // ) {
-    //   sectionsToAdd.push({
-    //     Title: "References",
-    //     templateTitle: "",
-    //     sectionOrder: String(
-    //       formData?.defaultSections?.filter(
-    //         (item: any) => item?.sectionSelected && !item?.removed
-    //       )?.length + 1
-    //     ),
-    //     sectionType: "references section",
-    //     sectionAuthorId: docDetails?.taskAssignedBy?.ID,
-    //     documentOfId: docDetails?.documentDetailsId,
-    //     status: "content in progress",
-    //     isActive: true,
-    //   });
-    // } else {
-    //   // sectionsToUpdate?.push({
-    //   //   Title: "References",
-    //   //   templateTitle: formData?.templateDetails?.templateName,
-    //   //   sectionOrder: String(
-    //   //     formData?.defaultSections?.filter(
-    //   //       (item: any) => item?.sectionSelected && !item?.removed
-    //   //     )?.length + 1
-    //   //   ),
-    //   //   sectionType: "references section",
-    //   //   documentOfId: docDetails?.documentDetailsId,
-    //   //   ID: hasReferences[0]?.ID,
-    //   //   // sectionAuthorId: element?.sectionAuthor?.value?.[0]?.id,
-    //   //   // consultantsId: {
-    //   //   //   results: element?.consultants?.value?.map((el: any) => el?.id),
-    //   //   // },
-    //   //   // status: "content in progress",
-    //   //   // isActive: element?.sectionSelected,
-    //   //   // isDeleted: element?.removed,
-    //   // });
-    //   await SpServices.SPUpdateItem({
-    //     Listname: LISTNAMES.SectionDetails,
-    //     ID: hasReferences[0]?.ID,
-    //     RequestJSON: {
-    //       sectionOrder: String(
-    //         formData?.defaultSections?.filter(
-    //           (item: any) => item?.sectionSelected && !item?.removed
-    //         )?.length + 1
-    //       ),
-    //     },
-    //   });
-    // }
-
     const defaultSectionsData: any[] = formData.defaultSections
       ?.filter((item: any) => {
         return (
@@ -869,7 +807,7 @@ export const updateSections = async (
           if (
             element?.sectionType === "defaultSection" ||
             element?.sectionType === "referencesSection" ||
-            element?.sectionType === "normalSections"
+            element?.sectionType === "normalSection"
           ) {
             sectionOrder = String(
               validDefaultSections?.findIndex(
@@ -890,7 +828,7 @@ export const updateSections = async (
           if (
             element?.sectionType === "defaultSection" ||
             element?.sectionType === "referencesSection" ||
-            element?.sectionType === "normalSections"
+            element?.sectionType === "normalSection"
           ) {
             sectionOrder = String(nextDefaultOrderNumber);
             nextDefaultOrderNumber += 1; // Increment for the next default section item
@@ -914,10 +852,11 @@ export const updateSections = async (
             ? "references section"
             : (element?.sectionType === "defaultSection" &&
                 !isReferenceSections) ||
-              (element?.sectionType === "normalSections" &&
-                !isReferenceSections)
+              (element?.sectionType === "normalSection" && !isReferenceSections)
             ? "default section"
-            : "appendix section",
+            : element?.sectionType === "appendixSection" && !isReferenceSections
+            ? "appendix section"
+            : "default section",
           documentOfId: docDetails?.documentDetailsId,
           isActive: element?.sectionSelected,
           isDeleted: element?.removed,
@@ -1179,221 +1118,6 @@ export const updateSections = async (
         });
       }
     });
-
-    // const updateSectionsPromise = allPayload.map(async (section) => {
-    //   try {
-    //     // Consolidated fetch operations for tasks
-    //     const [uniqueTaskByResponse, allTasksOfDoc] = await Promise.all([
-    //       SpServices.SPReadItems({
-    //         Listname: LISTNAMES.MyTasks,
-    //         Select: "*,documentDetails/ID,sectionDetails/ID",
-    //         Expand: "documentDetails,sectionDetails",
-    //         Filter: [
-    //           {
-    //             FilterKey: "sectionName",
-    //             FilterValue: section?.Title,
-    //             Operator: "eq",
-    //           },
-    //           {
-    //             FilterKey: "documentDetails",
-    //             FilterValue: section?.documentOfId,
-    //             Operator: "eq",
-    //           },
-    //         ],
-    //       }),
-    //       SpServices.SPReadItems({
-    //         Listname: LISTNAMES.MyTasks,
-    //         Select: "*,documentDetails/ID,sectionDetails/ID",
-    //         Expand: "documentDetails,sectionDetails",
-    //         Filter: [
-    //           {
-    //             FilterKey: "documentDetails",
-    //             FilterValue: section?.documentOfId,
-    //             Operator: "eq",
-    //           },
-    //         ],
-    //       }),
-    //     ]);
-
-    //     let currentSectionDetails: any;
-    //     if (section?.ID && !section?.isDeleted) {
-    //       currentSectionDetails = await SpServices.SPReadItemUsingId({
-    //         Listname: LISTNAMES.SectionDetails,
-    //         SelectedId: section?.ID,
-    //         Select: "*,documentOf/ID",
-    //         Expand: "documentOf",
-    //       });
-
-    //       await SpServices.SPUpdateItem({
-    //         Listname: LISTNAMES.SectionDetails,
-    //         ID: section?.ID,
-    //         RequestJSON: section,
-    //       });
-    //     }
-
-    //     if (section?.isActive && !section?.isDeleted) {
-    //       const hasSectionAuthor = uniqueTaskByResponse?.some(
-    //         (item) =>
-    //           item?.role?.toLowerCase() === "section author" &&
-    //           item?.sectionName === section?.Title
-    //       );
-
-    //       const completedDate = allTasksOfDoc.find(
-    //         (item) => item?.completed
-    //       )?.completedOn;
-
-    //       if (!hasSectionAuthor) {
-    //         await SpServices.SPAddItem({
-    //           Listname: LISTNAMES.MyTasks,
-    //           RequestJSON: {
-    //             Title: docDetails?.docName,
-    //             taskAssigneeId: section?.sectionAuthorId,
-    //             role: "Section Author",
-    //             taskStatus: "content in progress",
-    //             docVersion: docDetails?.docVersion,
-    //             docCreatedDate: docDetails?.docCreatedDate,
-    //             taskDueDate: calculateDueDateByRole(
-    //               docDetails?.docCreatedDate,
-    //               "content developer"
-    //             ),
-    //             sectionDetailsId: section?.ID,
-    //             pathName: docDetails?.pathName,
-    //             documentDetailsId: docDetails?.documentDetailsId,
-    //             sectionName: section?.Title,
-    //             completed: currentSectionDetails?.sectionSubmitted || false,
-    //             completedOn: currentSectionDetails?.sectionSubmitted
-    //               ? completedDate
-    //               : "",
-    //             docStatus: docDetails?.docStatus,
-    //             taskAssignedById: docDetails?.taskAssignee?.ID,
-    //           },
-    //         });
-    //       }
-
-    //       await Promise.all(
-    //         uniqueTaskByResponse.map(async (item) => {
-    //           if (
-    //             section?.sectionAuthorId &&
-    //             item?.role?.toLowerCase() === "section author"
-    //           ) {
-    //             await SpServices.SPUpdateItem({
-    //               Listname: LISTNAMES.MyTasks,
-    //               ID: item?.ID,
-    //               RequestJSON: {
-    //                 sectionName: section?.Title,
-    //                 taskAssigneeId: section?.sectionAuthorId,
-    //               },
-    //             });
-    //           } else if (
-    //             section?.consultantsId?.results?.length > 0 &&
-    //             item?.role?.toLowerCase() === "consultant"
-    //           ) {
-    //             await SpServices.SPDeleteItem({
-    //               Listname: LISTNAMES.MyTasks,
-    //               ID: item?.ID,
-    //             });
-    //           }
-    //         })
-    //       );
-
-    //       const sectionCreatedDate = calculateDueDateByRole(
-    //         dayjs(currentSectionDetails?.Created).format("DD/MM/YYYY"),
-    //         "consultant"
-    //       );
-
-    //       const newConsultantTasks = section?.consultantsId?.results?.map(
-    //         (el: any) => ({
-    //           taskAssignee: el,
-    //           role: "Consultant",
-    //           status: "content in progress",
-    //           sectionName: section?.Title,
-    //         })
-    //       );
-
-    //       await Promise.all(
-    //         newConsultantTasks.map(async (taskItem: any) => {
-    //           const sectionId =
-    //             section?.ID ||
-    //             (
-    //               await SpServices.SPReadItems({
-    //                 Listname: LISTNAMES.SectionDetails,
-    //                 Select: "*,documentOf/ID",
-    //                 Expand: "documentOf",
-    //                 Filter: [
-    //                   {
-    //                     FilterKey: "Title",
-    //                     FilterValue: taskItem?.sectionName,
-    //                     Operator: "eq",
-    //                   },
-    //                   {
-    //                     FilterKey: "documentOf",
-    //                     FilterValue: docDetails?.documentDetailsId,
-    //                     Operator: "eq",
-    //                   },
-    //                 ],
-    //               })
-    //             )[0]?.ID;
-
-    //           await SpServices.SPAddItem({
-    //             Listname: LISTNAMES.MyTasks,
-    //             RequestJSON: {
-    //               Title: docDetails?.docName,
-    //               taskAssigneeId: taskItem.taskAssignee,
-    //               role: taskItem.role,
-    //               taskStatus: taskItem.status || "content in progress",
-    //               docVersion: docDetails?.docVersion,
-    //               docCreatedDate: docDetails?.docCreatedDate,
-    //               taskDueDate: sectionCreatedDate,
-    //               sectionDetailsId: sectionId,
-    //               pathName: docDetails?.pathName,
-    //               documentDetailsId: docDetails?.documentDetailsId,
-    //               sectionName: taskItem.sectionName,
-    //               docStatus: taskItem.docStatus,
-    //               completed: currentSectionDetails?.sectionSubmitted || false,
-    //               completedOn: currentSectionDetails?.sectionSubmitted
-    //                 ? completedDate
-    //                 : "",
-    //               taskAssignedById: docDetails?.taskAssignee?.ID,
-    //             },
-    //           });
-    //         })
-    //       );
-    //     } else {
-    //       await SpServices.SPUpdateItem({
-    //         Listname: LISTNAMES.SectionDetails,
-    //         ID: section?.ID,
-    //         RequestJSON: { isActive: section?.isActive||false },
-    //       });
-
-    //       await Promise.all(
-    //         uniqueTaskByResponse.map((item) =>
-    //           SpServices.SPDeleteItem({
-    //             Listname: LISTNAMES.MyTasks,
-    //             ID: item?.ID,
-    //           })
-    //         )
-    //       );
-    //     }
-
-    //     if (section?.isDeleted) {
-    //       await SpServices.SPDeleteItem({
-    //         Listname: LISTNAMES.SectionDetails,
-    //         ID: section?.ID,
-    //       });
-
-    //       await Promise.all(
-    //         uniqueTaskByResponse.map((item) =>
-    //           SpServices.SPDeleteItem({
-    //             Listname: LISTNAMES.MyTasks,
-    //             ID: item?.ID,
-    //           })
-    //         )
-    //       );
-    //     }
-    //   } catch (error) {
-    //     console.error("Error updating section:", error);
-    //   }
-    // });
 
     await Promise.all([...updateSectionsPromise])
       .then(() => {
