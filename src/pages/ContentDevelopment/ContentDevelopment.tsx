@@ -47,6 +47,7 @@ import {
   changeDocStatus,
   changeSectionStatus,
   getAllSectionsChangeRecord,
+  getPreviousVersionDoc,
   getSectionChangeRecord,
 } from "../../services/ContentDevelopment/CommonServices/CommonServices";
 
@@ -54,7 +55,7 @@ import ChangeRecord from "../../webparts/readifyEmMain/components/ContentDevelop
 
 import ToastMessage from "../../webparts/readifyEmMain/components/common/Toast/ToastMessage";
 import { calculateDueDateByRole } from "../../utils/validations";
-import {
+import getLastReviewDate, {
   getCurrentLoggedPromoter,
   getCurrentPromoter,
   updateSectionDataLocal,
@@ -65,6 +66,8 @@ import { setCDSectionData } from "../../redux/features/ContentDevloperSlice";
 import References from "../../webparts/readifyEmMain/components/ContentDevelopment/References/References";
 import dayjs from "dayjs";
 import { removeVersionFromDocName } from "../../utils/formatDocName";
+import { Backdrop, CircularProgress } from "@mui/material";
+import { setCDBackDrop } from "../../redux/features/ContentDeveloperBackDropSlice";
 
 const Details = {
   sectionName: "Introduction",
@@ -189,6 +192,10 @@ const ContentDevelopment = (): JSX.Element => {
   const AllSectionsDataMain: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDSectionsData
   );
+  const CDBackDrop: any = useSelector(
+    (state: any) => state.ContentDeveloperBackDrop.backDrop
+  );
+  console.log("CDBackDrop: ", CDBackDrop);
 
   const currentUserDetails: any = useSelector(
     (state: any) => state?.MainSPContext?.currentUserDetails
@@ -197,12 +204,19 @@ const ContentDevelopment = (): JSX.Element => {
   const currentDocDetailsData: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDDocDetails
   );
+  console.log("currentDocDetailsData: ", currentDocDetailsData);
 
   // initial States
   // AllSections State
   const [sectionDetails, setSectionDetails] = useState<any>(Details);
   const [AllSectionsData, setAllSectionsData] =
     useState<any>(AllSectionsDataMain);
+  const [prevDocVersions, setPrevDocVersions] = useState<any>({
+    data: [],
+    lastReviewDate: "",
+  });
+
+  console.log("prevDocVersions: ", prevDocVersions);
 
   const [toggleCommentSection, setToggleCommentSection] = useState(false);
   const [checkChanges, setCheckChanges] = useState(false);
@@ -490,6 +504,7 @@ const ContentDevelopment = (): JSX.Element => {
 
   const submitPromotedComment = async () => {
     handleClosePopup(5);
+    dispatch(setCDBackDrop(true));
 
     try {
       if (promoteComments.promoteComment?.trim() === "") {
@@ -555,8 +570,6 @@ const ContentDevelopment = (): JSX.Element => {
       const currentInProgressPromoter = updatedPromoters?.filter(
         (item: any) => item?.status === "in progress"
       )[0]?.id;
-
-      console.log("currentInProgressPromoter: ", currentInProgressPromoter);
 
       const sectionPromoterCount = currentDocRole.reviewer
         ? totalReviewers
@@ -640,7 +653,6 @@ const ContentDevelopment = (): JSX.Element => {
           };
         }
       });
-
       await changeSectionStatus(
         payLoad,
         AllSectionsDataMain,
@@ -659,6 +671,7 @@ const ContentDevelopment = (): JSX.Element => {
   };
 
   const markAllSection = async () => {
+    dispatch(setCDBackDrop(true));
     const totalPromoters: any = currentDocRole?.reviewer
       ? {
           data: currentDocDetailsData?.reviewers,
@@ -737,9 +750,20 @@ const ContentDevelopment = (): JSX.Element => {
           .catch((err: any) => {
             console.log("err: ", err);
           });
+        dispatch(setCDBackDrop(false));
+        setToastMessage({
+          isShow: true,
+          severity: "success",
+          title: "Sections updated!",
+          message: `All sections has been marked as ${
+            currentDocRole.reviewer ? "reviewed" : "approved"
+          }.`,
+          duration: 3000,
+        });
       })
       .catch((err: any) => {
         console.log("err: ", err);
+        dispatch(setCDBackDrop(false));
       });
   };
 
@@ -833,9 +857,9 @@ const ContentDevelopment = (): JSX.Element => {
         withLabel
         icon={false}
         value={currentDocDetailsData?.nextReviewDate}
-        disabled={currentDocDetailsData?.nextReviewDate?.includes(
-          "awaiting approval"
-        )}
+        disabled={currentDocDetailsData?.nextReviewDate
+          ?.toLowerCase()
+          ?.includes("awaiting approval")}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "definitionName");
         }}
@@ -1070,6 +1094,7 @@ const ContentDevelopment = (): JSX.Element => {
         onClick: async () => {
           handleClosePopup(5);
           if (promoteComments.promoteComment !== "") {
+            dispatch(setCDBackDrop(true));
             debugger;
             await addPromotedComment(
               promoteComments.promoteComment,
@@ -1200,7 +1225,6 @@ const ContentDevelopment = (): JSX.Element => {
             dispatch
           );
           console.log(Comments, changeRecordDetails);
-          debugger;
           if (
             AllSectionsData[tempActiveSection].sectionType?.toLowerCase() ===
             "change record"
@@ -1221,8 +1245,6 @@ const ContentDevelopment = (): JSX.Element => {
     currentUserDetails
   );
 
-  console.log("currentPromoter: ", currentPromoter);
-
   const popuphandleOnChanges = (
     value: number,
     condition: boolean,
@@ -1231,37 +1253,36 @@ const ContentDevelopment = (): JSX.Element => {
     if (condition) {
       if (tempActiveSection !== value) {
         setTempActiveSection(value);
-        if (checkChanges) {
-          togglePopupVisibility(
-            setPopupController,
-            8,
-            "open",
-            "Discard current changes?"
-          );
-        } else {
-          setActiveSection(value);
-          const Comments = getSectionComments(
-            AllSectionsData[value].ID,
-            currentDocDetailsData.version,
+        // if (checkChanges) {
+        //   togglePopupVisibility(
+        //     setPopupController,
+        //     8,
+        //     "open",
+        //     "Discard current changes?"
+        //   );
+        // } else {
+        setActiveSection(value);
+        const Comments = getSectionComments(
+          AllSectionsData[value].ID,
+          currentDocDetailsData.version,
+          dispatch
+        );
+        const changeRecordDetails = getSectionChangeRecord(
+          AllSectionsData[value].ID,
+          dispatch
+        );
+        console.log(Comments, changeRecordDetails);
+        debugger;
+        if (
+          AllSectionsData[value].sectionType?.toLowerCase() === "change record"
+        ) {
+          getAllSectionsChangeRecord(
+            currentDocDetailsData.documentDetailsID,
             dispatch
           );
-          const changeRecordDetails = getSectionChangeRecord(
-            AllSectionsData[value].ID,
-            dispatch
-          );
-          console.log(Comments, changeRecordDetails);
-          debugger;
-          if (
-            AllSectionsData[value].sectionType?.toLowerCase() ===
-            "change record"
-          ) {
-            getAllSectionsChangeRecord(
-              currentDocDetailsData.documentDetailsID,
-              dispatch
-            );
-          }
         }
       }
+      // }
     } else {
       getPromotedComments(
         currentDocDetailsData.documentDetailsID,
@@ -1321,57 +1342,6 @@ const ContentDevelopment = (): JSX.Element => {
     return false;
   };
 
-  // const enablePromote = (): boolean => {
-  //   if (!currentDocDetailsData || !AllSectionsData) return false;
-
-  //   const isInReview =
-  //     currentDocDetailsData.documentStatus?.toLowerCase() === "in review";
-  //   const isApproved =
-  //     currentDocDetailsData.documentStatus?.toLowerCase() === "approved";
-  //   const isInApproval =
-  //     currentDocDetailsData.documentStatus?.toLowerCase() === "in approval";
-  //   const isInRework =
-  //     currentDocDetailsData.documentStatus?.toLowerCase() === "in rework";
-
-  //   const sectionsValid = AllSectionsData?.filter(
-  //     (item: any) =>
-  //       item?.sectionType?.toLowerCase() !== "header section" &&
-  //       item?.sectionType?.toLowerCase() !== "change record" &&
-  //       item?.sectionType?.toLowerCase() !== "references section"
-  //   )?.every(
-  //     (item: any) =>
-  //       item?.sectionSubmitted &&
-  //       (isInReview || isInRework
-  //         ? item?.sectionReviewed || currentPromoter?.status === "completed"
-  //         : item?.sectionApproved || currentPromoter?.status === "completed")
-  //   );
-
-  //   // Condition for reviewers
-  //   if ((isInReview || isInRework || isApproved) && currentDocRole?.reviewer) {
-  //     return (
-  //       sectionsValid &&
-  //       currentDocDetailsData?.reviewers?.some(
-  //         (item: any) => item?.status === "in progress"
-  //       )
-  //     );
-  //   }
-
-  //   // Condition for approvers
-  //   if (
-  //     (isInApproval || isInRework || isApproved) &&
-  //     currentDocRole?.approver
-  //   ) {
-  //     return (
-  //       sectionsValid &&
-  //       currentDocDetailsData?.approvers?.some(
-  //         (item: any) => item?.status === "in progress"
-  //       )
-  //     );
-  //   }
-
-  //   return false;
-  // };
-
   let markAsBtnText = "";
 
   if (
@@ -1404,6 +1374,18 @@ const ContentDevelopment = (): JSX.Element => {
     setAllSectionsData(AllSectionsDataMain);
     // setActiveSection();
     setInitialLoader(currentDocDetailsData?.isLoading);
+    let data: any;
+    getPreviousVersionDoc(currentDocDetailsData?.documentDetailsID).then(
+      (res: any) => {
+        const lastReviewDate: any = getLastReviewDate(res);
+        setPrevDocVersions({
+          data: res,
+          lastReviewDate: lastReviewDate,
+        });
+      }
+    );
+
+    console.log("data: ", data);
   }, [currentDocDetailsData?.isLoading]);
 
   useEffect(() => {
@@ -1610,6 +1592,7 @@ const ContentDevelopment = (): JSX.Element => {
                   />
                 )}
                 <SectionBanner
+                  lastReviewDate={prevDocVersions?.lastReviewDate}
                   sectionDetails={AllSectionsData[activeSection]}
                   currentDocDetails={currentDocDetailsData}
                   appendixHeader={false}
@@ -1790,6 +1773,26 @@ const ContentDevelopment = (): JSX.Element => {
         //   currentDocDetailsData === null && <ErrorElement />
         // )
       }
+
+      <Backdrop
+        sx={(theme: any) => ({
+          color: "#eff5ff",
+          zIndex: theme.zIndex.drawer + 1,
+        })}
+        open={CDBackDrop}
+      >
+        <CircularProgress
+          sx={{
+            fontSize: "24px",
+            animationDuration: "450ms",
+            color: "#eff5ff",
+          }}
+          disableShrink
+          variant="indeterminate"
+          color="inherit"
+        />
+      </Backdrop>
+
       <ToastMessage
         severity={toastMessage.severity}
         title={toastMessage.title}

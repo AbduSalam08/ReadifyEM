@@ -142,11 +142,11 @@ export const AddSections = async (
 
       const defaultSectionsData = getUpdatedSectionsData(
         formData.defaultSections,
-        "default section"
+        "defaultSection"
       );
       const appendixSectionsData = getUpdatedSectionsData(
         formData.appendixSections,
-        "appendix section"
+        "appendixSection"
       );
 
       const SATasks: any[] = [];
@@ -231,6 +231,7 @@ export const AddSections = async (
           secondaryText: "",
         });
       }
+
       const docDetailsRes = await SpServices.SPReadItems({
         Listname: LISTNAMES.DocumentDetails,
         Select:
@@ -750,6 +751,7 @@ export const updateSections = async (
   setLoaderState: any,
   docDetails: any
 ): Promise<any> => {
+  debugger;
   try {
     const sectionsToUpdate: any[] = [];
     const sectionsToAdd: any[] = [];
@@ -848,6 +850,15 @@ export const updateSections = async (
           consultantsId: {
             results: element?.consultants?.value?.map((el: any) => el?.id),
           },
+          // sectionType: isReferenceSections
+          //   ? "references section"
+          //   : (element?.sectionType === "defaultSection" &&
+          //       !isReferenceSections) ||
+          //     (element?.sectionType === "normalSection" && !isReferenceSections)
+          //   ? "default section"
+          //   : element?.sectionType === "appendixSection" && !isReferenceSections
+          //   ? "appendix section"
+          //   : "default section",
           sectionType: isReferenceSections
             ? "references section"
             : (element?.sectionType === "defaultSection" &&
@@ -856,7 +867,7 @@ export const updateSections = async (
             ? "default section"
             : element?.sectionType === "appendixSection" && !isReferenceSections
             ? "appendix section"
-            : "default section",
+            : "default section" || element?.sectionType,
           documentOfId: docDetails?.documentDetailsId,
           isActive: element?.sectionSelected,
           isDeleted: element?.removed,
