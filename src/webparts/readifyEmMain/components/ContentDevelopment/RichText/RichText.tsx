@@ -586,7 +586,9 @@ const RichText = ({
           // Get current cursor position
           const range = quill.getSelection();
           console.log(range);
+
           let rangeIndex: number = 0;
+
           // Check if the range is null or invalid
           if (range) {
             // If the range is valid, insert a newline at the current index
@@ -595,38 +597,26 @@ const RichText = ({
             // If the range is null, get the length of the content and insert a newline at the end
             rangeIndex = quill.getLength(); // Returns the last index
           }
+
           console.log(rangeIndex, quill.getLength());
 
-          // Insert a new line before inserting the file link
-          // quill.insertText(range.index, "\n");
-          rangeIndex += 1;
-
-          const iconHtml = `<div><img src="${
+          const iconHtml = `<span><img src="${
             base64Data.file
           }" style="width:11px !important; height:15px !important; vertical-align:middle;margin-right:8px;" />
-          <a href=${encodeURI(
+          <a style="margin-right:10px;" href=${encodeURI(
             fileUrl
           )} rel="noopener noreferrer" target="_blank">${file.name}</a>
-          </div>`;
+          </span>`;
+
           quill.clipboard.dangerouslyPasteHTML(rangeIndex, iconHtml);
-          // rangeIndex += 1;
-          // if (range) {
-          //   rangeIndex += 1;
-          // }
 
-          // Insert a space after the icon for better readability
-          // quill.insertText(rangeIndex, " ");
-          // rangeIndex += 1;
-
-          // Insert the link text
-          // quill.insertText(rangeIndex, file.name, "link", fileUrl);
           rangeIndex += file.name.length + 1;
 
           // Insert a new line after the link
-          quill.insertText(rangeIndex, "\n");
+          quill.insertText(rangeIndex, " ");
 
           // Move the cursor to the start of the new line
-          quill.setSelection(rangeIndex + file.name.length);
+          quill.setSelection(rangeIndex + 1);
         }
       }
     };
@@ -1112,26 +1102,29 @@ const RichText = ({
       )}
       <div style={{ position: "absolute", top: "7px", right: "10px" }}>
         {/* <button onClick={handleAddFile}>Add File</button> */}
-        <DefaultButton
-          text="Attachment"
-          startIcon={
-            <AttachFileIcon
-              sx={{
-                transform: "rotate(25deg)",
+        {!currentSectionData?.sectionSubmitted &&
+          (currentDocRole?.sectionAuthor || currentDocRole?.primaryAuthor) && (
+            <DefaultButton
+              text="Attachment"
+              startIcon={
+                <AttachFileIcon
+                  sx={{
+                    transform: "rotate(25deg)",
+                  }}
+                />
+              }
+              btnType="lightGreyVariant"
+              title="Add attachment"
+              style={{
+                letterSpacing: "0px",
               }}
+              onlyIcon={true}
+              onClick={() => {
+                handleAddFile();
+              }}
+              size="small"
             />
-          }
-          btnType="lightGreyVariant"
-          title="Add attachment"
-          style={{
-            letterSpacing: "0px",
-          }}
-          onlyIcon={true}
-          onClick={() => {
-            handleAddFile();
-          }}
-          size="small"
-        />
+          )}
       </div>
       {!noActionBtns ? (
         <div
