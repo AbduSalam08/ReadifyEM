@@ -432,31 +432,125 @@ const RichText = ({
   //   </div>
   // );
 
-  const handleFileUpload = async (file: File) => {
+  // Function to sanitize folder name
+  function sanitizeFolderName(name: any) {
+    // Replace or remove invalid characters for SharePoint folder names
+    return name.replace(/[:~"#%&*<>?/\\{|}.]/g, "");
+  }
+
+  // Function to check if folder exists
+  async function folderExists(libraryName: string, folderPath: string) {
+    try {
+      const folder = await sp.web
+        .getFolderByServerRelativeUrl(
+          `/sites/ReadifyEM/${libraryName}/${folderPath}`
+        )
+        .get();
+      return folder ? true : false;
+    } catch (error) {
+      if (error.message.includes("404")) {
+        return false; // Folder not found
+      } else {
+        throw error; // Other errors
+      }
+    }
+  }
+
+  const handleFileUpload = async (
+    file: File,
+    sectionDetails: any,
+    currentDocumentDetails: any
+  ) => {
+    debugger;
+    const libraryName = "Shared Documents";
+    // Sanitize folder names
+    const sanitizedDocumentName = sanitizeFolderName(
+      currentDocumentDetails.documentName
+    );
+    const sanitizedSectionName = sanitizeFolderName(sectionDetails.sectionName);
     try {
       // Check if the file already exists
-      const folderPath = "/sites/ReadifyEM/Shared Documents"; // Replace with your actual folder path
+      // const folderPath = "/sites/ReadifyEM/Shared Documents"; // Replace with your actual folder path
       const fileName = file.name;
-      const fileUrl = `${folderPath}/${fileName}`;
+      const fileUrl = `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}/${fileName}`;
       const fileExists = await sp.web.getFileByServerRelativeUrl(fileUrl).get();
-      if (fileExists) {
-        alert("File name already exists.");
-        // return `${window.location.origin}${fileUrl}`;
-        return null;
+
+      const checkLocally = description.includes(fileName);
+      if (checkLocally) {
+        alert("File already exists");
+      } else if (fileExists) {
+        // Upload the file to SharePoint
+        const fileAddResult = await sp.web
+          .getFolderByServerRelativeUrl(
+            `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}`
+          )
+          .files.add(file.name, file, true);
+        console.log(`File '${file.name}' uploaded successfully.`);
+
+        const fileUrl = fileAddResult.data.ServerRelativeUrl;
+
+        return `${window.location.origin}${fileUrl}`;
       }
     } catch (error) {
       console.error("Error uploading file:", error.code);
       if (
         error.message.includes("File not found") ||
-        error.message.includes("-2130575338")
+        error.message.includes("-2130575338") ||
+        error.message.includes("-2147024809")
       ) {
         try {
-          const folderPath = "/sites/ReadifyEM/Shared Documents";
+          debugger;
+
+          const documentFolderExists = await folderExists(
+            libraryName,
+            sanitizedDocumentName
+          );
+          if (!documentFolderExists) {
+            //Create 'document_name' folder in the library
+            await sp.web.folders.add(
+              `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}`
+            );
+            console.log(
+              `Folder '${sanitizedDocumentName}' created successfully.`
+            );
+          } else {
+            console.log(`Folder '${sanitizedDocumentName}' already exists.`);
+          }
+
+          const sectionFolderExists = await folderExists(
+            libraryName,
+            `${sanitizedDocumentName}/${sanitizedSectionName}`
+          );
+
+          if (!sectionFolderExists) {
+            // Create 'section_name' folder inside 'document_name' folder
+            await sp.web.folders.add(
+              `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}`
+            );
+            console.log(
+              `Subfolder '${sanitizedSectionName}' created successfully.`
+            );
+          } else {
+            console.log(`Subfolder '${sanitizedSectionName}' already exists.`);
+          }
+
           // Upload the file to SharePoint
           const fileAddResult = await sp.web
-            .getFolderByServerRelativeUrl(folderPath)
+            .getFolderByServerRelativeUrl(
+              `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}`
+            )
             .files.add(file.name, file, true);
+          console.log(`File '${file.name}' uploaded successfully.`);
           debugger;
+
+          // Step 3: Update lookup field (metadata)
+          const item = await fileAddResult.file.getItem();
+          await item.update({
+            documentDetailsId: currentDocumentDetails.documentDetailsID, // Replace with your lookup field's internal name
+          });
+          console.log(
+            `Lookup field updated successfully with ID '${currentDocumentDetails.documentDetailsID}'.`
+          );
           // Get the file URL
           const fileUrl = fileAddResult.data.ServerRelativeUrl;
 
@@ -482,27 +576,57 @@ const RichText = ({
     fileInput.onchange = async (event: any) => {
       const file = event.target.files[0];
       if (file) {
-        const fileUrl = await handleFileUpload(file);
+        const fileUrl = await handleFileUpload(
+          file,
+          currentSectionData,
+          currentDocDetailsData
+        );
         if (fileUrl && quillRef.current) {
           const quill = quillRef.current.getEditor();
-          const range = quill.getSelection(); // Get current cursor position
-          // Insert a new line before inserting the file link
-          quill.insertText(range.index, "\n"); // Insert newline
+          // Get current cursor position
+          const range = quill.getSelection();
+          console.log(range);
+          let rangeIndex: number = 0;
+          // Check if the range is null or invalid
+          if (range) {
+            // If the range is valid, insert a newline at the current index
+            rangeIndex = range.index;
+          } else {
+            // If the range is null, get the length of the content and insert a newline at the end
+            rangeIndex = quill.getLength(); // Returns the last index
+          }
+          console.log(rangeIndex, quill.getLength());
 
-          const iconHtml = `<img src="${base64Data.file}" style="width:20px !important; height:20px !important; vertical-align:middle;" />`;
-          quill.clipboard.dangerouslyPasteHTML(range.index + 1, iconHtml);
+          // Insert a new line before inserting the file link
+          // quill.insertText(range.index, "\n");
+          rangeIndex += 1;
+
+          const iconHtml = `<div><img src="${
+            base64Data.file
+          }" style="width:11px !important; height:15px !important; vertical-align:middle;margin-right:8px;" />
+          <a href=${encodeURI(
+            fileUrl
+          )} rel="noopener noreferrer" target="_blank">${file.name}</a>
+          </div>`;
+          quill.clipboard.dangerouslyPasteHTML(rangeIndex, iconHtml);
+          // rangeIndex += 1;
+          // if (range) {
+          //   rangeIndex += 1;
+          // }
 
           // Insert a space after the icon for better readability
-          quill.insertText(range.index + 2, " ");
+          // quill.insertText(rangeIndex, " ");
+          // rangeIndex += 1;
 
           // Insert the link text
-          quill.insertText(range.index + 3, file.name, "link", fileUrl); // Insert the file link
+          // quill.insertText(rangeIndex, file.name, "link", fileUrl);
+          rangeIndex += file.name.length + 1;
 
           // Insert a new line after the link
-          quill.insertText(range.index + 3 + file.name.length, "\n");
+          quill.insertText(rangeIndex, "\n");
 
           // Move the cursor to the start of the new line
-          quill.setSelection(range.index + 4 + file.name.length);
+          quill.setSelection(rangeIndex + file.name.length);
         }
       }
     };
@@ -567,7 +691,7 @@ const RichText = ({
   const [description, setDescription] = useState<string>("");
   const [masterDescription, setMasterDescription] = useState<string>("");
 
-  console.log(masterDescription);
+  console.log(description, masterDescription);
 
   // const _handleOnChange = (newText: string): string => {
   //   setDescription(newText === "<p><br></p>" ? "" : newText);
@@ -620,8 +744,11 @@ const RichText = ({
               imageElements.forEach((imageElement: any) => {
                 if (imgSrc.startsWith(base64Data.file)) {
                   // Set style for the base64 icon
-                  imageElement.setAttribute("style", "width: 15px;height:15px");
                   imageElement.setAttribute("class", "fileAttachmentIcon");
+                  imageElement.setAttribute(
+                    "style",
+                    "width: 11px;height:15px;vertical-align:middle;"
+                  );
                 } else {
                   // Set style for other images
                   imageElement.setAttribute(
@@ -643,6 +770,7 @@ const RichText = ({
             : 1
           : 0;
       }
+      // setDescription(editor.getHTML());
       setDescription(editor.getHTML());
 
       const currentHtml = editor.getHTML().trim();

@@ -31,8 +31,21 @@ em {
   max-width: 400px;
   height: auto !important;
   max-height: 400px;
+  margin-right: 8px;
+  vertical-align: middle !important;
 }
 .ql-editor .fileAttachmentIcon {
-  width: 15px !important;
+  width: 11px !important;
   height: 15px !important;
+  margin-right: 8px;
+  vertical-align: middle !important;
+}
+.ql-editor a{
+  vertical-align: middle !important;
+}
+.ql-action{
+  display: none !important;
+}
+.ql-remove{
+  display: none !important;
 }
