@@ -503,10 +503,10 @@ const ContentDevelopment = (): JSX.Element => {
   };
 
   const submitPromotedComment = async () => {
-    handleClosePopup(5);
-    dispatch(setCDBackDrop(true));
+    handleClosePopup(3);
 
     try {
+      dispatch(setCDBackDrop(true));
       if (promoteComments.promoteComment?.trim() === "") {
         setPromoteComments({
           ...promoteComments,
