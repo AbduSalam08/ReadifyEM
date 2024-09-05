@@ -806,7 +806,10 @@ const References: React.FC<Props> = ({
           obj.ID
         );
         const tempArray = tempSelectedDefinitionArray.filter(
-          (obj: any) => !obj.isDeleted
+          (obj: any) =>
+            !obj.isDeleted &&
+            obj.referenceAuthorName !== "" &&
+            obj.referenceTitle !== ""
         );
         console.log(tempArray, sectionReferences);
         setAllReferencesData([...tempArray, ...sectionReferences]);

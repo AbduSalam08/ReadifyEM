@@ -219,18 +219,80 @@ const Definitions = (): JSX.Element => {
           IsValid: false,
           ErrorMsg: "definitionDescription",
         }));
-      } else if (definitionsData.referenceTitle === "") {
-        setDefinitionsData((prev: any) => ({
-          ...prev,
-          IsValid: false,
-          ErrorMsg: "referenceTitle",
-        }));
-      } else if (definitionsData.referenceAuthorName === "") {
-        setDefinitionsData((prev: any) => ({
-          ...prev,
-          IsValid: false,
-          ErrorMsg: "referenceAuthorName",
-        }));
+      } else if (definitionsData.referenceTitle !== "") {
+        if (definitionsData.referenceAuthorName === "") {
+          setDefinitionsData((prev: any) => ({
+            ...prev,
+            IsValid: false,
+            ErrorMsg: "referenceAuthorName",
+          }));
+        } else {
+          if (definitionsData.referenceLink !== "") {
+            if (!validateWebURL(definitionsData.referenceLink)) {
+              setDefinitionsData((prev: any) => ({
+                ...prev,
+                IsValid: false,
+                ErrorMsg: "referenceLink",
+              }));
+            } else {
+              setDefinitionsData((prev: any) => ({
+                ...prev,
+                IsValid: true,
+                ErrorMsg: "",
+              }));
+              return true;
+            }
+          } else {
+            setDefinitionsData((prev: any) => ({
+              ...prev,
+              IsValid: true,
+              ErrorMsg: "",
+            }));
+            return true;
+          }
+        }
+        // setDefinitionsData((prev: any) => ({
+        //   ...prev,
+        //   IsValid: false,
+        //   ErrorMsg: "referenceTitle",
+        // }));
+      } else if (definitionsData.referenceAuthorName !== "") {
+        if (definitionsData.referenceTitle === "") {
+          setDefinitionsData((prev: any) => ({
+            ...prev,
+            IsValid: false,
+            ErrorMsg: "referenceTitle",
+          }));
+        } else {
+          if (definitionsData.referenceLink !== "") {
+            if (!validateWebURL(definitionsData.referenceLink)) {
+              setDefinitionsData((prev: any) => ({
+                ...prev,
+                IsValid: false,
+                ErrorMsg: "referenceLink",
+              }));
+            } else {
+              setDefinitionsData((prev: any) => ({
+                ...prev,
+                IsValid: true,
+                ErrorMsg: "",
+              }));
+              return true;
+            }
+          } else {
+            setDefinitionsData((prev: any) => ({
+              ...prev,
+              IsValid: true,
+              ErrorMsg: "",
+            }));
+            return true;
+          }
+        }
+        // setDefinitionsData((prev: any) => ({
+        //   ...prev,
+        //   IsValid: false,
+        //   ErrorMsg: "referenceAuthorName",
+        // }));
       } else if (definitionsData.referenceLink !== "") {
         if (!validateWebURL(definitionsData.referenceLink)) {
           setDefinitionsData((prev: any) => ({
