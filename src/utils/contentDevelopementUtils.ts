@@ -600,7 +600,7 @@ export const updateDocDataLocal = (
   updates: Partial<any>
 ): any[] => {
   return DocData?.map((obj) => {
-    if (obj.ID === docID) {
+    if (obj.ID === docID || obj.documentDetailsID === docID) {
       return {
         ...obj,
         ...updates,

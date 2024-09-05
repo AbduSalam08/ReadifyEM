@@ -198,15 +198,11 @@ const ContentDevelopment = (): JSX.Element => {
     (state: any) => state.ContentDeveloperData.CDDocDetails
   );
 
-  console.log("currentDocDetailsData: ", currentDocDetailsData);
-
   // initial States
   // AllSections State
   const [sectionDetails, setSectionDetails] = useState<any>(Details);
   const [AllSectionsData, setAllSectionsData] =
     useState<any>(AllSectionsDataMain);
-
-  console.log("AllSectionsData: ", AllSectionsData);
 
   const [toggleCommentSection, setToggleCommentSection] = useState(false);
   const [checkChanges, setCheckChanges] = useState(false);
@@ -488,8 +484,6 @@ const ContentDevelopment = (): JSX.Element => {
         false
       );
     }
-
-    console.log("updatedApprovers: ", updatedApprovers);
 
     return updatedApprovers;
   };
@@ -839,6 +833,9 @@ const ContentDevelopment = (): JSX.Element => {
         withLabel
         icon={false}
         value={currentDocDetailsData?.nextReviewDate}
+        disabled={currentDocDetailsData?.nextReviewDate?.includes(
+          "awaiting approval"
+        )}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "definitionName");
         }}
@@ -923,6 +920,20 @@ const ContentDevelopment = (): JSX.Element => {
         multiUsers={true}
         // noBorderInput={true}
         key={5}
+      />,
+      <CustomInput
+        size="MD"
+        labelText="Footer Title"
+        withLabel
+        icon={false}
+        value={currentDocDetailsData?.footerTitle}
+        onChange={(value: any) => {
+          // handleOnChangeFunction(value, "definitionName");
+        }}
+        readOnly={true}
+        noBorderInput={true}
+        hideErrMsg={true}
+        key={1}
       />,
     ],
     [
@@ -1611,6 +1622,7 @@ const ContentDevelopment = (): JSX.Element => {
                       version={currentDocDetailsData?.version}
                       type={currentDocDetailsData?.documentTemplateType?.Title}
                       headerTitle={currentDocDetailsData?.documentName}
+                      currentDocDetailsData={currentDocDetailsData}
                       sectionDetails={AllSectionsData[activeSection]}
                       primaryAuthorDefaultHeader={true}
                     />

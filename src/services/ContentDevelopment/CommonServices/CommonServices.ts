@@ -253,6 +253,7 @@ export const getSectionsDetails = async (
       documentTemplateType: DocDetailsResponseData?.documentTemplateType,
       documentPath: DocDetailsResponseData?.documentPath,
       version: DocDetailsResponseData?.documentVersion,
+      footerTitle: DocDetailsResponseData?.footerTitle,
       primaryAuthor: {
         ID: DocDetailsResponseData?.primaryAuthor?.ID,
         name: DocDetailsResponseData?.primaryAuthor?.Title,

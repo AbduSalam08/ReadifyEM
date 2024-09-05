@@ -13,6 +13,7 @@ import { InputSwitch } from "primereact/inputswitch";
 import SpServices from "../../../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../../../config/config";
 import { trimStartEnd } from "../../../../utils/validations";
+import { statusLabel } from "../common/ContentDeveloperStatusLabel/ContentDeveloperStatusLabel";
 
 interface LibraryItem {
   name: string;
@@ -151,13 +152,13 @@ const TableItem: React.FC<TableItemProps> = ({
               <div className={styles.item} title={fieldValue} key={i}>
                 {!item.fields[key]
                   ?.toLowerCase()
-                  ?.includes("yet to be approved") && fieldValue}
+                  ?.includes("awaiting approval") && fieldValue}
                 {lowerCaseKey === "nextreviewdate" && !item.isDraft && (
                   <div style={{ marginLeft: "10px" }}>
                     {item.fields[key] &&
                     !item.fields[key]
                       ?.toLowerCase()
-                      ?.includes("yet to be approved") &&
+                      ?.includes("awaiting approval") &&
                     trimStartEnd(item.fields[key])?.trim() ? (
                       <DueDatePill
                         dueDate={item.fields[key]}
@@ -165,11 +166,12 @@ const TableItem: React.FC<TableItemProps> = ({
                         leftText={"D"}
                       />
                     ) : (
-                      <StatusPill
-                        status="Hidden"
-                        size="SM"
-                        dynamicText={item.fields[key]}
-                      />
+                      // <StatusPill
+                      //   status="Hidden"
+                      //   size="SM"
+                      //   dynamicText={item.fields[key]}
+                      // />
+                      statusLabel(false, item.fields[key])
                     )}
                   </div>
                 )}

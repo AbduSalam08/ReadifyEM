@@ -14,12 +14,13 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "primereact/button";
 import "./SetupHeader.css";
 import { useNavigate } from "react-router-dom";
-import { CONFIG } from "../../../../../config/config";
+import { CONFIG, LISTNAMES } from "../../../../../config/config";
 import {
   // addAppendixHeaderAttachmentData,
   addHeaderAttachmentData,
   getSectionData,
   getSectionDataFromAppendixList,
+  updateDocDataLocal,
 } from "../../../../../utils/contentDevelopementUtils";
 import { getHeaderSectionDetails } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +30,9 @@ import ToastMessage from "../../common/Toast/ToastMessage";
 const sampleDocHeaderImg: any = require("../../../../../assets/images/png/imagePlaceholder.png");
 import CloseIcon from "@mui/icons-material/Close";
 import { removeVersionFromDocName } from "../../../../../utils/formatDocName";
+import SpServices from "../../../../../services/SPServices/SpServices";
+import { sp } from "@pnp/sp";
+import { setCDDocDetails } from "../../../../../redux/features/ContentDevloperSlice";
 
 interface Props {
   sectionDetails: any;
@@ -39,8 +43,10 @@ interface Props {
   primaryAuthorDefaultHeader?: boolean;
   noActionBtns?: boolean;
   appendixSection?: boolean;
+  footerTitle?: boolean;
   currentDocRole?: any;
   onChange?: any;
+  currentDocDetailsData?: any;
 }
 
 const SetupHeader: React.FC<Props> = ({
@@ -51,9 +57,11 @@ const SetupHeader: React.FC<Props> = ({
   noActionBtns,
   appendixSection,
   appendixName,
+  footerTitle,
   sectionDetails,
   onChange,
   currentDocRole,
+  currentDocDetailsData,
 }) => {
   console.log("currentDocRole: ", currentDocRole);
   const fileUploadRef = useRef<any>(null);
@@ -63,6 +71,7 @@ const SetupHeader: React.FC<Props> = ({
     type: type,
     headerTitle: headerTitle,
     appendixName: appendixName,
+    footerTitle: footerTitle,
   };
   const [toastMessage, setToastMessage] = useState<any>({
     isShow: false,
@@ -89,6 +98,11 @@ const SetupHeader: React.FC<Props> = ({
     fileData: [],
     fileName: "",
   });
+
+  const [details, setDetails] = useState({
+    footerTitle: footerTitle,
+  });
+  console.log("details: ", details);
 
   const navigate = useNavigate();
 
@@ -339,7 +353,6 @@ const SetupHeader: React.FC<Props> = ({
   };
 
   const setFileDataInitial = (data: any): any => {
-    console.log("data: ", data);
     setFile(data);
     if (onChange) {
       onChange(data);
@@ -364,6 +377,24 @@ const SetupHeader: React.FC<Props> = ({
       getSectionDataFromAppendixList(sectionDetails, setFileDataInitial);
     }
   }, [sectionDetails]);
+
+  useEffect(() => {
+    sp.web.lists
+      .getByTitle(LISTNAMES.DocumentDetails)
+      .items.getById(currentDocDetailsData?.documentDetailsID)
+      .get()
+      .then((res: any) => {
+        console.log("res: ", res);
+        const resp = res[0] || res;
+        setDetails((prev: any) => ({
+          ...prev,
+          footerTitle: resp?.footerTitle,
+        }));
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+  }, []);
 
   useEffect(() => {
     if (onChange) {
@@ -469,6 +500,24 @@ const SetupHeader: React.FC<Props> = ({
               secWidth="307px"
               readOnly={true}
             />
+            <CustomInput
+              value={details.footerTitle}
+              labelText="Footer Title"
+              withLabel
+              // autoFocus
+              readOnly={!currentDocRole?.primaryAuthor}
+              placeholder="Enter here"
+              topLabel
+              secWidth="307px"
+              onChange={(value: any) => {
+                console.log("value: ", value);
+                setDetails((prev: any) => ({
+                  ...prev,
+                  footerTitle: value,
+                }));
+              }}
+              // readOnly={true}
+            />
             {!noActionBtns && currentDocRole?.primaryAuthor && (
               <div
                 style={{
@@ -510,9 +559,19 @@ const SetupHeader: React.FC<Props> = ({
                         dispatch
                       );
 
-                    Promise.all([dataAdded])
+                    const updateDocFooterTitle = await SpServices.SPUpdateItem({
+                      Listname: LISTNAMES.DocumentDetails,
+                      ID: currentDocDetailsData?.documentDetailsID,
+                      RequestJSON: {
+                        footerTitle: details.footerTitle,
+                      },
+                    });
+
+                    Promise.all([dataAdded, updateDocFooterTitle])
                       .then(async () => {
+                        debugger;
                         await getHeaderSectionDetails(sectionDetails, dispatch);
+
                         setSectionLoader(false);
                         setToastMessage({
                           isShow: true,
@@ -531,7 +590,7 @@ const SetupHeader: React.FC<Props> = ({
                         setSectionLoader(false);
                         setToastMessage({
                           isShow: true,
-                          severity: "error",
+                          severity: "warn",
                           title: "Something went wrong!",
                           message:
                             "A unexpected error happened while updating! please try again later.",
@@ -539,7 +598,15 @@ const SetupHeader: React.FC<Props> = ({
                         });
                       });
 
-                    // }
+                    const updatedDocData = updateDocDataLocal(
+                      [currentDocDetailsData],
+                      currentDocDetailsData?.documentDetailsID,
+                      {
+                        footerTitle: details.footerTitle,
+                      }
+                    );
+
+                    dispatch(setCDDocDetails(updatedDocData[0]));
                   }}
                 />
               </div>
