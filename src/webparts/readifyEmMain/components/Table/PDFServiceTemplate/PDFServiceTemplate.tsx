@@ -16,8 +16,8 @@ import "./PDFServiceTemplate.css";
 // import SpServices from "../../../../../services/SPServices/SpServices";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import { getDocumentRelatedSections } from "../../../../../services/PDFServices/PDFServices";
-import DefaultButton from "../../common/Buttons/DefaultButton";
-import html2pdf from "html2pdf.js";
+// import DefaultButton from "../../common/Buttons/DefaultButton";
+// import html2pdf from "html2pdf.js";
 interface Iprops {
   documentId: number;
 }
@@ -163,20 +163,12 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
           <span>No content has been developed at this time.</span>
         </div>
       )}
-      <DefaultButton
+      {/* <DefaultButton
         text="PDF"
         btnType="secondary"
         onClick={() => {
-          // const doc = new jsPDF();
-          //get table html
           const pdfTable: any =
             document.getElementById("divToPrint")?.innerHTML;
-          //html to pdf format
-          // const html = htmlToPdfmake(pdfTable.innerHTML);
-          // debugger;
-          // const documentDefinition = { content: html };
-          // pdfMake.vfs = pdfFonts.pdfMake.vfs;
-          // pdfMake.createPdf(documentDefinition).open();
           debugger;
           html2pdf()
             .from(pdfTable)
@@ -184,12 +176,12 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
               margin: 1,
               filename: "document.pdf",
               image: { type: "jpeg", quality: 0.98 },
-              html2canvas: { scale: 0.7 },
+              html2canvas: { scale: 2 },
               jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
             })
             .save();
         }}
-      />
+      /> */}
     </>
   );
 };

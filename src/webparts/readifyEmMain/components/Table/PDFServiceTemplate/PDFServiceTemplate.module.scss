@@ -14,13 +14,20 @@
     background-color: #eeeeee;
 }
 .paraSection{
-    img {
-            width: 400px !important;
-            height: 400px !important;
-    }
     .fileAttachmentIcon {
-        width: 15px !important;
+        width: 11px !important;
         height: 15px !important;
+        margin-right: 8px;
+        vertical-align: middle !important;
+    }
+    img {
+        width: 400px;
+        height: 400px;
+        margin-right: 8px;
+        vertical-align: middle !important;
+    }
+    a{
+        vertical-align: middle !important;
     }
     p {
         line-height: 20px;
