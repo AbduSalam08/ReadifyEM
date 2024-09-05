@@ -92,3 +92,17 @@ export const ContentDeveloperStatusLabel = (
     return <SecondaryTextLabel icon={iconPending} text="In Development" />;
   }
 };
+
+export const statusLabel = (icon: any, text: string): any => {
+  const iconPending = icon ? (
+    icon
+  ) : (
+    <AccessTimeIcon
+      style={{
+        width: "17px",
+      }}
+    />
+  );
+
+  return <SecondaryTextLabel icon={iconPending} text={text} />;
+};

@@ -37,7 +37,8 @@
 }
 .setupHeaderWrapperExpanded {
   display: flex;
-  height: 265px;
+  // height: 265px;
+  height: auto;
   overflow: hidden;
   transition: all 0.2s !important;
 }

@@ -55,6 +55,7 @@ const AddNewDocumentToLib = async ({
 }: IProps): Promise<any> => {
   debugger;
   if (initiateNewVersion) {
+    let fileAddResult: any;
     try {
       setLoaderState({
         isLoading: {
@@ -81,14 +82,14 @@ const AddNewDocumentToLib = async ({
         .getBuffer();
 
       // Upload the file to the destination
-      const fileAddResult: any = await sp.web
+      fileAddResult = await sp.web
         .getFolderByServerRelativePath(filePath)
         .files.addUsingPath(destinationFileUrl, fileBuffer, {
           Overwrite: true,
         });
 
       // Update metadata for the uploaded file
-      const fileItem = await fileAddResult.file.getItem();
+      const fileItem = await fileAddResult?.file.getItem();
       console.log("fileItem: ", fileItem);
 
       await SpServices.SPUpdateItem({
@@ -144,6 +145,8 @@ const AddNewDocumentToLib = async ({
         }
       }
     } catch (error) {
+      debugger;
+
       console.error("Error creating or uploading PDF: ", error);
 
       setLoaderState({
@@ -155,19 +158,35 @@ const AddNewDocumentToLib = async ({
         visibility: true,
         text:
           error.message.includes("contains invalid characters") ||
-          error.message.includes("potentially dangerous Request")
+          error.message.includes("potentially dangerous Request") ||
+          error.message.includes("The expression") ||
+          error.message.includes("is not valid.")
             ? "Invalid document name"
             : "Unable to create the document.",
         secondaryText:
           error.message.includes("contains invalid characters") ||
-          error.message.includes("potentially dangerous Request")
+          error.message.includes("potentially dangerous Request") ||
+          error.message.includes("The expression") ||
+          error.message.includes("is not valid.")
             ? `The document name "${fileName}" contains invalid characters, please use a different name.`
             : "An unexpected error occurred while uploading document, please try again later.",
       });
 
+      await SpServices.SPDeleteItem({
+        Listname: LISTNAMES.DocumentDetails,
+        ID: fileID,
+      });
+
+      if (fileAddResult) {
+        await sp.web
+          .getFileByServerRelativeUrl(fileAddResult?.data?.ServerRelativeUrl)
+          .delete();
+      }
+
       return false;
     }
   } else {
+    let fileAddResult: any;
     try {
       setLoaderState({
         isLoading: {
@@ -191,11 +210,14 @@ const AddNewDocumentToLib = async ({
 
       // Upload the PDF to the specified SharePoint library
       if (fileName) {
-        const fileAddResult: any = await sp.web
+        debugger;
+        fileAddResult = await sp.web
           .getFolderByServerRelativePath(filePath)
           .files.addUsingPath(`${fileName}.pdf`, pdfBlob, {
             Overwrite: true,
           });
+
+        console.log("fileAddResult: ", fileAddResult);
 
         // Update metadata for the uploaded file
         const fileItem = await fileAddResult.file.getItem();
@@ -263,15 +285,29 @@ const AddNewDocumentToLib = async ({
         visibility: true,
         text:
           error.message.includes("contains invalid characters") ||
-          error.message.includes("potentially dangerous Request")
+          error.message.includes("potentially dangerous Request") ||
+          error.message.includes("The expression") ||
+          error.message.includes("is not valid.")
             ? "Invalid document name"
             : "Unable to create the document.",
         secondaryText:
           error.message.includes("contains invalid characters") ||
-          error.message.includes("potentially dangerous Request")
+          error.message.includes("potentially dangerous Request") ||
+          error.message.includes("The expression") ||
+          error.message.includes("is not valid.")
             ? `The document name "${fileName}" contains invalid characters, please use a different name.`
-            : "An unexpected error occured while uploading document, please try again later.",
+            : "An unexpected error occurred while uploading document, please try again later.",
       });
+      await SpServices.SPDeleteItem({
+        Listname: LISTNAMES.DocumentDetails,
+        ID: fileID,
+      });
+
+      if (fileAddResult) {
+        await sp.web
+          .getFileByServerRelativeUrl(fileAddResult?.data?.ServerRelativeUrl)
+          .delete();
+      }
 
       return false;
     }
@@ -460,6 +496,12 @@ const AddNewDocument = async (
     (el: any) => el?.templateName === data[1]?.value
   )[0]?.ID;
 
+  const primaryAuthorName: any = data?.filter(
+    (el: any) => el?.key === "primaryAuthorId"
+  )[0]?.value?.[0]?.name;
+
+  console.log("primaryAuthorName: ", primaryAuthorName);
+
   const formData: any = data?.reduce((acc: any, el: any) => {
     acc[el.key] =
       el.key === "approvers" || el.key === "reviewers"
@@ -471,14 +513,14 @@ const AddNewDocument = async (
         : el.key === "documentTemplateTypeId"
         ? selectedTemplateID
         : el.key === "nextReviewDate"
-        ? "Yet to be approved"
+        ? "awaiting approval"
         : el.value;
     return acc;
   }, {});
 
   await SpServices.SPAddItem({
     Listname: LISTNAMES.DocumentDetails,
-    RequestJSON: formData,
+    RequestJSON: { ...formData, footerTitle: primaryAuthorName },
   })
     .then(async (res: any) => {
       const responseData = res?.data;
@@ -498,7 +540,7 @@ const AddNewDocument = async (
         {
           key: "nextReviewDate",
           // value: responseData?.nextReviewDate,
-          value: "Yet to be approved",
+          value: "awaiting approval",
         },
         {
           key: "isDraft",
@@ -774,7 +816,7 @@ const UpdateDocument = async (
                 ? dayjs(new Date()).format("DD/MM/YYYY")
                 : el.key === "nextReviewDate"
                 ? // ? validateAndFindDate(currentNextReviewDate?.value)
-                  "Yet to be approved"
+                  "awaiting approval"
                 : el.value;
             return acc;
           }, {});
@@ -965,8 +1007,9 @@ const UpdateDocument = async (
                 ? selectedTemplateID
                 : el.key === "nextReviewDate"
                 ? // ? validateAndFindDate(currentNextReviewDate?.value)
-                  "Yet to be approved"
+                  "awaiting approval"
                 : el.value;
+
             return acc;
           }, {});
 
