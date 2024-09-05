@@ -122,6 +122,7 @@ interface Props {
   currentDocDetails: any;
   appendixHeader: any;
   secondaryTitle?: any;
+  lastReviewDate: any;
 }
 
 const SectionBanner: React.FC<Props> = ({
@@ -129,6 +130,7 @@ const SectionBanner: React.FC<Props> = ({
   currentDocDetails,
   appendixHeader,
   secondaryTitle,
+  lastReviewDate,
 }) => {
   const [imgURL, setImgURL] = useState<string>("");
   const dispatch = useDispatch();
@@ -200,7 +202,9 @@ const SectionBanner: React.FC<Props> = ({
           <div className={styles.bannerSec}>
             <span className={styles.docDetailsSpan1}>Last review</span>
             <span className={styles.docDetailsSpan2}>
-              {currentDocDetails?.lastReviewDate || "-"}
+              {lastReviewDate?.toLowerCase() !== "invalid date"
+                ? lastReviewDate
+                : "-" || "-"}
             </span>
           </div>
           <div className={styles.bannerSec}>

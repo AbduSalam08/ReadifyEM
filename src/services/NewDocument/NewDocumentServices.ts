@@ -513,7 +513,7 @@ const AddNewDocument = async (
         : el.key === "documentTemplateTypeId"
         ? selectedTemplateID
         : el.key === "nextReviewDate"
-        ? "awaiting approval"
+        ? "Awaiting approval"
         : el.value;
     return acc;
   }, {});
@@ -540,7 +540,7 @@ const AddNewDocument = async (
         {
           key: "nextReviewDate",
           // value: responseData?.nextReviewDate,
-          value: "awaiting approval",
+          value: "Awaiting approval",
         },
         {
           key: "isDraft",
@@ -816,7 +816,7 @@ const UpdateDocument = async (
                 ? dayjs(new Date()).format("DD/MM/YYYY")
                 : el.key === "nextReviewDate"
                 ? // ? validateAndFindDate(currentNextReviewDate?.value)
-                  "awaiting approval"
+                  "Awaiting approval"
                 : el.value;
             return acc;
           }, {});
@@ -1007,7 +1007,7 @@ const UpdateDocument = async (
                 ? selectedTemplateID
                 : el.key === "nextReviewDate"
                 ? // ? validateAndFindDate(currentNextReviewDate?.value)
-                  "awaiting approval"
+                  "Awaiting approval"
                 : el.value;
 
             return acc;

@@ -24,6 +24,7 @@ import {
   setSectionComments,
 } from "../../../redux/features/SectionCommentsSlice";
 import { calculateDocDueDateByTerm } from "../../../utils/NewDocumentUtils";
+import { setCDBackDrop } from "../../../redux/features/ContentDeveloperBackDropSlice";
 
 export const getSectionsDetails = async (
   taskDetails: any,
@@ -1171,6 +1172,7 @@ export const changeDocStatus = async (
               new Date(),
               currentDocResponse?.reviewRange
             ),
+            approvedOn: dayjs(new Date()).format("DD/MM/YYYY"),
           },
         });
 
@@ -1258,9 +1260,11 @@ export const changeSectionStatus = async (
   })
     .then((res: any) => {
       console.log("res: ", res);
+      dispatch(setCDBackDrop(false));
     })
     .catch((err: any) => {
       console.log("err: ", err);
+      dispatch(setCDBackDrop(false));
     });
 
   for (const element of sectionsData) {
@@ -1534,4 +1538,25 @@ export const addChangeRecord = async (
       await getAllSectionsChangeRecord(documentId, dispatcher);
     })
     .catch((err: any) => console.log(err));
+};
+
+export const getPreviousVersionDoc = async (docID: any): Promise<any> => {
+  try {
+    const response = await SpServices.SPReadItems({
+      Listname: LISTNAMES.AllDocuments,
+      Select: "*, documentDetails/ID",
+      Expand: "documentDetails",
+      Filter: [
+        {
+          Operator: "eq",
+          FilterKey: "documentDetails",
+          FilterValue: docID,
+        },
+      ],
+    });
+    return response; // Return the response from the SPReadItems call
+  } catch (error) {
+    console.error("Error fetching previous version document:", error);
+    return null; // Or handle the error as needed
+  }
 };
