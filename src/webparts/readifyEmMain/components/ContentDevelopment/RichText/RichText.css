@@ -42,6 +42,7 @@ em {
 }
 .ql-editor a{
   vertical-align: middle !important;
+  margin-right: 10px;
 }
 .ql-action{
   display: none !important;
