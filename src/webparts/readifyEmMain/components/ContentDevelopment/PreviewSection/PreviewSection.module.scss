@@ -4,9 +4,13 @@
     font-family: "interRegular", sans-serif !important;
 }
 .paraSection {
+    .fileAttachmentIcon{
+        width: 15px !important;
+        height: 15px !important;
+    }
     img {
-        width: 400px !important;
-        height: 400px !important;
+        width: 400px;
+        height: 400px;
     }
     p{
         line-height: 20px;

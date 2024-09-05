@@ -17,7 +17,7 @@ import {
   UpdateAttachment,
 } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import SpServices from "../../../../../services/SPServices/SpServices";
-import { LISTNAMES } from "../../../../../config/config";
+import { base64Data, LISTNAMES } from "../../../../../config/config";
 import { useNavigate } from "react-router-dom";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import ToastMessage from "../../common/Toast/ToastMessage";
@@ -39,6 +39,8 @@ import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
 import PreviewSection from "../PreviewSection/PreviewSection";
 import CloseIcon from "@mui/icons-material/Close";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import { sp } from "@pnp/sp";
 
 interface IRichTextProps {
   noActionBtns?: boolean;
@@ -411,6 +413,103 @@ const RichText = ({
     duration: "",
   });
   const [sectionLoader, setSectionLoader] = useState(true);
+
+  // Step 3: Extend Quill's toolbar with your custom button
+  // const CustomToolbar = () => (
+  //   <div id="toolbar">
+  //     <button className="ql-header" value="1" />
+  //     <button className="ql-header" value="2" />
+  //     <button className="ql-bold" />
+  //     <button className="ql-italic" />
+  //     <button className="ql-underline" />
+  //     <button className="ql-list" value="ordered" />
+  //     <button className="ql-list" value="bullet" />
+  //     <button className="ql-indent" value="-1" />
+  //     <button className="ql-indent" value="+1" />
+  //     <button className="ql-image" />
+  //     <button className="ql-clean" />
+  //     <span className="ql-customButton" />
+  //   </div>
+  // );
+
+  const handleFileUpload = async (file: File) => {
+    try {
+      // Check if the file already exists
+      const folderPath = "/sites/ReadifyEM/Shared Documents"; // Replace with your actual folder path
+      const fileName = file.name;
+      const fileUrl = `${folderPath}/${fileName}`;
+      const fileExists = await sp.web.getFileByServerRelativeUrl(fileUrl).get();
+      if (fileExists) {
+        alert("File name already exists.");
+        // return `${window.location.origin}${fileUrl}`;
+        return null;
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error.code);
+      if (
+        error.message.includes("File not found") ||
+        error.message.includes("-2130575338")
+      ) {
+        try {
+          const folderPath = "/sites/ReadifyEM/Shared Documents";
+          // Upload the file to SharePoint
+          const fileAddResult = await sp.web
+            .getFolderByServerRelativeUrl(folderPath)
+            .files.add(file.name, file, true);
+          debugger;
+          // Get the file URL
+          const fileUrl = fileAddResult.data.ServerRelativeUrl;
+
+          // Return the full file URL
+          return `${window.location.origin}${fileUrl}`;
+        } catch (uploadError) {
+          console.error("Error uploading file:", uploadError);
+          return null;
+        }
+      } else {
+        console.error("Error checking file existence:", error);
+        return null;
+      }
+    }
+  };
+
+  // Function to trigger file upload dialog and insert link into the editor
+  const handleAddFile = async () => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".xls,.xlsx,.doc,.docx,.txt"; // Accept only Excel, Word, and TXT files
+
+    fileInput.onchange = async (event: any) => {
+      const file = event.target.files[0];
+      if (file) {
+        const fileUrl = await handleFileUpload(file);
+        if (fileUrl && quillRef.current) {
+          const quill = quillRef.current.getEditor();
+          const range = quill.getSelection(); // Get current cursor position
+          // Insert a new line before inserting the file link
+          quill.insertText(range.index, "\n"); // Insert newline
+
+          const iconHtml = `<img src="${base64Data.file}" style="width:20px !important; height:20px !important; vertical-align:middle;" />`;
+          quill.clipboard.dangerouslyPasteHTML(range.index + 1, iconHtml);
+
+          // Insert a space after the icon for better readability
+          quill.insertText(range.index + 2, " ");
+
+          // Insert the link text
+          quill.insertText(range.index + 3, file.name, "link", fileUrl); // Insert the file link
+
+          // Insert a new line after the link
+          quill.insertText(range.index + 3 + file.name.length, "\n");
+
+          // Move the cursor to the start of the new line
+          quill.setSelection(range.index + 4 + file.name.length);
+        }
+      }
+    };
+
+    fileInput.click(); // Trigger the file input dialog
+  };
+
   const modules: any = {
     toolbar: [
       [
@@ -497,9 +596,9 @@ const RichText = ({
             const blob = await response.blob();
             // Check if the image is a GIF using the MIME type
             if (
-              blob.type === "image/gif" ||
-              blob.type === "text/plain" ||
-              blob.type === "application/pdf"
+              blob.type === "image/gif"
+              // blob.type === "text/plain" ||
+              // blob.type === "application/pdf"
             ) {
               quill.deleteText(cumulativeIndex, 1);
               alert("GIF images are not allowed and have been removed.");
@@ -519,7 +618,17 @@ const RichText = ({
                 `img[src="${imgSrc}"]`
               );
               imageElements.forEach((imageElement: any) => {
-                imageElement.setAttribute("style", "width: 400px;height:400px");
+                if (imgSrc.startsWith(base64Data.file)) {
+                  // Set style for the base64 icon
+                  imageElement.setAttribute("style", "width: 15px;height:15px");
+                  imageElement.setAttribute("class", "fileAttachmentIcon");
+                } else {
+                  // Set style for other images
+                  imageElement.setAttribute(
+                    "style",
+                    "width: 400px;height:400px"
+                  );
+                }
               });
             }
           } catch (error) {
@@ -845,6 +954,7 @@ const RichText = ({
     <div
       style={{
         height: "88%",
+        position: "relative",
       }}
     >
       {sectionLoader && !noActionBtns ? (
@@ -872,6 +982,29 @@ const RichText = ({
           onChange={handleChange}
         />
       )}
+      <div style={{ position: "absolute", top: "7px", right: "10px" }}>
+        {/* <button onClick={handleAddFile}>Add File</button> */}
+        <DefaultButton
+          text="Attachment"
+          startIcon={
+            <AttachFileIcon
+              sx={{
+                transform: "rotate(25deg)",
+              }}
+            />
+          }
+          btnType="lightGreyVariant"
+          title="Add attachment"
+          style={{
+            letterSpacing: "0px",
+          }}
+          onlyIcon={true}
+          onClick={() => {
+            handleAddFile();
+          }}
+          size="small"
+        />
+      </div>
       {!noActionBtns ? (
         <div
           style={{

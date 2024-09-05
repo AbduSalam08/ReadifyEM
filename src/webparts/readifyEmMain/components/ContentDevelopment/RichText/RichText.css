@@ -28,7 +28,11 @@ em {
 }
 .ql-editor img {
   width: auto !important;
-  max-width: 400px !important;
+  max-width: 400px;
   height: auto !important;
-  max-height: 400px !important;
+  max-height: 400px;
+}
+.ql-editor .fileAttachmentIcon {
+  width: 15px !important;
+  height: 15px !important;
 }

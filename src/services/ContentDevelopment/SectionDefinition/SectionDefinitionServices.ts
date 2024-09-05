@@ -34,7 +34,7 @@ const convertDefinitionsToTxtFile = (
 ): any => {
   const filterDefinitions = content.filter((obj: any) => !obj.isDeleted);
   let definitionsTable = "";
-  definitionsTable = `<div style="margin-left: 25px;display: flex;flex-wrap:wrap;">`;
+  definitionsTable = `<div style="margin-left: 25px;">`;
 
   // definitionsTable = `<table style="border-collapse: collapse; width: 100%;">
   //       <thead>
@@ -64,18 +64,18 @@ const convertDefinitionsToTxtFile = (
     //               ${obj.definitionDescription}
     //             </td>
     //           </tr>`;
-    definitionsTable += `<div style="width:100%;display:flex;margin-bottom: 10px;">
-      <p style="width:5%;line-height: 20px;font-weight: 500;font-size: 17px;font-family: interMedium,sans-serif;">${sectionOrder}.${
+    definitionsTable += `<div style="width:100%;margin-bottom: 10px;">
+      <span style="width:5%;line-height: 20px;font-weight: 500;font-size: 17px;font-family: interMedium,sans-serif;">${sectionOrder}.${
       index + 1
-    }.</p>
-      <div style="width: 90%;">
-        <p style="font-family: interMedium,sans-serif;">${
+    }.</span>
+      <span style="width: 90%;">
+        <span style="font-family: interMedium,sans-serif;">${
           obj.definitionName
-        }</p>
-        <span style="line-height: 20px;font-size: 14px;font-family: interRegular,sans-serif;">${
-          obj.definitionDescription
         }</span>
-      </div>
+        <p style="line-height: 20px;padding-top: 5px;margin:0px;font-size: 14px;font-family: interRegular,sans-serif;margin-left:30px;">${
+          obj.definitionDescription
+        }</p>
+      </span>
     </div>`;
   });
   // definitionsTable += `</tbody></table>`;
@@ -96,6 +96,9 @@ export const convertReferenceToTxtFile = (
   sectionOrder: string
 ): any => {
   console.log(content);
+  const filterData = content.filter(
+    (obj: any) => obj.referenceAuthorName !== "" && obj.referenceTitle !== ""
+  );
 
   let referencesTable = "";
   // referencesTable = `<table style="border-collapse: collapse; width: 100%;">
@@ -117,10 +120,10 @@ export const convertReferenceToTxtFile = (
   //       </thead>
   //       <tbody>`;
 
-  referencesTable += `<div style="margin-left: 25px;display: flex;flex-wrap:wrap;">`;
+  referencesTable += `<div style="margin-left: 25px;">`;
 
-  content?.forEach((obj: any, index: number) => {
-    referencesTable += `<p style="width:100%;padding:7px 0px;">${sectionOrder.toString()}.${
+  filterData?.forEach((obj: any, index: number) => {
+    referencesTable += `<p style="width:100%;padding:7px 0px;margin:0px;">${sectionOrder.toString()}.${
       index + 1
     }.<span style="margin-left: 5px;">${obj.referenceAuthorName}${". "}${
       obj.yearOfPublish ? "(" + obj.yearOfPublish + "). " : ""
@@ -198,10 +201,12 @@ const getAllSectionDefinitions = async (
           ID: item.ID,
           definitionName: item.Title,
           definitionDescription: item.description,
-          referenceAuthorName: item.referenceAuthorName,
+          referenceAuthorName: item.referenceAuthorName
+            ? item.referenceAuthorName
+            : "",
           yearOfPublish: item.yearOfPublish ? item.yearOfPublish : "",
           referenceLink: item.referenceLink ? item.referenceLink : "",
-          referenceTitle: item.referenceTitle,
+          referenceTitle: item.referenceTitle ? item.referenceTitle : "",
           definitionDetailsId: item.definitionDetails.ID,
           isSectionDefinition: item.isSectionDefinition ? true : false,
           isSelected: false,

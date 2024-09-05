@@ -219,7 +219,7 @@ const convertSupportingDocToTxtFile = (
   //         </tr>
   //       </thead>
   //       <tbody>`;
-  supportingDocTable += `<div style="margin-left: 25px;display: flex;flex-wrap:wrap;">`;
+  supportingDocTable += `<div style="margin-left: 25px;">`;
 
   filterSupportingDocuments?.forEach((obj: any, index: number) => {
     // supportingDocTable += `<tr key={${index}}>
@@ -244,24 +244,18 @@ const convertSupportingDocToTxtFile = (
     //             </td>
     //           </tr>`;
 
-    supportingDocTable += `<div style="width:100%;display:flex;margin-bottom: 10px;">
-      <p style="width:5%;line-height: 20px;font-weight: 500;font-size: 17px;font-family: interMedium,sans-serif;">${sectionOrder}.${
-      index + 1
-    }.</p>
-      <div style="width: 95%;">
-        <p style="font-family: interMedium,sans-serif;">${obj.documentName}</p>
-        <a style="word-break: break-all;text-decoration: none;" href=${
+    supportingDocTable += `<div style="width:100%;margin-bottom: 10px;">
+      <span style="width:5%;line-height: 20px;font-weight: 500;font-size: 17px;font-family: interMedium,sans-serif;">
+      ${sectionOrder}.${index + 1}.</span>
+      <span style="width:95%;">
+        <a style="word-break: break-all;" href=${
           obj.documentLink.startsWith("https://")
             ? encodeURI(obj.documentLink)
             : encodeURI("https://" + obj.documentLink)
         } target="_blank">
-          ${
-            obj.documentLink.startsWith("https://")
-              ? obj.documentLink
-              : "https://" + obj.documentLink
-          }
+          ${obj.documentName}
         </a>
-      </div>
+      </span>
     </div>`;
   });
   // supportingDocTable += `</tbody></table>`;
