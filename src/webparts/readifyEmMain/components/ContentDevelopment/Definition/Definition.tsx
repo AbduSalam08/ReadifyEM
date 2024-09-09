@@ -1484,9 +1484,8 @@ const Definition: React.FC<Props> = ({
     getAllSecDefinitions();
     LoadDefinitionTableData(dispatch);
 
-    const closeDiv = (e: any) => {
+    const closeDiv = (e: any): void => {
       console.log(e);
-
       if (
         e?.target.className !== "p-inputtext p-component" &&
         e?.target?.id !== "sectionDefinitionUniqueId"

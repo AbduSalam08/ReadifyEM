@@ -433,13 +433,16 @@ const RichText = ({
   // );
 
   // Function to sanitize folder name
-  function sanitizeFolderName(name: any) {
+  const sanitizeFolderName = (name: any): Promise<string> => {
     // Replace or remove invalid characters for SharePoint folder names
     return name.replace(/[:~"#%&*<>?/\\{|}.]/g, "");
-  }
+  };
 
   // Function to check if folder exists
-  async function folderExists(libraryName: string, folderPath: string) {
+  const folderExists = async (
+    libraryName: string,
+    folderPath: string
+  ): Promise<any> => {
     try {
       const folder = await sp.web
         .getFolderByServerRelativeUrl(
@@ -454,13 +457,13 @@ const RichText = ({
         throw error; // Other errors
       }
     }
-  }
+  };
 
   const handleFileUpload = async (
     file: File,
     sectionDetails: any,
     currentDocumentDetails: any
-  ) => {
+  ): Promise<any> => {
     debugger;
     const libraryName = "Shared Documents";
     // Sanitize folder names
@@ -503,7 +506,7 @@ const RichText = ({
 
           const documentFolderExists = await folderExists(
             libraryName,
-            sanitizedDocumentName
+            await sanitizedDocumentName
           );
           if (!documentFolderExists) {
             //Create 'document_name' folder in the library
@@ -568,7 +571,7 @@ const RichText = ({
   };
 
   // Function to trigger file upload dialog and insert link into the editor
-  const handleAddFile = async () => {
+  const handleAddFile = async (): Promise<void> => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = ".xls,.xlsx,.doc,.docx,.txt"; // Accept only Excel, Word, and TXT files
@@ -745,6 +748,12 @@ const RichText = ({
                     "style",
                     "width: 400px;height:400px"
                   );
+
+                  // Get the parent <p> tag and apply text-align center
+                  // const parentParagraph = imageElement.closest("p");
+                  // if (parentParagraph) {
+                  //   parentParagraph.style.textAlign = "center";
+                  // }
                 }
               });
             }
@@ -761,7 +770,31 @@ const RichText = ({
           : 0;
       }
       // setDescription(editor.getHTML());
-      setDescription(editor.getHTML());
+      const htmlContent = editor.getHTML();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlContent, "text/html");
+
+      const indentElements = doc.querySelectorAll("[class^='ql-indent-']");
+
+      // Loop through all indented elements
+      indentElements.forEach((element: any) => {
+        // Extract the indent level from the class (e.g., ql-indent-1 -> 1)
+        const indentClass: any = Array.from(element.classList).find(
+          (cls: any) => cls.startsWith("ql-indent-")
+        );
+        const indentLevel = parseInt(indentClass.split("-")[2], 10);
+
+        // Apply the margin-left based on indent level (32px * level)
+        const marginLeft = `${indentLevel * 32}px`;
+
+        // Add the margin-left inline style
+        element.style.marginLeft = marginLeft;
+      });
+
+      const updatedHtml = doc.body.innerHTML;
+      console.log(updatedHtml);
+
+      setDescription(updatedHtml);
 
       const currentHtml = editor.getHTML().trim();
       const normalizedMasterDescription = masterDescription.trim();
@@ -1071,7 +1104,7 @@ const RichText = ({
   return (
     <div
       style={{
-        height: "88%",
+        height: "100%",
         position: "relative",
       }}
     >
