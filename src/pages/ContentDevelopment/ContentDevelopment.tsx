@@ -37,7 +37,7 @@ const commentIcon = require("../../assets/images/svg/violetCommentIcon.svg");
 import styles from "./ContentDevelopment.module.scss";
 
 // loader
-import CircularSpinner from "../../webparts/readifyEmMain/components/common/AppLoader/CircularSpinner";
+// import CircularSpinner from "../../webparts/readifyEmMain/components/common/AppLoader/CircularSpinner";
 
 // import Services and buttons
 import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
@@ -1644,6 +1644,8 @@ const ContentDevelopment = (): JSX.Element => {
                   <div
                     style={{
                       width: "100%",
+                      // height: "calc(100vh - 250px)",
+                      height: "calc(100vh - 250px)",
                       display: "flex",
                       alignItems: "stretch",
                       // justifyContent: "center",
@@ -1660,7 +1662,9 @@ const ContentDevelopment = (): JSX.Element => {
                           ]?.sectionType?.toLowerCase() === "change record"
                             ? "100%"
                             : "75%",
-                        height: "calc(90vh - 286px)",
+                        height: "100%",
+                        // height: "calc(90vh - 286px)",
+                        // height: "calc(100vh - 80px)",
                       }}
                     >
                       {AllSectionsData[
@@ -1747,7 +1751,8 @@ const ContentDevelopment = (): JSX.Element => {
                           width: toggleCommentSection ? "1px" : "25%",
                           transition: "all .2s",
                           position: "relative",
-                          height: "calc(95vh - 286px)",
+                          // height: "calc(95vh - 286px)",
+                          height: "100%",
                           border: toggleCommentSection
                             ? "1px solid #eee"
                             : "1px solid transparent",
@@ -1789,7 +1794,26 @@ const ContentDevelopment = (): JSX.Element => {
             </div>
           </div>
         ) : (
-          <CircularSpinner />
+          <div
+            style={{
+              width: "100%",
+              height: "70vh",
+            }}
+            className={styles.flexCenter}
+          >
+            <CircularProgress
+              sx={{
+                width: "40px",
+                height: "40px",
+                animationDuration: "450ms",
+                color: "#adadad",
+              }}
+              size={"30px"}
+              disableShrink
+              variant="indeterminate"
+              color="inherit"
+            />
+          </div>
         )
         // initialLoader &&
         // AllSectionsData?.length === 0 &&

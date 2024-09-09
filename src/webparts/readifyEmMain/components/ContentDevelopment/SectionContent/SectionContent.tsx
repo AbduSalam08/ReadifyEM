@@ -1107,9 +1107,21 @@ const SectionContent: React.FC<IProps> = ({
   }, [sectionChangeRecord.changeRecordDescription]);
 
   return (
-    <div className="sectionWrapper">
+    <div
+      style={{
+        height: "100%",
+        // height: "calc(100% - 30px)",
+        // height: sectionLoader ? "calc(100% - 30px)" : "100%",
+      }}
+    >
       {sectionLoader && !noActionBtns ? (
-        <div className="contentDevLoaderWrapper">
+        <div
+          className="contentDevLoaderWrapper"
+          style={{
+            // height: "100%",
+            height: "calc(100% - 30px)",
+          }}
+        >
           <CircularSpinner />
         </div>
       ) : (
@@ -1143,124 +1155,6 @@ const SectionContent: React.FC<IProps> = ({
           )}
         </div>
       )}
-      {/* {!noActionBtns ? (
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginTop: "15px",
-          }}
-        >
-          <button className={"helpButton"}>Help?</button>
-          <div style={{ display: "flex", gap: "15px" }}>
-            {currentSectionDetails?.sectionSubmitted && (
-              <SecondaryTextLabel
-                icon={
-                  <AccessTimeIcon
-                    style={{
-                      width: "17px",
-                    }}
-                  />
-                }
-                text="yet to be reviewed"
-              />
-            )}
-            <DefaultButton
-              text="Close"
-              btnType="darkGreyVariant"
-              onClick={() => {
-                navigate(-1);
-              }}
-            />
-            {currentDocRole?.primaryAuthor || currentDocRole?.sectionAuthor ? (
-              <>
-                {(currentDocRole?.primaryAuthor ||
-                  currentDocRole?.reviewer ||
-                  currentDocRole?.approver) &&
-                  currentSectionDetails?.sectionSubmitted && (
-                    <DefaultButton
-                      text="Rework"
-                      disabled={sectionLoader}
-                      btnType="secondaryRed"
-                      onClick={() => {
-                        togglePopupVisibility(
-                          setPopupController,
-                          1,
-                          "open",
-                          "Reason for rejection"
-                        );
-                      }}
-                    />
-                  )}
-                {!currentSectionDetails?.sectionSubmitted && (
-                  <>
-                    <DefaultButton
-                      text="Reset content"
-                      disabled={sectionLoader}
-                      btnType="secondaryRed"
-                      onClick={() => {
-                        setSectionData((prev: any) => {
-                          const updatedSections = [...prev];
-                          updatedSections[activeIndex] = {
-                            ...updatedSections[activeIndex],
-                            contentType: "initial",
-                          };
-                          return updatedSections;
-                        });
-                      }}
-                    />
-
-                    <DefaultButton
-                      text="Save"
-                      disabled={sectionLoader}
-                      btnType="lightGreyVariant"
-                      onClick={() => {
-                        addData();
-                      }}
-                    />
-
-                    {(currentDocRole?.sectionAuthor ||
-                      currentDocRole?.primaryAuthor) && (
-                      <DefaultButton
-                        text="Submit"
-                        disabled={sectionLoader}
-                        btnType="primary"
-                        onClick={() => {
-                          // addData("submit");
-                          togglePopupVisibility(
-                            setPopupController,
-                            0,
-                            "open",
-                            "Are you sure want to submit this section?"
-                          );
-                        }}
-                      />
-                    )}
-                  </>
-                )}
-              </>
-            ) : (
-              ""
-            )}
-          </div>
-        </div>
-      ) : (
-        currentSectionDetails?.sectionType?.toLowerCase() !==
-          "appendix section" && (
-          <DefaultButton
-            text="Close"
-            btnType="darkGreyVariant"
-            onClick={() => {
-              navigate(-1);
-            }}
-            style={{
-              marginTop: "10px",
-            }}
-          />
-        )
-      )} */}
 
       {!noActionBtns ? (
         <div
@@ -1270,7 +1164,7 @@ const SectionContent: React.FC<IProps> = ({
             justifyContent: "space-between",
             width: "100%",
             gap: "15px",
-            marginTop: "10px",
+            marginTop: sectionLoader ? "0" : "10px",
           }}
         >
           <button className={"helpButton"}>Help?</button>

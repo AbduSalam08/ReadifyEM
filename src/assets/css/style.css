@@ -813,7 +813,15 @@ body {
   font-family: "interMedium", sans-serif !important;
 }
 .contentDevLoaderWrapper {
-  height: calc(100% - 55px);
+  /* height: calc(100% - 55px); */
+  /* height: calc(90vh - 286px); */
+  /* height: calc(100vh - 250px); */
+  /* height: calc(100% - 10px); */
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 .stepperWarning.p-inline-message.p-inline-message-warn {
   color: #856404;

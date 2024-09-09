@@ -1104,7 +1104,8 @@ const RichText = ({
   return (
     <div
       style={{
-        height: "100%",
+        // height: "100%",
+        height: "calc(100% - 30px)",
         position: "relative",
       }}
     >

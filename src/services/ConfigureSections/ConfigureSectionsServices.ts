@@ -39,6 +39,7 @@ export const AddSections = async (
       let hasChangeRecord: any;
       // let hasReferences: any;
       let hasHeader: any;
+      let hasPdfHeader: any;
 
       const sectionItems = await SpServices.SPReadItems({
         Listname: LISTNAMES.SectionDetails,
@@ -61,6 +62,9 @@ export const AddSections = async (
       // );
       hasHeader = sectionItems?.filter(
         (item: any) => item?.sectionType?.toLowerCase() === "header section"
+      );
+      hasPdfHeader = sectionItems?.filter(
+        (item: any) => item?.sectionType?.toLowerCase() === "pdf header"
       );
 
       if (hasChangeRecord?.length !== 0) {
@@ -92,6 +96,18 @@ export const AddSections = async (
           templateTitle: "",
           sectionOrder: "0",
           sectionType: "header section",
+          sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+          documentOfId: docDetails?.documentDetailsId,
+          status: "content in progress",
+          isActive: true,
+        });
+      }
+      if (hasPdfHeader?.length === 0) {
+        sectionsToAdd.push({
+          Title: "pdf header",
+          templateTitle: "",
+          sectionOrder: "0",
+          sectionType: "pdf header",
           sectionAuthorId: docDetails?.taskAssignedBy?.ID,
           documentOfId: docDetails?.documentDetailsId,
           status: "content in progress",
@@ -444,16 +460,29 @@ export const AddSections = async (
       const payloadJSON: any[] = [];
 
       if (!noHeader) {
-        payloadJSON.push({
-          Title: "Header",
-          templateTitle: "",
-          sectionOrder: "0",
-          sectionType: "header section",
-          sectionAuthorId: docDetails?.taskAssignedBy?.ID,
-          documentOfId: docDetails?.documentDetailsId,
-          status: "content in progress",
-          isActive: true,
-        });
+        const headerItems = [
+          {
+            Title: "Header",
+            templateTitle: "",
+            sectionOrder: "0",
+            sectionType: "header section",
+            sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+            documentOfId: docDetails?.documentDetailsId,
+            status: "content in progress",
+            isActive: true,
+          },
+          {
+            Title: "pdf header",
+            templateTitle: "",
+            sectionOrder: "0",
+            sectionType: "pdf header",
+            sectionAuthorId: docDetails?.taskAssignedBy?.ID,
+            documentOfId: docDetails?.documentDetailsId,
+            status: "content in progress",
+            isActive: true,
+          },
+        ];
+        payloadJSON.push(...headerItems);
       }
       // formData?.defaultSections?.some(
       //   (item: any) =>
@@ -699,6 +728,13 @@ export const AddSections = async (
                 console.error("Error adding item to SectionDetails: ", err);
               }
             })
+          );
+
+          await addDefaultPDFheader(
+            {
+              base64: "",
+            },
+            docDetails?.documentDetailsId
           );
 
           if (isPATaskisNotConfigured) {
