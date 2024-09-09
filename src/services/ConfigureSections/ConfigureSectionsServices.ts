@@ -14,6 +14,7 @@ import {
 } from "../../utils/validations";
 import { AddTask } from "../MyTasks/MyTasksServices";
 import SpServices from "../SPServices/SpServices";
+import { removeVersionFromDocName } from "../../utils/formatDocName";
 
 // Function to trigger - Adding sections
 export const AddSections = async (
@@ -66,8 +67,8 @@ export const AddSections = async (
         try {
           await SpServices.SPDeleteAttachments({
             ListName: LISTNAMES.SectionDetails,
-            AttachmentName: "Sample.txt",
             ListID: hasChangeRecord[0]?.ID,
+            AttachmentName: "Sample.txt",
           });
         } catch (err) {
           console.error("Error deleting attachment:", err);
@@ -423,7 +424,9 @@ export const AddSections = async (
           isLoading: { inprogress: false, success: true, error: false },
           visibility: true,
           text: `Sections configured successfully!`,
-          secondaryText: `The document "${docDetails?.docName}'s" sections have been configured successfully!`,
+          secondaryText: `The document "${removeVersionFromDocName(
+            docDetails?.docName
+          )}'s" sections have been configured successfully!`,
         });
       }
     } catch (err) {
@@ -713,7 +716,9 @@ export const AddSections = async (
               isLoading: { inprogress: false, success: true, error: false },
               visibility: true,
               text: `Sections configured successfully!`,
-              secondaryText: `The document "${docDetails?.docName}'s" sections have been configured successfully!`,
+              secondaryText: `The document "${removeVersionFromDocName(
+                docDetails?.docName
+              )}'s" sections have been configured successfully!`,
             });
           }
         } catch (err) {
@@ -1136,7 +1141,9 @@ export const updateSections = async (
           isLoading: { inprogress: false, success: true, error: false },
           visibility: true,
           text: "Sections updated successfully!",
-          secondaryText: `The document "${docDetails?.docName}'s" sections have been updated successfully!`,
+          secondaryText: `The document "${removeVersionFromDocName(
+            docDetails?.docName
+          )}'s" sections have been updated successfully!`,
         });
       })
       .catch((err) => {

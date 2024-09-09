@@ -19,6 +19,7 @@ import {
   getNextVersions,
   replaceVersionInFilename,
 } from "../../utils/EMManualUtils";
+import { removeVersionFromDocName } from "../../utils/formatDocName";
 
 // Interface for the properties
 interface IProps {
@@ -115,8 +116,12 @@ const AddNewDocumentToLib = async ({
               ? "Draft saved successfully!"
               : "New document created successfully!",
             secondaryText: isDraft
-              ? `The draft document "${fileName}" has been saved successfully!`
-              : `The new document "${fileName}" has been created successfully!`,
+              ? `The draft document "${removeVersionFromDocName(
+                  fileName
+                )}" has been saved successfully!`
+              : `The new document "${removeVersionFromDocName(
+                  fileName
+                )}" has been created successfully!`,
           });
           return true;
         })
@@ -242,8 +247,12 @@ const AddNewDocumentToLib = async ({
                 ? "Draft saved successfully!"
                 : "New document created successfully!",
               secondaryText: isDraft
-                ? `The draft document "${fileName}" has been saved successfully!`
-                : `The new document "${fileName}" has been created successfully!`,
+                ? `The draft document "${removeVersionFromDocName(
+                    fileName
+                  )}" has been saved successfully!`
+                : `The new document "${removeVersionFromDocName(
+                    fileName
+                  )}" has been created successfully!`,
             });
             return true;
           })
@@ -295,7 +304,9 @@ const AddNewDocumentToLib = async ({
           error.message.includes("potentially dangerous Request") ||
           error.message.includes("The expression") ||
           error.message.includes("is not valid.")
-            ? `The document name "${fileName}" contains invalid characters, please use a different name.`
+            ? `The document name "${removeVersionFromDocName(
+                fileName
+              )}" contains invalid characters, please use a different name.`
             : "An unexpected error occurred while uploading document, please try again later.",
       });
       await SpServices.SPDeleteItem({
@@ -443,9 +454,11 @@ const UpdateDocumentInLib = async ({
             : "Document updated successfully!",
           secondaryText: reorderDoc
             ? ""
-            : `The ${isDraft ? "Draft" : " "} document "${
+            : `The ${
+                isDraft ? "Draft" : " "
+              } document "${removeVersionFromDocName(
                 responseData.Title
-              }" has been updated successfully!`,
+              )}" has been updated successfully!`,
         });
 
         return true;

@@ -115,6 +115,7 @@ import {
 } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import { useDispatch, useSelector } from "react-redux";
 import { removeVersionFromDocName } from "../../../../../utils/formatDocName";
+import { ChevronRight } from "@mui/icons-material";
 const sampleDocHeaderImg: any = require("../../../../../assets/images/png/imagePlaceholder.png");
 
 interface Props {
@@ -137,6 +138,7 @@ const SectionBanner: React.FC<Props> = ({
   const CDHeaderDetails = useSelector(
     (state: any) => state.ContentDeveloperData.CDHeaderDetails
   );
+  const [headerToggle, setHeaderToggle] = useState(true);
 
   // UseEffect to fetch header details based on section type
   useEffect(() => {
@@ -158,8 +160,43 @@ const SectionBanner: React.FC<Props> = ({
   }, [CDHeaderDetails, sectionDetails]);
 
   return (
-    <>
-      <div className={styles.headerContainer}>
+    <div
+      style={{
+        position: "relative",
+        margin: headerToggle ? "0" : "15px 0",
+      }}
+    >
+      <div
+        className={`${styles.flexCenter} ${styles.bannerHeader}`}
+        style={{
+          position: "absolute",
+          top: headerToggle ? "0" : "-10px",
+          padding: headerToggle ? "0 5px" : "0 8px",
+          left: "0",
+          cursor: "pointer",
+        }}
+        onClick={() => {
+          setHeaderToggle(!headerToggle);
+        }}
+      >
+        {!headerToggle ? "Header" : ""}{" "}
+        <ChevronRight
+          sx={{
+            fontSize: "20px",
+            transform: `rotate(${headerToggle ? "90deg" : "0deg"})`,
+            transition: "all .2s",
+          }}
+        />
+      </div>
+      <div
+        className={styles.headerContainer}
+        style={{
+          height: headerToggle ? "85px" : "0px",
+          padding: headerToggle ? "10px 15px" : "0",
+          overflow: "hidden",
+          transition: "all .2s",
+        }}
+      >
         <div className={styles.headerLogo}>
           <img
             src={
@@ -215,7 +252,7 @@ const SectionBanner: React.FC<Props> = ({
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

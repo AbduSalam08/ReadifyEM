@@ -324,10 +324,26 @@ const ConfigureSections = (): JSX.Element => {
 
           <div className={styles.dndSectionsWrapper}>
             <div className={styles.header}>
-              <div className={styles.docTitle}>
-                {removeVersionFromDocName(currentTaskData?.docName) || "-"}
-                <div className={styles.versionPill}>
-                  v{currentTaskData?.docVersion}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  justifyContent: "flex-start",
+                  gap: "10px",
+                }}
+              >
+                <div className={styles.docTitle}>
+                  {removeVersionFromDocName(currentTaskData?.docName) || "-"}
+                  <div className={styles.versionPill}>
+                    v{currentTaskData?.docVersion}
+                  </div>
+                </div>
+                <div className={styles.docDetails}>
+                  <span>
+                    Template name :{" "}
+                    {currentTaskData?.documentTemplateType?.Title || "-"}
+                  </span>
                 </div>
               </div>
               <div className={styles.docDetails}>

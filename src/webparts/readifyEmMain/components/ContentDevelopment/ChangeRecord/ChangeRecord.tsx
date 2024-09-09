@@ -31,7 +31,7 @@ const ChangeRecord = () => {
       {loader ? (
         <CircularSpinner />
       ) : (
-        <div style={{ height: "100%", overflow: "auto" }}>
+        <div style={{ height: "auto", overflow: "auto" }}>
           <table
             // className={styles.tableWrapper}
             style={{ borderCollapse: "collapse", width: "100%" }}

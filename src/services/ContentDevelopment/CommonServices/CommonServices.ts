@@ -24,7 +24,11 @@ import {
   setSectionComments,
 } from "../../../redux/features/SectionCommentsSlice";
 import { calculateDocDueDateByTerm } from "../../../utils/NewDocumentUtils";
-import { setCDBackDrop } from "../../../redux/features/ContentDeveloperBackDropSlice";
+import {
+  setCDBackDrop,
+  setCDTaskSuccess,
+} from "../../../redux/features/ContentDeveloperBackDropSlice";
+import { removeVersionFromDocName } from "../../../utils/formatDocName";
 
 export const getSectionsDetails = async (
   taskDetails: any,
@@ -915,12 +919,12 @@ export const addRejectedComment = async (
   AllSectionsDataMain: any,
   dispatcher: any
 ): Promise<any> => {
-  console.log("documentDetails: ", documentDetails);
-  console.log(rejectedComment);
   debugger;
   let fileID: any;
   let currentDocResponse: any;
   console.log("currentDocResponse: ", currentDocResponse);
+  handleClosePopup(1);
+  dispatcher(setCDBackDrop(true));
 
   await SpServices.SPReadItemUsingId({
     Listname: LISTNAMES.DocumentDetails,
@@ -1022,7 +1026,7 @@ export const addRejectedComment = async (
         })
       );
 
-      handleClosePopup(1);
+      dispatcher(setCDBackDrop(false));
       setToastState({
         isShow: true,
         severity: "success",
@@ -1033,6 +1037,8 @@ export const addRejectedComment = async (
     })
     .catch((err) => {
       console.log(err);
+      dispatcher(setCDBackDrop(false));
+
       setLoaderState({
         isLoading: {
           inprogress: false,
@@ -1056,7 +1062,6 @@ export const changeDocStatus = async (
   dispatch: any,
   lastPromoter?: any
 ): Promise<any> => {
-  console.log("docDetailsData: ", docDetailsData);
   debugger;
   let fileID: any;
   let currentDocResponse: any;
@@ -1252,6 +1257,7 @@ export const changeSectionStatus = async (
   lastPromoter?: boolean,
   currentDocumentDetails?: any
 ): Promise<any> => {
+  console.log("currentDocumentDetails: ", currentDocumentDetails);
   console.log("AllSectionsData: ", AllSectionsData);
   debugger;
   await SpServices.batchUpdate({
@@ -1261,10 +1267,46 @@ export const changeSectionStatus = async (
     .then((res: any) => {
       console.log("res: ", res);
       dispatch(setCDBackDrop(false));
+      if (lastPromoter && promoterType === "approver") {
+        dispatch(
+          setCDTaskSuccess({
+            isLoading: {
+              inprogress: false,
+              success: true,
+              error: false,
+            },
+            visibility: true,
+            text: "Document Published!",
+            secondaryText: `The document "${removeVersionFromDocName(
+              currentDocumentDetails?.documentName
+            )}" has been approved & published successfully!`,
+          })
+        );
+      } else {
+        dispatch(
+          setCDTaskSuccess({
+            isLoading: { inprogress: false, success: true, error: false },
+            visibility: true,
+            text: "Task completed!",
+            secondaryText: `The document "${removeVersionFromDocName(
+              currentDocumentDetails?.documentName
+            )}" has been promoted successfully!`,
+          })
+        );
+      }
     })
     .catch((err: any) => {
       console.log("err: ", err);
       dispatch(setCDBackDrop(false));
+      dispatch(
+        setCDTaskSuccess({
+          isLoading: { inprogress: false, success: false, error: true },
+          visibility: true,
+          text: "Something went wrong!",
+          secondaryText:
+            "An unexpected error occurred while completing the task, please try again later.",
+        })
+      );
     });
 
   for (const element of sectionsData) {
@@ -1406,6 +1448,7 @@ const convertToTxtFile = (content: any[]): any => {
   const file: any = new File([blob], "Sample.txt", { type: "text/plain" });
   return file;
 };
+
 export const getAllSectionsChangeRecord = async (
   documentId: number,
   dispatcher: any
