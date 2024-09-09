@@ -215,12 +215,12 @@ const ContentTypeConfirmation = ({
         <div
           style={{
             width: "100%",
-            height: "10%",
+            // height: "10%",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            marginTop: "15px",
-            padding: "0 10px",
+            // marginTop: "15px",
+            padding: "10px",
           }}
         >
           <button className={"helpButton"}>Help?</button>

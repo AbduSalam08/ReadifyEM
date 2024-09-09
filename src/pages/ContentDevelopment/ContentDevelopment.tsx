@@ -61,13 +61,19 @@ import getLastReviewDate, {
   updateSectionDataLocal,
 } from "../../utils/contentDevelopementUtils";
 import SpServices from "../../services/SPServices/SpServices";
-import { LISTNAMES } from "../../config/config";
+import { initialPopupLoaders, LISTNAMES } from "../../config/config";
 import { setCDSectionData } from "../../redux/features/ContentDevloperSlice";
 import References from "../../webparts/readifyEmMain/components/ContentDevelopment/References/References";
 import dayjs from "dayjs";
 import { removeVersionFromDocName } from "../../utils/formatDocName";
 import { Backdrop, CircularProgress } from "@mui/material";
-import { setCDBackDrop } from "../../redux/features/ContentDeveloperBackDropSlice";
+import {
+  setCDBackDrop,
+  setCDTaskSuccess,
+} from "../../redux/features/ContentDeveloperBackDropSlice";
+import AlertPopup from "../../webparts/readifyEmMain/components/common/Popups/AlertPopup/AlertPopup";
+import { CurrentUserIsAdmin } from "../../constants/DefineUser";
+import { useNavigate } from "react-router-dom";
 
 const Details = {
   sectionName: "Introduction",
@@ -110,6 +116,8 @@ const Details = {
 const ContentDevelopment = (): JSX.Element => {
   // dispatch
   const dispatch = useDispatch();
+  // use navigate for routing purpose
+  const navigate = useNavigate();
 
   const initialPopupController = [
     {
@@ -195,7 +203,9 @@ const ContentDevelopment = (): JSX.Element => {
   const CDBackDrop: any = useSelector(
     (state: any) => state.ContentDeveloperBackDrop.backDrop
   );
-  console.log("CDBackDrop: ", CDBackDrop);
+  const CDTaskSuccess: any = useSelector(
+    (state: any) => state.ContentDeveloperBackDrop.CDTaskSuccess
+  );
 
   const currentUserDetails: any = useSelector(
     (state: any) => state?.MainSPContext?.currentUserDetails
@@ -252,6 +262,9 @@ const ContentDevelopment = (): JSX.Element => {
   const [popupController, setPopupController] = useState(
     initialPopupController
   );
+
+  const isAdmin: boolean = CurrentUserIsAdmin();
+
   // toast message state
 
   const [toastMessage, setToastMessage] = useState<any>({
@@ -535,6 +548,9 @@ const ContentDevelopment = (): JSX.Element => {
       const currentPromoter = getCurrentPromoter(
         currentDocDetailsData?.reviewers
       );
+      const currentApprover = getCurrentPromoter(
+        currentDocDetailsData?.approvers
+      );
       let updatedPromoters: any;
 
       if (
@@ -653,6 +669,7 @@ const ContentDevelopment = (): JSX.Element => {
           };
         }
       });
+
       await changeSectionStatus(
         payLoad,
         AllSectionsDataMain,
@@ -661,9 +678,11 @@ const ContentDevelopment = (): JSX.Element => {
         sectionPromoterKey,
         currentDocRole.reviewer
           ? currentPromoter?.currentOrder === totalReviewers
-          : currentDocRole.approver
-          ? currentPromoter?.currentOrder === totalApprovers
-          : false
+          : currentDocRole.approver &&
+              currentApprover?.currentPromoter?.id ===
+                currentDocDetailsData?.approvers?.length,
+
+        currentDocDetailsData
       );
     } catch (error) {
       console.error("Error in submitPromotedComment:", error);
@@ -1142,8 +1161,15 @@ const ContentDevelopment = (): JSX.Element => {
             dispatch,
             false
           );
-          await changeSectionStatus(payLoad, AllSectionsDataMain, dispatch);
-          console.log("payLoad: ", payLoad);
+          await changeSectionStatus(
+            payLoad,
+            AllSectionsDataMain,
+            dispatch,
+            "reviewer",
+            "reviewers",
+            false,
+            currentDocDetailsData
+          );
           // await submitPromotedComment();
         },
       },
@@ -1634,7 +1660,7 @@ const ContentDevelopment = (): JSX.Element => {
                           ]?.sectionType?.toLowerCase() === "change record"
                             ? "100%"
                             : "75%",
-                        height: "calc(95vh - 286px)",
+                        height: "calc(90vh - 286px)",
                       }}
                     >
                       {AllSectionsData[
@@ -1721,7 +1747,7 @@ const ContentDevelopment = (): JSX.Element => {
                           width: toggleCommentSection ? "1px" : "25%",
                           transition: "all .2s",
                           position: "relative",
-                          height: "calc(100vh - 286px)",
+                          height: "calc(95vh - 286px)",
                           border: toggleCommentSection
                             ? "1px solid #eee"
                             : "1px solid transparent",
@@ -1823,6 +1849,24 @@ const ContentDevelopment = (): JSX.Element => {
           popupHeight={index === 0 ? true : false}
         />
       ))}
+
+      <AlertPopup
+        secondaryText={CDTaskSuccess?.secondaryText}
+        isLoading={CDTaskSuccess?.isLoading}
+        onClick={() => {
+          dispatch(setCDTaskSuccess(initialPopupLoaders));
+          if (isAdmin) {
+            navigate("/admin/my_tasks");
+          }
+          navigate("/user/my_tasks");
+        }}
+        onHide={() => {
+          dispatch(setCDTaskSuccess(initialPopupLoaders));
+        }}
+        popupTitle={CDTaskSuccess?.text}
+        visibility={CDTaskSuccess?.visibility}
+        popupWidth={"30vw"}
+      />
     </>
   );
 };

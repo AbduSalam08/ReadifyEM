@@ -276,7 +276,10 @@ const SectionHeader: React.FC<Props> = ({
     <div className={styles.headerContainer}>
       <span className={styles.sectionName}>
         {`${
-          documentName?.toLowerCase() === "header"
+          documentName?.toLowerCase() === "header" ||
+          activeSectionData?.sectionType?.toLowerCase() ===
+            "appendix section" ||
+          activeSectionData?.sectionType?.toLowerCase() === "change record"
             ? documentName
             : `${activeSectionData?.sectionOrder + ". " + documentName}`
         }`}

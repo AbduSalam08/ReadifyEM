@@ -2,13 +2,16 @@
   //   border: 1px solid #adadad60;
   padding: 10px 15px;
   border-radius: 4px;
-  height: 88%;
-  max-height: 88%;
+  height: 98%;
+  // max-height: 88%;
 }
 .headerWrapper {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 20px 0px;
+  padding-top: 0;
+  width: 85%;
+  margin: auto;
   span {
     font-family: "interMedium", sans-serif !important;
     font-size: 20px;

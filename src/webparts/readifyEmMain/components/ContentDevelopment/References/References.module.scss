@@ -1,101 +1,100 @@
 .textPlayGround {
-    border: 1px solid #adadad60;
-    padding: 10px 15px;
-    border-radius: 4px;
-    height: 88%;
-    max-height: 88%;
-    overflow: auto;
+  border: 1px solid #adadad60;
+  padding: 10px 15px;
+  border-radius: 4px;
+  height: 98%;
+  // max-height: 88%;
+  overflow: auto;
 }
 .TopFilters {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0px 20px 0px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0px 20px 0px;
 }
 .definitionHeaderWrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    // padding: 10px 0px 20px 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  // padding: 10px 0px 20px 0px;
 
-    span {
-        font-family: "interMedium", sans-serif !important;
-        font-size: 20px;
-    }
+  span {
+    font-family: "interMedium", sans-serif !important;
+    font-size: 20px;
+  }
 }
 
-
 .selectedReferencesSec {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 10px 20px;
-    border: 1px solid #e2d6d660;
-    margin-bottom: 10px;
-    border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px 20px;
+  border: 1px solid #e2d6d660;
+  margin-bottom: 10px;
+  border-radius: 4px;
 
-    .referenceTitle {
-        font-family: "interRegular", sans-serif !important;
-        font-size: 14px;
-        line-height: 20px;
-        span{
-            font-style: italic;
-        }
+  .referenceTitle {
+    font-family: "interRegular", sans-serif !important;
+    font-size: 14px;
+    line-height: 20px;
+    span {
+      font-style: italic;
     }
+  }
 
-    .referenceLink {
-        font-family: "interRegular", sans-serif !important;
-        font-size: 13px;
-        color: "#593ABB";
-        text-decoration: none;
-    }
+  .referenceLink {
+    font-family: "interRegular", sans-serif !important;
+    font-size: 13px;
+    color: "#593ABB";
+    text-decoration: none;
+  }
 }
 
 .referenceWrapper {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
 
-    span {
-        font-size: 16px;
-        color: #adadad;
-        font-family: "interMedium", sans-serif !important;
-    }
+  span {
+    font-size: 16px;
+    color: #adadad;
+    font-family: "interMedium", sans-serif !important;
+  }
 }
 .referenceInput {
-    width: 100% !important;
+  width: 100% !important;
 }
 
 .closeBtn {
-    width: 27px;
-    height: 27px;
-    display: grid;
-    place-items: center;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 50%;
-    background-color: #fff;
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 50%;
+  background-color: #fff;
 
-    img {
-        width: 25px;
-        height: 16px;
-    }
+  img {
+    width: 25px;
+    height: 16px;
+  }
 }
 
 .noDataFound {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    height: 100px;
-    align-items: center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  height: 100px;
+  align-items: center;
 
-    span {
-        color: #adadad;
-        font-size: 14px;
-        font-family: interRegular, sans-serif !important;
-    }
+  span {
+    color: #adadad;
+    font-size: 14px;
+    font-family: interRegular, sans-serif !important;
+  }
 }
