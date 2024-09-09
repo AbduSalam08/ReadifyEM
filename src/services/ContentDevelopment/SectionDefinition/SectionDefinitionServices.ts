@@ -328,8 +328,12 @@ const getMasterDefinition = async (Data: any) => {
   return tempArray;
 };
 
-const AddSectionAttachment = async (sectionId: number, file: any) => {
+export const AddSectionAttachmentFile = async (
+  sectionId: number,
+  file: any
+) => {
   console.log(file);
+  debugger;
 
   await SpServices.SPDeleteAttachments({
     ListName: LISTNAMES.SectionDetails,
@@ -454,7 +458,7 @@ export const AddReferenceAttachment = async (documentId: number, file: any) => {
   }).then((res: any) => {
     res?.forEach(async (obj: any) => {
       if (obj.sectionType === "references section") {
-        AddSectionAttachment(obj.ID, file);
+        AddSectionAttachmentFile(obj.ID, file);
       }
     });
   });
@@ -532,7 +536,7 @@ const submitSectionDefinitions = async (
               await tempSectionDefinitions,
               sectionOrder
             );
-            AddSectionAttachment(sectionId, _file);
+            AddSectionAttachmentFile(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
               [...(await tempSectionDefinitions), ...sectionReferences],
               await referenceSectionNumber
@@ -595,7 +599,7 @@ const submitSectionDefinitions = async (
               await tempSectionDefinitions,
               sectionOrder
             );
-            AddSectionAttachment(sectionId, _file);
+            AddSectionAttachmentFile(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
               [...(await tempSectionDefinitions), ...sectionReferences],
               await referenceSectionNumber
@@ -653,7 +657,7 @@ const submitSectionDefinitions = async (
   //             await tempSectionDefinitions,
   //             sectionOrder
   //           );
-  //           AddSectionAttachment(sectionId, _file);
+  //           AddSectionAttachmentFile(sectionId, _file);
   //           const reference_file: any = await convertReferenceToTxtFile(
   //             await tempSectionDefinitions
   //           );
@@ -755,7 +759,7 @@ const addNewDefinition = async (
               await tempSectionDefinitions,
               sectionOrder
             );
-            AddSectionAttachment(sectionId, _file);
+            AddSectionAttachmentFile(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
               [...(await tempSectionDefinitions), ...sectionReferences],
               await referenceSectionNumber
@@ -917,7 +921,7 @@ const updateSectionDefinition = async (
               await tempSectionDefinitions,
               sectionOrder
             );
-            AddSectionAttachment(sectionId, _file);
+            AddSectionAttachmentFile(sectionId, _file);
             const reference_file: any = await convertReferenceToTxtFile(
               [...(await tempSectionDefinitions), ...sectionReferences],
               await referenceSectionNumber
