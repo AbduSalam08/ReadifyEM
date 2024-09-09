@@ -1,9 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CircularProgress } from "@mui/material";
 // styles
 import styles from "./AppLoader.module.scss";
-const CircularSpinner = (): JSX.Element => {
+const CircularSpinner = (pageSpinnerHeight?: any): JSX.Element => {
   return (
-    <div className={`${styles.flexcenter} ${styles.loaderSection}`}>
+    <div
+      className={`${styles.flexcenter} ${styles.loaderSection}`}
+      style={{
+        height: pageSpinnerHeight,
+      }}
+    >
       <CircularProgress
         sx={{
           width: "40px",

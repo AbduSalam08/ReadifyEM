@@ -138,7 +138,7 @@ const SectionBanner: React.FC<Props> = ({
   const CDHeaderDetails = useSelector(
     (state: any) => state.ContentDeveloperData.CDHeaderDetails
   );
-  const [headerToggle, setHeaderToggle] = useState(true);
+  const [headerToggle, setHeaderToggle] = useState(false);
 
   // UseEffect to fetch header details based on section type
   useEffect(() => {
@@ -146,6 +146,13 @@ const SectionBanner: React.FC<Props> = ({
     //   getAppendixHeaderSectionDetails(sectionDetails, dispatch);
     // } else {
     getHeaderSectionDetails(sectionDetails, dispatch);
+
+    if (sectionDetails?.sectionType === "header section") {
+      setHeaderToggle(true);
+    } else {
+      setHeaderToggle(false);
+    }
+
     // }
   }, [
     sectionDetails,
@@ -166,28 +173,30 @@ const SectionBanner: React.FC<Props> = ({
         margin: headerToggle ? "0" : "15px 0",
       }}
     >
-      <div
-        className={`${styles.flexCenter} ${styles.bannerHeader}`}
-        style={{
-          position: "absolute",
-          top: headerToggle ? "0" : "-10px",
-          padding: headerToggle ? "0 5px" : "0 8px",
-          left: "0",
-          cursor: "pointer",
-        }}
-        onClick={() => {
-          setHeaderToggle(!headerToggle);
-        }}
-      >
-        {!headerToggle ? "Header" : ""}{" "}
-        <ChevronRight
-          sx={{
-            fontSize: "20px",
-            transform: `rotate(${headerToggle ? "90deg" : "0deg"})`,
-            transition: "all .2s",
+      {sectionDetails?.sectionType !== "header section" && (
+        <div
+          className={`${styles.flexCenter} ${styles.bannerHeader}`}
+          style={{
+            position: "absolute",
+            top: headerToggle ? "0" : "-10px",
+            padding: headerToggle ? "0 5px" : "0 8px",
+            left: "0",
+            cursor: "pointer",
           }}
-        />
-      </div>
+          onClick={() => {
+            setHeaderToggle(!headerToggle);
+          }}
+        >
+          {!headerToggle ? "Header" : ""}{" "}
+          <ChevronRight
+            sx={{
+              fontSize: "20px",
+              transform: `rotate(${headerToggle ? "90deg" : "0deg"})`,
+              transition: "all .2s",
+            }}
+          />
+        </div>
+      )}
       <div
         className={styles.headerContainer}
         style={{

@@ -14,16 +14,20 @@
   height: auto;
   // max-height: 71vh;
   min-height: 71vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
   // max-height: calc(100vh - 200px);
   // overflow: auto;
 }
 .allSectionWrapper {
-  // height: 92%;
-  height: 100%;
+  // height: 100%;
   // max-height: calc(100vh - 95px);
-  // max-height: calc(95vh - 200px);
-  max-height: calc(100vh - 200px);
+  // max-height: calc(100% - 45px);
   // min-height: calc(0vh - 95px);
+  height: 100%;
+  max-height: calc(100vh - 180px);
   overflow: auto;
   padding: 0px 15px;
 }
