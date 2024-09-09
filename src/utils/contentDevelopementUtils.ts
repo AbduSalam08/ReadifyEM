@@ -152,6 +152,11 @@ import {
   setCDSectionData,
 } from "../redux/features/ContentDevloperSlice";
 import dayjs from "dayjs";
+import {
+  bindHeaderTable,
+  convertBlobToBase64,
+} from "../services/PDFServices/PDFServices";
+import { AddSectionAttachmentFile } from "../services/ContentDevelopment/SectionDefinition/SectionDefinitionServices";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const AddAppendixAttachment = async (
@@ -277,6 +282,59 @@ export const UpdateAppendixAttachment = async (
   }
 };
 
+export const addDefaultPDFheader = async (
+  sectionDetails: any,
+  documentId: number
+) => {
+  const DocDetailsResponse: any = await SpServices.SPReadItems({
+    Listname: LISTNAMES.DocumentDetails,
+    Select:
+      "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail, documentTemplateType/ID, documentTemplateType/Title",
+    Expand: "primaryAuthor, Author, documentTemplateType",
+    Filter: [
+      {
+        FilterKey: "ID",
+        Operator: "eq",
+        FilterValue: documentId,
+      },
+    ],
+  });
+  const sectionsDetails: any = await SpServices.SPReadItems({
+    Listname: LISTNAMES.SectionDetails,
+    Select: "*, documentOf/ID",
+    Expand: "documentOf",
+    Filter: [
+      {
+        FilterKey: "documentOf",
+        Operator: "eq",
+        FilterValue: documentId,
+      },
+    ],
+  });
+  const DocDetailsResponseData: any = DocDetailsResponse[0];
+
+  const pdfHeaderSection = sectionsDetails.filter(
+    (obj: any) => obj.sectionType === "pdf header"
+  );
+  const PDFHeaderTable = await bindHeaderTable(
+    sectionDetails,
+    DocDetailsResponseData
+  );
+  const cleanedTable = PDFHeaderTable.replace(/\n/g, "").replace(
+    /\s{2,}/g,
+    " "
+  );
+
+  const blob = new Blob([JSON.stringify(cleanedTable)], {
+    type: "text/plain",
+  });
+  const file: any = new File([blob], "Sample.txt", {
+    type: "text/plain",
+  });
+
+  await AddSectionAttachmentFile(pdfHeaderSection[0].ID, file);
+};
+
 // Services for Section Details
 export const AddSectionAttachment = async (
   itemID: number,
@@ -285,6 +343,7 @@ export const AddSectionAttachment = async (
   saveAndClose: boolean,
   fileName?: string,
   allSectionsData?: any,
+  currentDocDetailsData?: any,
   dispatcher?: any
 ): Promise<any> => {
   debugger;
@@ -294,8 +353,20 @@ export const AddSectionAttachment = async (
     FileName: fileName,
     Attachments: file,
   })
-    .then((res: any) => {
+    .then(async (res: any) => {
       console.log("res: ", res);
+      console.log("currentDocDetailsData: ", currentDocDetailsData);
+      console.log("allSectionsData: ", allSectionsData);
+      debugger;
+      const response = await fetch(res.data.ServerRelativeUrl);
+      const imageBlob = await response.blob();
+      const base64Data = await convertBlobToBase64(imageBlob);
+      const sectionDetail = { base64: base64Data };
+      console.log("sectionDetail: ", sectionDetail);
+      addDefaultPDFheader(
+        sectionDetail,
+        currentDocDetailsData.documentDetailsID
+      );
     })
     .catch((err: any) => {
       console.log("err: ", err);
@@ -349,6 +420,7 @@ export const UpdateSectionAttachment = async (
   fileName?: string,
   deleteAttachments?: boolean,
   allSectionsData?: any,
+  currentDocDetailsData?: any,
   dispatcher?: any
 ): Promise<any> => {
   debugger;
@@ -399,6 +471,7 @@ export const UpdateSectionAttachment = async (
           saveAndClose,
           fileName,
           allSectionsData,
+          currentDocDetailsData,
           dispatcher
         );
         console.log("New attachment added successfully.");
@@ -414,6 +487,7 @@ export const addHeaderAttachmentData = async (
   sectionDetails?: any,
   file?: any,
   allSectionData?: any,
+  currentDocDetailsData?: any,
   dispatch?: any,
   contentType?: any
 ): Promise<any> => {
@@ -426,6 +500,7 @@ export const addHeaderAttachmentData = async (
       file.fileName,
       file.fileData?.length === 0,
       allSectionData,
+      currentDocDetailsData,
       dispatch
     );
   }

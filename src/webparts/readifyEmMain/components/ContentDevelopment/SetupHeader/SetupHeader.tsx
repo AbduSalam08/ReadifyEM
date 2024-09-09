@@ -556,6 +556,7 @@ const SetupHeader: React.FC<Props> = ({
                         sectionDetails,
                         file,
                         AllSectionsDataMain,
+                        currentDocDetailsData,
                         dispatch
                       );
 
