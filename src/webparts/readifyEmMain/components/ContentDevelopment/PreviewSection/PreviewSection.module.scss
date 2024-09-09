@@ -23,6 +23,16 @@
     p{
         line-height: 20px;
     }
+    ol{
+        list-style: decimal;
+        margin-left: 20px;
+    }ul{
+        list-style: disc;
+        margin-left: 20px;
+    }
+    li{
+        margin-bottom: 10px;
+    }
 }
 .noDataFound {
     width: 100%;
