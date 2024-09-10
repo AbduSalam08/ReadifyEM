@@ -1,3 +1,6 @@
+/* eslint-disable require-atomic-updates */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable no-debugger */
 /* eslint-disable react/jsx-key */
@@ -12,12 +15,13 @@ import { TableRowLoading } from "./LoadingTemplates/TableRowLoading";
 // import { UpdateDocument } from "../../../../services/NewDocument/NewDocumentServices";
 import AlertPopup from "../common/Popups/AlertPopup/AlertPopup";
 import { IPopupLoaders } from "../../../../interface/MainInterface";
-import { initialPopupLoaders, LISTNAMES } from "../../../../config/config";
+import { initialPopupLoaders } from "../../../../config/config";
 import { OrderList } from "primereact/orderlist";
 // import { updateFolderSequenceNumber } from "../../../../services/EMManual/EMMServices";
 import { CurrentUserIsAdmin } from "../../../../constants/DefineUser";
-import SpServices from "../../../../services/SPServices/SpServices";
+// import SpServices from "../../../../services/SPServices/SpServices";
 import { updateFolderSequenceNumber } from "../../../../services/EMManual/EMMServices";
+import { UpdateDocument } from "../../../../services/NewDocument/NewDocumentServices";
 
 interface ITableProps {
   headers: string[];
@@ -81,166 +85,66 @@ const Table: React.FC<ITableProps> = ({
         },
       ];
 
-  const [DNDData, setDNDData] = useState<LibraryItem[]>([]);
-  console.log("DNDData: ", DNDData);
+  const [DNDData, setDNDData] = useState<any[]>([]);
 
   const [popupLoaders, setPopupLoaders] =
     useState<IPopupLoaders>(initialPopupLoaders);
 
-  // const handleData = async (newData: any, data: any): Promise<any> => {
-  //   console.log("data: ", data);
-  //   console.log("newData: ", newData);
-  //   debugger;
-  //   const reorderedItems = newData?.map((e: any, index: number) => {
-  //     return {
-  //       ID: e?.ID,
-  //       sequenceNo: String(index + 1),
-  //     };
-  //   });
-  //   const fileReorder = newData?.some((item: any) => item?.type === "file");
-  //   if (fileReorder) {
-  //     const reorderedItemsList = newData?.map((e: any, index: number) => {
-  //       return {
-  //         ID: e?.ID,
-  //         sequenceNo: String(index + 1),
-  //       };
-  //     });
-  //     const reorderedItemsLib = newData?.map((e: any, index: number) => {
-  //       return {
-  //         ID: e?.fileID,
-  //         sequenceNo: String(index + 1),
-  //       };
-  //     });
+  const handleData = (newData: any): void => {
+    const reorderedItems = newData?.map((e: any, index: number) => {
+      return {
+        ...e,
+        sequenceNo: String(index + 1),
+      };
+    });
 
-  //     await SpServices.batchUpdate({
-  //       ListName: LISTNAMES.AllDocuments,
-  //       responseData: reorderedItemsLib,
-  //     });
-
-  //     await SpServices.batchUpdate({
-  //       ListName: LISTNAMES.DocumentDetails,
-  //       responseData: reorderedItemsList,
-  //     });
-  //   }
-
-  //   reorderedItems?.forEach(async (el: any) => {
-  //     if (el?.type === "folder") {
-  //       await updateFolderSequenceNumber(el?.fileID, el?.sequenceNo);
-  //     }
-  //     // else {
-  //     // await UpdateDocument(
-  //     //   el,
-  //     //   el?.fileID,
-  //     //   setPopupLoaders,
-  //     //   el?.ID,
-  //     //   el?.isDraft,
-  //     //   false,
-  //     //   true
-  //     // );
-  //     // }
-  //   });
-
-  //   if (!fileReorder) {
-  //     loadData();
-  //   }
-  // };
-
-  const handleData = async (newData: any, data: any): Promise<void> => {
-    try {
-      console.log("data: ", data);
-      console.log("newData: ", newData);
-      debugger;
-
-      const fileReorder = newData?.some((item: any) => item?.type === "file");
-
-      console.log("fileReorder: ", fileReorder);
-      if (fileReorder) {
-        // Find the index of the item in DNDData that matches the fileID of the data
-        const index = DNDData?.findIndex(
-          (item: any) => item?.fileID === data?.fileID
-        );
-
-        if (index !== -1) {
-          // Clone the existing DNDData to avoid mutating state directly
-          const updatedData = [...DNDData];
-
-          // Replace the item at the found index with the new data
-          updatedData[index] = {
-            ...updatedData[index],
-            items: newData, // or directly newData if it should replace the items key
-          };
-          // Update the state directly with the new data
-          setDNDData(updatedData);
-        }
-        // Reorder the items for both lists
-        const reorderedItemsList = newData?.map((e: any, index: number) => ({
-          ID: e?.ID,
-          sequenceNo: String(index + 1),
-        }));
-
-        const reorderedItemsLib = newData?.map((e: any, index: number) => ({
-          ID: e?.fileID,
-          sequenceNo: String(index + 1),
-        }));
-
-        // Batch update the items in SharePoint lists
-        await SpServices.batchUpdate({
-          ListName: LISTNAMES.AllDocuments,
-          responseData: reorderedItemsLib,
-        });
-
-        await SpServices.batchUpdate({
-          ListName: LISTNAMES.DocumentDetails,
-          responseData: reorderedItemsList,
-        });
+    reorderedItems?.forEach(async (el: any) => {
+      if (el?.type === "folder") {
+        await updateFolderSequenceNumber(el?.fileID, el?.sequenceNo);
       } else {
-        const reorderedItems = newData?.map((e: any, index: number) => ({
-          ...e,
-          sequenceNo: String(index + 1),
-        }));
-
-        reorderedItems?.forEach(async (el: any) => {
-          if (el?.type === "folder") {
-            await updateFolderSequenceNumber(el?.fileID, el?.sequenceNo);
-          }
-          // else {
-          // await UpdateDocument(
-          //   el,
-          //   el?.fileID,
-          //   setPopupLoaders,
-          //   el?.ID,
-          //   el?.isDraft,
-          //   false,
-          //   true
-          // );
-          // }
-        });
-        setDNDData(newData);
-        // await loadData();
+        await UpdateDocument(
+          el,
+          el?.fileID,
+          setPopupLoaders,
+          el?.ID,
+          el?.isDraft,
+          false,
+          true
+        );
       }
-    } catch (error) {
-      console.error("Error handling data:", error);
-    }
+    });
+
+    loadData();
   };
 
-  const togglePanel = (item: LibraryItem): void => {
-    const updateItem = (currentItem: LibraryItem): LibraryItem => {
+  const togglePanel = (item: any): void => {
+    console.log("item 111: ", item);
+    debugger;
+    const updateItem = (currentItem: any): any => {
+      // Check if this is the item to update based on its name
       if (currentItem.name === item.name) {
+        // Spread currentItem to ensure all other keys are preserved
         return { ...currentItem, open: !currentItem.open };
       }
 
+      // If currentItem has children, recursively update them
       if (currentItem.items) {
         return {
           ...currentItem,
-          items: currentItem.items.map((childItem) => updateItem(childItem)),
+          items: currentItem.items.map((childItem: any) =>
+            updateItem(childItem)
+          ),
         };
       }
 
+      // Return currentItem unchanged if it's not the item to update
       return currentItem;
     };
 
-    const updatedDNDData: any = DNDData.map((prevItem) => updateItem(prevItem));
-    setDNDData(updatedDNDData);
+    // Apply the update to the whole DNDData list
+    setDNDData((prevDNDData) =>
+      prevDNDData.map((prevItem) => updateItem(prevItem))
+    );
   };
 
   const filterData = (
@@ -262,7 +166,7 @@ const Table: React.FC<ITableProps> = ({
       }
     };
 
-    const matchesStatus = (item: LibraryItem): boolean => {
+    const matchesStatus = (item: any): boolean => {
       return (
         filterByStatus === null ||
         (item.type === "file" && item.fields?.status === filterByStatus)
@@ -331,7 +235,8 @@ const Table: React.FC<ITableProps> = ({
         columns={columns}
         itemTemplateLoading={TableItemLoading}
         handleData={(value: any) => {
-          handleData(value, data);
+          handleData(value);
+          // handleData(value, data);
         }}
         loading={loading}
         togglePanel={togglePanel}
@@ -421,7 +326,8 @@ const Table: React.FC<ITableProps> = ({
           itemTemplate={(item: any) => renderTableItem(item)}
           onChange={(e) => {
             // console.log("e: ", e.value);
-            handleData(e.value, DNDData);
+            // handleData(e.value, DNDData);
+            handleData(e.value);
           }}
           dragdrop={isAdmin}
           focusOnHover={false}
