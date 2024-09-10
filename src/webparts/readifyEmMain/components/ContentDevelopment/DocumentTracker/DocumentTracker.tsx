@@ -261,7 +261,7 @@
 import React from "react";
 import styles from "./DocumentTracker.module.scss";
 import MultiplePeoplePersona from "../../common/CustomInputFields/MultiplePeoplePersona";
-const checkMark = require("../../../../../assets/images/svg/checkIconViolet.svg");
+const checkMark = require("../../../../../assets/images/svg/completedSVG.svg");
 const warning = require("../../../../../assets/images/svg/exclamationDarkRed.svg");
 import { Timeline } from "primereact/timeline";
 import "./DocumentTracker.css";
@@ -280,6 +280,11 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
   const hasRework = sectionsData?.some(
     (item: any) => item?.sectionStatus?.toLowerCase() === "rework in progress"
   );
+
+  // const allsectionsSubmitted = sectionsData?.some(
+  //   (item: any) =>  item?.sectionStatus?.toLowerCase() === "submitted"
+  // );
+
   const docApproved =
     documentData?.documentStatus?.toLowerCase() === "approved";
 
@@ -305,14 +310,14 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
 
   const events = [
     {
-      color: "#593ABB",
+      color: "#32BA7C",
       borderColor: "#ffffffd4",
       serialNumber: 1,
       content: (
         <div className={styles.trackSection}>
           <div className={styles.trackerContent}>
             <div className={styles.trackerHeadlineSec}>
-              <span className={styles.roleType} style={{ color: "#593ABB" }}>
+              <span className={styles.roleType} style={{ color: "#32BA7C" }}>
                 Primary Author
               </span>
               <MultiplePeoplePersona
@@ -324,7 +329,14 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
           </div>
           <div className={styles.statusSection}>
             <button className={styles.backBtn}>
-              <img src={checkMark} alt="check mark" />
+              <img
+                src={checkMark}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                }}
+                alt="check mark"
+              />
             </button>
           </div>
         </div>

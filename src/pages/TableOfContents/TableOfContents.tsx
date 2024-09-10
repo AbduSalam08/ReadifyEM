@@ -924,7 +924,6 @@ const TableOfContents = (): JSX.Element => {
             defaultTable={false}
             loadData={setMainData}
             renderActions={(item: any, index: number) => {
-              console.log("item: ", item);
               const nextReviewDate = dayjs(
                 item?.fields?.nextReviewDate,
                 "DD/MM/YYYY"

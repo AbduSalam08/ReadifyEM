@@ -50,12 +50,21 @@ const TableItem: React.FC<TableItemProps> = ({
   columns,
 }) => {
   const [data, setData] = useState(tableData);
-  console.log("data: ", data);
   const [isOpen, setIsOpen] = useState(data.open);
+  const [toggleStates, setToggleStates] = useState<Record<number, boolean>>({});
   const isAdmin: boolean = CurrentUserIsAdmin();
+
   useEffect(() => {
     setIsOpen(data.open);
   }, [data?.open]);
+
+  useEffect(() => {
+    const initialStates: Record<number, boolean> = {};
+    data.items?.forEach((item: any) => {
+      initialStates[item?.fileID] = item.fields?.isVisible;
+    });
+    setToggleStates(initialStates);
+  }, []);
 
   useEffect(() => {
     setData(tableData);
@@ -103,42 +112,84 @@ const TableItem: React.FC<TableItemProps> = ({
               <div className={styles.item} title={fieldValue} key={i}>
                 {(item.fields.status?.toLowerCase() === "approved" ||
                   item.fields.status?.toLowerCase() === "current") && (
+                  // <InputSwitch
+                  //   // checked={item.fields[key]}
+                  //   checked={isToggled}
+                  //   className="sectionToggler"
+                  //   disabled={
+                  //     item.fields.status?.toLowerCase() !== "approved" &&
+                  //     item.fields.status?.toLowerCase() !== "current"
+                  //   }
+                  //   onChange={async (e) => {
+                  //     setIsToggled((prev: any) => !prev);
+
+                  //     await SpServices.SPUpdateItem({
+                  //       Listname: LISTNAMES.AllDocuments,
+                  //       ID: item.fileID,
+                  //       RequestJSON: {
+                  //         isVisible: !item.fields.isVisible,
+                  //       },
+                  //     });
+                  //     // Update the local state to reflect the visibility change
+                  //     const currentItem = data.items?.find(
+                  //       (el: any) => el?.fileID === item?.fileID
+                  //     );
+
+                  //     if (currentItem) {
+                  //       setData((prev: any) => ({
+                  //         ...prev,
+                  //         items: prev.items.map((el: any) =>
+                  //           el.fileID === item.fileID
+                  //             ? {
+                  //                 ...el,
+                  //                 fields: {
+                  //                   ...el.fields,
+                  //                   isVisible: !el.fields.isVisible,
+                  //                 },
+                  //               }
+                  //             : el
+                  //         ),
+                  //       }));
+                  //     }
+                  //   }}
+                  //   key={i}
+                  // />
                   <InputSwitch
-                    checked={item.fields[key]}
+                    checked={toggleStates[item.fileID]}
                     className="sectionToggler"
                     disabled={
                       item.fields.status?.toLowerCase() !== "approved" &&
                       item.fields.status?.toLowerCase() !== "current"
                     }
                     onChange={async (e) => {
+                      const newState = !toggleStates[item.fileID];
+                      setToggleStates((prev) => ({
+                        ...prev,
+                        [item.fileID]: newState,
+                      }));
+
                       await SpServices.SPUpdateItem({
                         Listname: LISTNAMES.AllDocuments,
                         ID: item.fileID,
                         RequestJSON: {
-                          isVisible: !item.fields.isVisible,
+                          isVisible: newState,
                         },
                       });
-                      // Update the local state to reflect the visibility change
-                      const currentItem = data.items?.find(
-                        (el: any) => el?.fileID === item?.fileID
-                      );
 
-                      if (currentItem) {
-                        setData((prev: any) => ({
-                          ...prev,
-                          items: prev.items.map((el: any) =>
-                            el.fileID === item.fileID
-                              ? {
-                                  ...el,
-                                  fields: {
-                                    ...el.fields,
-                                    isVisible: !el.fields.isVisible,
-                                  },
-                                }
-                              : el
-                          ),
-                        }));
-                      }
+                      setData((prev: any) => ({
+                        ...prev,
+                        items: prev.items.map((el: any) =>
+                          el.fileID === item.fileID
+                            ? {
+                                ...el,
+                                fields: {
+                                  ...el.fields,
+                                  isVisible: newState,
+                                },
+                              }
+                            : el
+                        ),
+                      }));
                     }}
                     key={i}
                   />
@@ -340,6 +391,7 @@ const TableItem: React.FC<TableItemProps> = ({
   const handleTogglePanel = (): void => {
     setIsOpen((prev) => !prev);
     togglePanel(data);
+    console.log("data 111: ", data);
   };
 
   const folders = data.items?.filter((item: any) => item?.type === "folder");

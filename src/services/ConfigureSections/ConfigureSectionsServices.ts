@@ -15,6 +15,7 @@ import {
 import { AddTask } from "../MyTasks/MyTasksServices";
 import SpServices from "../SPServices/SpServices";
 import { removeVersionFromDocName } from "../../utils/formatDocName";
+import { addDefaultPDFheader } from "../../utils/contentDevelopementUtils";
 
 // Function to trigger - Adding sections
 export const AddSections = async (
@@ -141,6 +142,14 @@ export const AddSections = async (
       //     isActive: true,
       //   });
       // }
+
+      // updsating the pdf header section for new version
+      await addDefaultPDFheader(
+        {
+          base64: "",
+        },
+        docDetails?.documentDetailsId
+      );
 
       const getUpdatedSectionsData = (sections: any[], type: string): any =>
         sections
@@ -965,6 +974,7 @@ export const updateSections = async (
           },
         ],
       });
+
       const AllTaskOfDoc = await SpServices.SPReadItems({
         Listname: LISTNAMES.MyTasks,
         Select: "*,documentDetails/ID,sectionDetails/ID",
@@ -1030,6 +1040,7 @@ export const updateSections = async (
             },
           });
         }
+
         await Promise.all(
           uniqueTaskByResponse.map(async (item: any) => {
             if (
