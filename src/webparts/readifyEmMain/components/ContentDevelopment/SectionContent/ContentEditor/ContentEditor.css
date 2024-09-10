@@ -9,8 +9,9 @@
   font-family: "interRegular", sans-serif !important;
 }
 .ql-tooltip {
-  z-index: 9999;
+  z-index: 9999!important;
   width: 476px !important;
+  left: -70px!important;
 }
 .ql-editor::before {
   font-size: 13px !important;

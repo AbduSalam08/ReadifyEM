@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./SectionContent.module.scss";
 import DefaultButton from "../../common/Buttons/DefaultButton";
 import ContentEditor from "./ContentEditor/ContentEditor";
@@ -59,6 +59,11 @@ interface Point {
   childs: Point[];
 }
 
+interface InvalidPointResult {
+  path: number[];
+  text: string;
+}
+
 // interface IPoint {
 //   text: string;
 //   value: string;
@@ -76,6 +81,13 @@ const SectionContentLatest: React.FC<IProps> = ({
   currentDocRole,
   setCheckChanges,
 }) => {
+  console.log(currentSectionDetails);
+
+  // Track the latest point to be focused
+  const lastAddedPointRef = useRef<HTMLDivElement | null>(null);
+  // Inside your renderPoints function
+  const contentEditorRefs = useRef<Map<string, any>>(new Map());
+
   // confirmation popup controllers
   const initialPopupController = [
     {
@@ -645,6 +657,18 @@ const SectionContentLatest: React.FC<IProps> = ({
 
   const addData = async (submissionType?: any): Promise<any> => {
     setCheckChanges(false);
+    const invalidPath = findInvalidPointPath(masterPoints);
+    if (invalidPath) {
+      focusOnInvalidPoint(invalidPath.path); // Focus on the first invalid point
+      setToastMessage({
+        isShow: true,
+        severity: "warn",
+        title: "Empty point!",
+        message: `Please fill the point ${invalidPath.text} before adding a new one.`,
+        duration: 3000,
+      });
+      return;
+    }
     debugger;
     togglePopupVisibility(
       setPopupController,
@@ -666,30 +690,6 @@ const SectionContentLatest: React.FC<IProps> = ({
         duration: 3000,
       });
       return;
-    }
-    const hasEmptyValue = masterPoints
-      .slice(1)
-      .some((item: any) => item.value === "");
-    if (hasEmptyValue) {
-      // setValidation({
-      //   ...validation,
-      //   isValid: false,
-      //   errorMessage: "error message",
-      // });
-      setToastMessage({
-        isShow: true,
-        severity: "warn",
-        title: "Empty point!",
-        message: "Please fill in all points before adding a new one.",
-        duration: 3000,
-      });
-      return;
-    } else {
-      setValidation({
-        ...validation,
-        isValid: true,
-        errorMessage: "",
-      });
     }
     setSectionLoader(true);
     const _file: any = await convertToTxtFile();
@@ -737,36 +737,48 @@ const SectionContentLatest: React.FC<IProps> = ({
       });
   };
 
-  useEffect(() => {
-    setSectionLoader(true);
-    if (currentSectionDetails?.contentType === "list") {
-      getSectionData();
-    }
-    setValidation({ ...validation, isValid: true, errorMessage: "" });
-
-    // if (sortedPoints) {
-    //   setSectionLoader(false);
-    // }
-  }, [ID, currentSectionDetails?.ID]);
-
-  useEffect(() => {
-    console.log(sectionChangeRecord);
-    setChangeRecordDetails({
-      ...changeRecordDetails,
-      author: sectionChangeRecord.changeRecordAuthor
-        ? sectionChangeRecord.changeRecordAuthor
-        : currentUserDetails,
-      Description: sectionChangeRecord.changeRecordDescription,
-      currentDate: dayjs(
-        new Date(sectionChangeRecord.changeRecordModify)
-      ).format("DD-MMM-YYYY hh:mm A"),
-    });
-  }, [sectionChangeRecord.changeRecordDescription]);
-
   // lastest code
 
-  const defaultStartingSection = "5";
   console.log(masterPoints);
+
+  // Recursively check if any point or its child has an empty value and return its path
+  const findInvalidPointPath = (
+    arr: Point[],
+    path: number[] = []
+  ): InvalidPointResult | null => {
+    for (let index = 0; index < arr.length; index++) {
+      const point = arr[index];
+      const currentPath = [...path, index]; // Track the current path
+
+      if (point.value.trim() === "" || point.value.trim() === "<p><br></p>") {
+        return { path: currentPath, text: point.text }; // Return the path of the invalid point
+      }
+
+      if (point.childs.length > 0) {
+        const childPath = findInvalidPointPath(point.childs, currentPath);
+        if (childPath) {
+          return childPath; // Return the path if a child point is invalid
+        }
+      }
+    }
+    return null; // All points and child points are valid
+  };
+
+  // Recursively check if any point or its child has an empty value
+  const validatePoints = (arr: Point[]): boolean => {
+    for (const point of arr) {
+      if (point.value.trim() === "" || point.value.trim() === "<p><br></p>") {
+        return false; // Invalid if any point has an empty value
+      }
+      if (point.childs.length > 0) {
+        const childValidation = validatePoints(point.childs); // Check child points
+        if (!childValidation) {
+          return false; // If any child point is invalid, return false
+        }
+      }
+    }
+    return true; // All points and child points are valid
+  };
 
   // Function to update point text recursively based on its position
   const updatePointText = (arr: Point[], prefix: string = ""): Point[] => {
@@ -789,28 +801,53 @@ const SectionContentLatest: React.FC<IProps> = ({
     setMasterPoints(updatedPoints);
   };
 
+  const focusOnInvalidPoint = (invalidPath: number[]) => {
+    const refKey = invalidPath.join("-"); // Generate the same key based on the path
+    const editorToFocus = contentEditorRefs.current.get(refKey); // Get the corresponding editor
+
+    if (editorToFocus) {
+      editorToFocus.focus(); // Focus the editor
+    }
+  };
+
   // Function to add a new sub-point at a specific path
   const addSubPoint = (path: number[]): any => {
-    const newSubPoint: Point = {
-      text: "", // This will be updated when numbering
-      value: "",
-      class: "",
-      childs: [],
-    };
-
-    const updatedPoints = updatePointsAtPath(masterPoints, path, (point) => {
-      return {
-        ...point,
-        childs: [...point.childs, newSubPoint],
+    const invalidPath = findInvalidPointPath(masterPoints);
+    if (invalidPath) {
+      focusOnInvalidPoint(invalidPath.path); // Focus on the first invalid point
+      setToastMessage({
+        isShow: true,
+        severity: "warn",
+        title: "Empty point!",
+        message: `Please fill the point ${invalidPath.text} before adding a new one.`,
+        duration: 3000,
+      });
+      return;
+    }
+    if (validatePoints([...masterPoints])) {
+      const newSubPoint: Point = {
+        text: "", // This will be updated when numbering
+        value: "",
+        class: "",
+        childs: [],
       };
-    });
 
-    // Re-number points after adding the sub-point
-    const renumberedPoints = updatePointText(
-      updatedPoints,
-      defaultStartingSection
-    );
-    setMasterPoints(renumberedPoints);
+      const updatedPoints = updatePointsAtPath(masterPoints, path, (point) => {
+        return {
+          ...point,
+          childs: [...point.childs, newSubPoint],
+        };
+      });
+
+      // Re-number points after adding the sub-point
+      const renumberedPoints = updatePointText(
+        updatedPoints,
+        currentSectionDetails.sectionOrder
+      );
+      setMasterPoints(renumberedPoints);
+    } else {
+      alert("Invalid points");
+    }
   };
 
   // Function to delete a point at a specific path
@@ -822,7 +859,7 @@ const SectionContentLatest: React.FC<IProps> = ({
       );
       const renumberedPoints = updatePointText(
         updatedPoints,
-        defaultStartingSection
+        currentSectionDetails.sectionOrder
       );
       setMasterPoints(renumberedPoints);
     } else {
@@ -841,7 +878,7 @@ const SectionContentLatest: React.FC<IProps> = ({
       // Re-number points after deletion
       const renumberedPoints = updatePointText(
         updatedPoints,
-        defaultStartingSection
+        currentSectionDetails.sectionOrder
       );
       setMasterPoints(renumberedPoints);
     }
@@ -880,7 +917,7 @@ const SectionContentLatest: React.FC<IProps> = ({
     return arr.map((point, index) => {
       // Calculate the current path for this point (parent path + current index)
       const currentPath = [...parentPath, index];
-
+      const refKey = currentPath.join("-");
       // Determine the indent level based on the length of the parent path
       const indentLevel = parentPath.length;
       +1; // Adjust based on hierarchy level
@@ -929,6 +966,18 @@ const SectionContentLatest: React.FC<IProps> = ({
             </span>
 
             <ContentEditor
+              //   ref={(el: any) => {
+              //     // Set the ref for the last added point to auto-focus
+              //     if (point.value === "") {
+              //       lastAddedPointRef.current = el;
+              //     }
+              //   }}
+              ref={(el: any) => {
+                if (el) contentEditorRefs.current.set(refKey, el); // Store the ref
+                if (point.value === "") {
+                  lastAddedPointRef.current = el;
+                }
+              }}
               readOnly={
                 currentSectionDetails?.sectionSubmitted ||
                 currentDocRole?.consultant
@@ -972,22 +1021,71 @@ const SectionContentLatest: React.FC<IProps> = ({
 
   // Function to add a new top-level point
   const addNewPoint = (): any => {
-    const newPoint: Point = {
-      text: "", // This will be updated when numbering
-      value: "",
-      class: "",
-      childs: [],
-    };
+    const invalidPath = findInvalidPointPath(masterPoints);
+    if (invalidPath) {
+      focusOnInvalidPoint(invalidPath.path); // Focus on the first invalid point
+      setToastMessage({
+        isShow: true,
+        severity: "warn",
+        title: "Empty point!",
+        message: `Please fill the point ${invalidPath.text} before adding a new one.`,
+        duration: 3000,
+      });
+      return;
+    }
+    if (validatePoints([...masterPoints])) {
+      const newPoint: Point = {
+        text: "", // This will be updated when numbering
+        value: "",
+        class: "",
+        childs: [],
+      };
 
-    const updatedPoints = [...masterPoints, newPoint];
+      const updatedPoints = [...masterPoints, newPoint];
 
-    // Re-number points after adding the new point
-    const renumberedPoints = updatePointText(
-      updatedPoints,
-      defaultStartingSection
-    );
-    setMasterPoints(renumberedPoints);
+      // Re-number points after adding the new point
+      const renumberedPoints = updatePointText(
+        updatedPoints,
+        currentSectionDetails.sectionOrder
+      );
+      setMasterPoints(renumberedPoints);
+    } else {
+      alert("Invalid points");
+    }
   };
+
+  // Focus on the last added point when the points change
+  useEffect(() => {
+    if (lastAddedPointRef.current) {
+      lastAddedPointRef.current.focus();
+    }
+  }, [masterPoints]);
+
+  useEffect(() => {
+    setSectionLoader(true);
+    if (currentSectionDetails?.contentType === "list") {
+      getSectionData();
+    }
+    setValidation({ ...validation, isValid: true, errorMessage: "" });
+
+    // if (sortedPoints) {
+    //   setSectionLoader(false);
+    // }
+  }, [ID, currentSectionDetails?.ID]);
+
+  useEffect(() => {
+    console.log(sectionChangeRecord);
+    setChangeRecordDetails({
+      ...changeRecordDetails,
+      author: sectionChangeRecord.changeRecordAuthor
+        ? sectionChangeRecord.changeRecordAuthor
+        : currentUserDetails,
+      Description: sectionChangeRecord.changeRecordDescription,
+      currentDate: dayjs(
+        new Date(sectionChangeRecord.changeRecordModify)
+      ).format("DD-MMM-YYYY hh:mm A"),
+    });
+  }, [sectionChangeRecord.changeRecordDescription]);
 
   return (
     <div

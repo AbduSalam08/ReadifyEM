@@ -26,39 +26,75 @@ const PreviewSection: React.FC<Iprops> = ({ sectionId, sectionDetails }) => {
     getSectionAttachment(sectionId, sectionDetails, setSectionAttachment);
   }, []);
 
+  // Function to render points recursively
+  const renderPoints = (
+    arr: any[],
+    parentPath: number[] = []
+  ): JSX.Element[] => {
+    return arr.map((point, index) => {
+      // Calculate the current path for this point (parent path + current index)
+      const currentPath = [...parentPath, index];
+
+      // Determine the indent level based on the length of the parent path
+      const indentLevel = parentPath.length;
+      const marginLeft = indentLevel * 31; // Adjust this value for appropriate spacing
+      const nestedStyle: React.CSSProperties = {
+        marginLeft: `${marginLeft}px`,
+        display: "flex",
+        alignItems: "center",
+        paddingBottom: "13px",
+      };
+
+      return (
+        <div key={point.text}>
+          <div className={styles.listItem} style={nestedStyle} key={index}>
+            <span style={{ marginRight: "10px" }}>{point.text}</span>
+            <span
+              dangerouslySetInnerHTML={{
+                __html: point.value,
+              }}
+            />
+          </div>
+          {point.childs.length > 0 && renderPoints(point.childs, currentPath)}
+        </div>
+      );
+    });
+  };
+
   return (
     <div className={styles.paraSection}>
       {sectionAttachment !== 0 && sectionAttachment !== "empty" ? (
         typeof sectionAttachment === "string" ? (
           <div dangerouslySetInnerHTML={{ __html: sectionAttachment }} />
         ) : (
-          sectionAttachment.map((list: any, index: number) => {
-            const indent = list.text.split(".").length - 1;
-            console.log(indent);
-            const marginLeft = (indent + 1 - 1) * 26;
-            const nestedStyle: React.CSSProperties = {
-              marginLeft: `${marginLeft}px`,
-              display: "flex",
-              alignItems: "center",
-              paddingBottom: "13px",
-            };
-            return (
-              list.value !== "" && (
-                <div
-                  className={styles.listItem}
-                  style={nestedStyle}
-                  key={index}
-                >
-                  <span style={{ marginRight: "10px" }}>{list.text}</span>
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: list.value,
-                    }}
-                  />
-                </div>
-              )
-            );
-          })
+          // sectionAttachment.map((list: any, index: number) => {
+          //   const indent = list.text.split(".").length - 1;
+          //   console.log(indent);
+          //   const marginLeft = (indent + 1 - 1) * 26;
+          // const nestedStyle: React.CSSProperties = {
+          //   marginLeft: `${marginLeft}px`,
+          //   display: "flex",
+          //   alignItems: "center",
+          //   paddingBottom: "13px",
+          // };
+          //   return (
+          //     list.value !== "" && (
+          //       <div
+          //         className={styles.listItem}
+          //         style={nestedStyle}
+          //         key={index}
+          //       >
+          //         <span style={{ marginRight: "10px" }}>{list.text}</span>
+          //         <span
+          //           dangerouslySetInnerHTML={{
+          //             __html: list.value,
+          //           }}
+          //         />
+          //       </div>
+          //     )
+          //   );
+          // })
+          <div>{renderPoints(sectionAttachment)}</div>
         )
       ) : sectionAttachment === "empty" ? (
         <div className={styles.noDataFound}>
