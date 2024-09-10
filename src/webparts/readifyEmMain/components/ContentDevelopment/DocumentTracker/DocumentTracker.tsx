@@ -281,12 +281,18 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
     (item: any) => item?.sectionStatus?.toLowerCase() === "rework in progress"
   );
 
-  // const allsectionsSubmitted = sectionsData?.some(
-  //   (item: any) =>  item?.sectionStatus?.toLowerCase() === "submitted"
-  // );
-
+  // const allsectionsSubmitted = sectionsData
+  //   ?.filter(
+  //     (item: any) =>
+  //       item?.sectionType?.toLowerCase() !== "header section" &&
+  //       item?.sectionType?.toLowerCase() !== "change record"
+  //   )
+  //   ?.every((item: any) => item?.sectionStatus?.toLowerCase() === "submitted");
   const docApproved =
-    documentData?.documentStatus?.toLowerCase() === "approved";
+    documentData?.documentStatus?.toLowerCase() === "approved" ||
+    documentData?.documentStatus?.toLowerCase() === "current";
+  const docInDev =
+    documentData?.documentStatus?.toLowerCase() === "in development";
 
   const reviewPending = documentData?.reviewers?.every(
     (item: any) => item?.status === "pending"
@@ -308,16 +314,30 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
     (item: any) => item?.status === "completed"
   );
 
+  const allsectionsSubmitted =
+    reviewStarted || approvalStarted || reviewed || approvalCompleted;
+
+  console.log("allsectionsSubmitted: ", allsectionsSubmitted);
+
   const events = [
     {
       color: "#32BA7C",
       borderColor: "#ffffffd4",
-      serialNumber: 1,
+      serialNumber: (
+        <img
+          src={checkMark}
+          style={{
+            width: "20px",
+            // height: "20px",
+          }}
+          alt="check mark"
+        />
+      ),
       content: (
         <div className={styles.trackSection}>
           <div className={styles.trackerContent}>
             <div className={styles.trackerHeadlineSec}>
-              <span className={styles.roleType} style={{ color: "#32BA7C" }}>
+              <span className={styles.roleType} style={{ color: "#555" }}>
                 Primary Author
               </span>
               <MultiplePeoplePersona
@@ -327,7 +347,7 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
             </div>
             <span>Document template & sections setup</span>
           </div>
-          <div className={styles.statusSection}>
+          {/* <div className={styles.statusSection}>
             <button className={styles.backBtn}>
               <img
                 src={checkMark}
@@ -338,14 +358,38 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
                 alt="check mark"
               />
             </button>
-          </div>
+          </div> */}
         </div>
       ),
     },
     {
-      color: hasRework ? "#C4000C" : "#593ABB",
+      color: hasRework
+        ? "#fff"
+        : allsectionsSubmitted && !docInDev && !hasRework
+        ? "#32BA7C"
+        : "#593ABB",
       borderColor: hasRework ? "#fee4e5" : "#ffffffd4",
-      serialNumber: 2,
+      serialNumber: hasRework ? (
+        <img
+          src={warning}
+          style={{
+            width: "26px",
+            height: "30px",
+          }}
+          alt="check mark"
+        />
+      ) : allsectionsSubmitted && !docInDev && !hasRework ? (
+        <img
+          src={checkMark}
+          style={{
+            width: "20px",
+            // height: "20px",
+          }}
+          alt="check mark"
+        />
+      ) : (
+        2
+      ),
       content: (
         <div className={styles.trackSection}>
           <div className={styles.trackerContent}>
@@ -360,7 +404,14 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
             >
               <span
                 className={styles.roleType}
-                style={{ color: hasRework ? "#C4000C" : "#593ABB" }}
+                style={{
+                  color: "#555",
+                  // color: hasRework
+                  //   ? "#C4000C"
+                  //   : allsectionsSubmitted
+                  //   ? "#32BA7C"
+                  //   : "#593ABB",
+                }}
               >
                 Section Author(s)
               </span>
@@ -382,66 +433,47 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
             {hasRework ? (
               <>
                 <p style={{ color: "#C4000C" }}>Rework in progress</p>
-                <button className={styles.backBtn}>
+                {/* <button className={styles.backBtn}>
                   <img src={warning} alt="back to my tasks" />
-                </button>
+                </button> */}
               </>
-            ) : docApproved ? (
+            ) : allsectionsSubmitted && !docInDev && !hasRework ? (
               <>
-                <button className={styles.backBtn}>
-                  <img src={checkMark} alt="check mark" />
-                </button>
-              </>
-            ) : sectionsData?.some((item: any) => {
-                return item?.sectionStatus
-                  ?.toLowerCase()
-                  ?.includes("yet to be reviewed");
-              }) ? (
-              <>
-                <p
-                  style={{
-                    color: "#593ABB",
-                    fontFamily: "interMedium, sans-serif",
-                  }}
-                >
-                  Sections submitted
-                </p>
-              </>
-            ) : sectionsData?.some((item: any) => {
-                return item?.sectionStatus
-                  ?.toLowerCase()
-                  ?.includes("yet to be approved");
-              }) ? (
-              <>
-                <p
-                  style={{
-                    color: "#593ABB",
-                    fontFamily: "interMedium, sans-serif",
-                  }}
-                >
-                  Sections submitted
-                </p>
+                <p style={{ color: "#32BA7C" }}>Sections submitted</p>
               </>
             ) : (
-              <>
-                <p
-                  style={{
-                    color: "#593ABB",
-                    fontFamily: "interMedium, sans-serif",
-                  }}
-                >
-                  Content in progress
-                </p>
-              </>
+              docInDev && (
+                <>
+                  <p
+                    style={{
+                      color: "#593ABB",
+                      fontFamily: "interMedium, sans-serif",
+                    }}
+                  >
+                    Content in progress
+                  </p>
+                </>
+              )
             )}
           </div>
         </div>
       ),
     },
     {
-      color: reviewed || reviewStarted ? "#593ABB" : "#555",
+      color: reviewed ? "#32BA7C" : reviewStarted ? "#593ABB" : "#555",
       borderColor: "#ffffffd4",
-      serialNumber: 3,
+      serialNumber: reviewed ? (
+        <img
+          src={checkMark}
+          style={{
+            width: "20px",
+            // height: "20px",
+          }}
+          alt="check mark"
+        />
+      ) : (
+        3
+      ),
       content: (
         <div className={styles.trackSection}>
           <div className={styles.trackerContent}>
@@ -449,7 +481,8 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
               <span
                 className={styles.roleType}
                 style={{
-                  color: reviewed || reviewStarted ? "#593ABB" : "#555",
+                  // color: reviewed || reviewStarted ? "#593ABB" : "#555",
+                  color: "#555",
                 }}
               >
                 Reviewer(s)
@@ -462,41 +495,70 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
             <span>Review & Reject progress for all sections</span>
           </div>
           <div className={styles.statusSection}>
-            {reviewed ? (
-              <button className={styles.backBtn}>
-                <img src={checkMark} alt="check mark" />
-              </button>
-            ) : reviewPending ? (
-              <>
-                <p
-                  style={{
-                    color: "#adadad",
-                    fontFamily: "interMedium, sans-serif",
-                  }}
-                >
-                  Reviewal is pending
-                </p>
-              </>
-            ) : (
-              <>
-                <p
-                  style={{
-                    color: "#593ABB",
-                    fontFamily: "interMedium, sans-serif",
-                  }}
-                >
-                  Review in progress
-                </p>
-              </>
-            )}
+            {
+              //   reviewed ? (
+              //   <button className={styles.backBtn}>
+              //     <img src={checkMark} alt="check mark" />
+              //   </button>
+              // ) :
+              reviewPending ? (
+                <>
+                  <p
+                    style={{
+                      color: "#adadad",
+                      fontFamily: "interMedium, sans-serif",
+                    }}
+                  >
+                    {/* Reviewal is pending */}Awaiting reviewal
+                  </p>
+                </>
+              ) : reviewed ? (
+                <>
+                  <p
+                    style={{
+                      color: "#32BA7C",
+                      fontFamily: "interMedium, sans-serif",
+                    }}
+                  >
+                    Reviewed
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p
+                    style={{
+                      color: "#593ABB",
+                      fontFamily: "interMedium, sans-serif",
+                    }}
+                  >
+                    Review in progress
+                  </p>
+                </>
+              )
+            }
           </div>
         </div>
       ),
     },
     {
-      color: approvalCompleted || approvalStarted ? "#593ABB" : "#555555",
+      color: approvalCompleted
+        ? "#32BA7C"
+        : approvalStarted
+        ? "#593ABB"
+        : "#555555",
       borderColor: "#ffffffd4",
-      serialNumber: 4,
+      serialNumber: approvalCompleted ? (
+        <img
+          src={checkMark}
+          style={{
+            width: "20px",
+            // height: "20px",
+          }}
+          alt="check mark"
+        />
+      ) : (
+        4
+      ),
       content: (
         <div className={styles.trackSection}>
           <div className={styles.trackerContent}>
@@ -504,10 +566,11 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
               <span
                 className={styles.roleType}
                 style={{
-                  color:
-                    approvalCompleted || approvalStarted
-                      ? "#593ABB"
-                      : "#555555",
+                  color: "#555555",
+                  // color:
+                  //   approvalCompleted || approvalStarted
+                  //     ? "#593ABB"
+                  //     : "#555555",
                 }}
               >
                 Approver(s)
@@ -520,48 +583,75 @@ const DocumentTracker: React.FC<Props> = ({ documentData, sectionsData }) => {
             <span>Approve & Reject progress for all sections</span>
           </div>
           <div className={styles.statusSection}>
-            {approvalCompleted ? (
-              <button className={styles.backBtn}>
-                <img src={checkMark} alt="check mark" />
-              </button>
-            ) : approvalPending ? (
-              <>
-                <p
-                  style={{
-                    color: "#adadad ",
-                    fontFamily: "interMedium, sans-serif",
-                  }}
-                >
-                  Approval is pending
-                </p>
-              </>
-            ) : (
-              <>
-                <p
-                  style={{
-                    color: "#593ABB",
-                    fontFamily: "interMedium, sans-serif",
-                  }}
-                >
-                  Approval in progress
-                </p>
-              </>
-            )}
+            {
+              //   approvalCompleted ? (
+              //   <button className={styles.backBtn}>
+              //     <img src={checkMark} alt="check mark" />
+              //   </button>
+              // ) :
+              approvalPending ? (
+                <>
+                  <p
+                    style={{
+                      color: "#adadad ",
+                      fontFamily: "interMedium, sans-serif",
+                    }}
+                  >
+                    {/* Approval is pending */}
+                    Awaiting approval
+                  </p>
+                </>
+              ) : approvalCompleted ? (
+                <>
+                  <p
+                    style={{
+                      color: "#32BA7C",
+                      fontFamily: "interMedium, sans-serif",
+                    }}
+                  >
+                    Approved
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p
+                    style={{
+                      color: "#593ABB",
+                      fontFamily: "interMedium, sans-serif",
+                    }}
+                  >
+                    Approval in progress
+                  </p>
+                </>
+              )
+            }
           </div>
         </div>
       ),
     },
     {
-      color: docApproved ? "#19d3b2" : "#555555",
+      color: docApproved ? "#32BA7C" : "#555555",
       borderColor: docApproved ? "#ffffffd4" : "#ffffffd4",
-      serialNumber: 5,
+      serialNumber: docApproved ? (
+        <img
+          src={checkMark}
+          style={{
+            width: "20px",
+            // height: "20px",
+          }}
+          alt="check mark"
+        />
+      ) : (
+        5
+      ),
       content: (
         <div>
           <div className={styles.trackerContent}>
             <span
               className={styles.roleType}
               style={{
-                color: docApproved ? "#19d3b2" : "#555555",
+                color: "#555555",
+                // color: docApproved ? "#32BA7C"  : "#555555",
                 marginBottom: "5px",
               }}
             >

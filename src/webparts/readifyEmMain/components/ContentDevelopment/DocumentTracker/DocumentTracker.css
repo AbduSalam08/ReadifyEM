@@ -13,3 +13,9 @@
 .p-timeline-event-separator {
   font-family: "interMedium", sans-serif !important;
 }
+.p-timeline-event-separator span {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-content: center;
+}
