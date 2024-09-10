@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 // import { LISTNAMES } from "../config/config";
 // import { UpdateAttachment } from "../services/ContentDevelopment/CommonServices/CommonServices";
 // import SpServices from "../services/SPServices/SpServices";
@@ -285,7 +286,7 @@ export const UpdateAppendixAttachment = async (
 export const addDefaultPDFheader = async (
   sectionDetails: any,
   documentId: number
-) => {
+): Promise<void> => {
   const DocDetailsResponse: any = await SpServices.SPReadItems({
     Listname: LISTNAMES.DocumentDetails,
     Select:
@@ -312,27 +313,64 @@ export const addDefaultPDFheader = async (
     ],
   });
   const DocDetailsResponseData: any = DocDetailsResponse[0];
-
+  debugger;
   const pdfHeaderSection = sectionsDetails.filter(
     (obj: any) => obj.sectionType === "pdf header"
   );
-  const PDFHeaderTable = await bindHeaderTable(
-    sectionDetails,
-    DocDetailsResponseData
-  );
-  const cleanedTable = PDFHeaderTable.replace(/\n/g, "").replace(
-    /\s{2,}/g,
-    " "
-  );
+  await sectionsDetails?.forEach(async (obj: any) => {
+    if (obj.Title === "Header") {
+      await SpServices.SPGetAttachments({
+        Listname: LISTNAMES.SectionDetails,
+        ID: obj.Id,
+      })
+        .then(async (res: any) => {
+          if (res.length > 0) {
+            const response = await fetch(res[0].ServerRelativeUrl);
+            const imageblob = await response.blob();
+            const tempSectionDetails = {
+              base64: await convertBlobToBase64(imageblob),
+            };
 
-  const blob = new Blob([JSON.stringify(cleanedTable)], {
-    type: "text/plain",
-  });
-  const file: any = new File([blob], "Sample.txt", {
-    type: "text/plain",
-  });
+            const PDFHeaderTable = await bindHeaderTable(
+              tempSectionDetails,
+              DocDetailsResponseData
+            );
+            const cleanedTable = PDFHeaderTable.replace(/\n/g, "").replace(
+              /\s{2,}/g,
+              " "
+            );
 
-  await AddSectionAttachmentFile(pdfHeaderSection[0].ID, file);
+            const blob = new Blob([JSON.stringify(cleanedTable)], {
+              type: "text/plain",
+            });
+            const file: any = new File([blob], "Sample.txt", {
+              type: "text/plain",
+            });
+
+            await AddSectionAttachmentFile(pdfHeaderSection[0].ID, file);
+          } else {
+            const PDFHeaderTable = await bindHeaderTable(
+              sectionDetails,
+              DocDetailsResponseData
+            );
+            const cleanedTable = PDFHeaderTable.replace(/\n/g, "").replace(
+              /\s{2,}/g,
+              " "
+            );
+
+            const blob = new Blob([JSON.stringify(cleanedTable)], {
+              type: "text/plain",
+            });
+            const file: any = new File([blob], "Sample.txt", {
+              type: "text/plain",
+            });
+
+            await AddSectionAttachmentFile(pdfHeaderSection[0].ID, file);
+          }
+        })
+        .catch((err: any) => console.log(err));
+    }
+  });
 };
 
 // Services for Section Details

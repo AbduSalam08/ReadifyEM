@@ -289,6 +289,7 @@ const SDDSections = ({
                   value={section?.sectionSelected}
                   checked={section?.sectionSelected}
                   id={section.value}
+                  onMouseDown={(e) => e.preventDefault()}
                   onChange={(e: any) => {
                     !viewOnly && handleSelectSection(index, e.target.checked);
                   }}

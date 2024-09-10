@@ -783,7 +783,6 @@ const CustomPeoplePicker: React.FC<Props> = ({
 
   useEffect(() => {
     setTimeout(() => {
-      debugger;
       if (peoplePickerRef.current && !readOnly) {
         const inputElement = peoplePickerRef.current.querySelector("input");
         if (inputElement) {

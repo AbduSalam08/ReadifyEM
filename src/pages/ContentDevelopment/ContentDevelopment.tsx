@@ -14,7 +14,8 @@ import Header from "../../webparts/readifyEmMain/components/ContentDevelopment/C
 import SectionHeader from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionHeader/SectionHeader";
 import SectionBanner from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionBanner/sectionBanner";
 import SectionComments from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionComment/SectionComments";
-import SectionContent from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionContent/SectionContent";
+// import SectionContent from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionContent/SectionContent";
+import SectionContentLatest from "../../webparts/readifyEmMain/components/ContentDevelopment/SectionContent/SectionContentLatest";
 import CustomInput from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomInput";
 import SetupHeader from "../../webparts/readifyEmMain/components/ContentDevelopment/SetupHeader/SetupHeader";
 import CustomPeoplePicker from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomPeoplePicker";
@@ -997,6 +998,7 @@ const ContentDevelopment = (): JSX.Element => {
         placeholder="Enter Description"
         isValid={promoteComments.IsValid}
         errorMsg={promoteComments.ErrorMsg}
+        topLabel={true}
         key={2}
       />,
     ],
@@ -1718,7 +1720,19 @@ const ContentDevelopment = (): JSX.Element => {
                         />
                       ) : AllSectionsData[activeSection]?.contentType ===
                         "list" ? (
-                        <SectionContent
+                        // <SectionContent
+                        // currentDocRole={currentDocRole}
+                        // activeIndex={activeSection}
+                        // setSectionData={setAllSectionsData}
+                        // currentSectionDetails={AllSectionsData[activeSection]}
+                        // sectionNumber={
+                        //   AllSectionsData[activeSection]?.sectionOrder
+                        // }
+                        // ID={AllSectionsData[activeSection]?.ID}
+                        // noActionBtns={false}
+                        // setCheckChanges={setCheckChanges}
+                        // />
+                        <SectionContentLatest
                           currentDocRole={currentDocRole}
                           activeIndex={activeSection}
                           setSectionData={setAllSectionsData}
