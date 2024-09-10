@@ -55,6 +55,7 @@ interface IProps {
 interface Point {
   text: string;
   value: string;
+  class: any;
   childs: Point[];
 }
 
@@ -780,7 +781,7 @@ const SectionContentLatest: React.FC<IProps> = ({
   };
 
   // Function to handle input changes
-  const handleInputChanges = (path: number[], newValue: string) => {
+  const handleInputChanges = (path: number[], newValue: string): any => {
     const updatedPoints = updatePointsAtPath(masterPoints, path, (point) => {
       return { ...point, value: newValue };
     });
@@ -789,10 +790,11 @@ const SectionContentLatest: React.FC<IProps> = ({
   };
 
   // Function to add a new sub-point at a specific path
-  const addSubPoint = (path: number[]) => {
+  const addSubPoint = (path: number[]): any => {
     const newSubPoint: Point = {
       text: "", // This will be updated when numbering
       value: "",
+      class: "",
       childs: [],
     };
 
@@ -812,7 +814,7 @@ const SectionContentLatest: React.FC<IProps> = ({
   };
 
   // Function to delete a point at a specific path
-  const deletePoint = (path: number[]) => {
+  const deletePoint = (path: number[]): any => {
     if (path.length === 1) {
       // If deleting a top-level point
       const updatedPoints = masterPoints.filter(
@@ -871,24 +873,61 @@ const SectionContentLatest: React.FC<IProps> = ({
   };
 
   // Function to render points recursively
-  const renderPoints = (arr: Point[], parentPath: number[] = []) => {
-    return arr?.map((point, index) => {
+  const renderPoints = (
+    arr: Point[],
+    parentPath: number[] = []
+  ): JSX.Element[] => {
+    return arr.map((point, index) => {
       // Calculate the current path for this point (parent path + current index)
       const currentPath = [...parentPath, index];
+
+      // Determine the indent level based on the length of the parent path
+      const indentLevel = parentPath.length;
+      +1; // Adjust based on hierarchy level
+      const marginLeft = indentLevel - 1 + 15; // Adjust this value for appropriate spacing
+
+      // Indent lines to visually connect parent and child points
+      const ancestors: JSX.Element[] = [];
+      for (let i = 1; i < indentLevel; i++) {
+        ancestors.push(
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              top: `0%`, // Position to align with the point text
+              left: `${i === 0 ? `0` : `${(i - 1) * 26 - 14}px`}`,
+              borderLeft: `1px solid ${i !== 1 ? `transparent` : `#adadad60`}`,
+              height: "100%", // Adjust this to match the height alignment with nested points
+            }}
+          />
+        );
+      }
 
       return (
         <div
           key={point.text}
-          style={{ marginLeft: parentPath.length === 0 ? "0px" : "20px" }}
+          style={{
+            position: "relative",
+            marginLeft: `${marginLeft}px`,
+            // marginLeft: `px`,
+            display: "flex",
+            flexDirection: "column",
+          }}
         >
-          <div>
-            <span>{point.text}</span>
-            {/* <input
-              type="text"
-              value={point.value}
-              onChange={(e) => handleInputChanges(currentPath, e.target.value)}
-              placeholder="Enter value"
-            /> */}
+          {/* Indent lines */}
+          {ancestors}
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+            }}
+            className={`${styles.renderedInput} renderedInput`}
+          >
+            <span style={{ marginRight: "5px" }} className={styles.pointText}>
+              {point.text}
+            </span>
+
             <ContentEditor
               readOnly={
                 currentSectionDetails?.sectionSubmitted ||
@@ -900,11 +939,30 @@ const SectionContentLatest: React.FC<IProps> = ({
                 handleInputChanges(currentPath, html);
               }}
             />
-            <button onClick={() => deletePoint(currentPath)}>Delete</button>
-            <button onClick={() => addSubPoint(currentPath)}>
-              Add Sub-point
-            </button>
+
+            {!currentSectionDetails?.sectionSubmitted && (
+              <>
+                <button
+                  onClick={() => deletePoint(currentPath)}
+                  className="actionButtons"
+                  style={{
+                    background: "transparent",
+                    padding: "0 5px 0 0",
+                  }}
+                >
+                  <i className="pi pi-times-circle" />
+                </button>
+
+                <button
+                  onClick={() => addSubPoint(currentPath)}
+                  className="actionButtons"
+                >
+                  <i className="pi pi-angle-double-right" />
+                </button>
+              </>
+            )}
           </div>
+
           {/* Render child points recursively */}
           {point.childs.length > 0 && renderPoints(point.childs, currentPath)}
         </div>
@@ -913,10 +971,11 @@ const SectionContentLatest: React.FC<IProps> = ({
   };
 
   // Function to add a new top-level point
-  const addNewPoint = () => {
+  const addNewPoint = (): any => {
     const newPoint: Point = {
       text: "", // This will be updated when numbering
       value: "",
+      class: "",
       childs: [],
     };
 
