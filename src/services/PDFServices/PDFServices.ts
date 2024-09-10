@@ -10,30 +10,30 @@ import { base64Data, CONFIG, LISTNAMES } from "../../config/config";
 import SpServices from "../SPServices/SpServices";
 // const sampleDocHeaderImg: any = require("../../assets/images/png/imagePlaceholder.png");
 
-const findMaxSectionOrder = (arr1: any[], arr2: any[]): number => {
-  // Combine both arrays
-  const combinedArray = [...arr1, ...arr2];
+// const findMaxSectionOrder = (arr1: any[], arr2: any[]): number => {
+//   // Combine both arrays
+//   const combinedArray = [...arr1, ...arr2];
 
-  // If combined array is empty, return 1 as the starting order
-  if (combinedArray.length === 0) return 1;
+//   // If combined array is empty, return 1 as the starting order
+//   if (combinedArray.length === 0) return 1;
 
-  // Find the maximum sectionOrder value
-  const maxOrderObject = combinedArray.reduce(
-    (maxObj, currentObj) => {
-      // Check if sectionOrder exists and is a valid number, else set to -Infinity for comparison
-      const currentOrder = parseInt(currentObj.sectionOrder, 10) || -Infinity;
-      const maxOrder = parseInt(maxObj.sectionOrder, 10) || -Infinity;
+//   // Find the maximum sectionOrder value
+//   const maxOrderObject = combinedArray.reduce(
+//     (maxObj, currentObj) => {
+//       // Check if sectionOrder exists and is a valid number, else set to -Infinity for comparison
+//       const currentOrder = parseInt(currentObj.sectionOrder, 10) || -Infinity;
+//       const maxOrder = parseInt(maxObj.sectionOrder, 10) || -Infinity;
 
-      // Return the object with the higher sectionOrder
-      return currentOrder > maxOrder ? currentObj : maxObj;
-    },
-    { sectionOrder: "-Infinity" }
-  ); // Initialize with a default object to prevent errors
+//       // Return the object with the higher sectionOrder
+//       return currentOrder > maxOrder ? currentObj : maxObj;
+//     },
+//     { sectionOrder: "-Infinity" }
+//   ); // Initialize with a default object to prevent errors
 
-  // Parse the final max section order and increment by 1, ensuring it starts from 1 if no valid max was found
-  const maxOrderValue = parseInt(maxOrderObject.sectionOrder, 10);
-  return isNaN(maxOrderValue) ? 1 : maxOrderValue + 1;
-};
+//   // Parse the final max section order and increment by 1, ensuring it starts from 1 if no valid max was found
+//   const maxOrderValue = parseInt(maxOrderObject.sectionOrder, 10);
+//   return isNaN(maxOrderValue) ? 1 : maxOrderValue + 1;
+// };
 
 const readTextFileFromTXT = (
   data: any,
@@ -65,7 +65,11 @@ const readTextFileFromTXT = (
           (obj: any) => obj.sectionType === "header section"
         );
         const defaultSectionsArray = updatedSections
-          ?.filter((obj: any) => obj.sectionType === "default section")
+          ?.filter(
+            (obj: any) =>
+              obj.sectionType === "default section" ||
+              obj.sectionType === "references section"
+          )
           .sort((a, b) => {
             return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
           });
@@ -74,20 +78,20 @@ const readTextFileFromTXT = (
           .sort((a, b) => {
             return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
           });
-        const referenceSectionArray = updatedSections
-          ?.filter((obj: any) => obj.sectionType === "references section")
-          .sort((a, b) => {
-            return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
-          });
-        if (referenceSectionArray.length !== 0) {
-          referenceSectionArray[0] = {
-            ...referenceSectionArray[0],
-            sectionOrder: findMaxSectionOrder(
-              defaultSectionsArray,
-              normalSectionsArray
-            ),
-          };
-        }
+        // const referenceSectionArray = updatedSections
+        //   ?.filter((obj: any) => obj.sectionType === "references section")
+        //   .sort((a, b) => {
+        //     return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
+        //   });
+        // if (referenceSectionArray.length !== 0) {
+        //   referenceSectionArray[0] = {
+        //     ...referenceSectionArray[0],
+        //     sectionOrder: findMaxSectionOrder(
+        //       defaultSectionsArray,
+        //       normalSectionsArray
+        //     ),
+        //   };
+        // }
         const appendixSectionsArray = updatedSections
           ?.filter((obj: any) => obj.sectionType === "appendix section")
           .sort((a, b) => {
@@ -115,7 +119,7 @@ const readTextFileFromTXT = (
           ...headerSectionArray,
           ...defaultSectionsArray,
           ...normalSectionsArray,
-          ...referenceSectionArray,
+          // ...referenceSectionArray,
           ...appendixSectionsArray,
           ...changeRecordSectionArray,
         ];
@@ -157,7 +161,7 @@ export const bindHeaderTable = async (
                 <td style="width: 20%;font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">
 
                   <img style="width:100%;min-width: 75px !important;min-width: 150px !important;height:60px !important" src="${
-                    sectionDetails?.base64
+                    sectionDetails?.base64 !== ""
                       ? sectionDetails?.base64
                       : base64Image
                   }" alt="doc header logo" />
@@ -329,7 +333,9 @@ export const getDocumentRelatedSections = async (
                   );
                   const defaultSectionsArray = updatedSections
                     ?.filter(
-                      (obj: any) => obj.sectionType === "default section"
+                      (obj: any) =>
+                        obj.sectionType === "default section" ||
+                        obj.sectionType === "references section"
                     )
                     .sort((a, b) => {
                       return (
@@ -343,26 +349,26 @@ export const getDocumentRelatedSections = async (
                         parseInt(a.sectionOrder) - parseInt(b.sectionOrder)
                       );
                     });
-                  const referenceSectionArray = updatedSections
-                    ?.filter(
-                      (obj: any) => obj.sectionType === "references section"
-                    )
-                    .sort((a, b) => {
-                      return (
-                        parseInt(a.sectionOrder) - parseInt(b.sectionOrder)
-                      );
-                    });
-                  debugger;
-                  if (referenceSectionArray.length !== 0) {
-                    referenceSectionArray[0] = {
-                      ...referenceSectionArray[0],
-                      sectionOrder:
-                        1 +
-                        headerSectionArray.length +
-                        defaultSectionsArray.length +
-                        normalSectionsArray.length,
-                    };
-                  }
+                  // const referenceSectionArray = updatedSections
+                  //   ?.filter(
+                  //     (obj: any) => obj.sectionType === "references section"
+                  //   )
+                  //   .sort((a, b) => {
+                  //     return (
+                  //       parseInt(a.sectionOrder) - parseInt(b.sectionOrder)
+                  //     );
+                  //   });
+                  // debugger;
+                  // if (referenceSectionArray.length !== 0) {
+                  //   referenceSectionArray[0] = {
+                  //     ...referenceSectionArray[0],
+                  //     sectionOrder:
+                  //       1 +
+                  //       headerSectionArray.length +
+                  //       defaultSectionsArray.length +
+                  //       normalSectionsArray.length,
+                  //   };
+                  // }
                   const appendixSectionsArray = updatedSections
                     ?.filter(
                       (obj: any) => obj.sectionType === "appendix section"
@@ -396,7 +402,7 @@ export const getDocumentRelatedSections = async (
                     ...headerSectionArray,
                     ...defaultSectionsArray,
                     ...normalSectionsArray,
-                    ...referenceSectionArray,
+                    // ...referenceSectionArray,
                     ...appendixSectionsArray,
                     ...changeRecordSectionArray,
                   ];

@@ -70,3 +70,7 @@
   /* @extend .flexCenter; */
   cursor: pointer;
 }
+.p-toast {
+  z-index: 10000!important;
+  /* or any large value */
+}

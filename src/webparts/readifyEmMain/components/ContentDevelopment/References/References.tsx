@@ -800,7 +800,7 @@ const References: React.FC<Props> = ({
       currentSectionDetails?.ID
     );
     allSectionsData.forEach(async (obj: any) => {
-      if (obj.sectionName === "Definitions") {
+      if (obj.sectionName.toLowerCase() === "definitions") {
         const tempSelectedDefinitionArray = await getAllSectionDefinitions(
           documentId,
           obj.ID

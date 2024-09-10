@@ -132,7 +132,8 @@
 // export default SectionHeader;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect } from "react";
+/* eslint-disable @typescript-eslint/no-var-requires */
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./SectionHeader.module.scss";
 import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
@@ -140,7 +141,9 @@ import { addSectionConsultants } from "../../../../../services/ContentDevelopmen
 import { LISTNAMES } from "../../../../../config/config";
 // import SpServices from "../../../../../services/SPServices/SpServices";
 import { sp } from "@pnp/sp";
-import ToastMessage from "../../common/Toast/ToastMessage";
+// import ToastMessage from "../../common/Toast/ToastMessage";
+const SuccessImg = require("../../../../../assets/images/png/completedIcon.png");
+import { Toast } from "primereact/toast";
 
 interface Props {
   documentName: string;
@@ -163,6 +166,7 @@ const SectionHeader: React.FC<Props> = ({
   currentDocRole,
   currentDocDetailsData,
 }) => {
+  const toast: any = useRef(null);
   const dispatch = useDispatch();
   console.log(
     "currentDocDetailsData: ",
@@ -212,6 +216,34 @@ const SectionHeader: React.FC<Props> = ({
           AllSectionsDataMain,
           setToastMessage
         );
+        toast.current.show({
+          severity: "success",
+          summary: "Consultants updated!",
+          // detail: message,
+          content: (
+            <div
+              className="flex flex-column align-items-left "
+              style={{ display: "flex", flex: "1" }}
+            >
+              <div className="p-toast-image" style={{ marginRight: "15px" }}>
+                <img
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                  }}
+                  src={SuccessImg}
+                />
+              </div>
+              <div>
+                <span className="p-toast-summary">Consultants updated!</span>
+                <div className="p-toast-detail">
+                  Consultants updated successfully.
+                </div>
+              </div>
+            </div>
+          ),
+          life: 3000,
+        });
       } else {
         setToastMessage({
           isShow: true,
@@ -220,9 +252,65 @@ const SectionHeader: React.FC<Props> = ({
           message: "Please select at least one consultant.",
           duration: 3000,
         });
+        toast.current.show({
+          severity: "warn",
+          summary: "Empty consultant!",
+          // detail: message,
+          content: (
+            <div
+              className="flex flex-column align-items-left "
+              style={{ display: "flex", flex: "1" }}
+            >
+              <div className="p-toast-image" style={{ marginRight: "15px" }}>
+                <img
+                  style={{
+                    width: "30px",
+                    height: "30px",
+                  }}
+                  src={SuccessImg}
+                />
+              </div>
+              <div>
+                <span className="p-toast-summary">Empty consultant!</span>
+                <div className="p-toast-detail">
+                  Please select at least one consultant.
+                </div>
+              </div>
+            </div>
+          ),
+          life: 3000,
+        });
       }
     } else {
       console.log("consultantsState is empty");
+      toast.current.show({
+        severity: "warn",
+        summary: "Empty consultant!",
+        // detail: message,
+        content: (
+          <div
+            className="flex flex-column align-items-left "
+            style={{ display: "flex", flex: "1" }}
+          >
+            <div className="p-toast-image" style={{ marginRight: "15px" }}>
+              <img
+                style={{
+                  width: "30px",
+                  height: "30px",
+                }}
+                src={SuccessImg}
+              />
+            </div>
+            <div>
+              <span className="p-toast-summary">Empty consultant!</span>
+              <div className="p-toast-detail">
+                Please select at least one consultant.
+              </div>
+            </div>
+          </div>
+        ),
+        life: 3000,
+      });
       setToastMessage({
         isShow: true,
         severity: "warn",
@@ -274,6 +362,20 @@ const SectionHeader: React.FC<Props> = ({
 
   return (
     <div className={styles.headerContainer}>
+      <Toast
+        className={
+          toastMessage.severity === "success"
+            ? "toastMainWrapperSuccess"
+            : toastMessage.severity === "info"
+            ? "toastMainWrapperInfo"
+            : toastMessage.severity === "warn"
+            ? "toastMainWrapperWarn"
+            : "toastMainWrapperError"
+        }
+        // className="toastMainWrapper"
+        ref={toast}
+        // onRemove={clear}
+      />
       <span className={styles.sectionName}>
         {`${
           documentName?.toLowerCase() === "header" ||
@@ -367,7 +469,7 @@ const SectionHeader: React.FC<Props> = ({
           )}
         </div>
       )}
-      {toastMessage.isShow && (
+      {/* {toastMessage.isShow && (
         <ToastMessage
           severity={toastMessage.severity}
           title={toastMessage.title}
@@ -376,7 +478,7 @@ const SectionHeader: React.FC<Props> = ({
           isShow={toastMessage.isShow}
           setToastMessage={setToastMessage}
         />
-      )}
+      )} */}
     </div>
   );
 };

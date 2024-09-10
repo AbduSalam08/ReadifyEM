@@ -104,7 +104,7 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
                 style={{ padding: "10px 0px" }}
                 key={index}
               >
-                {obj.text !== "Header" && (
+                {obj.text !== "Header" && obj.text !== "Change Record" && (
                   <span
                     style={{
                       display: "flex",
