@@ -49,7 +49,8 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
               }}
             />
           </div>
-          {point.childs.length > 0 && renderPoints(point.childs, currentPath)}
+          {point.children.length > 0 &&
+            renderPoints(point.children, currentPath)}
         </div>
       );
     });
@@ -83,7 +84,10 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
                   </span>
                 )}
                 {typeof obj.value === "string" ? (
-                  <div dangerouslySetInnerHTML={{ __html: obj.value }} />
+                  <div
+                    style={{ marginLeft: "20px" }}
+                    dangerouslySetInnerHTML={{ __html: obj.value }}
+                  />
                 ) : (
                   // obj.value.map((list: any, index: number) => {
                   //   const indent = list.text.split(".").length - 1;
