@@ -182,7 +182,9 @@ export const AddAppendixAttachment = async (
           FileName: fileName,
           Attachments: file,
         })
-          .then((res: any) => {})
+          .then((res: any) => {
+            console.log("res");
+          })
           .catch((err: any) => {
             console.log("Error : ", err);
           });
@@ -197,7 +199,9 @@ export const AddAppendixAttachment = async (
       FileName: fileName,
       Attachments: file,
     })
-      .then((res: any) => {})
+      .then((res: any) => {
+        console.log("res");
+      })
       .catch((err: any) => {
         console.log("Error : ", err);
       });
@@ -256,7 +260,9 @@ export const UpdateAppendixAttachment = async (
         ListID: itemID,
         AttachmentName: attachment.FileName,
       })
-        .then((res) => {})
+        .then((res) => {
+          console.log("res");
+        })
         .catch((err) => console.log("Error deleting attachment: ", err));
     }
 
