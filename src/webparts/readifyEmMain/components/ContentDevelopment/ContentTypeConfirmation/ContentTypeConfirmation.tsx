@@ -31,7 +31,6 @@ const ContentTypeConfirmation = ({
   sectionID,
   currentSectionData,
 }: IContentTypeConfirmationProps): JSX.Element => {
-  console.log("currentSectionData: ", currentSectionData);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [sectionLoader, setSectionLoader] = useState(false);
@@ -54,10 +53,8 @@ const ContentTypeConfirmation = ({
         currentItemsAttachments = res;
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
-
-    console.log("currentItemsAttachments: ", currentItemsAttachments);
 
     let updateAttachmentPromise: any;
 

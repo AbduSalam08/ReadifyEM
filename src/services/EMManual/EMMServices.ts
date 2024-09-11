@@ -45,12 +45,10 @@ export const getLibraryItems = async (): Promise<{
       folder.folders(),
       folder.files(),
     ]);
-    console.log("folders: ", folders);
 
     const folderItems: LibraryItem[] = [];
 
     for (const subFolder of folders) {
-      console.log("subFolder?.UniqueId: ", subFolder?.UniqueId);
       // removing FORMS default folder using its unique ID which is dont needed in out application
       if (subFolder?.UniqueId !== "b6160d32-57c4-47a4-922d-2a6c28fdc986") {
         const subFolderFields = await sp.web
@@ -386,7 +384,6 @@ export const EditFolderAndChangeItemPath = async (
           await UpdatePrimaryAuthorTask(documentId);
           await UpdateTask(documentId);
         } else {
-          console.log("No task available for this item.");
         }
       }
     }

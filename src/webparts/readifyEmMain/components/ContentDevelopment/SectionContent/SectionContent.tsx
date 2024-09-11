@@ -198,7 +198,6 @@ const SectionContent: React.FC<IProps> = ({
     currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
 
   const promoteSection = async (): Promise<any> => {
-    debugger;
     togglePopupVisibility(
       setPopupController,
       2,
@@ -213,10 +212,7 @@ const SectionContent: React.FC<IProps> = ({
       ? currentDocDetailsData?.approvers
       : [];
 
-    console.log("promoters: ", promoters);
-
     const currentPromoter: any = getCurrentPromoter(promoters);
-    console.log("currentPromoter: ", currentPromoter);
 
     const promoterKey: string = currentDocRole?.reviewer
       ? "sectionReviewed"
@@ -259,11 +255,10 @@ const SectionContent: React.FC<IProps> = ({
             },
           }
         );
-        console.log("updatedSections: ", updatedSections);
         dispatch(setCDSectionData([...updatedSections]));
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
         setSectionLoader(false);
         setToastMessage({
           isShow: true,
@@ -498,7 +493,6 @@ const SectionContent: React.FC<IProps> = ({
   ];
 
   const submitRejectedComment = async (): Promise<any> => {
-    console.log(rejectedComments);
     if (rejectedComments.rejectedComment?.trim() !== "") {
       setRejectedComments({
         ...rejectedComments,
@@ -603,10 +597,8 @@ const SectionContent: React.FC<IProps> = ({
         newPoint,
       ]);
       if (await objectsEqual) {
-        console.log("not Changed");
         setCheckChanges(false);
       } else {
-        console.log("Changed");
         setCheckChanges(true);
       }
     }
@@ -669,10 +661,8 @@ const SectionContent: React.FC<IProps> = ({
     setPoints(newPoints);
     const objectsEqual = compareArraysOfObjects(masterPoints, [...newPoints]);
     if (await objectsEqual) {
-      console.log("not Changed");
       setCheckChanges(false);
     } else {
-      console.log("Changed");
       setCheckChanges(true);
     }
   };
@@ -774,10 +764,8 @@ const SectionContent: React.FC<IProps> = ({
     setPoints(newPoints);
     const objectsEqual = compareArraysOfObjects(masterPoints, [...newPoints]);
     if (await objectsEqual) {
-      console.log("not Changed");
       setCheckChanges(false);
     } else {
-      console.log("Changed");
       setCheckChanges(true);
     }
     onChange && onChange(newPoints);
@@ -801,10 +789,8 @@ const SectionContent: React.FC<IProps> = ({
     setPoints(newPoints);
     const objectsEqual = compareArraysOfObjects(masterPoints, [...newPoints]);
     if (await objectsEqual) {
-      console.log("not Changed");
       setCheckChanges(false);
     } else {
-      console.log("Changed");
       setCheckChanges(true);
     }
     onChange && onChange(newPoints);
@@ -907,7 +893,6 @@ const SectionContent: React.FC<IProps> = ({
       AttachmentName: data?.FileName,
     })
       .then((res: any) => {
-        console.log("res: ", res);
         const parsedValue: any = JSON.parse(res);
         const tempParsedValue: any = JSON.parse(res);
         if (typeof parsedValue === "object") {
@@ -934,7 +919,7 @@ const SectionContent: React.FC<IProps> = ({
         ]);
         onChange &&
           onChange([{ text: String(sectionNumber), value: "", class: "I_0" }]);
-        console.log("err: ", err);
+        console.log("Error : ", err);
         setSectionLoader(false);
       });
   };
@@ -946,7 +931,6 @@ const SectionContent: React.FC<IProps> = ({
       ID: ID,
     })
       .then((res: any) => {
-        console.log("res: ", res);
         const filteredItem: any = res?.filter(
           (item: any) => item?.FileName === "Sample.txt"
         );
@@ -975,7 +959,7 @@ const SectionContent: React.FC<IProps> = ({
         ]);
         onChange &&
           onChange([{ text: String(sectionNumber), value: "", class: "I_0" }]);
-        console.log(err);
+        console.log("Error : ", err);
         setSectionLoader(false);
       });
   };
@@ -988,7 +972,7 @@ const SectionContent: React.FC<IProps> = ({
 
   const addData = async (submissionType?: any): Promise<any> => {
     setCheckChanges(false);
-    debugger;
+
     togglePopupVisibility(
       setPopupController,
       0,
@@ -1093,7 +1077,6 @@ const SectionContent: React.FC<IProps> = ({
   }, [ID, currentSectionDetails?.ID]);
 
   useEffect(() => {
-    console.log(sectionChangeRecord);
     setChangeRecordDetails({
       ...changeRecordDetails,
       author: sectionChangeRecord.changeRecordAuthor

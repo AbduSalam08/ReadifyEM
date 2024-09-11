@@ -19,8 +19,6 @@ export const addSectionConsultants = async (
   AllSectionsDataMain: any,
   setToastMessageState: any
 ): Promise<any> => {
-  console.log("sectionDetails: ", sectionDetails);
-  debugger;
   try {
     // let consultantsData = consultants.map((obj: any) => obj.id);
     SpServices.SPUpdateItem({
@@ -30,8 +28,7 @@ export const addSectionConsultants = async (
         consultantsId: { results: consultants?.map((el: any) => el?.id) },
       },
     })
-      .then(async (res) => {
-        console.log(res);
+      .then(async (res: any) => {
         // setToastMessageState({
         //   isShow: true,
         //   severity: "success",
@@ -62,9 +59,7 @@ export const addSectionConsultants = async (
             },
           ],
         }).then(async (res) => {
-          console.log(res);
-          debugger;
-          if (res.length > 0) {
+          if (res?.length > 0) {
             res.forEach(async (task: any) => {
               await SpServices.SPDeleteItem({
                 Listname: LISTNAMES.MyTasks,
@@ -113,10 +108,9 @@ export const addSectionConsultants = async (
           );
           dispatch(setAllSectionsData(updatedSections));
         });
-        console.log(documentDetails, sectionDetails, consultants);
       })
-      .catch((err) => console.log(err));
+      .catch((error) => console.log("Error : ", error));
   } catch (err) {
-    console.log(err);
+    console.log("Error : ", err);
   }
 };

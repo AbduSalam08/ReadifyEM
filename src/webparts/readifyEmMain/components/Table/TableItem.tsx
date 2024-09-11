@@ -362,7 +362,6 @@ const TableItem: React.FC<TableItemProps> = ({
                   <div>{itemTemplate(file, paddingLeft + 6)}</div>
                 )}
                 onChange={(e) => {
-                  // console.log("Files onChange:", e);
                   handleData(e.value);
                 }}
                 dragdrop={isAdmin}
@@ -375,7 +374,6 @@ const TableItem: React.FC<TableItemProps> = ({
                   <div>{renderItemsRecursively([folder], level + 1)}</div>
                 )}
                 onChange={(e) => {
-                  // console.log("Folders onChange:", e);
                   handleData(e.value);
                 }}
                 dragdrop={isAdmin}
@@ -391,7 +389,6 @@ const TableItem: React.FC<TableItemProps> = ({
   const handleTogglePanel = (): void => {
     setIsOpen((prev) => !prev);
     togglePanel(data);
-    console.log("data 111: ", data);
   };
 
   const folders = data.items?.filter((item: any) => item?.type === "folder");
@@ -455,7 +452,6 @@ const TableItem: React.FC<TableItemProps> = ({
                 renderItemsRecursively([item], 0)
               }
               onChange={(e) => {
-                // console.log("e: ", e);
                 handleData(e.value);
               }}
               dragdrop={isAdmin}
@@ -469,7 +465,6 @@ const TableItem: React.FC<TableItemProps> = ({
                 renderItemsRecursively([item], 0)
               }
               onChange={(e) => {
-                // console.log("e: ", e);
                 handleData(e.value);
               }}
               dragdrop={isAdmin}

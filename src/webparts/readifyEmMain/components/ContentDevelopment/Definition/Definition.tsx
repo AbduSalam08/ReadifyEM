@@ -202,7 +202,6 @@ const Definition: React.FC<Props> = ({
   });
 
   const submitChangeRecord = async (): Promise<any> => {
-    console.log("clicked");
     if (changeRecordDetails.Description?.trimStart() !== "") {
       await addChangeRecord(
         changeRecordDetails,
@@ -253,8 +252,6 @@ const Definition: React.FC<Props> = ({
   const [initialLoader, setInitialLoader] = useState(true);
   const [updateChecker, setUpdateChecker] = useState(true);
 
-  console.log(selectedDefinitions, sectionDefinitions, filterDefinitions);
-
   // popup view and actions controller
   const [popupController, setPopupController] = useState(
     initialPopupController
@@ -276,7 +273,6 @@ const Definition: React.FC<Props> = ({
     isLoading: false,
     isSectionDefinition: true,
   });
-  console.log(definitionsData);
 
   // toast message
 
@@ -317,7 +313,6 @@ const Definition: React.FC<Props> = ({
   };
 
   const validateSections = (): any => {
-    debugger;
     // return true;
     const duplicateCheck = AllDefinitionData.filter((obj: any) => {
       return (
@@ -498,8 +493,6 @@ const Definition: React.FC<Props> = ({
         setPopupController,
         togglePopupVisibility
       );
-    } else {
-      console.log("invalid");
     }
   };
 
@@ -520,8 +513,6 @@ const Definition: React.FC<Props> = ({
         setPopupController,
         togglePopupVisibility
       );
-    } else {
-      console.log("invalid");
     }
   };
 
@@ -532,7 +523,6 @@ const Definition: React.FC<Props> = ({
     currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
 
   const promoteSection = async (): Promise<any> => {
-    debugger;
     togglePopupVisibility(
       setPopupController,
       2,
@@ -547,10 +537,7 @@ const Definition: React.FC<Props> = ({
       ? currentDocDetailsData?.approvers
       : [];
 
-    console.log("promoters: ", promoters);
-
     const currentPromoter: any = getCurrentPromoter(promoters);
-    console.log("currentPromoter: ", currentPromoter);
 
     const promoterKey: string = currentDocRole?.reviewer
       ? "sectionReviewed"
@@ -593,12 +580,11 @@ const Definition: React.FC<Props> = ({
             },
           }
         );
-        console.log("updatedSections: ", updatedSections);
 
         dispatch(setCDSectionData([...updatedSections]));
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
         setInitialLoader(false);
         setToastMessage({
           isShow: true,
@@ -1284,10 +1270,8 @@ const Definition: React.FC<Props> = ({
           ...tempSelectedDocuments,
         ]);
         if (await objectsEqual) {
-          console.log("not Changed");
           setCheckChanges(false);
         } else {
-          console.log("Changed");
           setCheckChanges(true);
         }
       } else {
@@ -1327,10 +1311,8 @@ const Definition: React.FC<Props> = ({
           ...selectedDefinitions,
         ]);
         if (await objectsEqual) {
-          console.log("not Changed");
           setCheckChanges(false);
         } else {
-          console.log("Changed");
           setCheckChanges(true);
         }
       }
@@ -1355,10 +1337,8 @@ const Definition: React.FC<Props> = ({
             ...tempSelectedDocuments,
           ]);
           if (await objectsEqual) {
-            console.log("not Changed");
             setCheckChanges(false);
           } else {
-            console.log("Changed");
             setCheckChanges(true);
           }
         } else {
@@ -1368,10 +1348,8 @@ const Definition: React.FC<Props> = ({
             ...tempSelectedDocuments,
           ]);
           if (await objectsEqual) {
-            console.log("not Changed");
             setCheckChanges(false);
           } else {
-            console.log("Changed");
             setCheckChanges(true);
           }
         }
@@ -1383,7 +1361,6 @@ const Definition: React.FC<Props> = ({
   const submitSectionDefinition = async (
     submitCondition: boolean
   ): Promise<any> => {
-    debugger;
     setCheckChanges(false);
     togglePopupVisibility(setPopupController, 2, "close", "");
     const tempFilterData = selectedDefinitions.filter((obj) => !obj.isDeleted);
@@ -1452,16 +1429,13 @@ const Definition: React.FC<Props> = ({
       ...tempSelectedDocuments,
     ]);
     if (await objectsEqual) {
-      console.log("not Changed");
       setCheckChanges(false);
     } else {
-      console.log("Changed");
       setCheckChanges(true);
     }
   };
 
   const editDefinition = async (index: number): Promise<any> => {
-    console.log(index);
     setUpdateChecker(false);
     setDefinitionsData(selectedDefinitions[index]);
     togglePopupVisibility(
@@ -1485,7 +1459,6 @@ const Definition: React.FC<Props> = ({
     LoadDefinitionTableData(dispatch);
 
     const closeDiv = (e: any): void => {
-      console.log(e);
       if (
         e?.target.className !== "p-inputtext p-component" &&
         e?.target?.id !== "sectionDefinitionUniqueId"
@@ -1498,7 +1471,6 @@ const Definition: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
-    console.log(sectionChangeRecord);
     setChangeRecordDetails({
       ...changeRecordDetails,
       author: sectionChangeRecord.changeRecordAuthor
@@ -1537,8 +1509,6 @@ const Definition: React.FC<Props> = ({
                       }}
                       onClickFunction={(value: boolean) => {
                         // handleSearchClick(value);
-                        console.log(value);
-
                         if (value) {
                           setFilterDefinitions([...sectionDefinitions]);
                         }

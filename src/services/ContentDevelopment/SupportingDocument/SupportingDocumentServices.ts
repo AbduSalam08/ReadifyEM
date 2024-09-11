@@ -54,7 +54,7 @@ const getAllSupportingDocumentsData = async (
       // getDocumentDeatils([...tempSelectedDocumentsArray]);
     })
     .catch((err: any) => {
-      console.log(err);
+      console.log("Error : ", err);
     });
   return tempSelectedDocumentsArray;
 };
@@ -74,8 +74,6 @@ const getDocumentDeatils = async (Data: any[]) => {
     ],
   })
     .then((res: any[]) => {
-      console.log(res);
-      debugger;
       res?.forEach((item: any) => {
         const index = Data.findIndex(
           (obj: any) => obj.documentName === item.Title
@@ -107,14 +105,12 @@ const getDocumentDeatils = async (Data: any[]) => {
       });
       // getApprovedDocuments(tempArray);
     })
-    .catch((err) => console.log(err));
+    .catch((error) => console.log("Error : ", error));
   return tempArray;
 };
 
 const getApprovedDocuments = async (Data: any) => {
-  console.log(Data);
   const approvedDocuments: any = [];
-  debugger;
   // await documents.forEach(async (document: any) => {
   await SpServices.SPReadItems({
     Listname: LISTNAMES.AllDocuments,
@@ -130,8 +126,6 @@ const getApprovedDocuments = async (Data: any) => {
     ],
   })
     .then((res: any) => {
-      debugger;
-      console.log(res);
       const tempArray = res?.map((obj: any) => {
         if (obj?.File?.Name) {
           return {
@@ -141,8 +135,6 @@ const getApprovedDocuments = async (Data: any) => {
           };
         }
       });
-      console.log(tempArray);
-
       tempArray?.forEach((item: any) => {
         const index = Data.findIndex(
           (obj: any) => obj.documentName === item.documentName
@@ -188,7 +180,7 @@ const getApprovedDocuments = async (Data: any) => {
       // }
     })
     .catch((err: any) => {
-      console.log(err);
+      console.log("Error : ", err);
     });
   // });
   return await approvedDocuments;
@@ -261,8 +253,6 @@ const convertSupportingDocToTxtFile = (
   // supportingDocTable += `</tbody></table>`;
   supportingDocTable += `</div>`;
 
-  debugger;
-
   const cleanedTable = supportingDocTable
     .replace(/\n/g, "")
     .replace(/\s{2,}/g, " ");
@@ -275,43 +265,27 @@ const convertSupportingDocToTxtFile = (
 };
 
 const AddSectionAttachment = async (sectionId: number, file: any) => {
-  debugger;
   await SpServices.SPDeleteAttachments({
     ListName: LISTNAMES.SectionDetails,
     ListID: sectionId,
     AttachmentName: "Sample.txt",
   })
     .then((res) => {
-      console.log("res:", res);
       SpServices.SPAddAttachment({
         ListName: LISTNAMES.SectionDetails,
         ListID: sectionId,
         FileName: "Sample.txt",
         Attachments: file,
-      })
-        .then((res: any) => {
-          console.log("res: ", res);
-          // _getData();
-        })
-        .catch((err: any) => {
-          console.log("err: ", err);
-        });
+      });
     })
     .catch((err) => {
-      console.log(err);
+      console.log("Error : ", err);
       SpServices.SPAddAttachment({
         ListName: LISTNAMES.SectionDetails,
         ListID: sectionId,
         FileName: "Sample.txt",
         Attachments: file,
-      })
-        .then((res: any) => {
-          console.log("res: ", res);
-          // _getData();
-        })
-        .catch((err: any) => {
-          console.log("err: ", err);
-        });
+      });
     });
 };
 
@@ -323,7 +297,6 @@ const submitSupportingDocuments = (
   getSelectedFun: any,
   sectionOrder: number
 ) => {
-  debugger;
   let renderCondition: boolean = false;
   const tempArray: any[] = [...selectedDocuments];
   const tempAddArray = tempArray.filter((obj: any) => obj.status);
@@ -345,7 +318,6 @@ const submitSupportingDocuments = (
         RequestJSON: jsonObject,
       })
         .then(async (res: any) => {
-          console.log(res);
           renderCondition = true;
           if (
             tempAddArray.length - 1 === index &&
@@ -372,7 +344,7 @@ const submitSupportingDocuments = (
             return renderCondition;
           }
         })
-        .catch((err) => console.log(err));
+        .catch((error) => console.log("Error : ", error));
     });
   }
   if (tempDelArray.length > 0) {
@@ -409,7 +381,7 @@ const submitSupportingDocuments = (
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.log("Error : ", err);
         });
     });
   }
@@ -447,7 +419,7 @@ const submitSupportingDocuments = (
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.log("Error : ", err);
         });
     });
   }
@@ -525,7 +497,6 @@ const updateSectionDetails = async (
     },
   })
     .then(async (res: any) => {
-      console.log("res: ", res);
       const updateArray = updateSectionDataLocal(AllsectionData, sectionID, {
         sectionSubmitted: true,
         sectionStatus: currentSectionStatus,
@@ -534,7 +505,7 @@ const updateSectionDetails = async (
       });
 
       dispatch(setCDSectionData([...updateArray]));
-      debugger;
+
       try {
         const res = await SpServices.SPReadItems({
           Listname: LISTNAMES.SectionDetails,
@@ -591,7 +562,7 @@ const updateSectionDetails = async (
       }
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
 
   // SpServices.SPUpdateItem({
@@ -610,9 +581,8 @@ const updateSectionDetails = async (
   //     );
 
   //     dispatch(setCDSectionData([...updatedSections]));
-  //     console.log(res);
   //   })
-  //   .catch((err) => console.log(err));
+  //   .catch((error)=>console.log("Error : ",error));
 };
 
 export {

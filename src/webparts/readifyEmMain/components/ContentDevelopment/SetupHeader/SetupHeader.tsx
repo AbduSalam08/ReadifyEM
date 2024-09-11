@@ -63,7 +63,6 @@ const SetupHeader: React.FC<Props> = ({
   currentDocRole,
   currentDocDetailsData,
 }) => {
-  console.log("currentDocRole: ", currentDocRole);
   const fileUploadRef = useRef<any>(null);
   const dispatch = useDispatch();
   const initialHeaderDetails = {
@@ -86,11 +85,9 @@ const SetupHeader: React.FC<Props> = ({
   const AllSectionsDataMain: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDSectionsData
   );
-  console.log("CDHeaderDetails: ", CDHeaderDetails);
   const [totalSize, setTotalSize] = useState(0);
   const [sectionLoader, setSectionLoader] = useState(true);
   // const [expandHeader, setExpandHeader] = useState(true);
-  // console.log("expandHeader: ", expandHeader);
   const [file, setFile] = useState<{
     fileData: any;
     fileName: string;
@@ -102,14 +99,12 @@ const SetupHeader: React.FC<Props> = ({
   const [details, setDetails] = useState({
     footerTitle: footerTitle,
   });
-  console.log("details: ", details);
 
   const navigate = useNavigate();
 
   const onTemplateSelect = (e: any): void => {
     let _totalSize = totalSize;
     const files = e.files;
-    console.log("files: ", files);
     const extension: string = files[0]?.name
       ?.split(".")
       .slice(-1)[0]
@@ -173,7 +168,6 @@ const SetupHeader: React.FC<Props> = ({
   };
 
   const itemTemplate = (fileData: any, props: any): any => {
-    console.log("fileData: ", fileData);
     // const extension: string =
     //   fileData?.name?.split(".").slice(-1)[0] ||
     //   CDHeaderDetails?.fileName?.split(".").slice(-1)[0] ||
@@ -384,7 +378,6 @@ const SetupHeader: React.FC<Props> = ({
       .items.getById(currentDocDetailsData?.documentDetailsID)
       .get()
       .then((res: any) => {
-        console.log("res: ", res);
         const resp = res[0] || res;
         setDetails((prev: any) => ({
           ...prev,
@@ -392,7 +385,7 @@ const SetupHeader: React.FC<Props> = ({
         }));
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   }, []);
 
@@ -510,7 +503,6 @@ const SetupHeader: React.FC<Props> = ({
               topLabel
               secWidth="307px"
               onChange={(value: any) => {
-                console.log("value: ", value);
                 setDetails((prev: any) => ({
                   ...prev,
                   footerTitle: value,
@@ -570,7 +562,6 @@ const SetupHeader: React.FC<Props> = ({
 
                     Promise.all([dataAdded, updateDocFooterTitle])
                       .then(async () => {
-                        debugger;
                         await getHeaderSectionDetails(sectionDetails, dispatch);
 
                         setSectionLoader(false);

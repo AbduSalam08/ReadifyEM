@@ -45,17 +45,13 @@ const ConfigureSections = (): JSX.Element => {
   const currentTaskData: any = useSelector(
     (state: any) => state.myTasksData?.uniqueTaskData
   );
-  console.log("currentTaskData: ", currentTaskData);
   const ConfigurePageDetails: any = useSelector(
     (state: any) => state.SectionConfiguration?.ConfigurePageDetails
   );
-  console.log("ConfigurePageDetails: ", ConfigurePageDetails);
 
   // const AllSectionsDataConfiguration: any = useSelector(
   //   (state: any) => state.SectionConfiguration?.AllSectionsData
   // );
-
-  // console.log("AllSectionsDataConfiguration: ", AllSectionsDataConfiguration);
 
   const [popupLoaders, setPopupLoaders] =
     useState<IPopupLoaders>(initialPopupLoaders);
@@ -129,7 +125,6 @@ const ConfigureSections = (): JSX.Element => {
     appendixSections: [],
     isLoading: false,
   });
-  console.log("sectionsData: ", sectionsData);
 
   // main that calls all data
   const setMainData = async () => {
@@ -248,7 +243,6 @@ const ConfigureSections = (): JSX.Element => {
       dispatch
     );
   };
-  console.log("ConfigurePageDetails: ", ConfigurePageDetails);
 
   const hasInvalidDefaultSections = sectionsData?.defaultSections?.some(
     (item: any) =>

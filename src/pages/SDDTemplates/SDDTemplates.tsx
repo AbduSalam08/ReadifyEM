@@ -133,12 +133,6 @@ const SDDTemplates = (): JSX.Element => {
   const AllSDDTemplateData = useSelector(
     (state: any) => state.SDDTemplatesData.AllSDDTemplates
   );
-
-  console.log("AllSDDTemplateData", AllSDDTemplateData);
-  // const AllSDDTemplateDetails = useSelector(
-  //   (state: any) => state.SDDTemplatesData.SDDtemplateDetails
-  // );
-
   // main table data
   const [tableData, setTableData] = useState({
     headers: ["Template Name", "Created At"],
@@ -173,8 +167,6 @@ const SDDTemplates = (): JSX.Element => {
     },
     isLoading: false,
   });
-
-  console.log("sectionsData", sectionsData);
 
   // main state to hable all top filters globally in page
   const [filterOptions, setFilterOptions] = useState({
@@ -584,8 +576,6 @@ const SDDTemplates = (): JSX.Element => {
       const popupIndex: number = popupController?.findIndex((e) => e.open);
       togglePopupVisibility(setPopupController, popupIndex, "close");
       AddSDDTemplate(sectionsData, setPopupLoaders);
-    } else {
-      console.log("invalid submission");
     }
   };
 
@@ -604,8 +594,6 @@ const SDDTemplates = (): JSX.Element => {
       );
 
       UpdateSDDTemplate(currentTemplateData[0], sectionsData, setPopupLoaders);
-    } else {
-      console.log("invalid submission");
     }
   };
 

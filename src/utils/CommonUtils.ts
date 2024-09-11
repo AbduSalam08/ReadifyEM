@@ -6,8 +6,6 @@ export const compareArraysOfObjects = async (
   arr1: any,
   arr2: any
 ): Promise<any> => {
-  console.log(arr1, arr2);
-
   // If arrays have different lengths, they are not equal
   if (arr1.length !== arr2.length) {
     return false;

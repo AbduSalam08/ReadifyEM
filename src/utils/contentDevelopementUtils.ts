@@ -49,7 +49,7 @@
 //         appendixHeaderID = res[0]?.ID;
 //       })
 //       ?.catch((err: any) => {
-//         console.log("err: ", err);
+//         console.log("Error : ", err);
 //       });
 
 //     await UpdateAttachment(
@@ -101,7 +101,7 @@
 //         // setNewAttachment(false);
 //       }
 //     })
-//     .catch((err) => console.log(err));
+//     .catch((error)=>console.log("Error : ",error));
 // };
 
 // export const getSectionDataFromAppendixList = async (
@@ -141,7 +141,7 @@
 //         // setNewAttachment(false);
 //       }
 //     })
-//     .catch((err) => console.log(err));
+//     .catch((error)=>console.log("Error : ",error));
 // };
 
 // Services for Appendix
@@ -167,7 +167,6 @@ export const AddAppendixAttachment = async (
   sectionID: any,
   fileName?: string
 ): Promise<any> => {
-  debugger;
   if (!itemID && sectionID) {
     await SpServices.SPAddItem({
       Listname: LISTNAMES.AppendixHeader,
@@ -177,22 +176,19 @@ export const AddAppendixAttachment = async (
       },
     })
       .then(async (res: any) => {
-        console.log("res: ", res);
         await SpServices.SPAddAttachment({
           ListName: LISTNAMES.AppendixHeader,
           ListID: res?.data?.ID,
           FileName: fileName,
           Attachments: file,
         })
-          .then((res: any) => {
-            console.log("res: ", res);
-          })
+          .then((res: any) => {})
           .catch((err: any) => {
-            console.log("err: ", err);
+            console.log("Error : ", err);
           });
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   } else {
     await SpServices.SPAddAttachment({
@@ -201,11 +197,9 @@ export const AddAppendixAttachment = async (
       FileName: fileName,
       Attachments: file,
     })
-      .then((res: any) => {
-        console.log("res: ", res);
-      })
+      .then((res: any) => {})
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   }
 };
@@ -218,7 +212,7 @@ export const AddAppendixAttachment = async (
 //   documentID?: any,
 //   sectionID?: any
 // ): Promise<any> => {
-//   debugger;
+//
 //   if (deleteAttachment) {
 //     await SpServices.SPDeleteAttachments({
 //       ListName: LISTNAMES.AppendixHeader,
@@ -226,7 +220,7 @@ export const AddAppendixAttachment = async (
 //       AttachmentName: fileName,
 //     })
 //       .then((res) => console.log("res:", res))
-//       .catch((err) => console.log(err));
+//       .catch((error)=>console.log("Error : ",error));
 //   } else {
 //     await SpServices.SPDeleteAttachments({
 //       ListName: LISTNAMES.AppendixHeader,
@@ -234,7 +228,7 @@ export const AddAppendixAttachment = async (
 //       AttachmentName: fileName,
 //     })
 //       .then((res) => console.log("res:", res))
-//       .catch((err) => console.log(err));
+//       .catch((error)=>console.log("Error : ",error));
 
 //     await AddAppendixAttachment(itemID, file, documentID, sectionID, fileName);
 //   }
@@ -248,15 +242,12 @@ export const UpdateAppendixAttachment = async (
   documentID?: any,
   sectionID?: any
 ): Promise<any> => {
-  debugger;
   // Retrieve all attachments using sp.web
   if (itemID) {
     const attachments = await sp.web.lists
       .getByTitle(LISTNAMES.AppendixHeader)
       .items.getById(itemID)
       .attachmentFiles();
-
-    console.log("Attachments: ", attachments);
 
     // Delete all attachments using SpServices
     for (const attachment of attachments) {
@@ -265,7 +256,7 @@ export const UpdateAppendixAttachment = async (
         ListID: itemID,
         AttachmentName: attachment.FileName,
       })
-        .then((res) => console.log("Deleted attachment: ", res))
+        .then((res) => {})
         .catch((err) => console.log("Error deleting attachment: ", err));
     }
 
@@ -313,7 +304,7 @@ export const addDefaultPDFheader = async (
     ],
   });
   const DocDetailsResponseData: any = DocDetailsResponse[0];
-  debugger;
+
   const pdfHeaderSection = sectionsDetails.filter(
     (obj: any) => obj.sectionType === "pdf header"
   );
@@ -368,7 +359,7 @@ export const addDefaultPDFheader = async (
             await AddSectionAttachmentFile(pdfHeaderSection[0].ID, file);
           }
         })
-        .catch((err: any) => console.log(err));
+        .catch((err: any) => console.log("Error : ", err));
     }
   });
 };
@@ -384,7 +375,6 @@ export const AddSectionAttachment = async (
   currentDocDetailsData?: any,
   dispatcher?: any
 ): Promise<any> => {
-  debugger;
   await SpServices.SPAddAttachment({
     ListName: LISTNAMES.SectionDetails,
     ListID: itemID,
@@ -392,22 +382,17 @@ export const AddSectionAttachment = async (
     Attachments: file,
   })
     .then(async (res: any) => {
-      console.log("res: ", res);
-      console.log("currentDocDetailsData: ", currentDocDetailsData);
-      console.log("allSectionsData: ", allSectionsData);
-      debugger;
       const response = await fetch(res.data.ServerRelativeUrl);
       const imageBlob = await response.blob();
       const base64Data = await convertBlobToBase64(imageBlob);
       const sectionDetail = { base64: base64Data };
-      console.log("sectionDetail: ", sectionDetail);
       addDefaultPDFheader(
         sectionDetail,
         currentDocDetailsData.documentDetailsID
       );
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
 
   const updatePayload =
@@ -427,7 +412,6 @@ export const AddSectionAttachment = async (
     RequestJSON: updatePayload,
   })
     .then((res: any) => {
-      console.log("res: ", res);
       const updateArray = allSectionsData?.map((obj: any) => {
         if (obj.ID === itemID) {
           return {
@@ -440,12 +424,10 @@ export const AddSectionAttachment = async (
           return obj;
         }
       });
-      console.log("updateArray: ", updateArray);
-
       dispatcher(setCDSectionData([...updateArray]));
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
 };
 
@@ -461,9 +443,6 @@ export const UpdateSectionAttachment = async (
   currentDocDetailsData?: any,
   dispatcher?: any
 ): Promise<any> => {
-  debugger;
-  console.log("saveAndClose: ", saveAndClose);
-
   try {
     // Retrieve all attachments for the given item
     if (deleteAttachments && !file) {
@@ -481,7 +460,6 @@ export const UpdateSectionAttachment = async (
             AttachmentName: attachment.FileName,
           });
         }
-        console.log("All existing attachments deleted.");
       }
     } else if (!deleteAttachments && file) {
       const attachments = await sp.web.lists
@@ -498,7 +476,6 @@ export const UpdateSectionAttachment = async (
             AttachmentName: attachment.FileName,
           });
         }
-        console.log("All existing attachments deleted.");
       }
       if (!deleteAttachments && file) {
         // Add new attachment
@@ -512,7 +489,6 @@ export const UpdateSectionAttachment = async (
           currentDocDetailsData,
           dispatcher
         );
-        console.log("New attachment added successfully.");
       }
     }
   } catch (err) {
@@ -550,8 +526,6 @@ export const addAppendixHeaderAttachmentData = async (
   file?: any,
   deleteAttachment?: boolean
 ): Promise<any> => {
-  debugger;
-  console.log("sectionDetails: ", sectionDetails);
   if (!file.fileData?.ServerRelativeUrl && file.fileName !== "") {
     let appendixHeaderID: any = null;
     await SpServices.SPReadItems({
@@ -567,11 +541,10 @@ export const addAppendixHeaderAttachmentData = async (
       ],
     })
       ?.then((res: any) => {
-        console.log("res: ", res);
         appendixHeaderID = res[0]?.ID;
       })
       ?.catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
 
     if (file.fileData && file.fileName) {
@@ -601,25 +574,23 @@ export const getSectionData = async (
   setFile?: any,
   dispatcher?: any
 ): Promise<any> => {
-  const resp = await SpServices.SPReadItems({
-    Listname: LISTNAMES.SectionDetails,
-    Select: "*",
-    Filter: [
-      {
-        FilterKey: "ID",
-        FilterValue: sectionDetails?.ID,
-        Operator: "eq",
-      },
-    ],
-  });
-  console.log("resp: ", resp);
+  // const resp = await SpServices.SPReadItems({
+  //   Listname: LISTNAMES.SectionDetails,
+  //   Select: "*",
+  //   Filter: [
+  //     {
+  //       FilterKey: "ID",
+  //       FilterValue: sectionDetails?.ID,
+  //       Operator: "eq",
+  //     },
+  //   ],
+  // });
 
   await SpServices.SPGetAttachments({
     Listname: LISTNAMES.SectionDetails,
     ID: sectionDetails?.ID,
   })
     .then((res: any) => {
-      console.log("res: ", res);
       // const filteredItem: any = res?.filter((item: any) =>
       //   item?.FileName?.includes("headerImg")
       // );
@@ -635,7 +606,7 @@ export const getSectionData = async (
       // }
     })
     .catch((err) => {
-      console.log(err);
+      console.log("Error : ", err);
       dispatcher && dispatcher(setCDHeaderDetails([]));
     });
 };
@@ -645,7 +616,6 @@ export const getSectionDataFromAppendixList = async (
   setFile?: any,
   dispatcher?: any
 ): Promise<any> => {
-  debugger;
   const resp = await SpServices.SPReadItems({
     Listname: LISTNAMES.AppendixHeader,
     Select: "*, sectionDetail/ID, documentDetail/ID",
@@ -658,7 +628,6 @@ export const getSectionDataFromAppendixList = async (
       },
     ],
   });
-  console.log("resp: ", resp);
 
   const appendixHeaderID: any = resp[0]?.ID;
 
@@ -668,11 +637,9 @@ export const getSectionDataFromAppendixList = async (
       ID: appendixHeaderID,
     })
       .then((res: any) => {
-        console.log("res: ", res);
         // const filteredItem: any = res?.filter((item: any) =>
         //   item?.FileName?.includes("headerImg")
         // );
-        // console.log("filteredItem: ", filteredItem);
         // if (filteredItem.length > 0) {
         const data = {
           fileData: res[0],
@@ -684,7 +651,7 @@ export const getSectionDataFromAppendixList = async (
       })
       .catch((err) => {
         dispatcher && dispatcher(setCDHeaderDetails([]));
-        console.log(err);
+        console.log("Error : ", err);
       });
   } else {
     dispatcher && dispatcher(setCDHeaderDetails([]));
@@ -791,7 +758,6 @@ export async function updateTaskCompletion(
   documentOfId: any,
   type: "active" | "completed"
 ): Promise<void> {
-  debugger;
   try {
     let currentDocDetailsData: any;
     await sp.web.lists
@@ -800,12 +766,11 @@ export async function updateTaskCompletion(
       .select("*")
       .get()
       .then((res: any) => {
-        console.log("res: ", res);
         const resp = res[0] || res;
         currentDocDetailsData = resp;
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
 
     // Read items from SharePoint
@@ -830,9 +795,6 @@ export async function updateTaskCompletion(
         },
       ],
     });
-
-    console.log("res: ", res);
-
     let updatedTaskData;
     if (type === "active") {
       // Prepare updated task data

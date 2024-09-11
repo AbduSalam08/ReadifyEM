@@ -81,8 +81,6 @@ const SectionContentLatest: React.FC<IProps> = ({
   currentDocRole,
   setCheckChanges,
 }) => {
-  console.log(currentSectionDetails);
-
   // Track the latest point to be focused
   // const lastAddedPointRef = useRef<HTMLDivElement | null>(null);
   // Inside your renderPoints function
@@ -217,7 +215,6 @@ const SectionContentLatest: React.FC<IProps> = ({
     currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
 
   const promoteSection = async (): Promise<any> => {
-    debugger;
     togglePopupVisibility(
       setPopupController,
       2,
@@ -232,10 +229,7 @@ const SectionContentLatest: React.FC<IProps> = ({
       ? currentDocDetailsData?.approvers
       : [];
 
-    console.log("promoters: ", promoters);
-
     const currentPromoter: any = getCurrentPromoter(promoters);
-    console.log("currentPromoter: ", currentPromoter);
 
     const promoterKey: string = currentDocRole?.reviewer
       ? "sectionReviewed"
@@ -278,11 +272,10 @@ const SectionContentLatest: React.FC<IProps> = ({
             },
           }
         );
-        console.log("updatedSections: ", updatedSections);
         dispatch(setCDSectionData([...updatedSections]));
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
         setSectionLoader(false);
         setToastMessage({
           isShow: true,
@@ -517,7 +510,6 @@ const SectionContentLatest: React.FC<IProps> = ({
   ];
 
   const submitRejectedComment = async (): Promise<any> => {
-    console.log(rejectedComments);
     if (rejectedComments.rejectedComment?.trim() !== "") {
       setRejectedComments({
         ...rejectedComments,
@@ -587,7 +579,6 @@ const SectionContentLatest: React.FC<IProps> = ({
       AttachmentName: data?.FileName,
     })
       .then((res: any) => {
-        console.log("res: ", res);
         const parsedValue: any = JSON.parse(res);
         if (typeof parsedValue === "object") {
           setMasterPoints([...parsedValue]);
@@ -607,7 +598,7 @@ const SectionContentLatest: React.FC<IProps> = ({
         // setPoints([{ text: String(sectionNumber), value: "", class: "I_0" }]);
         // onChange &&
         //   onChange([{ text: String(sectionNumber), value: "", class: "I_0" }]);
-        // console.log("err: ", err);
+        // console.log("Error : ", err);
         setSectionLoader(false);
       });
   };
@@ -619,7 +610,6 @@ const SectionContentLatest: React.FC<IProps> = ({
       ID: ID,
     })
       .then((res: any) => {
-        console.log("res: ", res);
         const filteredItem: any = res?.filter(
           (item: any) => item?.FileName === "Sample.txt"
         );
@@ -642,7 +632,7 @@ const SectionContentLatest: React.FC<IProps> = ({
         // setPoints([{ text: String(sectionNumber), value: "", class: "I_0" }]);
         // onChange &&
         //   onChange([{ text: String(sectionNumber), value: "", class: "I_0" }]);
-        // console.log(err);
+        // console.log("Error : ",err);
         setSectionLoader(false);
       });
   };
@@ -669,7 +659,7 @@ const SectionContentLatest: React.FC<IProps> = ({
       });
       return;
     }
-    debugger;
+
     togglePopupVisibility(
       setPopupController,
       0,
@@ -738,8 +728,6 @@ const SectionContentLatest: React.FC<IProps> = ({
   };
 
   // lastest code
-
-  console.log(masterPoints);
 
   // Recursively check if any point or its child has an empty value and return its path
   const findInvalidPointPath = (
@@ -1057,7 +1045,6 @@ const SectionContentLatest: React.FC<IProps> = ({
   }, [ID, currentSectionDetails?.ID]);
 
   useEffect(() => {
-    console.log(sectionChangeRecord);
     setChangeRecordDetails({
       ...changeRecordDetails,
       author: sectionChangeRecord.changeRecordAuthor

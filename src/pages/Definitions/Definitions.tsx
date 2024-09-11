@@ -327,8 +327,6 @@ const Definitions = (): JSX.Element => {
       togglePopupVisibility(setPopupController, popupIndex, "close");
 
       UpdateDefinition(definitionsData, setPopupLoaders);
-    } else {
-      console.log("invalid");
     }
   };
 
@@ -351,8 +349,6 @@ const Definitions = (): JSX.Element => {
       const popupIndex: number = popupController?.findIndex((e) => e.open);
       togglePopupVisibility(setPopupController, popupIndex, "close");
       AddDefinition(definitionsData, setPopupLoaders);
-    } else {
-      console.log("invalid");
     }
   };
 

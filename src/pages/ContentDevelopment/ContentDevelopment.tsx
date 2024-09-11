@@ -215,7 +215,6 @@ const ContentDevelopment = (): JSX.Element => {
   const currentDocDetailsData: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDDocDetails
   );
-  console.log("currentDocDetailsData: ", currentDocDetailsData);
 
   // initial States
   // AllSections State
@@ -226,8 +225,6 @@ const ContentDevelopment = (): JSX.Element => {
     data: [],
     lastReviewDate: "",
   });
-
-  console.log("prevDocVersions: ", prevDocVersions);
 
   const [toggleCommentSection, setToggleCommentSection] = useState(false);
   const [checkChanges, setCheckChanges] = useState(false);
@@ -286,7 +283,6 @@ const ContentDevelopment = (): JSX.Element => {
     totalReviewers: number,
     dispatch: any
   ) => {
-    debugger;
     const currentPromoter = getCurrentPromoter(
       currentDocDetailsData?.reviewers
     );
@@ -347,7 +343,7 @@ const ContentDevelopment = (): JSX.Element => {
                 }
               })
               .catch((err: any) => {
-                console.log("err: ", err);
+                console.log("Error : ", err);
               });
           }
         });
@@ -402,9 +398,6 @@ const ContentDevelopment = (): JSX.Element => {
       console.error("No active reviewer found");
       return;
     }
-
-    console.log("updatedReviewers: ", updatedReviewers);
-
     return updatedReviewers;
   };
 
@@ -413,7 +406,6 @@ const ContentDevelopment = (): JSX.Element => {
     totalApprovers: number,
     dispatch: any
   ) => {
-    debugger;
     const currentPromoter = getCurrentPromoter(
       currentDocDetailsData?.approvers
     );
@@ -484,7 +476,7 @@ const ContentDevelopment = (): JSX.Element => {
               }
             })
             .catch((err: any) => {
-              console.log("err: ", err);
+              console.log("Error : ", err);
             });
         }
       });
@@ -768,7 +760,7 @@ const ContentDevelopment = (): JSX.Element => {
             dispatch(setCDSectionData(AllSectionDataLocalShallowCopy));
           })
           .catch((err: any) => {
-            console.log("err: ", err);
+            console.log("Error : ", err);
           });
         dispatch(setCDBackDrop(false));
         setToastMessage({
@@ -782,7 +774,7 @@ const ContentDevelopment = (): JSX.Element => {
         });
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
         dispatch(setCDBackDrop(false));
       });
   };
@@ -1116,7 +1108,7 @@ const ContentDevelopment = (): JSX.Element => {
           handleClosePopup(5);
           if (promoteComments.promoteComment !== "") {
             dispatch(setCDBackDrop(true));
-            debugger;
+
             await addPromotedComment(
               promoteComments.promoteComment,
               currentDocDetailsData,
@@ -1144,7 +1136,6 @@ const ContentDevelopment = (): JSX.Element => {
               }
             }
           );
-          console.log("changeReviewer: ", changeReviewer);
           const payLoad: any = AllSectionsDataMain?.filter(
             (item: any) => item?.sectionType?.toLowerCase() !== "header"
           )?.map((el: any) => {
@@ -1243,16 +1234,15 @@ const ContentDevelopment = (): JSX.Element => {
           handleClosePopup(8);
           setCheckChanges(false);
           setActiveSection(tempActiveSection);
-          const Comments = getSectionComments(
+          getSectionComments(
             AllSectionsData[tempActiveSection].ID,
             currentDocDetailsData.version,
             dispatch
           );
-          const changeRecordDetails = getSectionChangeRecord(
+          getSectionChangeRecord(
             AllSectionsData[tempActiveSection].ID,
             dispatch
           );
-          console.log(Comments, changeRecordDetails);
           if (
             AllSectionsData[tempActiveSection].sectionType?.toLowerCase() ===
             "change record"
@@ -1290,17 +1280,12 @@ const ContentDevelopment = (): JSX.Element => {
         //   );
         // } else {
         setActiveSection(value);
-        const Comments = getSectionComments(
+        getSectionComments(
           AllSectionsData[value].ID,
           currentDocDetailsData.version,
           dispatch
         );
-        const changeRecordDetails = getSectionChangeRecord(
-          AllSectionsData[value].ID,
-          dispatch
-        );
-        console.log(Comments, changeRecordDetails);
-        debugger;
+        getSectionChangeRecord(AllSectionsData[value].ID, dispatch);
         if (
           AllSectionsData[value].sectionType?.toLowerCase() === "change record"
         ) {
@@ -1402,7 +1387,6 @@ const ContentDevelopment = (): JSX.Element => {
     setAllSectionsData(AllSectionsDataMain);
     // setActiveSection();
     setInitialLoader(currentDocDetailsData?.isLoading);
-    let data: any;
     getPreviousVersionDoc(currentDocDetailsData?.documentDetailsID).then(
       (res: any) => {
         const lastReviewDate: any = getLastReviewDate(res);
@@ -1412,8 +1396,6 @@ const ContentDevelopment = (): JSX.Element => {
         });
       }
     );
-
-    console.log("data: ", data);
   }, [currentDocDetailsData?.isLoading]);
 
   useEffect(() => {
@@ -1423,12 +1405,11 @@ const ContentDevelopment = (): JSX.Element => {
   useEffect(() => {
     if (AllSectionsDataMain?.length !== 0) {
       setAllSectionsData(AllSectionsDataMain);
-      const Comments = getSectionComments(
+      getSectionComments(
         AllSectionsDataMain[activeItemsFirstIndex].ID,
         currentDocDetailsData.version,
         dispatch
       );
-      console.log(Comments);
     }
   }, [AllSectionsDataMain?.length]);
 

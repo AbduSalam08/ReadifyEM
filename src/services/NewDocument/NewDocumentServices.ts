@@ -54,7 +54,6 @@ const AddNewDocumentToLib = async ({
   initiateNewVersion,
   docDetails,
 }: IProps): Promise<any> => {
-  debugger;
   if (initiateNewVersion) {
     let fileAddResult: any;
     try {
@@ -91,8 +90,6 @@ const AddNewDocumentToLib = async ({
 
       // Update metadata for the uploaded file
       const fileItem = await fileAddResult?.file.getItem();
-      console.log("fileItem: ", fileItem);
-
       await SpServices.SPUpdateItem({
         ID: fileID,
         Listname: LISTNAMES.DocumentDetails,
@@ -126,7 +123,7 @@ const AddNewDocumentToLib = async ({
           return true;
         })
         .catch((err: any) => {
-          console.log("err: ", err);
+          console.log("Error : ", err);
 
           setLoaderState({
             isLoading: {
@@ -150,8 +147,6 @@ const AddNewDocumentToLib = async ({
         }
       }
     } catch (error) {
-      debugger;
-
       console.error("Error creating or uploading PDF: ", error);
 
       setLoaderState({
@@ -215,15 +210,11 @@ const AddNewDocumentToLib = async ({
 
       // Upload the PDF to the specified SharePoint library
       if (fileName) {
-        debugger;
         fileAddResult = await sp.web
           .getFolderByServerRelativePath(filePath)
           .files.addUsingPath(`${fileName}.pdf`, pdfBlob, {
             Overwrite: true,
           });
-
-        console.log("fileAddResult: ", fileAddResult);
-
         // Update metadata for the uploaded file
         const fileItem = await fileAddResult.file.getItem();
 
@@ -257,7 +248,7 @@ const AddNewDocumentToLib = async ({
             return true;
           })
           .catch((err: any) => {
-            console.log("err: ", err);
+            console.log("Error : ", err);
 
             setLoaderState({
               isLoading: {
@@ -334,7 +325,6 @@ const UpdateDocumentInLib = async ({
   changedDocumentPath,
   reorderDoc,
 }: IUpdateProps): Promise<any> => {
-  debugger;
   try {
     setLoaderState({
       isLoading: {
@@ -393,20 +383,18 @@ const UpdateDocumentInLib = async ({
           false,
           false
         )
-        .then((res: any) => {
-          console.log("res");
-        })
+        .then((res: any) => {})
         .catch((err: any) => {
-          console.log("err: ", err);
+          console.log("Error : ", err);
         });
     }
-    // debugger;
+    //
     sp.web.lists
       .getByTitle(LIBNAMES.AllDocuments)
       .items.getById(fileID)
       .update(documentFields)
       .then(async (res: any) => {
-        // debugger;
+        //
         await SpServices.SPReadItems({
           Listname: LISTNAMES.MyTasks,
           Select: "*,documentDetails/ID",
@@ -431,7 +419,7 @@ const UpdateDocumentInLib = async ({
             }
           })
           .catch(async (err: any) => {
-            console.log("err: ", err);
+            console.log("Error : ", err);
             await UpdatePrimaryAuthorTask(DocumentID);
           });
 
@@ -464,7 +452,7 @@ const UpdateDocumentInLib = async ({
         return true;
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
         setLoaderState({
           isLoading: {
             inprogress: false,
@@ -503,8 +491,6 @@ const AddNewDocument = async (
   isDraft?: boolean,
   AllTempatesMainData?: any
 ): Promise<any> => {
-  debugger;
-  console.log("data: ", data);
   const selectedTemplateID: any = AllTempatesMainData?.filter(
     (el: any) => el?.templateName === data[1]?.value
   )[0]?.ID;
@@ -512,8 +498,6 @@ const AddNewDocument = async (
   const primaryAuthorName: any = data?.filter(
     (el: any) => el?.key === "primaryAuthorId"
   )[0]?.value?.[0]?.name;
-
-  console.log("primaryAuthorName: ", primaryAuthorName);
 
   const formData: any = data?.reduce((acc: any, el: any) => {
     acc[el.key] =
@@ -575,12 +559,9 @@ const AddNewDocument = async (
 
       // Ensure filePath is correctly passed
       const filePath = responseData?.documentPath;
-      console.log("filePath: ", filePath);
-
       const fileName = responseData?.Title;
       const fileID = responseData?.ID;
       if (filePath && fileName && fileID) {
-        debugger;
         await AddNewDocumentToLib({
           fileName,
           fileID,
@@ -594,7 +575,7 @@ const AddNewDocument = async (
       }
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
       setLoaderState({
         isLoading: {
           inprogress: false,
@@ -621,7 +602,7 @@ const AddNewDocument = async (
 //   AllTempatesMainData?: any,
 //   prevDocType?: any
 // ): Promise<any> => {
-//   debugger;
+//
 
 //   const docTypeChanged: boolean =
 //     trimStartEnd(prevDocType) !== trimStartEnd(data[1]?.value);
@@ -655,7 +636,7 @@ const AddNewDocument = async (
 //             : el.value;
 //         return acc;
 //       }, {});
-//   debugger;
+//
 //   await SpServices.SPUpdateItem({
 //     Listname: LISTNAMES.DocumentDetails,
 //     ID: DocumentID,
@@ -736,7 +717,6 @@ const UpdateDocument = async (
   initiateNewVersion?: boolean,
   versionChangeType?: string
 ): Promise<any> => {
-  debugger;
   if (initiateNewVersion) {
     try {
       setLoaderState({
@@ -833,9 +813,6 @@ const UpdateDocument = async (
                 : el.value;
             return acc;
           }, {});
-
-      console.log("formData: ", formData);
-
       await SpServices.SPUpdateItem({
         Listname: LISTNAMES.DocumentDetails,
         ID: DocumentID,
@@ -845,7 +822,6 @@ const UpdateDocument = async (
       // const docStatus: any = formData?.filter(
       //   (el: any) => el?.key === "status"
       // )[0]?.value;
-      // console.log("docStatus: ", docStatus);
 
       if (
         docTypeChanged &&
@@ -951,10 +927,10 @@ const UpdateDocument = async (
           }
         })
         .catch((err: any) => {
-          console.log("err: ", err);
+          console.log("Error : ", err);
         });
     } catch (err: any) {
-      console.log("err: ", err);
+      console.log("Error : ", err);
       console.error("Error updating document:", err);
       if (
         err.message !==
@@ -970,7 +946,6 @@ const UpdateDocument = async (
       }
     }
   } else {
-    debugger;
     try {
       setLoaderState({
         isLoading: {
@@ -1035,8 +1010,6 @@ const UpdateDocument = async (
       const docStatus: any = !reorderDoc
         ? data?.filter((el: any) => el?.key === "status")[0]?.value
         : "";
-      console.log("docStatus: ", docStatus);
-
       if (docTypeChanged && docStatus !== "Not Started" && !reorderDoc) {
         // const [sectionDetails, myTasks] = await Promise.all([
         await SpServices.SPReadItems({
@@ -1074,9 +1047,6 @@ const UpdateDocument = async (
         });
         // ]);
 
-        // console.log("myTasks: ", myTasks);
-        // console.log("sectionDetails: ", sectionDetails);
-
         // await Promise.all([
 
         // ]).then(async (res: any) => {
@@ -1089,7 +1059,7 @@ const UpdateDocument = async (
           reorderDoc,
         });
         // .catch((err: any) => {
-        //   console.log("err: ", err);
+        //   console.log("Error : ", err);
         // });
 
         // });
@@ -1145,7 +1115,6 @@ const GetDocumentDetails = async (
       Expand: "primaryAuthor, documentTemplateType",
     });
     if (res) {
-      console.log("res: ", res);
       setPopupLoaders({
         isLoading: {
           inprogress: true,

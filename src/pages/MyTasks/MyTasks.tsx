@@ -48,14 +48,11 @@ const MyTasks = (): JSX.Element => {
 
   // const myTasksData: any = useSelector((state: any) => state.myTasksData.value);
 
-  // console.log("myTasksData: ", myTasksData);
-
   // // main tasks data state
   // const [tasksData, setTasksData] = useState({
   //   loading: false,
   //   data: [] as any[],
   // });
-  // console.log("tasksData aaa: ", tasksData);
 
   // // state to store the filter properties
   // const [filterOptions, setFilterOptions] = useState({
@@ -145,7 +142,6 @@ const MyTasks = (): JSX.Element => {
     loading: false,
     data: [] as any[],
   });
-  console.log("tasksData: ", tasksData);
 
   const [filterOptions, setFilterOptions] = useState({
     searchTerm: "",
@@ -377,7 +373,6 @@ const MyTasks = (): JSX.Element => {
       <div className={styles.cardsSection}>
         {tasksData.data?.length !== 0 &&
           tasksData.data?.map((item: any, index: number) => {
-            console.log("item: ", item);
             const isPA = item?.role?.toLowerCase() === "primary author";
 
             const isConfigurationCard: boolean =

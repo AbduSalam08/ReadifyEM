@@ -136,8 +136,6 @@ const References: React.FC<Props> = ({
     duration: "",
   });
 
-  console.log(allSectionsData, allReferencesData);
-
   // local constants
   const initialPopupController = [
     {
@@ -281,8 +279,6 @@ const References: React.FC<Props> = ({
         setPopupController,
         togglePopupVisibility
       );
-    } else {
-      console.log("invalid");
     }
   };
   const updateSectionReference = async (): Promise<any> => {
@@ -302,8 +298,6 @@ const References: React.FC<Props> = ({
         setPopupController,
         togglePopupVisibility
       );
-    } else {
-      console.log("invalid");
     }
   };
 
@@ -349,7 +343,6 @@ const References: React.FC<Props> = ({
     currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
 
   const promoteSection = async (): Promise<any> => {
-    debugger;
     togglePopupVisibility(
       setPopupController,
       2,
@@ -364,10 +357,7 @@ const References: React.FC<Props> = ({
       ? currentDocDetailsData?.approvers
       : [];
 
-    console.log("promoters: ", promoters);
-
     const currentPromoter: any = getCurrentPromoter(promoters);
-    console.log("currentPromoter: ", currentPromoter);
 
     const promoterKey: string = currentDocRole?.reviewer
       ? "sectionReviewed"
@@ -415,7 +405,7 @@ const References: React.FC<Props> = ({
         dispatch(setCDSectionData([...updatedSections]));
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
         setLoader(false);
         setToastMessage({
           isShow: true,
@@ -794,7 +784,6 @@ const References: React.FC<Props> = ({
   ];
 
   const getReferencesFromDefintions = async () => {
-    debugger;
     setLoader(true);
     const sectionReferences = await getSectionRefernces(
       currentSectionDetails?.ID

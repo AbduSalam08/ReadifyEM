@@ -58,7 +58,6 @@ const readTextFileFromTXT = (
       setAllSectionContent((prev: any) => {
         // Add the new sectionDetails to the previous state
 
-        debugger;
         const updatedSections = [...prev, sectionDetails];
 
         const headerSectionArray = updatedSections?.filter(
@@ -130,7 +129,7 @@ const readTextFileFromTXT = (
       return sectionDetails;
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
 };
 
@@ -150,8 +149,6 @@ export const bindHeaderTable = async (
   docDetails: any
 ): Promise<string> => {
   const base64Image = base64Data.headerImage;
-
-  console.log(base64Image);
 
   let definitionsTable = "";
   definitionsTable = `<table class="pdf_header" style="border-collapse: collapse; width: 100%;">
@@ -255,7 +252,6 @@ export const getDocumentRelatedSections = async (
       ],
     })
       .then(async (res: any) => {
-        console.log(res);
         if (res.length > 0) {
           const sortedArray = res.sort(
             (a: any, b: any) =>
@@ -265,10 +261,8 @@ export const getDocumentRelatedSections = async (
           const tempAttachments: any[] = [];
           const tempSectionList: any[] = [];
           let base64Data: any = "";
-          console.log(sortedArray);
-          debugger;
+
           for (const item of sortedArray) {
-            console.log(item.sectionOrder);
             const attachments = await SpServices.SPGetAttachments({
               Listname: LISTNAMES.SectionDetails,
               ID: item.Id,
@@ -307,7 +301,6 @@ export const getDocumentRelatedSections = async (
               }
             }
           }
-          console.log(tempAttachments);
           // dispatcher(setSectionsAttachments([...tempAttachments]));
           if (tempAttachments.length !== 0) {
             tempAttachments.forEach(async (item: any, index: number) => {
@@ -358,7 +351,7 @@ export const getDocumentRelatedSections = async (
                   //       parseInt(a.sectionOrder) - parseInt(b.sectionOrder)
                   //     );
                   //   });
-                  // debugger;
+                  //
                   // if (referenceSectionArray.length !== 0) {
                   //   referenceSectionArray[0] = {
                   //     ...referenceSectionArray[0],
@@ -425,7 +418,6 @@ export const getDocumentRelatedSections = async (
                 // setSectionLoader(false);
               }
             });
-            debugger;
           } else {
             setLoader(false);
           }
@@ -434,7 +426,7 @@ export const getDocumentRelatedSections = async (
         }
       })
       .catch((err: any) => {
-        console.log(err);
+        console.log("Error : ", err);
       });
   } catch (error) {
     console.error("Error in updateFolderSequenceNumber: ", error);

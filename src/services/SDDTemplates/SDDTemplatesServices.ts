@@ -18,10 +18,6 @@ const AddSDDTemplate = async (
   setLoaderState: any
 ): Promise<any> => {
   const templateTitle = formData?.templateName;
-
-  console.log(formData);
-
-  debugger;
   try {
     // const getSectionType = (value: string): string => {
     //   return value === "defaultSection"
@@ -440,9 +436,7 @@ const softDeleteTemplate = async (
     const results = await Promise.all([updatePromises, sectionsToDelete]);
 
     // Log the responses
-    results.forEach((res, index) => {
-      console.log(`Response done`);
-    });
+    results.forEach((res, index) => {});
 
     // Set loading state to success
     setLoaderState({
@@ -497,7 +491,7 @@ const fetchTemplates = async (): Promise<{
 
     return { allMainTemplateData };
   } catch (error) {
-    console.log("error: ", error);
+    console.log("Error : ", error);
     return { allMainTemplateData: [] };
   }
 };
@@ -536,8 +530,6 @@ const LoadSectionsTemplateData = async (
   update?: boolean,
   dispatch?: any
 ): Promise<any> => {
-  debugger;
-  console.log("sectionsData", sectionsData);
   // Set loading state
   setSectionsData((prev: any) => ({
     ...prev,
@@ -641,7 +633,7 @@ const LoadSectionsTemplateData = async (
     //   (a, b) =>
     //     defaultTemplates.indexOf(a.value) - defaultTemplates.indexOf(b.value)
     // );
-    debugger;
+
     const orderedNormalSection = normalSection.sort((a, b) => a.id - b.id);
     const orderedAppendixSection = appendixSection.sort((a, b) => a.id - b.id);
 
@@ -777,7 +769,6 @@ const LoadSectionsTemplateData = async (
   //     normalSection: orderedMergedSections,
   //     appendixSection: orderedAppendixSection,
   //   };
-  //   console.log("currentTemplateDetails", currentTemplateDetails);
   //   // Dispatch the template details
   //   if (dispatch) {
   //     dispatch(setSDDTemplateDetails(currentTemplateDetails));

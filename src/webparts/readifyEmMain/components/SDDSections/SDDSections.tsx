@@ -37,8 +37,6 @@ const SDDSections = ({
   viewOnly,
   update,
 }: Props): JSX.Element => {
-  console.log(sectionsData, AllSectionsData, sectionTitle, objKey);
-
   // const isNotDefaultSection: boolean =
   //   sectionsData[0]?.type?.toLowerCase() !== "defaultsection";
 
@@ -259,7 +257,6 @@ const SDDSections = ({
   const hasDuplicates = !viewOnly ? checkDuplicates() : false;
 
   const SectionRow = (section: any, index: number): JSX.Element => {
-    console.log(section, index);
     return (
       <div
         className={`${styles.usersCard} ${
@@ -359,12 +356,9 @@ const SDDSections = ({
   };
 
   const reOrderSections = (data: any[]): any => {
-    console.log(data);
-
     const orderSection = data.map((obj: any, index: number) => {
       return { ...obj, id: index + 1 };
     });
-    console.log(orderSection);
     setSectionsData((prev: any) => ({
       ...prev,
       [objKey]: orderSection,

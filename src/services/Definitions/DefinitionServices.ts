@@ -56,7 +56,7 @@ const UpdateDefinition = async (
         });
       })
       .catch((err) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
         setLoaderState({
           isLoading: {
             inprogress: false,
@@ -304,7 +304,7 @@ const fetchTemplates = async (): Promise<{
 
     return { allMainTemplateData };
   } catch (error) {
-    console.log("error: ", error);
+    console.log("Error : ", error);
     return { allMainTemplateData: [] };
   }
 };
@@ -355,7 +355,6 @@ const LoadDefinitionData = async (
       Expand: "referenceAuthor",
     })
       .then((res: any) => {
-        console.log(res);
         const CurrentDefinitionDetails: any = {
           ID: templateID,
           definitionName: res?.Title ? res.Title : "",
@@ -399,7 +398,7 @@ const LoadDefinitionData = async (
         }));
         dispatch(setDefinitionDetails(CurrentDefinitionDetails));
       })
-      .catch((err) => console.log(err));
+      .catch((error) => console.log("Error : ", error));
   } catch (error) {
     console.error("Error loading sections template data:", error);
     setSectionsData((prev: any) => ({

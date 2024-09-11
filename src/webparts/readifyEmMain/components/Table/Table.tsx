@@ -118,8 +118,6 @@ const Table: React.FC<ITableProps> = ({
   };
 
   const togglePanel = (item: any): void => {
-    console.log("item 111: ", item);
-    debugger;
     const updateItem = (currentItem: any): any => {
       // Check if this is the item to update based on its name
       if (currentItem.name === item.name) {
@@ -325,7 +323,6 @@ const Table: React.FC<ITableProps> = ({
           value={DNDData}
           itemTemplate={(item: any) => renderTableItem(item)}
           onChange={(e) => {
-            // console.log("e: ", e.value);
             // handleData(e.value, DNDData);
             handleData(e.value);
           }}

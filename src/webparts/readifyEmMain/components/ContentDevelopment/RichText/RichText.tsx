@@ -464,7 +464,6 @@ const RichText = ({
     sectionDetails: any,
     currentDocumentDetails: any
   ): Promise<any> => {
-    debugger;
     const libraryName = "Shared Documents";
     // Sanitize folder names
     const sanitizedDocumentName = sanitizeFolderName(
@@ -488,22 +487,19 @@ const RichText = ({
             `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}`
           )
           .files.add(file.name, file, true);
-        console.log(`File '${file.name}' uploaded successfully.`);
 
         const fileUrl = fileAddResult.data.ServerRelativeUrl;
 
         return `${window.location.origin}${fileUrl}`;
       }
     } catch (error) {
-      console.error("Error uploading file:", error.code);
+      console.log("Error uploading file:", error.code);
       if (
         error.message.includes("File not found") ||
         error.message.includes("-2130575338") ||
         error.message.includes("-2147024809")
       ) {
         try {
-          debugger;
-
           const documentFolderExists = await folderExists(
             libraryName,
             await sanitizedDocumentName
@@ -513,11 +509,6 @@ const RichText = ({
             await sp.web.folders.add(
               `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}`
             );
-            console.log(
-              `Folder '${sanitizedDocumentName}' created successfully.`
-            );
-          } else {
-            console.log(`Folder '${sanitizedDocumentName}' already exists.`);
           }
 
           const sectionFolderExists = await folderExists(
@@ -530,11 +521,6 @@ const RichText = ({
             await sp.web.folders.add(
               `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}`
             );
-            console.log(
-              `Subfolder '${sanitizedSectionName}' created successfully.`
-            );
-          } else {
-            console.log(`Subfolder '${sanitizedSectionName}' already exists.`);
           }
 
           // Upload the file to SharePoint
@@ -543,28 +529,22 @@ const RichText = ({
               `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}`
             )
             .files.add(file.name, file, true);
-          console.log(`File '${file.name}' uploaded successfully.`);
-          debugger;
 
-          // Step 3: Update lookup field (metadata)
           const item = await fileAddResult.file.getItem();
           await item.update({
             documentDetailsId: currentDocumentDetails.documentDetailsID, // Replace with your lookup field's internal name
           });
-          console.log(
-            `Lookup field updated successfully with ID '${currentDocumentDetails.documentDetailsID}'.`
-          );
           // Get the file URL
           const fileUrl = fileAddResult.data.ServerRelativeUrl;
 
           // Return the full file URL
           return `${window.location.origin}${fileUrl}`;
         } catch (uploadError) {
-          console.error("Error uploading file:", uploadError);
+          console.log("Error uploading file:", uploadError);
           return null;
         }
       } else {
-        console.error("Error checking file existence:", error);
+        console.log("Error checking file existence:", error);
         return null;
       }
     }
@@ -588,7 +568,6 @@ const RichText = ({
           const quill = quillRef.current.getEditor();
           // Get current cursor position
           const range = quill.getSelection();
-          console.log(range);
 
           let rangeIndex: number = 0;
 
@@ -600,8 +579,6 @@ const RichText = ({
             // If the range is null, get the length of the content and insert a newline at the end
             rangeIndex = quill.getLength(); // Returns the last index
           }
-
-          console.log(rangeIndex, quill.getLength());
 
           const iconHtml = `<span><img src="${
             base64Data.file
@@ -684,8 +661,6 @@ const RichText = ({
   const [description, setDescription] = useState<string>("");
   const [masterDescription, setMasterDescription] = useState<string>("");
 
-  console.log(description, masterDescription);
-
   // const _handleOnChange = (newText: string): string => {
   //   setDescription(newText === "<p><br></p>" ? "" : newText);
   //   onChange && onChange(newText === "<p><br></p>" ? "" : newText);
@@ -707,7 +682,7 @@ const RichText = ({
         const op = currentContents.ops[i];
         if (op.insert && op.insert.image) {
           const imgSrc = op.insert.image;
-          debugger;
+
           try {
             const response = await fetch(imgSrc);
             const blob = await response.blob();
@@ -758,7 +733,7 @@ const RichText = ({
               });
             }
           } catch (error) {
-            console.error("Error processing image:", error);
+            console.log("Error processing image:", error);
           }
         }
 
@@ -792,7 +767,6 @@ const RichText = ({
       });
 
       const updatedHtml = doc.body.innerHTML;
-      console.log(updatedHtml);
 
       setDescription(updatedHtml);
 
@@ -840,7 +814,7 @@ const RichText = ({
         setDescription("");
         onChange && onChange("");
         setMasterDescription("");
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   };
 
@@ -919,7 +893,7 @@ const RichText = ({
 
   const addData = async (submissionType?: any): Promise<any> => {
     checkChanges(false);
-    debugger;
+
     togglePopupVisibility(
       setPopupController,
       0,
@@ -1001,7 +975,6 @@ const RichText = ({
     currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
 
   const promoteSection = async (): Promise<any> => {
-    debugger;
     togglePopupVisibility(
       setPopupController,
       2,

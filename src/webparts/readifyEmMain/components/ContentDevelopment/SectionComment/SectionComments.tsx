@@ -48,8 +48,6 @@ const SectionComments: React.FC<Props> = ({
   currentSectionData,
   currentDocDetails,
 }) => {
-  console.log(currentDocDetails);
-
   const dispatch = useDispatch();
 
   // popup loaders and messages
@@ -84,24 +82,7 @@ const SectionComments: React.FC<Props> = ({
     duration: "",
   });
 
-  console.log(
-    documentId,
-    sectionId,
-    AllSectionsComments,
-    currentUserDetails,
-    currentDocDetailsData,
-    toastMessage,
-    promotedComments
-  );
-
   const onChangeFunction = (value: string): any => {
-    // setToastMessage({
-    //   isShow: false,
-    //   severity: "info",
-    //   title: "Comment Submit",
-    //   message: "Your comment added successfully",
-    //   duration: 3000,
-    // });
     setInputComment(value.trimStart());
   };
 

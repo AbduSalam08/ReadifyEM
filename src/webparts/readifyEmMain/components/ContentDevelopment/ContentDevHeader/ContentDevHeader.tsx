@@ -88,8 +88,6 @@ const Header: React.FC<Props> = ({
     ],
   ];
 
-  console.log("documentName: ", documentName);
-  console.log("currentDocDetailsData: ", currentDocDetailsData);
   // route navigator
   const navigate = useNavigate();
 
@@ -125,11 +123,10 @@ const Header: React.FC<Props> = ({
       ],
     })
       .then((res: any) => {
-        console.log("res: ", res);
         PAtaskID = res[0]?.ID;
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   };
 

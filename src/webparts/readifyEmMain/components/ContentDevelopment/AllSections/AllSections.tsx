@@ -28,7 +28,6 @@ const AllSections: React.FC<Props> = ({
   currentDocDetailsData,
   currentDocRole,
 }) => {
-  console.log("data: ", data);
   const selectSection = (index: number, type: string): any => {
     if (type === "View comments") {
       onChange(index, false, "Promoted Comments");
@@ -46,8 +45,6 @@ const AllSections: React.FC<Props> = ({
     currentDocDetailsData,
     currentUserDetails
   );
-
-  console.log("currentPromoter: ", currentPromoter);
 
   const updateStatusCount = (itemStatus: string, newCount: number): string => {
     // Check if the status string includes either "review in progress" or "approval in progress"

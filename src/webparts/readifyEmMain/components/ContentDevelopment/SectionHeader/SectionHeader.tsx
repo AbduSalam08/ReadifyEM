@@ -1,136 +1,5 @@
 /* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-floating-promises */
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// import styles from "./SectionHeader.module.scss";
-// import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
-// import { useSelector } from "react-redux";
-// import { useEffect } from "react";
-// // import CustomMutiplePeoplePicker from "../../common/CustomInputFields/CustomMutiplePeoplePicker";
-
-// interface Props {
-//   documentName: string;
-//   sectionAuthor: any;
-//   PrimaryAuthor?: any;
-//   isPrimaryAuthor?: boolean;
-//   consultants: any[];
-//   activeSectionData: any;
-//   currentDocRole?: any;
-// }
-
-// const SectionHeader: React.FC<Props> = ({
-//   documentName,
-//   sectionAuthor,
-//   consultants,
-//   PrimaryAuthor,
-//   isPrimaryAuthor,
-//   activeSectionData,
-//   currentDocRole,
-// }) => {
-//   console.log("consultants: ", consultants);
-//   console.log("currentDocRole: ", currentDocRole);
-//   const handleOnChangeFunction = (value: any): any => {
-//     console.log("value");
-//   };
-
-//   const currentUserDetails: any = useSelector(
-//     (state: any) => state?.MainSPContext?.currentUserDetails
-//   );
-
-//   useEffect(() => {
-//     console.log();
-//   }, [sectionAuthor, PrimaryAuthor, consultants]);
-
-//   return (
-//     <>
-//       <div className={styles.headerContainer}>
-//         <span className={styles.sectionName}>
-//           {`${
-//             documentName?.toLowerCase() === "header"
-//               ? documentName
-//               : `${activeSectionData?.sectionOrder + ". " + documentName}`
-//           }`}
-//           {activeSectionData?.sectionType?.toLowerCase() ===
-//           "appendix section" ? (
-//             <span className={styles.appendixPill}>Appendix</span>
-//           ) : (
-//             ""
-//           )}
-//         </span>
-
-//         <div style={{ display: "flex", gap: "10px" }}>
-//           <div className={styles.authors}>
-//             <span className={styles.label}>
-//               {!isPrimaryAuthor
-//                 ? `Section Author ${
-//                     activeSectionData?.sectionAuthor[0]?.email ===
-//                     currentUserDetails?.email
-//                       ? "(you)"
-//                       : ""
-//                   }`
-//                 : `Primary Author ${
-//                     activeSectionData?.sectionAuthor[0]?.email ===
-//                     currentUserDetails?.email
-//                       ? "(you)"
-//                       : ""
-//                   }`}
-//             </span>
-//             <CustomPeoplePicker
-//               size="SM"
-//               maxWidth={"200px"}
-//               minWidth={"200px"}
-//               noRemoveBtn={true}
-//               selectedItem={
-//                 !isPrimaryAuthor ? sectionAuthor?.email : PrimaryAuthor?.email
-//               }
-//               onChange={(value: any) => {
-//                 handleOnChangeFunction(value);
-//               }}
-//               isValid={false}
-//               placeholder="Add Reference Author"
-//               readOnly
-//               hideErrMsg
-//             />
-//           </div>
-//           {!isPrimaryAuthor && (
-//             <div className={styles.authors}>
-//               <span className={styles.label}>Consultant</span>
-//               <CustomPeoplePicker
-//                 size="SM"
-//                 maxWidth={"200px"}
-//                 minWidth={"200px"}
-//                 personSelectionLimit={
-//                   currentDocRole.sectionAuthor ? 5 : consultants?.length
-//                 }
-//                 selectedItem={consultants}
-//                 onChange={(value: any) => {
-//                   handleOnChangeFunction(value);
-//                 }}
-//                 isValid={false}
-//                 placeholder="Add Reference Author"
-//                 // readOnly
-//                 hideErrMsg
-//                 readOnly={
-//                   currentDocRole.sectionAuthor
-//                     ? !currentDocRole.sectionAuthor
-//                     : !currentDocRole.primaryAuthor
-//                 }
-//                 noRemoveBtn={
-//                   currentDocRole.sectionAuthor
-//                     ? !currentDocRole.sectionAuthor
-//                     : !currentDocRole.primaryAuthor
-//                 }
-//                 multiUsers={true}
-//               />
-//             </div>
-//           )}
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
-
-// export default SectionHeader;
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import React, { useState, useEffect, useRef } from "react";
@@ -168,12 +37,6 @@ const SectionHeader: React.FC<Props> = ({
 }) => {
   const toast: any = useRef(null);
   const dispatch = useDispatch();
-  console.log(
-    "currentDocDetailsData: ",
-    currentDocDetailsData,
-    "activeSectionData",
-    activeSectionData
-  );
   const [authorState, setAuthorState] = useState<any>(sectionAuthor);
   // toast message state
 
@@ -185,9 +48,7 @@ const SectionHeader: React.FC<Props> = ({
     duration: "",
   });
 
-  console.log("authorState: ", authorState);
   const [consultantsState, setConsultantsState] = useState<any[]>(consultants);
-  console.log("consultantsState: ", consultantsState);
 
   const currentUserDetails: any = useSelector(
     (state: any) => state?.MainSPContext?.currentUserDetails
@@ -199,12 +60,10 @@ const SectionHeader: React.FC<Props> = ({
   );
 
   const handleOnChangeFunction = (value: any): any => {
-    console.log("value", value);
     setConsultantsState(value);
   };
 
   const onSubmitFunction = async (): Promise<any> => {
-    debugger;
     if (consultantsState) {
       if (consultantsState.length !== 0) {
         addSectionConsultants(
@@ -289,7 +148,6 @@ const SectionHeader: React.FC<Props> = ({
         });
       }
     } else {
-      console.log("consultantsState is empty");
       toast.current.show({
         severity: "warn",
         summary: "Empty consultant!",
@@ -353,7 +211,7 @@ const SectionHeader: React.FC<Props> = ({
         setAuthorState(currentSA);
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   };
 
