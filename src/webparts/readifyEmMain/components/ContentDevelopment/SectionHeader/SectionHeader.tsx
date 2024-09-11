@@ -216,6 +216,13 @@ const SectionHeader: React.FC<Props> = ({
           AllSectionsDataMain,
           setToastMessage
         );
+        setToastMessage({
+          isShow: true,
+          severity: "success",
+          title: "Empty consultant!",
+          message: "Please select at least one consultant.",
+          duration: 3000,
+        });
         toast.current.show({
           severity: "success",
           summary: "Consultants updated!",
