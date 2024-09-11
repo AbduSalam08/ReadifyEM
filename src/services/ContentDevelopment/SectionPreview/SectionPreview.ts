@@ -9,7 +9,7 @@ const readTextFileFromTXT = (
 ): void => {
   // setSectionLoader(true);
   SpServices.SPReadAttachments({
-    ListName: "SectionDetails",
+    ListName: LISTNAMES.SectionDetails,
     ListID: data.ID,
     AttachmentName: data?.FileName,
   })

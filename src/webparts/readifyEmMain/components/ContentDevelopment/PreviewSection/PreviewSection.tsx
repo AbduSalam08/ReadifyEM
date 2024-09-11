@@ -18,6 +18,7 @@ interface Iprops {
 
 const PreviewSection: React.FC<Iprops> = ({ sectionId, sectionDetails }) => {
   const [sectionAttachment, setSectionAttachment] = useState<any>(0);
+  console.log(sectionAttachment);
 
   useEffect(() => {
     getSectionAttachment(sectionId, sectionDetails, setSectionAttachment);
@@ -28,7 +29,8 @@ const PreviewSection: React.FC<Iprops> = ({ sectionId, sectionDetails }) => {
     arr: any[],
     parentPath: number[] = []
   ): JSX.Element[] => {
-    return arr.map((point, index) => {
+    debugger;
+    return arr?.map((point, index) => {
       // Calculate the current path for this point (parent path + current index)
       const currentPath = [...parentPath, index];
 
@@ -52,7 +54,8 @@ const PreviewSection: React.FC<Iprops> = ({ sectionId, sectionDetails }) => {
               }}
             />
           </div>
-          {point.childs.length > 0 && renderPoints(point.childs, currentPath)}
+          {point?.children.length > 0 &&
+            renderPoints(point?.children, currentPath)}
         </div>
       );
     });
