@@ -1,4 +1,5 @@
 /* webpart styles reset  */
+/* webpart styles reset  */
 .ms-CommandBarItem-link {
   position: absolute;
   top: 500px;
@@ -19,15 +20,9 @@
 .CanvasComponent.LCS .CanvasSection-col {
   padding: 0 !important;
 }
-/* hide the add webpart button */
-.CanvasComponent.LCS .CanvasToolboxHint {
-  display: none !important;
-}
-/* hide the add webpart button */
-
-/* .spAppAndPropertyPanelContainer .sp-appBar {
+.spAppAndPropertyPanelContainer .sp-appBar {
   display: none;
-} */
+}
 .CanvasComponent.LCS
   .CanvasSection--read:not(.CanvasSection--fullWidth)
   .ControlZone {
@@ -117,8 +112,6 @@ div[data-automation-id="CanvasZone-SectionContainer"] {
 }
 .mainContent {
   background-color: var(--body-bgcolor) !important;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
 }
 /* RESETTING CSS DEFAULT STYLES */
 html,

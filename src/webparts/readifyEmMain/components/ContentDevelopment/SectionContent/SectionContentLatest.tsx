@@ -56,7 +56,7 @@ interface Point {
   text: string;
   value: string;
   class: any;
-  childs: Point[];
+  children: Point[];
 }
 
 interface InvalidPointResult {
@@ -84,7 +84,7 @@ const SectionContentLatest: React.FC<IProps> = ({
   console.log(currentSectionDetails);
 
   // Track the latest point to be focused
-  const lastAddedPointRef = useRef<HTMLDivElement | null>(null);
+  // const lastAddedPointRef = useRef<HTMLDivElement | null>(null);
   // Inside your renderPoints function
   const contentEditorRefs = useRef<Map<string, any>>(new Map());
 
@@ -754,8 +754,8 @@ const SectionContentLatest: React.FC<IProps> = ({
         return { path: currentPath, text: point.text }; // Return the path of the invalid point
       }
 
-      if (point.childs.length > 0) {
-        const childPath = findInvalidPointPath(point.childs, currentPath);
+      if (point.children.length > 0) {
+        const childPath = findInvalidPointPath(point.children, currentPath);
         if (childPath) {
           return childPath; // Return the path if a child point is invalid
         }
@@ -770,8 +770,8 @@ const SectionContentLatest: React.FC<IProps> = ({
       if (point.value.trim() === "" || point.value.trim() === "<p><br></p>") {
         return false; // Invalid if any point has an empty value
       }
-      if (point.childs.length > 0) {
-        const childValidation = validatePoints(point.childs); // Check child points
+      if (point.children.length > 0) {
+        const childValidation = validatePoints(point.children); // Check child points
         if (!childValidation) {
           return false; // If any child point is invalid, return false
         }
@@ -787,7 +787,7 @@ const SectionContentLatest: React.FC<IProps> = ({
       return {
         ...point,
         text: newText,
-        childs: updatePointText(point.childs, `${newText}`), // Recursively number childs
+        children: updatePointText(point.children, `${newText}`), // Recursively number children
       };
     });
   };
@@ -801,7 +801,7 @@ const SectionContentLatest: React.FC<IProps> = ({
     setMasterPoints(updatedPoints);
   };
 
-  const focusOnInvalidPoint = (invalidPath: number[]) => {
+  const focusOnInvalidPoint = (invalidPath: number[]): any => {
     const refKey = invalidPath.join("-"); // Generate the same key based on the path
     const editorToFocus = contentEditorRefs.current.get(refKey); // Get the corresponding editor
 
@@ -829,13 +829,13 @@ const SectionContentLatest: React.FC<IProps> = ({
         text: "", // This will be updated when numbering
         value: "",
         class: "",
-        childs: [],
+        children: [],
       };
 
       const updatedPoints = updatePointsAtPath(masterPoints, path, (point) => {
         return {
           ...point,
-          childs: [...point.childs, newSubPoint],
+          children: [...point.children, newSubPoint],
         };
       });
 
@@ -868,10 +868,10 @@ const SectionContentLatest: React.FC<IProps> = ({
         masterPoints,
         path.slice(0, -1),
         (parentPoint) => {
-          const updatedChilds = parentPoint.childs.filter(
+          const updatedChilds = parentPoint.children.filter(
             (_, index) => index !== path[path.length - 1]
           );
-          return { ...parentPoint, childs: updatedChilds };
+          return { ...parentPoint, children: updatedChilds };
         }
       );
 
@@ -901,7 +901,7 @@ const SectionContentLatest: React.FC<IProps> = ({
         } else {
           return {
             ...point,
-            childs: updatePointsAtPath(point.childs, restPath, updater),
+            children: updatePointsAtPath(point.children, restPath, updater),
           };
         }
       }
@@ -918,9 +918,9 @@ const SectionContentLatest: React.FC<IProps> = ({
       // Calculate the current path for this point (parent path + current index)
       const currentPath = [...parentPath, index];
       const refKey = currentPath.join("-");
+
       // Determine the indent level based on the length of the parent path
-      const indentLevel = parentPath.length;
-      +1; // Adjust based on hierarchy level
+      const indentLevel = parentPath.length + 1;
       const marginLeft = indentLevel - 1 + 15; // Adjust this value for appropriate spacing
 
       // Indent lines to visually connect parent and child points
@@ -946,7 +946,6 @@ const SectionContentLatest: React.FC<IProps> = ({
           style={{
             position: "relative",
             marginLeft: `${marginLeft}px`,
-            // marginLeft: `px`,
             display: "flex",
             flexDirection: "column",
           }}
@@ -954,29 +953,15 @@ const SectionContentLatest: React.FC<IProps> = ({
           {/* Indent lines */}
           {ancestors}
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-            }}
-            className={`${styles.renderedInput} renderedInput`}
-          >
-            <span style={{ marginRight: "5px" }} className={styles.pointText}>
-              {point.text}
-            </span>
+          <div className={`${styles.renderedInput} renderedInput`}>
+            <span className={styles.pointText}>{point.text}</span>
 
             <ContentEditor
-              //   ref={(el: any) => {
-              //     // Set the ref for the last added point to auto-focus
-              //     if (point.value === "") {
-              //       lastAddedPointRef.current = el;
-              //     }
-              //   }}
               ref={(el: any) => {
-                if (el) contentEditorRefs.current.set(refKey, el); // Store the ref
-                if (point.value === "") {
-                  lastAddedPointRef.current = el;
-                }
+                if (el) contentEditorRefs.current.set(refKey, el);
+                // if (point.value === "") {
+                //   lastAddedPointRef.current = el;
+                // }
               }}
               readOnly={
                 currentSectionDetails?.sectionSubmitted ||
@@ -990,30 +975,27 @@ const SectionContentLatest: React.FC<IProps> = ({
             />
 
             {!currentSectionDetails?.sectionSubmitted && (
-              <>
+              <div className={styles.actionButtonsContainer}>
                 <button
                   onClick={() => deletePoint(currentPath)}
-                  className="actionButtons"
-                  style={{
-                    background: "transparent",
-                    padding: "0 5px 0 0",
-                  }}
+                  className={`${styles.actionButtons} ${styles.firstButton}`}
                 >
                   <i className="pi pi-times-circle" />
                 </button>
 
                 <button
                   onClick={() => addSubPoint(currentPath)}
-                  className="actionButtons"
+                  className={`${styles.actionButtons} ${styles.secondButton}`}
                 >
                   <i className="pi pi-angle-double-right" />
                 </button>
-              </>
+              </div>
             )}
           </div>
 
           {/* Render child points recursively */}
-          {point.childs.length > 0 && renderPoints(point.childs, currentPath)}
+          {point.children.length > 0 &&
+            renderPoints(point.children, currentPath)}
         </div>
       );
     });
@@ -1038,7 +1020,7 @@ const SectionContentLatest: React.FC<IProps> = ({
         text: "", // This will be updated when numbering
         value: "",
         class: "",
-        childs: [],
+        children: [],
       };
 
       const updatedPoints = [...masterPoints, newPoint];
@@ -1056,10 +1038,11 @@ const SectionContentLatest: React.FC<IProps> = ({
 
   // Focus on the last added point when the points change
   useEffect(() => {
-    if (lastAddedPointRef.current) {
-      lastAddedPointRef.current.focus();
+    const invalidPath = findInvalidPointPath(masterPoints);
+    if (invalidPath) {
+      focusOnInvalidPoint(invalidPath.path); // Focus on the first invalid point
     }
-  }, [masterPoints]);
+  }, [masterPoints.length]);
 
   useEffect(() => {
     setSectionLoader(true);

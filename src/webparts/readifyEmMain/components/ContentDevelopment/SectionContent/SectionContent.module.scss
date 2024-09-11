@@ -217,3 +217,55 @@
   animation: slideAndFade 0.17s both ease !important;
   margin-left: 10px;
 }
+.renderedInput {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    .actionButtons {
+      opacity: 1;
+      transform: translateX(0);
+      background-color: #eee;
+      border-radius: 4px;
+      // Sequential slide-in effect for each button
+      &.firstButton {
+        transition-delay: 0.1s;
+        margin-right: 5px;
+      }
+
+      &.secondButton {
+        transition-delay: 0.18s;
+      }
+    }
+  }
+}
+
+.actionButtonsContainer {
+  display: flex;
+  gap: 5px; // Space between buttons
+}
+
+.actionButtons {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.15s ease;
+  background: transparent;
+  padding: 0 5px 0 0;
+  border: none;
+  cursor: pointer;
+
+  i {
+    color: #333; // Adjust icon color
+  }
+
+  &:hover {
+    i {
+      color: #000; // Change icon color on hover
+    }
+  }
+}
+
+.pointText {
+  margin-right: 5px;
+}
