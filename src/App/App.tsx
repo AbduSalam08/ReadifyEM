@@ -28,6 +28,7 @@ import ErrorElement from "../webparts/readifyEmMain/components/common/ErrorEleme
 import styles from "./App.module.scss";
 
 const App = (props: any): JSX.Element => {
+  console.log("props: ", props);
   const dispatch = useDispatch();
   // dispatching the main context into redux store
   useEffect(() => {

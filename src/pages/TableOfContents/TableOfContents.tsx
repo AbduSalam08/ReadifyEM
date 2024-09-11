@@ -111,6 +111,10 @@ const popupInitialData = {
 
 // TSX component with JSX features
 const TableOfContents = (): JSX.Element => {
+  const contextProps: any = useSelector(
+    (state: any) => state?.MainSPContext?.value
+  );
+  console.log("contextProps: ", contextProps);
   //Dispatcher
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -147,7 +151,7 @@ const TableOfContents = (): JSX.Element => {
   }>({
     toc: true,
     NewDocument: false,
-    pageTitle: "Table Of Content",
+    pageTitle: contextProps?.tocTitle || "Home",
     editDocumentData: [],
   });
 
