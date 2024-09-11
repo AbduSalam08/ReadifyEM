@@ -383,7 +383,6 @@ export const EditFolderAndChangeItemPath = async (
         if (hasPATask.length !== 0) {
           await UpdatePrimaryAuthorTask(documentId);
           await UpdateTask(documentId);
-        } else {
         }
       }
     }

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-debugger */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import dayjs from "dayjs";
 import SpServices from "../../SPServices/SpServices";
 import { CONFIG, LIBNAMES, LISTNAMES } from "../../../config/config";

@@ -383,7 +383,9 @@ const UpdateDocumentInLib = async ({
           false,
           false
         )
-        .then((res: any) => {})
+        .then((res: any) => {
+          console.log("res");
+        })
         .catch((err: any) => {
           console.log("Error : ", err);
         });

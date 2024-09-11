@@ -436,7 +436,9 @@ const softDeleteTemplate = async (
     const results = await Promise.all([updatePromises, sectionsToDelete]);
 
     // Log the responses
-    results.forEach((res, index) => {});
+    results.forEach((res, index) => {
+      console.log("res");
+    });
 
     // Set loading state to success
     setLoaderState({
