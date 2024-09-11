@@ -18,7 +18,6 @@ const ChangeRecord = () => {
 
   const [loader, setLoader] = useState<boolean>(false);
   const [allSectionChangeRec, setAllSectionChangeRec] = useState<any[]>([]);
-  console.log(allSectionsChangeRecord);
 
   useEffect(() => {
     setLoader(true);

@@ -25,7 +25,6 @@ export const AddSections = async (
   noHeader?: boolean,
   addNewSectionFromUpdate?: boolean
 ): Promise<any> => {
-  debugger;
   const isPATaskisNotConfigured: boolean =
     docDetails?.role?.toLowerCase() === "primary author" &&
     docDetails?.taskStatus?.toLowerCase() === "not started";
@@ -331,7 +330,6 @@ export const AddSections = async (
           },
         ],
       }).then(async (res: any) => {
-        console.log("res: ", res);
         const payload = res?.map((item: any) => {
           return {
             ID: item?.ID,
@@ -707,11 +705,8 @@ export const AddSections = async (
                         },
                       ],
                     });
-
-                    console.log("SPReadItems response: ", res);
-
                     await Promise.all(
-                      res.map(async (item: any) => {
+                      res?.map(async (item: any) => {
                         try {
                           await SpServices.SPUpdateItem({
                             Listname: LISTNAMES.MyTasks,
@@ -720,7 +715,6 @@ export const AddSections = async (
                               sectionDetailsId: mainRes?.data?.ID,
                             },
                           });
-                          console.log(`Item ${item?.ID} updated successfully.`);
                         } catch (err) {
                           console.error(
                             `Error updating item ${item?.ID}: `,
@@ -801,12 +795,10 @@ export const updateSections = async (
   setLoaderState: any,
   docDetails: any
 ): Promise<any> => {
-  debugger;
   try {
     const sectionsToUpdate: any[] = [];
     const sectionsToAdd: any[] = [];
     const allPayload: any[] = [];
-    console.log("sectionsToAdd: ", sectionsToAdd);
 
     const defaultSectionsData: any[] = formData.defaultSections
       ?.filter((item: any) => {
@@ -1209,7 +1201,7 @@ export const updateSections = async (
         }
       });
   } catch (err) {
-    console.log("err: ", err);
+    console.log("Error : ", err);
     if (
       err?.message?.value !==
       "Item does not exist. It may have been deleted by another user."
@@ -1231,7 +1223,6 @@ export const LoadSectionsTemplateData = async (
   setSectionsData: any,
   dispatch?: any
 ): Promise<any> => {
-  debugger;
   // Set loading state
   setSectionsData((prev: any) => ({
     ...prev,

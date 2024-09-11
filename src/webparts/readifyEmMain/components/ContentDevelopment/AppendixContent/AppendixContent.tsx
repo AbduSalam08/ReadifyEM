@@ -47,15 +47,6 @@ const AppendixContent = ({
   isLoading,
   currentDocRole,
 }: IAppendixSectionProps): JSX.Element => {
-  console.log("currentDocDetailsData: ", currentDocDetailsData);
-  console.log(
-    "currentDocDetailsData.documentTemplateType: ",
-    currentDocDetailsData.documentTemplateType
-  );
-
-  console.log("sectionDetails: ", sectionDetails);
-  console.log("contentType: ", contentType);
-  console.log("sectionDetails: ", sectionDetails);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -185,8 +176,6 @@ const AppendixContent = ({
   ];
 
   const submitRejectedComment = async (): Promise<any> => {
-    console.log(rejectedComments);
-    debugger;
     if (rejectedComments.rejectedComment?.trim() !== "") {
       setRejectedComments({
         ...rejectedComments,
@@ -231,9 +220,7 @@ const AppendixContent = ({
     currentDocDetailsData?.taskRole?.toLowerCase() !== "admin";
 
   const [inputValue, setInputValue] = useState<any>(null);
-  console.log("inputValue: ", inputValue);
   const [headerImgDetails, setHeaderImgDetails] = useState<any>(null);
-  console.log("headerImgDetails: ", headerImgDetails);
 
   const convertToTxtFile = (): any => {
     const blob = new Blob([JSON.stringify(inputValue)], {
@@ -244,7 +231,6 @@ const AppendixContent = ({
   };
 
   const addData = async (submissionType?: any): Promise<any> => {
-    debugger;
     togglePopupVisibility(
       setPopupController,
       0,
@@ -294,7 +280,7 @@ const AppendixContent = ({
         setSectionLoader(false);
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
         setToastMessage({
           isShow: true,
           severity: "error",
@@ -336,7 +322,6 @@ const AppendixContent = ({
             primaryAuthorDefaultHeader={false}
             noActionBtns={true}
             onChange={(value: any) => {
-              console.log("value: ", value);
               setHeaderImgDetails(value);
             }}
           />

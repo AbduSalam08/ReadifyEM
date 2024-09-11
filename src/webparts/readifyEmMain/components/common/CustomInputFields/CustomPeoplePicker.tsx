@@ -244,7 +244,6 @@
 //   );
 
 //   const handleChange = (items: any[]): void => {
-//     console.log("items: ", items);
 //     const obj = items?.map((item: any) => {
 //       return {
 //         id: item.id,
@@ -698,7 +697,6 @@ const CustomPeoplePicker: React.FC<Props> = ({
   );
 
   const handleChange = (items: any[]): void => {
-    console.log("items: ", items);
     const obj = items?.map((item: any) => {
       return {
         id: item.id,
@@ -802,7 +800,6 @@ const CustomPeoplePicker: React.FC<Props> = ({
             : styles.p_pickerInputWrapper
         } ${disabled ? styles.disabledInput : ""}`}
         onClick={() => {
-          console.log("clicked");
           if (popupControl) {
             togglePopupVisibility(
               setPopupController,

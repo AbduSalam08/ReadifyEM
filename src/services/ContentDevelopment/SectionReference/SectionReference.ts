@@ -25,7 +25,6 @@ const getSectionRefernces = async (sectionId: number): Promise<any> => {
         },
       ],
     }).then((res) => {
-      debugger;
       if (res.length !== 0) {
         res.forEach((item) => {
           referencesDatas.push({
@@ -89,7 +88,6 @@ const addNewReference = async (
       RequestJSON: jsonObject,
     })
       .then(async (referenceRes: any) => {
-        console.log(referenceRes);
         // setLoaderState({
         //   isLoading: {
         //     inprogress: false,
@@ -117,7 +115,6 @@ const addNewReference = async (
           sectionDetailsId: sectionId,
           docDetailsId: documentId,
         });
-        // console.log("sectionDefinitions", tempSectionDefinitions);
         // const _file: any = await convertDefinitionsToTxtFile(
         //   await tempSectionDefinitions,
         //   sectionOrder
@@ -149,7 +146,7 @@ const addNewReference = async (
         // });
       })
       .catch((err) => {
-        console.log(err);
+        console.log("Error : ", err);
         setLoaderState({
           isLoading: {
             inprogress: false,
@@ -191,7 +188,6 @@ const UpdateReference = async (
   togglePopupVisibility: any
 ) => {
   try {
-    debugger;
     const referenceSectionNumber = await findReferenceSectionNumber(
       AllSectionsDataMain,
       documentId
@@ -208,7 +204,6 @@ const UpdateReference = async (
       ID: referenceData.ID,
       RequestJSON: jsonObject,
     }).then(async (res: any) => {
-      console.log(res);
       togglePopupVisibility(setPopupController, 2, "close");
       const updateReferenceData = allReferencesData.map((obj: any) => {
         if (obj.ID === referenceData.ID) {
@@ -221,8 +216,6 @@ const UpdateReference = async (
           return obj;
         }
       });
-      console.log(updateReferenceData);
-
       const reference_file: any = await convertReferenceToTxtFile(
         [...updateReferenceData],
         await referenceSectionNumber
@@ -239,7 +232,7 @@ const UpdateReference = async (
       setInitialLoader(false);
     });
   } catch (err) {
-    console.log(err);
+    console.log("Error : ", err);
   }
 };
 
@@ -253,7 +246,6 @@ const submitSectionReferences = async (
   submitCondition: boolean
 ) => {
   try {
-    debugger;
     const referenceSectionNumber = await findReferenceSectionNumber(
       AllSectionsDataMain,
       documentId
@@ -288,7 +280,7 @@ const submitSectionReferences = async (
       }
     });
   } catch (err) {
-    console.log(err);
+    console.log("Error : ", err);
   }
 };
 

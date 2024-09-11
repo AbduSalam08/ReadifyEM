@@ -23,10 +23,6 @@ interface definitionDetails {
   status: boolean;
   isDeleted: boolean;
 }
-// const AllSectionsDataMain: any = useSelector(
-//   (state: any) => state.ContentDeveloperData.CDSectionsData
-// );
-// console.log(AllSectionsDataMain);
 
 const convertDefinitionsToTxtFile = (
   content: any[],
@@ -95,11 +91,9 @@ export const convertReferenceToTxtFile = (
   content: any[],
   sectionOrder: string
 ): any => {
-  console.log(content);
   const filterData = content.filter(
     (obj: any) => obj.referenceAuthorName !== "" && obj.referenceTitle !== ""
   );
-
   let referencesTable = "";
   // referencesTable = `<table style="border-collapse: collapse; width: 100%;">
   //       <thead>
@@ -194,8 +188,6 @@ const getAllSectionDefinitions = async (
     ],
   })
     .then((res: any[]) => {
-      console.log(res);
-
       res?.forEach((item: any) => {
         tempArray.push({
           ID: item.ID,
@@ -216,7 +208,7 @@ const getAllSectionDefinitions = async (
         });
       });
     })
-    .catch((err) => console.log(err));
+    .catch((error) => console.log("Error : ", error));
   const sortedArray = tempArray.sort((a: any, b: any) => b.ID - a.ID);
   return sortedArray;
 };
@@ -233,8 +225,6 @@ const getAllSectionReferences = async (documentId: number): Promise<any> => {
     ],
   })
     .then((res: any[]) => {
-      console.log(res);
-
       res?.forEach((item: any) => {
         tempArray.push({
           ID: item.ID,
@@ -245,7 +235,7 @@ const getAllSectionReferences = async (documentId: number): Promise<any> => {
         });
       });
     })
-    .catch((err) => console.log(err));
+    .catch((error) => console.log("Error : ", error));
   const sortedArray = tempArray.sort((a: any, b: any) => b.ID - a.ID);
   return sortedArray;
 };
@@ -324,7 +314,7 @@ const getMasterDefinition = async (Data: any) => {
         }
       });
     })
-    .catch((err) => console.log(err));
+    .catch((error) => console.log("Error : ", error));
   return tempArray;
 };
 
@@ -332,44 +322,27 @@ export const AddSectionAttachmentFile = async (
   sectionId: number,
   file: any
 ) => {
-  console.log(file);
-  debugger;
-
   await SpServices.SPDeleteAttachments({
     ListName: LISTNAMES.SectionDetails,
     ListID: sectionId,
     AttachmentName: "Sample.txt",
   })
     .then(async (res) => {
-      console.log("res:", res);
       await SpServices.SPAddAttachment({
         ListName: LISTNAMES.SectionDetails,
         ListID: sectionId,
         FileName: "Sample.txt",
         Attachments: file,
-      })
-        .then((res: any) => {
-          console.log("res: ", res);
-          // _getData();
-        })
-        .catch((err: any) => {
-          console.log("err: ", err);
-        });
+      });
     })
     .catch(async (err) => {
-      console.log(err);
+      console.log("Error : ", err);
       await SpServices.SPAddAttachment({
         ListName: LISTNAMES.SectionDetails,
         ListID: sectionId,
         FileName: "Sample.txt",
         Attachments: file,
-      })
-        .then((res: any) => {
-          console.log("res: ", res);
-        })
-        .catch((err: any) => {
-          console.log("err: ", err);
-        });
+      });
     });
 };
 
@@ -394,11 +367,6 @@ export const findReferenceSectionNumber = async (
       },
     ],
   });
-  console.log(
-    "AllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionData",
-    AllSectionData
-  );
-
   // const tempArray = AllSectionData.filter(
   //   (obj: any) => obj.AttachmentFiles.length !== 0
   // );
@@ -406,10 +374,6 @@ export const findReferenceSectionNumber = async (
     (obj: any) => obj.sectionType === "references section"
   );
 
-  // console.log(
-  //   "AllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionDataAllSectionData",
-  //   tempArray
-  // );
   // const headerSectionArray = tempArray?.filter(
   //   (obj: any) => obj.sectionType === "header section"
   // );
@@ -438,7 +402,7 @@ export const findReferenceSectionNumber = async (
   //       normalSectionsArray.length,
   //   };
   // }
-  debugger;
+
   return tempArray.length !== 0 ? tempArray[0].sectionOrder : 1;
 };
 
@@ -531,7 +495,6 @@ const submitSectionDefinitions = async (
             const sectionReferences = await getAllSectionReferences(documentId);
             setSelectedDefinitionsState([...tempSectionDefinitions]);
             setMasterDefinitionsState([...tempSectionDefinitions]);
-            console.log("sectionDefinitions", tempSectionDefinitions);
             const _file: any = await convertDefinitionsToTxtFile(
               await tempSectionDefinitions,
               sectionOrder
@@ -552,7 +515,7 @@ const submitSectionDefinitions = async (
             setInitialLoader(false);
           }
         })
-        .catch((err) => console.log(err));
+        .catch((error) => console.log("Error : ", error));
     });
   }
   if (tempDelArray.length > 0) {
@@ -594,7 +557,6 @@ const submitSectionDefinitions = async (
             );
             setSelectedDefinitionsState([...tempSectionDefinitions]);
             setMasterDefinitionsState([...tempSectionDefinitions]);
-            console.log("sectionDefinitions", tempSectionDefinitions);
             const _file: any = await convertDefinitionsToTxtFile(
               await tempSectionDefinitions,
               sectionOrder
@@ -616,7 +578,7 @@ const submitSectionDefinitions = async (
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.log("Error : ", err);
         });
     });
   }
@@ -631,7 +593,6 @@ const submitSectionDefinitions = async (
   //       RequestJSON: jsonObject,
   //     })
   //       .then(async (res: any) => {
-  //         console.log(res);
   //         if (tempDelUpdateArray.length - 1 === index) {
   //           // setLoaderState({
   //           //   isLoading: {
@@ -652,7 +613,6 @@ const submitSectionDefinitions = async (
   //           );
   //           setSelectedDefinitionsState([...tempSectionDefinitions]);
   //           setMasterDefinitionsState([...tempSectionDefinitions]);
-  //           console.log("sectionDefinitions", tempSectionDefinitions);
   //           const _file: any = await convertDefinitionsToTxtFile(
   //             await tempSectionDefinitions,
   //             sectionOrder
@@ -673,7 +633,7 @@ const submitSectionDefinitions = async (
   //         }
   //       })
   //       .catch((err) => {
-  //         console.log(err);
+  //         console.log("Error : ",err);
   //       });
   //   });
   // }
@@ -694,7 +654,6 @@ const addNewDefinition = async (
   togglePopupVisibility: any
 ) => {
   try {
-    debugger;
     const referenceSectionNumber = await findReferenceSectionNumber(
       AllSectionsDataMain,
       documentId
@@ -716,7 +675,6 @@ const addNewDefinition = async (
       RequestJSON: payloadJSON,
     })
       .then(async (res: any) => {
-        console.log(res);
         const jsonObject = {
           Title: definitionsData.definitionName,
           description: definitionsData.definitionDescription,
@@ -735,7 +693,6 @@ const addNewDefinition = async (
           RequestJSON: jsonObject,
         })
           .then(async (sectionres: any) => {
-            console.log(sectionres);
             // setLoaderState({
             //   isLoading: {
             //     inprogress: false,
@@ -754,7 +711,6 @@ const addNewDefinition = async (
             const tempSectionDefinitions = await sectionDefinitions.filter(
               (obj: any) => !obj.isDeleted
             );
-            console.log("sectionDefinitions", tempSectionDefinitions);
             const _file: any = await convertDefinitionsToTxtFile(
               await tempSectionDefinitions,
               sectionOrder
@@ -768,7 +724,7 @@ const addNewDefinition = async (
             togglePopupVisibility(setPopupController, 0, "close");
             setSelectedDefinitions((prev: any) => [
               {
-                ID: sectionres.data.ID,
+                ID: sectionres?.data.ID,
                 definitionName: definitionsData.definitionName,
                 definitionDescription: definitionsData.definitionDescription,
                 referenceAuthorName: definitionsData.referenceAuthorName,
@@ -809,7 +765,7 @@ const addNewDefinition = async (
             // getAllSecDefinitions();
           })
           .catch((err) => {
-            console.log(err);
+            console.log("Error : ", err);
             setLoaderState({
               isLoading: {
                 inprogress: false,
@@ -915,8 +871,6 @@ const updateSectionDefinition = async (
             const tempSectionDefinitions = await sectionDefinitions.filter(
               (obj: any) => !obj.isDeleted
             );
-            console.log(tempSectionDefinitions);
-            console.log("sectionDefinitions", tempSectionDefinitions);
             const _file: any = await convertDefinitionsToTxtFile(
               await tempSectionDefinitions,
               sectionOrder
@@ -964,7 +918,7 @@ const updateSectionDefinition = async (
             setInitialLoader(false);
           })
           .catch((err: any) => {
-            console.log(err);
+            console.log("Error : ", err);
             setLoaderState({
               isLoading: {
                 inprogress: false,
@@ -979,7 +933,7 @@ const updateSectionDefinition = async (
           });
       })
       .catch((err: any) => {
-        console.log(err);
+        console.log("Error : ", err);
         setLoaderState({
           isLoading: {
             inprogress: false,
@@ -993,7 +947,7 @@ const updateSectionDefinition = async (
         });
       });
   } catch (err) {
-    console.log(err);
+    console.log("Error : ", err);
     setLoaderState({
       isLoading: {
         inprogress: false,
@@ -1033,7 +987,7 @@ const fetchTemplates = async (): Promise<{
 
     return { allMainTemplateData };
   } catch (error) {
-    console.log("error: ", error);
+    console.log("Error : ", error);
     return { allMainTemplateData: [] };
   }
 };

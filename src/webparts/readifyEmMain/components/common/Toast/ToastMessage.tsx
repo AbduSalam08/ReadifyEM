@@ -24,7 +24,6 @@ const ToastMessage = ({
   setToastMessage,
 }: Iprops): JSX.Element => {
   const toast: any = useRef(null);
-  console.log(severity);
 
   const clear = (): Promise<void> => {
     return toast.current.clear();
@@ -79,7 +78,6 @@ const ToastMessage = ({
     if (isShow) {
       show();
     }
-    console.log("show");
   });
 
   return (

@@ -58,13 +58,11 @@ const NewDocument = ({
   setMainData,
   screens,
 }: Props): JSX.Element => {
-  console.log("screens: ", screens);
   const dispatch = useDispatch();
   const DocumentPathOptions = useSelector(
     (state: any) => state.EMMTableOfContents.foldersData
   );
   const [currentDocDetails, setCurrentDocDetails] = useState<any>();
-  console.log("currentDocDetails: ", currentDocDetails);
   const currentDocStatus: any = currentDocDetails?.status?.toLowerCase();
   const [currentDocTemplateType, setCurrentDocTemplateType] = useState({
     value: "",
@@ -211,9 +209,6 @@ const NewDocument = ({
   ];
 
   const [formData, setFormData] = useState<IFormDataItem[]>(initialFormData);
-
-  console.log("formData: ", formData);
-
   const [stepperFormData, setStepperFormData] = useState<IStepData[]>([
     {
       step: 1,
@@ -274,11 +269,6 @@ const NewDocument = ({
     ? "major"
     : "";
 
-  console.log(
-    "isInitiateNewVersionOfDocument: ",
-    isInitiateNewVersionOfDocument
-  );
-
   // const editPageDocument: any = screens?.pageTitle
   //   ?.toLowerCase()
   //   ?.split?.("(")[1];
@@ -290,7 +280,6 @@ const NewDocument = ({
 
   // the folder URL which comes form the screens props
   const splittedPath: any = screens.editDocumentData?.url;
-  console.log("screens.editDocumentData: ", screens.editDocumentData);
 
   // splitting the folder path for saving and editting the path if only its editted
   const folderPathShallowCopy: string = isEditDocument ? splittedPath : "";
@@ -423,11 +412,8 @@ const NewDocument = ({
 
   // input values to store values in it
   const inputValue: any = formData[activeStep]?.value;
-  console.log("inputValue: ", inputValue);
   const inputError: any = !formData[activeStep]?.isValid;
-  console.log("inputError: ", inputError);
   const inputErrorMsg: any = formData[activeStep]?.errorMsg;
-  console.log("inputErrorMsg: ", inputErrorMsg);
 
   // steps input object
   const stepperInputs: any = [
@@ -510,9 +496,7 @@ const NewDocument = ({
     <CustomPeoplePicker
       key={4}
       onChange={(value: any) => {
-        console.log("value: ", value);
         handleInputChange(value);
-        console.log("inputValue: ", inputValue);
       }}
       selectedItem={
         inputValue?.email ||
@@ -930,7 +914,7 @@ const NewDocument = ({
           setCurrentDocDetails(res);
         })
         .catch((err: any) => {
-          console.log("err: ", err);
+          console.log("Error : ", err);
         });
     }
     LoadTableData(dispatch);

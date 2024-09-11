@@ -54,11 +54,6 @@ const ContentEditor = forwardRef<HTMLDivElement, EditorProps>(
       source: any,
       editor: any
     ) => {
-      console.log("html", html);
-      console.log("delta", delta);
-      console.log("source", source);
-      console.log("editor", editor);
-      debugger;
       const quill = quillRef.current.getEditor();
 
       const currentContents = quill.getContents();
@@ -99,7 +94,6 @@ const ContentEditor = forwardRef<HTMLDivElement, EditorProps>(
       }
 
       setEditorHtml(editor.getHTML());
-      console.log("editor", editor.getHTML());
       // setEditorHtml(editor.getHTML());
       // if (html) {
       //   setEditorHtml(html);

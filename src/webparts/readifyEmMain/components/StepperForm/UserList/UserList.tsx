@@ -120,7 +120,6 @@ const UserList = ({
                 noRemoveBtn={noRemoveBtn}
                 readOnly={readOnly}
                 onChange={(value: any) => {
-                  console.log("value: ", value);
                   const updatedUsers = users?.map((item: any, index: number) =>
                     index === i
                       ? {

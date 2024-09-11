@@ -56,7 +56,6 @@ const roleClasses = {
     badge: styles.approverBadge,
   },
 };
-console.log("roleClasses: ", roleClasses);
 
 const TaskCard: React.FC<CardProps> = ({
   title,
@@ -68,7 +67,6 @@ const TaskCard: React.FC<CardProps> = ({
   btnText,
   taskData,
 }) => {
-  console.log("taskData: ", taskData);
   const roleClass = roleClasses[roles];
   const isAdmin = CurrentUserIsAdmin();
   const navigate = useNavigate();

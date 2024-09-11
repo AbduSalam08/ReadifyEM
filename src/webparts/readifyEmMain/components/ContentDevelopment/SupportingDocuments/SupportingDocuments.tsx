@@ -210,7 +210,6 @@ const SupportingDocuments: React.FC<Props> = ({
     currentDocDetailsData?.documentStatus?.toLowerCase() === "in approval";
 
   const promoteSection = async (): Promise<any> => {
-    debugger;
     togglePopupVisibility(
       setPopupController,
       2,
@@ -224,12 +223,7 @@ const SupportingDocuments: React.FC<Props> = ({
       : docInApproval
       ? currentDocDetailsData?.approvers
       : [];
-
-    console.log("promoters: ", promoters);
-
     const currentPromoter: any = getCurrentPromoter(promoters);
-    console.log("currentPromoter: ", currentPromoter);
-
     const promoterKey: string = currentDocRole?.reviewer
       ? "sectionReviewed"
       : currentDocRole?.approver
@@ -271,12 +265,11 @@ const SupportingDocuments: React.FC<Props> = ({
             },
           }
         );
-        console.log("updatedSections: ", updatedSections);
 
         dispatch(setCDSectionData([...updatedSections]));
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
         setLoader(false);
         setToastMessage({
           isShow: true,
@@ -513,7 +506,6 @@ const SupportingDocuments: React.FC<Props> = ({
   // initial definitions data
   const [allDocumentsLink, setAllDocumentsLink] = useState<any[]>([]);
   const [filterDocuments, setFilterDocuments] = useState<any>("");
-  console.log("filterDocuments: ", filterDocuments);
   const [loader, setLoader] = useState<boolean>(false);
   const [selectedDocuments, setSelectedDocuments] = useState<documentDetails[]>(
     []
@@ -527,11 +519,8 @@ const SupportingDocuments: React.FC<Props> = ({
     message: "",
     duration: "",
   });
-  console.log(selectedDocuments, allDocumentsLink, masterSupportingDoc);
 
   const submitRejectedComment = async (): Promise<any> => {
-    console.log(rejectedComments);
-    debugger;
     if (rejectedComments.rejectedComment?.trim() !== "") {
       setRejectedComments({
         ...rejectedComments,
@@ -576,7 +565,6 @@ const SupportingDocuments: React.FC<Props> = ({
   };
 
   const getApprovedDocumentsLinks = async (data: any) => {
-    debugger;
     const approvedDocuments: any = await getApprovedDocuments(data);
     setAllDocumentsLink(await approvedDocuments);
     setLoader(false);
@@ -625,10 +613,8 @@ const SupportingDocuments: React.FC<Props> = ({
           ...tempSelectedDocuments,
         ]);
         if (await objectsEqual) {
-          console.log("not Changed");
           setCheckChanges(false);
         } else {
-          console.log("Changed");
           setCheckChanges(true);
         }
       } else {
@@ -661,10 +647,8 @@ const SupportingDocuments: React.FC<Props> = ({
           ],
         ]);
         if (await objectsEqual) {
-          console.log("not Changed");
           setCheckChanges(false);
         } else {
-          console.log("Changed");
           setCheckChanges(true);
         }
       }
@@ -687,10 +671,8 @@ const SupportingDocuments: React.FC<Props> = ({
             ...tempSelectedDocuments,
           ]);
           if (await objectsEqual) {
-            console.log("not Changed");
             setCheckChanges(false);
           } else {
-            console.log("Changed");
             setCheckChanges(true);
           }
         } else {
@@ -700,10 +682,8 @@ const SupportingDocuments: React.FC<Props> = ({
             ...tempSelectedDocuments,
           ]);
           if (await objectsEqual) {
-            console.log("not Changed");
             setCheckChanges(false);
           } else {
-            console.log("Changed");
             setCheckChanges(true);
           }
         }
@@ -732,10 +712,8 @@ const SupportingDocuments: React.FC<Props> = ({
         ...tempArray,
       ]);
       if (await objectsEqual) {
-        console.log("not Changed");
         setCheckChanges(false);
       } else {
-        console.log("Changed");
         setCheckChanges(true);
       }
     } else {
@@ -750,7 +728,6 @@ const SupportingDocuments: React.FC<Props> = ({
   };
 
   const validation = (index: number) => {
-    debugger;
     const tempSelectedDocuments = [...selectedDocuments];
     if (tempSelectedDocuments[index].documentName === "") {
       tempSelectedDocuments[index].emptyField = "documentName";
@@ -783,7 +760,7 @@ const SupportingDocuments: React.FC<Props> = ({
 
   const removeSupportingDocument = async (index: number) => {
     let tempSelectedDocuments = [...selectedDocuments];
-    debugger;
+
     const filterSelectionDefinitions = allDocumentsLink.map((obj: any) => {
       if (obj.documentName === tempSelectedDocuments[index].documentName) {
         return { ...obj, isDeleted: true, isSelected: false };
@@ -808,10 +785,8 @@ const SupportingDocuments: React.FC<Props> = ({
       ...tempSelectedDocuments,
     ]);
     if (await objectsEqual) {
-      console.log("not Changed");
       setCheckChanges(false);
     } else {
-      console.log("Changed");
       setCheckChanges(true);
     }
   };
@@ -822,7 +797,6 @@ const SupportingDocuments: React.FC<Props> = ({
     key: string,
     ind: number
   ): void => {
-    // console.log(value, id);
     const tempArray: any[] = [...selectedDocuments];
     const onChangeArray = tempArray.map((obj: any) => {
       if (obj.ID === id) {
@@ -903,8 +877,6 @@ const SupportingDocuments: React.FC<Props> = ({
     getAllSelectedDocuments();
 
     const closeDiv = (e: any) => {
-      console.log(e);
-
       if (
         e?.target.className !== "p-inputtext p-component" &&
         e?.target?.id !== "sectionSupportingDocumentId"
@@ -917,7 +889,6 @@ const SupportingDocuments: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
-    console.log(sectionChangeRecord);
     setChangeRecordDetails({
       ...changeRecordDetails,
       author: sectionChangeRecord.changeRecordAuthor
@@ -962,8 +933,6 @@ const SupportingDocuments: React.FC<Props> = ({
                   }}
                   onClickFunction={(value: boolean) => {
                     // handleSearchClick(value);
-                    console.log(value);
-
                     if (value) {
                       setFilterDocuments([...allDocumentsLink]);
                     }

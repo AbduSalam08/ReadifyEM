@@ -128,7 +128,6 @@ import { sortTasksByDateTime } from "../../utils/MyTasksUtils";
 //     ];
 
 //     const sortedTasksData: any[] = sortTasksByDateTime(AllTasks);
-//     console.log("sortedTasksData: ", sortedTasksData);
 
 //     setStateData &&
 //       setStateData((prev: any) => ({
@@ -139,7 +138,7 @@ import { sortTasksByDateTime } from "../../utils/MyTasksUtils";
 
 //     dispatch && dispatch(setTasksData(sortedTasksData));
 //   } catch (err: any) {
-//     console.log("err: ", err);
+//     console.log("Error : ", err);
 //   }
 // };
 
@@ -161,9 +160,6 @@ export const getAllTasksList = async (
       Expand: "taskAssignee, taskAssignedBy, documentDetails, sectionDetails",
     });
 
-    console.log("dataResponse:", dataResponse);
-    console.log("currentUserDetails.email:", currentUserDetails?.email);
-
     const primaryAuthorTasks: any[] = [];
     const sectionAuthorTasks: any[] = [];
     const consultantsTasks: any[] = [];
@@ -180,8 +176,6 @@ export const getAllTasksList = async (
         : item?.taskAssignee
         ? [item.taskAssignee]
         : [];
-
-      console.log("Task Assignees:", assignees);
 
       // Filter out tasks not assigned to the current user
       if (
@@ -254,7 +248,6 @@ export const getAllTasksList = async (
     ];
 
     const sortedTasksData: any[] = sortTasksByDateTime(AllTasks);
-    console.log("sortedTasksData: ", sortedTasksData);
 
     setStateData &&
       setStateData((prev: any) => ({
@@ -265,7 +258,7 @@ export const getAllTasksList = async (
 
     dispatch && dispatch(setTasksData(sortedTasksData));
   } catch (err: any) {
-    console.log("err: ", err);
+    console.log("Error : ", err);
     setStateData &&
       setStateData((prev: any) => ({
         ...prev,
@@ -279,7 +272,6 @@ export const getUniqueTaskData = async (
   taskID: any,
   dispatch: any
 ): Promise<any> => {
-  debugger;
   const TASK_ID: any =
     typeof taskID === "object" && taskID?.length !== 0 ? taskID[0] : taskID;
 
@@ -299,7 +291,6 @@ export const getUniqueTaskData = async (
   });
 
   const responseData: any = taskResponse[0];
-  console.log("responseData: ", responseData);
   let fileDetailsID: any;
 
   await SpServices.SPReadItemUsingId({
@@ -309,15 +300,12 @@ export const getUniqueTaskData = async (
     Expand: "fileDetails",
   })
     .then((res: any) => {
-      console.log("res: ", res);
       const resp = res[0] || res;
       fileDetailsID = resp?.fileDetailsId;
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
-
-  console.log("fileDetailsID: ", fileDetailsID);
 
   const uniqueTaskData: any = {
     taskID: responseData?.ID,
@@ -346,7 +334,6 @@ export const AddPrimaryAuthorTask = async (
   fileID: any,
   newVersion?: any
 ): Promise<any> => {
-  debugger;
   if (newVersion) {
     try {
       const AllDocResponse: any = await SpServices.SPReadItems({
@@ -402,7 +389,6 @@ export const AddPrimaryAuthorTask = async (
       });
 
       const AllTasks: any[] = [...primaryAuthorTasks];
-      console.log("AllTasks: ", AllTasks);
 
       const allTaskCalls: any = AllTasks?.map(async (taskItem: any) => {
         const defaultPayload: any = {
@@ -429,7 +415,7 @@ export const AddPrimaryAuthorTask = async (
 
       await Promise.all(allTaskCalls);
     } catch (err: any) {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     }
   } else {
     try {
@@ -511,14 +497,13 @@ export const AddPrimaryAuthorTask = async (
 
       await Promise.all(allTaskCalls);
     } catch (err: any) {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     }
   }
 };
 
 // functions to update task's primary author item
 export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
-  debugger;
   try {
     // Fetch the document details
     const AllDocResponse: any = await SpServices.SPReadItems({
@@ -619,7 +604,7 @@ export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
 
     await Promise.all(allTaskCalls);
   } catch (err: any) {
-    console.log("err: ", err);
+    console.log("Error : ", err);
   }
 };
 
@@ -658,8 +643,6 @@ export const AddTask = async (
   updateDueDate?: any,
   sectionID?: any
 ): Promise<any> => {
-  debugger;
-  console.log("formData: ", formData);
   try {
     const AllDocResponse: any = await SpServices.SPReadItems({
       Listname: LISTNAMES.DocumentDetails,
@@ -709,8 +692,6 @@ export const AddTask = async (
         RequestJSON: createTaskPayload(taskItem),
       })
         .then(async (res: any) => {
-          console.log("res: ", res);
-
           if (sectionID) {
             await SpServices.SPUpdateItem({
               Listname: LISTNAMES.MyTasks,
@@ -722,7 +703,7 @@ export const AddTask = async (
           }
         })
         .catch((err: any) => {
-          console.log("err: ", err);
+          console.log("Error : ", err);
         });
     });
   } catch (err: any) {
@@ -814,6 +795,6 @@ export const UpdateTask = async (fileID: any, formData?: any): Promise<any> => {
 
     await Promise.all(allTaskCalls);
   } catch (err: any) {
-    console.log("err: ", err);
+    console.log("Error : ", err);
   }
 };

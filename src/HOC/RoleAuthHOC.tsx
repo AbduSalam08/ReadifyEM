@@ -14,14 +14,12 @@ const RoleAuthorizationHOC = (): JSX.Element => {
   const mainContext: any = useSelector(
     (state: any) => state.MainSPContext.value
   );
-  console.log("mainContext: ", mainContext);
 
   const currentUserDetails: any = useSelector(
     (state: any) => state.MainSPContext.currentUserDetails
   );
 
   const getRoleAuth = async (): Promise<any> => {
-    debugger;
     const currentUserDetails: any = {
       userName: mainContext?._pageContext?._user?.displayName,
       Email: mainContext?._pageContext?._user?.email,

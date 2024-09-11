@@ -14,12 +14,10 @@ const readTextFileFromTXT = (
     AttachmentName: data?.FileName,
   })
     .then((res: any) => {
-      console.log(res);
       setSectionAttachmentState(JSON.parse(res));
     })
     .catch((err: any) => {
-      console.log("err: ", err);
-      // setSectionLoader(false);
+      console.log("Error : ", err);
     });
 };
 
@@ -28,8 +26,6 @@ export const getSectionAttachment = async (
   sectionDetails: any,
   setSectionAttachmentState: any
 ): Promise<void> => {
-  console.log(sectionId, sectionDetails);
-
   let sectionObject: any = {};
   const tempAttachments: any[] = [];
   const attachments = await SpServices.SPGetAttachments({
@@ -48,7 +44,6 @@ export const getSectionAttachment = async (
     readTextFileFromTXT(attachments[0], setSectionAttachmentState);
   } else {
     setSectionAttachmentState("empty");
-    console.log("empty");
   }
   //   setSectionAttachmentState([...tempAttachments]);
 };

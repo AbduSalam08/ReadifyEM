@@ -25,8 +25,6 @@ const DueDatePill: React.FC<DueDatePillProps> = ({
   const daysLeft = dueDateFormatted.diff(today, "day");
 
   const getPillColor = (): string => {
-    console.log("currentRole: ", currentRole);
-
     if (currentRole === "primary author") {
       if (daysLeft >= 90) return styles.green;
       if (daysLeft >= 30) return styles.yellow;

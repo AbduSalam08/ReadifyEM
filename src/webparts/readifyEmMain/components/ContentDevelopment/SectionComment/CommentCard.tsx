@@ -10,8 +10,6 @@ interface ICommentCardProps {
 }
 
 const CommentCard = ({ item, index }: ICommentCardProps): JSX.Element => {
-  console.log("item: ", item);
-  console.log(item);
   return (
     <div className={styles.commentCardWrapper}>
       <div

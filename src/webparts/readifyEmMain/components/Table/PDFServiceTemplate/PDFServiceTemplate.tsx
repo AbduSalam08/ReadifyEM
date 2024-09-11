@@ -13,12 +13,8 @@ interface Iprops {
 }
 
 const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
-  debugger;
-  console.log(documentId);
-
   const [allSectionContent, setAllSectionContent] = useState<any[]>([]);
   const [loader, setLoader] = useState<boolean>(false);
-  console.log(allSectionContent);
 
   useEffect(() => {
     getDocumentRelatedSections(documentId, setAllSectionContent, setLoader);
@@ -91,7 +87,6 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
                 ) : (
                   // obj.value.map((list: any, index: number) => {
                   //   const indent = list.text.split(".").length - 1;
-                  //   console.log(indent);
                   //   const marginLeft = (indent + 1 - 1) * 26;
                   //   const nestedStyle: React.CSSProperties = {
                   //     marginLeft: `${marginLeft}px`,

@@ -37,7 +37,6 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
   setSections,
   handleDrag,
 }) => {
-  console.log("sections: ", sections);
   const filteredSection = sections[objKey]?.filter(
     (item: any) => !item?.removed
   );
@@ -494,7 +493,6 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
     // const tempFilteredSectionDetails = filteredSection.sort(
     //   (a: any, b: any) => a?.sectionOrderNo - b?.sectionOrderNo
     // );
-    // console.log(tempFilteredSectionDetails);
     reOrderSections(filteredSection);
   }, []);
 

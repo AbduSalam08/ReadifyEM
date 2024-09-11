@@ -24,8 +24,6 @@ const getSectionComments = async (
   version: string,
   dispatcher: any
 ) => {
-  debugger;
-  console.log(sectionId, version);
   const tempArray: any[] = [];
   await SpServices.SPReadItems({
     Listname: LISTNAMES.SectionComments,
@@ -45,7 +43,6 @@ const getSectionComments = async (
     ],
   })
     .then((res: any[]) => {
-      console.log(res);
       res?.forEach((item: any) => {
         tempArray.push({
           ID: item.ID,
@@ -64,9 +61,8 @@ const getSectionComments = async (
           isRejectedComment: item.isRejectedComment ? true : false,
         });
       });
-      console.log(tempArray);
     })
-    .catch((err) => console.log(err));
+    .catch((error) => console.log("Error : ", error));
   dispatcher(setSectionComments(tempArray));
   return tempArray;
 };
@@ -76,7 +72,6 @@ const getPromotedComments = async (
   version: string,
   dispatcher: any
 ) => {
-  console.log(documentID);
   const tempArray: any[] = [];
   await SpServices.SPReadItems({
     Listname: LISTNAMES.PromotedComments,
@@ -96,7 +91,6 @@ const getPromotedComments = async (
     ],
   })
     .then((res: any[]) => {
-      console.log(res);
       res?.forEach((item: any) => {
         tempArray.push({
           ID: item.ID,
@@ -115,9 +109,8 @@ const getPromotedComments = async (
           // isRejectedComment: item.isRejectedComment ? true : false,
         });
       });
-      console.log(tempArray);
     })
-    .catch((err) => console.log(err));
+    .catch((error) => console.log("Error : ", error));
   dispatcher(setPromatedComments(tempArray));
 };
 
@@ -131,8 +124,6 @@ const addSectionComment = async (
   sectionId: any,
   AllSectionsDataMain: any
 ): Promise<boolean> => {
-  debugger;
-  console.log(jsonObject, sectionId, AllSectionsDataMain);
   let clearInput: boolean = false;
   const tempArray: any[] = [...sectionComments];
   try {
@@ -141,8 +132,7 @@ const addSectionComment = async (
       RequestJSON: jsonObject,
     })
       .then((res: any) => {
-        console.log(res);
-        if (res.data.ID) {
+        if (res?.data.ID) {
           clearInput = true;
           tempArray.push({
             ID: res?.data?.ID,
@@ -192,7 +182,7 @@ const addSectionComment = async (
         dispatcher(setSectionComments(tempArray));
       })
       .catch((err) => {
-        console.log(err);
+        console.log("Error : ", err);
         setLoaderState({
           isLoading: {
             inprogress: false,

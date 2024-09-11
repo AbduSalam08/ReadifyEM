@@ -310,8 +310,6 @@ export const AddAttachment = async (
   dispatch?: any,
   currentDocDetailsData?: any
 ): Promise<any> => {
-  debugger;
-
   const currentSectionDetail = AllSectionsDataMain?.filter(
     (item: any) => item?.ID === itemID
   )[0];
@@ -346,7 +344,6 @@ export const AddAttachment = async (
       },
     })
       .then(async (res: any) => {
-        console.log("res: ", res);
         await SpServices.SPAddAttachment({
           ListName:
             listType === "appendix"
@@ -361,11 +358,11 @@ export const AddAttachment = async (
             // _getData();
           })
           .catch((err: any) => {
-            console.log("err: ", err);
+            console.log("Error : ", err);
           });
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   } else if (listType === "appendix") {
     await SpServices.SPAddAttachment({
@@ -379,7 +376,7 @@ export const AddAttachment = async (
         // _getData();
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   } else {
     await SpServices.SPAddAttachment({
@@ -393,7 +390,7 @@ export const AddAttachment = async (
         // _getData();
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   }
 
@@ -444,7 +441,6 @@ export const AddAttachment = async (
       },
     })
       .then(async (res: any) => {
-        console.log("res: ", res);
         const updateArray = updateSectionDataLocal(
           AllSectionsDataMain,
           itemID,
@@ -460,7 +456,7 @@ export const AddAttachment = async (
         );
 
         dispatch(setCDSectionData([...updateArray]));
-        debugger;
+
         try {
           const res = await SpServices.SPReadItems({
             Listname: LISTNAMES.SectionDetails,
@@ -473,8 +469,6 @@ export const AddAttachment = async (
               },
             ],
           });
-
-          console.log("res: ", res);
 
           const checkIfAnySectionHasRework = res?.some(
             (item: any) => item?.status?.toLowerCase() === "rework in progress"
@@ -517,7 +511,7 @@ export const AddAttachment = async (
         }
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   }
 };
@@ -536,7 +530,6 @@ export const UpdateAttachment = async (
   documentID?: any,
   sectionID?: any
 ): Promise<any> => {
-  debugger;
   if (deleteAttachment) {
     await SpServices.SPDeleteAttachments({
       ListName:
@@ -547,7 +540,7 @@ export const UpdateAttachment = async (
       AttachmentName: fileName,
     })
       .then((res) => console.log("res:", res))
-      .catch((err) => console.log(err));
+      .catch((error) => console.log("Error : ", error));
   } else {
     await SpServices.SPDeleteAttachments({
       ListName:
@@ -558,7 +551,7 @@ export const UpdateAttachment = async (
       AttachmentName: fileName,
     })
       .then((res) => console.log("res:", res))
-      .catch((err) => console.log(err));
+      .catch((error) => console.log("Error : ", error));
 
     await AddAttachment(
       itemID,
@@ -592,7 +585,6 @@ export const AddAppendixAttachment = async (
       },
     })
       .then(async (res: any) => {
-        console.log("res: ", res);
         await SpServices.SPAddAttachment({
           ListName: LISTNAMES.AppendixHeader,
           ListID: res?.data?.ID,
@@ -603,11 +595,11 @@ export const AddAppendixAttachment = async (
             console.log("res: ", res);
           })
           .catch((err: any) => {
-            console.log("err: ", err);
+            console.log("Error : ", err);
           });
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   } else {
     await SpServices.SPAddAttachment({
@@ -620,7 +612,7 @@ export const AddAppendixAttachment = async (
         console.log("res: ", res);
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   }
 };
@@ -640,8 +632,6 @@ export const UpdateAppendixAttachment = async (
       .items.getById(itemID)
       .attachmentFiles();
 
-    console.log("Attachments: ", attachments);
-
     // Delete all attachments using SpServices
     for (const attachment of attachments) {
       await SpServices.SPDeleteAttachments({
@@ -651,8 +641,6 @@ export const UpdateAppendixAttachment = async (
       });
     }
 
-    console.log("All attachments deleted.");
-
     // If there's a new file to add, add it as an attachment using SpServices
     if (_file && fileName) {
       await SpServices.SPAddAttachment({
@@ -661,11 +649,9 @@ export const UpdateAppendixAttachment = async (
         FileName: fileName,
         Attachments: _file,
       });
-
-      console.log("New attachment added.");
     }
   } catch (err) {
-    console.log("Error: ", err);
+    console.log("Error : ", err);
   }
 };
 
@@ -686,7 +672,7 @@ export const AddSectionAttachment = async (
       console.log("res: ", res);
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
 
   await SpServices.SPUpdateItem({
@@ -701,7 +687,7 @@ export const AddSectionAttachment = async (
       console.log("res: ", res);
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
 };
 
@@ -730,7 +716,6 @@ export const UpdateSectionAttachment = async (
             AttachmentName: attachment.FileName,
           });
         }
-        console.log("All existing attachments deleted.");
       }
     } else {
       const attachments = await sp.web.lists
@@ -747,7 +732,6 @@ export const UpdateSectionAttachment = async (
             AttachmentName: attachment.FileName,
           });
         }
-        console.log("All existing attachments deleted.");
       }
       // Add new attachment
       await AddSectionAttachment(
@@ -757,8 +741,6 @@ export const UpdateSectionAttachment = async (
         saveAndClose,
         fileName
       );
-
-      console.log("New attachment added successfully.");
     }
   } catch (err) {
     console.error("Error while updating section attachments: ", err);
@@ -789,11 +771,10 @@ export const getHeaderSectionDetails = async (
     ],
   })
     .then((res: any) => {
-      console.log("res: ", res);
       HeaderID = res[0]?.ID;
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
 
   await SpServices.SPGetAttachments({
@@ -801,7 +782,6 @@ export const getHeaderSectionDetails = async (
     ID: HeaderID,
   })
     .then((res: any) => {
-      console.log("res2: ", res);
       if (res[0]?.ServerRelativeUrl) {
         // setImgURL(`${CONFIG.tenantURL}${res[0]?.ServerRelativeUrl}`);
         const data: any = {
@@ -816,7 +796,7 @@ export const getHeaderSectionDetails = async (
       }
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
 };
 
@@ -838,11 +818,10 @@ export const getAppendixHeaderSectionDetails = async (
     ],
   })
     .then((res: any) => {
-      console.log("res: ", res);
       HeaderID = res[0]?.ID;
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
 
   if (HeaderID) {
@@ -851,7 +830,6 @@ export const getAppendixHeaderSectionDetails = async (
       Listname: LISTNAMES.AppendixHeader,
     })
       .then((res: any) => {
-        console.log("res2: ", res);
         if (res[0]?.ServerRelativeUrl) {
           const data: any = {
             imgURL: `${CONFIG.tenantURL}${res[0]?.ServerRelativeUrl}`,
@@ -864,7 +842,7 @@ export const getAppendixHeaderSectionDetails = async (
         }
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   } else {
     dispatcher && dispatcher(setCDHeaderDetails([]));
@@ -878,7 +856,6 @@ export const addPromotedComment = async (
   setToastState: any,
   currentUserDetails: any
 ): Promise<any> => {
-  console.log(promoteComments);
   const jsonObject = {
     comments: promoteComments,
     role: documentDetails.taskRole,
@@ -892,7 +869,6 @@ export const addPromotedComment = async (
     RequestJSON: jsonObject,
   })
     .then((res: any) => {
-      console.log(res);
       handleClosePopup(3);
       setToastState({
         isShow: true,
@@ -903,7 +879,7 @@ export const addPromotedComment = async (
       });
     })
     .catch((err) => {
-      console.log(err);
+      console.log("Error : ", err);
     });
 };
 
@@ -919,10 +895,7 @@ export const addRejectedComment = async (
   AllSectionsDataMain: any,
   dispatcher: any
 ): Promise<any> => {
-  debugger;
   let fileID: any;
-  let currentDocResponse: any;
-  console.log("currentDocResponse: ", currentDocResponse);
   handleClosePopup(1);
   dispatcher(setCDBackDrop(true));
 
@@ -933,12 +906,10 @@ export const addRejectedComment = async (
     Expand: "fileDetails",
   })
     .then((res: any) => {
-      console.log("res: ", res);
       fileID = res?.fileDetailsId;
-      currentDocResponse = res;
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
 
   const tempArray: any[] = [...AllSectionsComments];
@@ -982,7 +953,6 @@ export const addRejectedComment = async (
     RequestJSON: jsonObject,
   })
     .then((res: any) => {
-      console.log(res);
       tempArray.push({
         ID: res?.data?.ID,
         comment: jsonObject.comments,
@@ -1016,7 +986,6 @@ export const addRejectedComment = async (
           return obj;
         }
       });
-      console.log(updateArray);
       dispatcher(setCDSectionData([...updateArray]));
 
       dispatcher(
@@ -1036,7 +1005,7 @@ export const addRejectedComment = async (
       });
     })
     .catch((err) => {
-      console.log(err);
+      console.log("Error : ", err);
       dispatcher(setCDBackDrop(false));
 
       setLoaderState({
@@ -1062,7 +1031,6 @@ export const changeDocStatus = async (
   dispatch: any,
   lastPromoter?: any
 ): Promise<any> => {
-  debugger;
   let fileID: any;
   let currentDocResponse: any;
 
@@ -1073,14 +1041,12 @@ export const changeDocStatus = async (
     Expand: "fileDetails",
   })
     .then((res: any) => {
-      console.log("res: ", res);
       fileID = res?.fileDetailsId;
       currentDocResponse = res;
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
-  debugger;
 
   await SpServices.SPUpdateItem({
     Listname: LISTNAMES.DocumentDetails,
@@ -1096,7 +1062,6 @@ export const changeDocStatus = async (
     },
   })
     .then(async (res: any) => {
-      console.log("res: ", res);
       await sp.web.lists
         .getByTitle(LIBNAMES.AllDocuments)
         .items.getById(fileID)
@@ -1193,7 +1158,6 @@ export const changeDocStatus = async (
             },
           ],
         }).then(async (res: any) => {
-          console.log("res: ", res);
           const updatedtask: any = res?.map((item: any) => {
             return {
               ...item,
@@ -1209,7 +1173,7 @@ export const changeDocStatus = async (
       }
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
 
   // const updatedDOCDetails: any = updateDocDataLocal(docDetailsData, docID, {
@@ -1225,14 +1189,11 @@ export const changeDocStatus = async (
     Expand: "fileDetails",
   })
     .then((res: any) => {
-      console.log("res: ", res);
       updatedDOCData = res;
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
-
-  console.log("updatedDOCData: ", updatedDOCData);
 
   dispatch(
     setCDDocDetails({
@@ -1257,15 +1218,11 @@ export const changeSectionStatus = async (
   lastPromoter?: boolean,
   currentDocumentDetails?: any
 ): Promise<any> => {
-  console.log("currentDocumentDetails: ", currentDocumentDetails);
-  console.log("AllSectionsData: ", AllSectionsData);
-  debugger;
   await SpServices.batchUpdate({
     ListName: LISTNAMES.SectionDetails,
     responseData: sectionsData,
   })
     .then((res: any) => {
-      console.log("res: ", res);
       dispatch(setCDBackDrop(false));
       if (lastPromoter && promoterType === "approver") {
         dispatch(
@@ -1296,7 +1253,7 @@ export const changeSectionStatus = async (
       }
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
       dispatch(setCDBackDrop(false));
       dispatch(
         setCDTaskSuccess({
@@ -1331,7 +1288,6 @@ export const changeSectionStatus = async (
             sectionRework: false,
           }
     );
-    console.log("updatedSection: ", updatedSection);
     // Collect the updates instead of dispatching right away
     AllSectionsData = [...updatedSection];
   }
@@ -1370,21 +1326,19 @@ export const getSectionChangeRecord = async (
     ],
   })
     .then((res: any[]) => {
-      console.log(res);
-      debugger;
       sectionChangeRecord = {
-        changeRecordDescription: res[0].changeRecordDescription
+        changeRecordDescription: res[0]?.changeRecordDescription
           ? res[0].changeRecordDescription
           : "",
-        changeRecordModify: res[0].changeRecordModify
+        changeRecordModify: res[0]?.changeRecordModify
           ? res[0].changeRecordModify
-          : res[0].Modified,
-        changeRecordAuthor: res[0].changeRecordAuthor
+          : res[0]?.Modified,
+        changeRecordAuthor: res[0]?.changeRecordAuthor
           ? { email: res[0].changeRecordAuthor.EMail }
           : "",
       };
     })
-    .catch((err) => console.log(err));
+    .catch((error) => console.log("Error : ", error));
   dispatcher(setSectionChangeRecord(sectionChangeRecord));
   return sectionChangeRecord;
 };
@@ -1453,7 +1407,6 @@ export const getAllSectionsChangeRecord = async (
   documentId: number,
   dispatcher: any
 ): Promise<any> => {
-  debugger;
   let sectionsChangeRecord: any[] = [];
   let changeRecId: any = null;
   await SpServices.SPReadItems({
@@ -1470,7 +1423,6 @@ export const getAllSectionsChangeRecord = async (
     ],
   })
     .then(async (res: any[]) => {
-      console.log(res);
       res?.forEach((obj: any) => {
         if (obj.sectionType === "change record") {
           changeRecId = obj.ID;
@@ -1489,7 +1441,7 @@ export const getAllSectionsChangeRecord = async (
           });
       });
     })
-    .catch((err) => console.log(err));
+    .catch((error) => console.log("Error : ", error));
   sectionsChangeRecord = sectionsChangeRecord.sort(
     (a, b) => a.sectionOrder - b.sectionOrder
   );
@@ -1501,36 +1453,21 @@ export const getAllSectionsChangeRecord = async (
     AttachmentName: "Sample.txt",
   })
     .then((res) => {
-      console.log("res:", res);
       SpServices.SPAddAttachment({
         ListName: LISTNAMES.SectionDetails,
         ListID: changeRecId,
         FileName: "Sample.txt",
         Attachments: _file,
-      })
-        .then((res: any) => {
-          console.log("res: ", res);
-          // _getData();
-        })
-        .catch((err: any) => {
-          console.log("err: ", err);
-        });
+      });
     })
     .catch((err) => {
-      console.log(err);
+      console.log("Error : ", err);
       SpServices.SPAddAttachment({
         ListName: LISTNAMES.SectionDetails,
         ListID: changeRecId,
         FileName: "Sample.txt",
         Attachments: _file,
-      })
-        .then((res: any) => {
-          console.log("res: ", res);
-          // _getData();
-        })
-        .catch((err: any) => {
-          console.log("err: ", err);
-        });
+      });
     });
 };
 export const addChangeRecord = async (
@@ -1544,8 +1481,6 @@ export const addChangeRecord = async (
   currentUserDetails: any,
   dispatcher: any
 ): Promise<void> => {
-  console.log(changeRecordState.Description);
-  debugger;
   const jsonObject = {
     changeRecordDescription: changeRecordState.Description,
     changeRecordAuthorId: currentUserDetails?.id,
@@ -1580,7 +1515,7 @@ export const addChangeRecord = async (
       });
       await getAllSectionsChangeRecord(documentId, dispatcher);
     })
-    .catch((err: any) => console.log(err));
+    .catch((err: any) => console.log("Error : ", err));
 };
 
 export const getPreviousVersionDoc = async (docID: any): Promise<any> => {

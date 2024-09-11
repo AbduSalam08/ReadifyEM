@@ -11,7 +11,6 @@ export const RoleAuth = async (
   currentUser: any,
   dispatch?: any
 ): Promise<any> => {
-  debugger;
   let currentUserDetails: any;
   let currentUserID: any;
   await sp.web.currentUser
@@ -20,7 +19,7 @@ export const RoleAuth = async (
       currentUserID = res?.Id;
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
 
   await sp.web.siteGroups
@@ -54,6 +53,6 @@ export const RoleAuth = async (
       dispatch && dispatch(setCurrentUserDetails(currentUserDetails));
     })
     .catch((err: any) => {
-      console.log("err: ", err);
+      console.log("Error : ", err);
     });
 };
