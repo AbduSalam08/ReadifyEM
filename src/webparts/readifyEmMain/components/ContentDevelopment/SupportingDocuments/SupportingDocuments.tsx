@@ -131,7 +131,9 @@ const SupportingDocuments: React.FC<Props> = ({
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
-
+  const pageDetailsState: any = useSelector(
+    (state: any) => state?.MainSPContext?.PageDetails
+  );
   const currentUserDetails: any = useSelector(
     (state: any) => state?.MainSPContext?.currentUserDetails
   );
@@ -1184,8 +1186,18 @@ const SupportingDocuments: React.FC<Props> = ({
           margin: "10px 0px",
         }}
       >
-        <button className={"helpButton"}>Help?</button>
-
+        {/* <button className={"helpButton"}>Help?</button> */}
+        <a
+          className={"helpButton"}
+          href={
+            pageDetailsState.helpLink.startsWith("https://")
+              ? encodeURI(pageDetailsState.helpLink)
+              : encodeURI("https://" + pageDetailsState.helpLink)
+          }
+          target="_blank"
+        >
+          Help?
+        </a>
         <div
           style={{
             display: "flex",

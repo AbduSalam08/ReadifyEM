@@ -25,7 +25,6 @@ require("../../../node_modules/primereact/resources/themes/bootstrap4-light-blue
 
 export interface IReadifyEmMainWebPartProps {
   description: string;
-  tocTitle: string;
 }
 
 export default class ReadifyEmMainWebPart extends BaseClientSideWebPart<IReadifyEmMainWebPartProps> {
@@ -58,7 +57,7 @@ export default class ReadifyEmMainWebPart extends BaseClientSideWebPart<IReadify
   public render(): void {
     const element: React.ReactElement<IReadifyEmMainProps> =
       React.createElement(ReadifyEmMain, {
-        context: { ...this.context, tocTitle: this.properties.tocTitle },
+        context: this.context,
       });
 
     ReactDom.render(element, this.domElement);
@@ -151,9 +150,6 @@ export default class ReadifyEmMainWebPart extends BaseClientSideWebPart<IReadify
               groupFields: [
                 PropertyPaneTextField("description", {
                   label: strings.DescriptionFieldLabel,
-                }),
-                PropertyPaneTextField("tocTitle", {
-                  label: "TOC Title",
                 }),
               ],
             },

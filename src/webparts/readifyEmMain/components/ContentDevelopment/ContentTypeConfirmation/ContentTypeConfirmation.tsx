@@ -35,7 +35,9 @@ const ContentTypeConfirmation = ({
   const dispatch = useDispatch();
   const [sectionLoader, setSectionLoader] = useState(false);
   const [toastMessage, setToastMessage] = useState<any>([]);
-
+  const pageDetailsState: any = useSelector(
+    (state: any) => state?.MainSPContext?.PageDetails
+  );
   const AllSectionsDataMain: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDSectionsData
   );
@@ -220,7 +222,18 @@ const ContentTypeConfirmation = ({
             padding: "10px",
           }}
         >
-          <button className={"helpButton"}>Help?</button>
+          {/* <button className={"helpButton"}>Help?</button> */}
+          <a
+            className={"helpButton"}
+            href={
+              pageDetailsState.helpLink.startsWith("https://")
+                ? encodeURI(pageDetailsState.helpLink)
+                : encodeURI("https://" + pageDetailsState.helpLink)
+            }
+            target="_blank"
+          >
+            Help?
+          </a>
           <div style={{ display: "flex", gap: "15px" }}>
             <DefaultButton
               text="Close"

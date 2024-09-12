@@ -85,6 +85,9 @@ const References: React.FC<Props> = ({
     isLoading: false,
     isSectionReferences: true,
   };
+  const pageDetailsState: any = useSelector(
+    (state: any) => state?.MainSPContext?.PageDetails
+  );
   const currentUserDetails: any = useSelector(
     (state: any) => state?.MainSPContext?.currentUserDetails
   );
@@ -997,7 +1000,18 @@ const References: React.FC<Props> = ({
               justifyContent: "space-between",
             }}
           >
-            <button className={"helpButton"}>Help?</button>
+            {/* <button className={"helpButton"}>Help?</button> */}
+            <a
+              className={"helpButton"}
+              href={
+                pageDetailsState.helpLink.startsWith("https://")
+                  ? encodeURI(pageDetailsState.helpLink)
+                  : encodeURI("https://" + pageDetailsState.helpLink)
+              }
+              target="_blank"
+            >
+              Help?
+            </a>
 
             <div
               style={{

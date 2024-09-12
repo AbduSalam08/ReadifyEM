@@ -26,12 +26,15 @@ import ErrorElement from "../webparts/readifyEmMain/components/common/ErrorEleme
 
 // global style sheet
 import styles from "./App.module.scss";
+import { getPageTitle } from "../services/ContentDevelopment/CommonServices/CommonServices";
 
 const App = (props: any): JSX.Element => {
   console.log("props: ", props);
   const dispatch = useDispatch();
   // dispatching the main context into redux store
+
   useEffect(() => {
+    getPageTitle(dispatch);
     dispatch(setMainSPContext(props.context));
   }, []);
 

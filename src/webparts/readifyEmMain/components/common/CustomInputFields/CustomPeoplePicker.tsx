@@ -455,6 +455,7 @@ import AddIcon from "@mui/icons-material/Add";
 
 interface Props {
   selectedItem?: any;
+  tempselectedItem?: any;
   onChange?: (value: any[]) => void;
   onSubmit?: any;
   placeholder?: string;
@@ -482,6 +483,7 @@ interface Props {
 
 const CustomPeoplePicker: React.FC<Props> = ({
   onChange,
+  tempselectedItem,
   onSubmit,
   placeholder = "User",
   personSelectionLimit,
@@ -751,6 +753,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
             endIcon: false,
             startIcon: false,
             onClick: () => {
+              onChange && onChange(tempselectedItem);
               handleClosePopup(0);
             },
           },

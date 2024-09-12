@@ -30,6 +30,7 @@ import {
   setCDTaskSuccess,
 } from "../../../redux/features/ContentDeveloperBackDropSlice";
 import { removeVersionFromDocName } from "../../../utils/formatDocName";
+import { setPageDetails } from "../../../redux/features/MainSPContextSlice";
 
 export const getSectionsDetails = async (
   taskDetails: any,
@@ -1538,4 +1539,131 @@ export const getPreviousVersionDoc = async (docID: any): Promise<any> => {
     console.error("Error fetching previous version document:", error);
     return null; // Or handle the error as needed
   }
+};
+
+export const getPageTitle = (dispatch: any): any => {
+  SpServices.SPReadItems({
+    Listname: LISTNAMES.PageConfiguration,
+    Select: "*,Title,Attachments,AttachmentFiles",
+    Expand: "AttachmentFiles",
+  }).then((res: any) => {
+    console.log("res", res);
+    dispatch(
+      setPageDetails({
+        pageTitle: res[0]?.Title,
+        helpLink: res[0]?.HelpLink,
+        imageData: {
+          fileData: res[0]?.AttachmentFiles[0],
+          fileName: res[0]?.AttachmentFiles[0].FileName,
+          fileUrl: res[0]?.AttachmentFiles[0].ServerRelativeUrl,
+        },
+      })
+    );
+  });
+};
+export const updatePageTitle = (
+  dispatch: any,
+  value: string,
+  pageDetailsState: any,
+  setToastMessage: any,
+  handleClosePopup: any
+): any => {
+  SpServices.SPUpdateItem({
+    Listname: LISTNAMES.PageConfiguration,
+    ID: 1,
+    RequestJSON: { Title: value },
+  }).then((res: any) => {
+    console.log("res", res);
+    dispatch(
+      setPageDetails({
+        ...pageDetailsState,
+        pageTitle: value,
+      })
+    );
+    handleClosePopup(3);
+    setToastMessage({
+      isShow: true,
+      severity: "success",
+      title: "Title changed!",
+      message: "title has been changed successfully.",
+      duration: 3000,
+    });
+  });
+};
+export const updatePageLog = async (
+  dispatch: any,
+  file: any,
+  pageDetailsState: any,
+  setToastMessage: any,
+  handleClosePopup: any
+): Promise<any> => {
+  await SpServices.SPDeleteAttachments({
+    ListName: LISTNAMES.PageConfiguration,
+    ListID: 1,
+    AttachmentName: pageDetailsState?.imageData?.fileName,
+  })
+    .then((res: any) => {
+      console.log("file_Deleted", res);
+      SpServices.SPAddAttachment({
+        ListName: LISTNAMES.PageConfiguration,
+        ListID: 1,
+        FileName: file?.fileName,
+        Attachments: file?.fileData,
+      })
+        .then((res: any) => {
+          console.log(res);
+          dispatch(
+            setPageDetails({
+              ...pageDetailsState,
+              imageData: {
+                fileData: res?.data,
+                fileName: res?.data?.FileName,
+                fileUrl: res?.data?.ServerRelativeUrl,
+              },
+            })
+          );
+          handleClosePopup(0);
+          setToastMessage({
+            isShow: true,
+            severity: "success",
+            title: "Logo changed!",
+            message: "Logo has been changed successfully.",
+            duration: 3000,
+          });
+        })
+        .catch((err) => {
+          console.log("Error : ", err);
+        });
+    })
+    .catch((err) => {
+      console.log("Error : ", err);
+      SpServices.SPAddAttachment({
+        ListName: LISTNAMES.PageConfiguration,
+        ListID: 1,
+        FileName: file?.fileName,
+        Attachments: file?.fileData,
+      })
+        .then((res: any) => {
+          console.log(res);
+          setPageDetails({
+            ...pageDetailsState,
+            imageData: {
+              fileData: res?.data,
+              fileName: res?.data?.FileName,
+              fileUrl: res?.data?.ServerRelativeUrl,
+            },
+          });
+          handleClosePopup(0);
+          setToastMessage({
+            isShow: true,
+            severity: "success",
+            title: "Logo changed!",
+            message: "Logo has been changed successfully.",
+            duration: 3000,
+          });
+        })
+        .catch((err) => {
+          console.log("Error : ", err);
+        });
+    });
 };

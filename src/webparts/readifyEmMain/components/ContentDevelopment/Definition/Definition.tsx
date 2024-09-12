@@ -164,7 +164,9 @@ const Definition: React.FC<Props> = ({
     IsValid: false,
     ErrorMsg: "",
   });
-
+  const pageDetailsState: any = useSelector(
+    (state: any) => state?.MainSPContext?.PageDetails
+  );
   const AllDefinitionData = useSelector(
     (state: any) => state.DefinitionsData.AllDefinitions
   );
@@ -1665,7 +1667,18 @@ const Definition: React.FC<Props> = ({
             justifyContent: "space-between",
           }}
         >
-          <button className={"helpButton"}>Help?</button>
+          {/* <button className={"helpButton"}>Help?</button> */}
+          <a
+            className={"helpButton"}
+            href={
+              pageDetailsState.helpLink.startsWith("https://")
+                ? encodeURI(pageDetailsState.helpLink)
+                : encodeURI("https://" + pageDetailsState.helpLink)
+            }
+            target="_blank"
+          >
+            Help?
+          </a>
 
           <div
             style={{
