@@ -3,6 +3,22 @@
   align-items: center;
   justify-content: center;
 }
+.editIcon {
+  cursor: pointer;
+  color: #333;
+  margin-left: 10px;
+  border-radius: 50%;
+  padding: 5px;
+  font-size: 30px;
+
+  &:hover {
+    background-color: #adadad30;
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+
+  transition: all 0.2s;
+}
 .headerWrapper {
   position: fixed;
   top: 48px;
@@ -25,6 +41,7 @@
   }
   .logo {
     // width: 100%;
+    display: flex;
     height: 48px;
     user-select: none !important;
     -webkit-user-drag: none !important;
@@ -33,5 +50,42 @@
       font-size: 25px;
       font-family: "interSemiBold", sans-serif;
     }
+  }
+}
+.logoUploadWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  .uploadLabel {
+    font-family: "interRegular", sans-serif !important;
+    font-size: 14px;
+    width: 70%;
+    display: flex;
+    align-items: center;
+  }
+}
+.selectedFileName {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  background: #eee;
+  padding: 5px 15px;
+  height: 35px;
+  border-radius: 4px;
+
+  p {
+    font-family: "interRegular", sans-serif;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    /* display: -webkit-box; */
+    // -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-width: 90%;
+    height: 14px;
+    font-size: 12px;
   }
 }

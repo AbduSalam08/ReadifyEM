@@ -336,6 +336,7 @@ export const addDefaultPDFheader = async (
               /\s{2,}/g,
               " "
             );
+            // .replace(/"/g, "'");
 
             const blob = new Blob([JSON.stringify(cleanedTable)], {
               type: "text/plain",

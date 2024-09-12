@@ -49,6 +49,8 @@ const SectionHeader: React.FC<Props> = ({
   });
 
   const [consultantsState, setConsultantsState] = useState<any[]>(consultants);
+  const [tempConsultantsState, setTempConsultantsState] =
+    useState<any>(consultants);
 
   const currentUserDetails: any = useSelector(
     (state: any) => state?.MainSPContext?.currentUserDetails
@@ -75,6 +77,7 @@ const SectionHeader: React.FC<Props> = ({
           AllSectionsDataMain,
           setToastMessage
         );
+        setTempConsultantsState([...consultantsState]);
         setToastMessage({
           isShow: true,
           severity: "success",
@@ -197,6 +200,7 @@ const SectionHeader: React.FC<Props> = ({
       .get()
       .then((res: any) => {
         const resp = res[0] || res;
+        const tempresp = res[0] || res;
         const currentSA = {
           ID: resp?.sectionAuthor?.ID,
           title: resp?.sectionAuthor?.Title,
@@ -207,7 +211,13 @@ const SectionHeader: React.FC<Props> = ({
           title: item?.Title,
           email: item?.EMail,
         }));
+        const tempCurrentCons = tempresp?.consultants?.map((item: any) => ({
+          ID: item?.ID,
+          title: item?.Title,
+          email: item?.EMail,
+        }));
         setConsultantsState(currentCons);
+        setTempConsultantsState(tempCurrentCons);
         setAuthorState(currentSA);
       })
       .catch((err: any) => {
@@ -223,6 +233,7 @@ const SectionHeader: React.FC<Props> = ({
     getupdatedAuthors();
     setAuthorState(sectionAuthor);
     setConsultantsState(consultants);
+    setTempConsultantsState(consultants);
   }, [activeSectionData?.ID]);
 
   return (
@@ -307,6 +318,7 @@ const SectionHeader: React.FC<Props> = ({
                     : consultantsState?.length
                 }
                 selectedItem={consultantsState}
+                tempselectedItem={tempConsultantsState}
                 onChange={handleOnChangeFunction}
                 onSubmit={onSubmitFunction}
                 isValid={false}

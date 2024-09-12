@@ -38,7 +38,10 @@ import { togglePopupVisibility } from "../../utils/togglePopup";
 import { filterDataByURL } from "../../utils/NewDocumentUtils";
 import { CurrentUserIsAdmin } from "../../constants/DefineUser";
 import { useNavigate } from "react-router-dom";
-import { getSectionsDetails } from "../../services/ContentDevelopment/CommonServices/CommonServices";
+import {
+  getSectionsDetails,
+  updatePageTitle,
+} from "../../services/ContentDevelopment/CommonServices/CommonServices";
 import { setSectionsAttachments } from "../../redux/features/PDFServicceSlice";
 // import { getDocumentRelatedSections } from "../../services/PDFServices/PDFServices";
 // import SpServices from "../../services/SPServices/SpServices";
@@ -50,10 +53,11 @@ const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
 const contentDeveloperEdit: any = require("../../assets/images/svg/editContentDeveloper.svg");
 const viewDocBtn: any = require("../../assets/images/svg/viewEye.svg");
 const newversionBtn: any = require("../../assets/images/svg/newVersion.svg");
-// import EditIcon from "@mui/icons-material/Edit";
+import EditIcon from "@mui/icons-material/Edit";
 import dayjs from "dayjs";
 import { getNextVersions } from "../../utils/EMManualUtils";
 import { removeVersionFromDocName } from "../../utils/formatDocName";
+import ToastMessage from "../../webparts/readifyEmMain/components/common/Toast/ToastMessage";
 // constants
 const initialPopupController = [
   {
@@ -114,6 +118,11 @@ const TableOfContents = (): JSX.Element => {
   const contextProps: any = useSelector(
     (state: any) => state?.MainSPContext?.value
   );
+  const pageDetailsState: any = useSelector(
+    (state: any) => state?.MainSPContext?.PageDetails
+  );
+  console.log(pageDetailsState);
+
   console.log("contextProps: ", contextProps);
   //Dispatcher
   const dispatch = useDispatch();
@@ -151,7 +160,7 @@ const TableOfContents = (): JSX.Element => {
   }>({
     toc: true,
     NewDocument: false,
-    pageTitle: contextProps?.tocTitle || "Home",
+    pageTitle: pageDetailsState?.pageTitle || "Home",
     editDocumentData: [],
   });
 
@@ -161,6 +170,14 @@ const TableOfContents = (): JSX.Element => {
   const [popupData, setPopupData] = useState<any>(popupInitialData);
   const [documentId, setDocumentId] = useState<number>(0);
 
+  const [toastMessage, setToastMessage] = useState<any>({
+    isShow: false,
+    severity: "",
+    title: "",
+    message: "",
+    duration: "",
+  });
+
   // const [documentPdfURL, setDocumentPdfURL] = useState("");
 
   // A controller state for popup in TOC
@@ -168,6 +185,9 @@ const TableOfContents = (): JSX.Element => {
     initialPopupController
   );
   console.log(tableData.data);
+  const handleClosePopup = (index?: any): void => {
+    togglePopupVisibility(setPopupController, index, "close");
+  };
 
   // current popupItem
   const currentPopupItem: any = popupController?.filter((e: any) => e?.open)[0];
@@ -316,6 +336,28 @@ const TableOfContents = (): JSX.Element => {
       </div>,
     ],
   ];
+
+  // Update page Title
+
+  const handlePageTitle = (): any => {
+    if (popupData.homePageTitle.value !== "") {
+      updatePageTitle(
+        dispatch,
+        popupData.homePageTitle.value,
+        pageDetailsState,
+        setToastMessage,
+        handleClosePopup
+      );
+    } else {
+      setToastMessage({
+        isShow: true,
+        severity: "warn",
+        title: "Invalid title submit!",
+        message: `Empty title submission not allowed.`,
+        duration: 3000,
+      });
+    }
+  };
 
   // submit handler for pou=pup submit events
   const handleSubmit = async (key: string): Promise<any> => {
@@ -666,15 +708,7 @@ const TableOfContents = (): JSX.Element => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          togglePopupVisibility(
-            setPopupController,
-            3,
-            "close",
-            "Change page title",
-            popupData
-          );
-          console.log("popupData", popupData);
-          // handleSubmit("sub group");
+          handlePageTitle();
         },
       },
     ],
@@ -738,6 +772,13 @@ const TableOfContents = (): JSX.Element => {
     setMainData();
   }, [dispatch]);
 
+  useEffect(() => {
+    setScreens({
+      ...screens,
+      pageTitle: pageDetailsState?.pageTitle,
+    });
+  }, [pageDetailsState?.pageTitle]);
+
   // useEffect(() => {
   //   readSectionAttachments();
   // }, [AllSectionsAttachments]);
@@ -773,8 +814,12 @@ const TableOfContents = (): JSX.Element => {
         className={styles.topTOCHeader}
       >
         <div className={styles.flexcenter}>
-          <PageTitle text={removeVersionFromDocName(screens.pageTitle)} />
-          {/* {screens?.toc && (
+          <PageTitle
+            text={removeVersionFromDocName(
+              screens.pageTitle ? screens.pageTitle : "Home"
+            )}
+          />
+          {screens?.toc && (
             <EditIcon
               className={styles.editIcon}
               onClick={() => {
@@ -787,7 +832,7 @@ const TableOfContents = (): JSX.Element => {
                 );
               }}
             />
-          )} */}
+          )}
 
           {screens?.pageTitle?.toLowerCase()?.includes("initiate version") ? (
             screens?.pageTitle?.toLowerCase()?.includes("minor") ? (
@@ -1091,8 +1136,6 @@ const TableOfContents = (): JSX.Element => {
           />
         )
       )}
-
-      {/* popup sections */}
       {popupController?.map((popupData: any, index: number) => (
         <Popup
           key={index}
@@ -1122,6 +1165,14 @@ const TableOfContents = (): JSX.Element => {
         popupTitle={popupLoaders.text}
         visibility={popupLoaders.visibility}
         popupWidth={"30vw"}
+      />
+      <ToastMessage
+        severity={toastMessage.severity}
+        title={toastMessage.title}
+        message={toastMessage.message}
+        duration={toastMessage.duration}
+        isShow={toastMessage.isShow}
+        setToastMessage={setToastMessage}
       />
     </div>
   );

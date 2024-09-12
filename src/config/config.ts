@@ -19,6 +19,7 @@ const LISTNAMES = {
   AllDocuments: "AllDocuments",
   PromotedComments: "PromotedComments",
   sectionReferences: "SectionReferences",
+  PageConfiguration: "PageConfiguration",
 };
 
 const LIBNAMES = {
