@@ -410,12 +410,19 @@ const Header = (): JSX.Element => {
           alt="Readify EM Logo"
         />
         {/* <span>Readify EM</span> */}
-        <EditIcon
-          className={styles.editIcon}
-          onClick={() => {
-            togglePopupVisibility(setPopupController, 0, "open", "Change logo");
-          }}
-        />
+        {isAdmin && (
+          <EditIcon
+            className={styles.editIcon}
+            onClick={() => {
+              togglePopupVisibility(
+                setPopupController,
+                0,
+                "open",
+                "Change logo"
+              );
+            }}
+          />
+        )}
       </div>
       <ToastMessage
         severity={toastMessage.severity}

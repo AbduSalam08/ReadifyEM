@@ -468,6 +468,7 @@ const RichText = ({
     sectionDetails: any,
     currentDocumentDetails: any
   ): Promise<any> => {
+    debugger;
     const libraryName = "Shared Documents";
     // Sanitize folder names
     const sanitizedDocumentName = sanitizeFolderName(
@@ -478,9 +479,11 @@ const RichText = ({
       // Check if the file already exists
       // const folderPath = "/sites/ReadifyEM/Shared Documents"; // Replace with your actual folder path
       const fileName = file.name;
-      const fileUrl = `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}/${fileName}`;
+      const fileUrl = `/sites/ReadifyEM/${libraryName}/${(
+        await sanitizedDocumentName
+      ).trimEnd()}/${(await sanitizedSectionName).trimEnd()}/${fileName}`;
       const fileExists = await sp.web.getFileByServerRelativeUrl(fileUrl).get();
-
+      debugger;
       const checkLocally = description.includes(fileName);
       if (checkLocally) {
         alert("File already exists");
@@ -586,7 +589,7 @@ const RichText = ({
 
           const iconHtml = `<span><img src="${
             base64Data.file
-          }" style="width:11px !important; height:15px !important; vertical-align:middle;margin-right:8px;" />
+          }" width="11" height="15" />
           <a style="margin-right:10px;" href=${encodeURI(
             fileUrl
           )} rel="noopener noreferrer" target="_blank">${file.name}</a>
@@ -717,16 +720,22 @@ const RichText = ({
                 if (imgSrc.startsWith(base64Data.file)) {
                   // Set style for the base64 icon
                   imageElement.setAttribute("class", "fileAttachmentIcon");
+                  imageElement.setAttribute("width", "11");
+                  imageElement.setAttribute("height", "15");
+
                   imageElement.setAttribute(
                     "style",
-                    "width: 11px;height:15px;vertical-align:middle;"
+                    "margin-right: 8px;vertical-align:middle;"
                   );
                 } else {
                   // Set style for other images
-                  imageElement.setAttribute(
-                    "style",
-                    "width: 400px;height:400px"
-                  );
+                  imageElement.setAttribute("class", "rtUploadImage");
+                  imageElement.setAttribute("width", "400");
+                  imageElement.setAttribute("height", "400");
+                  // imageElement.setAttribute(
+                  //   "style",
+                  //   "width: 400px;height:400px"
+                  // );
 
                   // Get the parent <p> tag and apply text-align center
                   // const parentParagraph = imageElement.closest("p");
@@ -888,7 +897,8 @@ const RichText = ({
   };
 
   const convertToTxtFile = (): any => {
-    const blob = new Blob([JSON.stringify(description)], {
+    const modifyDescription = description.replace(/"/g, "'");
+    const blob = new Blob([JSON.stringify(modifyDescription)], {
       type: "text/plain",
     });
     const file: any = new File([blob], "Sample.txt", { type: "text/plain" });
@@ -1111,32 +1121,42 @@ const RichText = ({
           onChange={handleChange}
         />
       )}
-      <div style={{ position: "absolute", top: "7px", right: "10px" }}>
-        {/* <button onClick={handleAddFile}>Add File</button> */}
-        {!currentSectionData?.sectionSubmitted &&
-          (currentDocRole?.sectionAuthor || currentDocRole?.primaryAuthor) && (
-            <DefaultButton
-              text="Attachment"
-              startIcon={
-                <AttachFileIcon
-                  sx={{
-                    transform: "rotate(25deg)",
-                  }}
-                />
-              }
-              btnType="lightGreyVariant"
-              title="Add attachment"
-              style={{
-                letterSpacing: "0px",
-              }}
-              onlyIcon={true}
-              onClick={() => {
-                handleAddFile();
-              }}
-              size="small"
-            />
-          )}
-      </div>
+      {!sectionLoader && (
+        <div style={{ position: "absolute", top: "7px", right: "10px" }}>
+          {/* <button onClick={handleAddFile}>Add File</button> */}
+          {!currentSectionData?.sectionSubmitted &&
+            (currentDocRole?.sectionAuthor ||
+              currentDocRole?.primaryAuthor) && (
+              <DefaultButton
+                text="Attachment"
+                startIcon={
+                  <AttachFileIcon
+                    sx={{
+                      transform: "rotate(25deg)",
+                    }}
+                  />
+                }
+                btnType="lightGreyVariant"
+                title="Add attachment"
+                style={{
+                  letterSpacing: "0px",
+                }}
+                disabled={
+                  !currentSectionData?.sectionSubmitted &&
+                  (currentDocRole?.sectionAuthor ||
+                    currentDocRole?.primaryAuthor)
+                    ? false
+                    : true
+                }
+                onlyIcon={true}
+                onClick={() => {
+                  handleAddFile();
+                }}
+                size="small"
+              />
+            )}
+        </div>
+      )}
       {!noActionBtns ? (
         <div
           style={{

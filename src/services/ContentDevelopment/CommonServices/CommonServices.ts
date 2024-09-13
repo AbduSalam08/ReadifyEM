@@ -1396,7 +1396,8 @@ const convertToTxtFile = (content: any[]): any => {
 
   const cleanedTable = changeRecordTable
     .replace(/\n/g, "")
-    .replace(/\s{2,}/g, " ");
+    .replace(/\s{2,}/g, " ")
+    .replace(/"/g, "'");
 
   const blob = new Blob([JSON.stringify(cleanedTable)], {
     type: "text/plain",
