@@ -51,6 +51,7 @@ import PDFServiceTemplate from "../../webparts/readifyEmMain/components/Table/PD
 // images
 const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
 const contentDeveloperEdit: any = require("../../assets/images/svg/editContentDeveloper.svg");
+// const editConfigurationImg: any = require("../../assets/images/svg/taskConfigurationEditIcon.svg");
 const viewDocBtn: any = require("../../assets/images/svg/viewEye.svg");
 const newversionBtn: any = require("../../assets/images/svg/newVersion.svg");
 import EditIcon from "@mui/icons-material/Edit";
@@ -247,7 +248,7 @@ const TableOfContents = (): JSX.Element => {
         ...prev,
         [inputName]: {
           ...prev[inputName],
-          value: value,
+          value: value.trimStart(),
           isValid:
             typeof value !== "object"
               ? emptyCheck(value) && value !== null && value !== undefined
@@ -340,7 +341,7 @@ const TableOfContents = (): JSX.Element => {
   // Update page Title
 
   const handlePageTitle = (): any => {
-    if (popupData.homePageTitle.value !== "") {
+    if (popupData.homePageTitle.value.trimStart() !== "") {
       updatePageTitle(
         dispatch,
         popupData.homePageTitle.value,
@@ -819,7 +820,20 @@ const TableOfContents = (): JSX.Element => {
               screens.pageTitle ? screens.pageTitle : "Home"
             )}
           />
-          {screens?.toc && (
+          {screens?.toc && isAdmin && (
+            // <button
+            //   onClick={() => {
+            //     togglePopupVisibility(
+            //       setPopupController,
+            //       3,
+            //       "open",
+            //       "Change page title",
+            //       popupData
+            //     );
+            //   }}
+            // >
+            //   <img src={editConfigurationImg} alt="editConfigurationImg" />
+            // </button>
             <EditIcon
               className={styles.editIcon}
               onClick={() => {

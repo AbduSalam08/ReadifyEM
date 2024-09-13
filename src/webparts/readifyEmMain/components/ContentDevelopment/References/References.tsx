@@ -216,32 +216,32 @@ const References: React.FC<Props> = ({
     } else {
       setReferencesData((prev: any) => ({
         ...prev,
-        [key]: value,
+        [key]: value.trimStart(),
         IsDuplicate: false,
       }));
     }
   };
 
   const validateSections = (): any => {
-    if (referencesData.referenceTitle === "") {
+    if (referencesData.referenceTitle.trimStart() === "") {
       setReferencesData((prev: any) => ({
         ...prev,
         IsValid: false,
         ErrorMsg: "referenceTitle",
       }));
-    } else if (referencesData.referenceAuthorName === "") {
+    } else if (referencesData.referenceAuthorName.trimStart() === "") {
       setReferencesData((prev: any) => ({
         ...prev,
         IsValid: false,
         ErrorMsg: "referenceAuthorName",
       }));
-    } else if (referencesData.referenceLink !== "") {
+    } else if (referencesData.referenceLink.trimStart() !== "") {
       // setReferencesData((prev: any) => ({
       //   ...prev,
       //   IsValid: false,
       //   ErrorMsg: "referenceLink",
       // }));
-      if (!validateWebURL(referencesData.referenceLink)) {
+      if (!validateWebURL(referencesData.referenceLink.trimStart())) {
         setReferencesData((prev: any) => ({
           ...prev,
           IsValid: false,

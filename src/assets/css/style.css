@@ -215,6 +215,17 @@ img {
   height: 100%;
   object-fit: contain;
 }
+.fileAttachmentIcon {
+  width: 11px !important;
+  height: 15px !important;
+  margin-right: 8px;
+  vertical-align: middle !important;
+}
+.rtUploadImage {
+  width: 400px!important;
+  height: 400px!important;
+  vertical-align: middle !important;
+}
 body {
   line-height: 1;
 }

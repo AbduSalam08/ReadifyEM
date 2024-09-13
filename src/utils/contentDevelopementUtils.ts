@@ -332,11 +332,9 @@ export const addDefaultPDFheader = async (
               tempSectionDetails,
               DocDetailsResponseData
             );
-            const cleanedTable = PDFHeaderTable.replace(/\n/g, "").replace(
-              /\s{2,}/g,
-              " "
-            );
-            // .replace(/"/g, "'");
+            const cleanedTable = PDFHeaderTable.replace(/\n/g, "")
+              .replace(/\s{2,}/g, " ")
+              .replace(/"/g, "'");
 
             const blob = new Blob([JSON.stringify(cleanedTable)], {
               type: "text/plain",
@@ -351,10 +349,9 @@ export const addDefaultPDFheader = async (
               sectionDetails,
               DocDetailsResponseData
             );
-            const cleanedTable = PDFHeaderTable.replace(/\n/g, "").replace(
-              /\s{2,}/g,
-              " "
-            );
+            const cleanedTable = PDFHeaderTable.replace(/\n/g, "")
+              .replace(/\s{2,}/g, " ")
+              .replace(/"/g, "'");
 
             const blob = new Blob([JSON.stringify(cleanedTable)], {
               type: "text/plain",

@@ -79,7 +79,8 @@ const convertDefinitionsToTxtFile = (
 
   const cleanedTable = definitionsTable
     .replace(/\n/g, "")
-    .replace(/\s{2,}/g, " ");
+    .replace(/\s{2,}/g, " ")
+    .replace(/"/g, "'");
 
   const blob = new Blob([JSON.stringify(cleanedTable)], {
     type: "text/plain",
@@ -162,7 +163,8 @@ export const convertReferenceToTxtFile = (
 
   const cleanedTable = referencesTable
     .replace(/\n/g, "")
-    .replace(/\s{2,}/g, " ");
+    .replace(/\s{2,}/g, " ")
+    .replace(/"/g, "'");
 
   const blob = new Blob([JSON.stringify(cleanedTable)], {
     type: "text/plain",

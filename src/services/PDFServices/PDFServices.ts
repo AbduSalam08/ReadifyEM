@@ -150,84 +150,20 @@ export const bindHeaderTable = async (
 ): Promise<string> => {
   const base64Image = base64Data.headerImage;
 
-  // let definitionsTable = "";
-  // definitionsTable = `<table class="pdf_header" style="width:100%;border: 1px solid black;">
-  //       <tbody>`;
-
-  // definitionsTable += `<tr>
-  //               <td style="width:15%; padding:10px;">
-
-  //                 <img width="200" height="80" style="padding:10px;" src="${
-  //                   sectionDetails?.base64 !== ""
-  //                     ? sectionDetails?.base64
-  //                     : base64Image
-  //                 }" alt="doc header logo" />
-  //               </td>
-  //               <td style="width: 35%;font-size: 11px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center;center; border-left: 1px solid #000;">
-  //                 <div style="display: flex;flex-wrap: wrap;">
-  //                   <p style="width: 100%;font-size: 26px;font-family: interMedium, sans-serif;margin: 5px;">${
-  //                     docDetails?.Title || "-"
-  //                   }</p>
-  //                   <span style="width: 100%;font-family: interRegular, sans-serif;font-size: 14px;color: #adadad;">Version : ${
-  //                     docDetails.documentVersion
-  //                   }</span>
-  //                 </div>
-  //               </td>
-  //               <td style="width: 30%;font-size: 13px;line-height: 18px; font-family: interMedium,sans-serif; text-align: center;border: 1px solid #000;">
-  //                 <table style="width: 100%;border-collapse: collapse;">
-  //                   <tbody>
-  //                     <tr style = "border-bottom: 1px solid #000;">
-  //                       <td style="width: 50%; text-align: right; padding: 3px 10px;">Type</td>
-  //                       <td style="width: 50%; text-align: left; padding: 3px 10px;">
-  //                         <span style="overflow-wrap: anywhere;">${
-  //                           docDetails?.documentTemplateType?.Title || "-"
-  //                         }</span>
-  //                       </td>
-  //                     </tr>
-  //                     <tr style = "border-bottom: 1px solid #000;">
-  //                       <td style="width: 50%; text-align: right; padding: 3px 10px;">Created on</td>
-  //                       <td style="width: 50%; text-align: left; padding: 3px 10px;">
-  //                         <span style="overflow-wrap: anywhere;">${
-  //                           docDetails?.createdDate || "-"
-  //                         }</span>
-  //                       </td>
-  //                     </tr>
-  //                     <tr style = "border-bottom: 1px solid #000;">
-  //                       <td style="width: 50%; text-align: right; padding: 3px 10px;">Last review</td>
-  //                       <td style="width: 50%; text-align: left; padding: 3px 10px;">
-  //                         <span style="overflow-wrap: anywhere;">${
-  //                           docDetails?.lastReviewDate || "-"
-  //                         }</span>
-  //                       </td>
-  //                     </tr>
-  //                     <tr>
-  //                       <td style="width: 50%; text-align: right; padding: 3px 10px;">Next review</td>
-  //                       <td style="width: 50%; text-align: left; padding: 3px 10px;">
-  //                         <span style="overflow-wrap: anywhere;">${
-  //                           docDetails?.nextReviewDate || "-"
-  //                         }</span>
-  //                       </td>
-  //                     </tr>
-  //                   </tbody>
-  //                 </table>
-  //               </td>
-  //             </tr>`;
-
-  // definitionsTable += `</tbody></table>`;
   let definitionsTable = "";
-  definitionsTable = `<table class="pdf_header" style="border-collapse: collapse; width: 100%;">
+  definitionsTable = `<table class="pdf_header" style="width:100%;border: 1px solid black;">
         <tbody>`;
 
   definitionsTable += `<tr>
-                <td style="width: 20%;font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">
+                <td style="width:15%; padding:10px;">
 
-                  <img style="width:100%;min-width: 75px !important;min-width: 150px !important;height:60px !important" src="${
+                  <img width="200" height="80" style="padding:10px;" src="${
                     sectionDetails?.base64 !== ""
                       ? sectionDetails?.base64
                       : base64Image
                   }" alt="doc header logo" />
                 </td>
-                <td style="width: 50%;font-size: 13px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">
+                <td style="width: 35%;font-size: 11px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center;center; border-left: 1px solid #000;">
                   <div style="display: flex;flex-wrap: wrap;">
                     <p style="width: 100%;font-size: 26px;font-family: interMedium, sans-serif;margin: 5px;">${
                       docDetails?.Title || "-"
@@ -241,32 +177,32 @@ export const bindHeaderTable = async (
                   <table style="width: 100%;border-collapse: collapse;">
                     <tbody>
                       <tr style = "border-bottom: 1px solid #000;">
-                        <td style="width: 50%; border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Type</td>
-                        <td style="width: 50%; text-align: start; padding: 3px 10px;">
+                        <td style="width: 50%; text-align: right; padding: 3px 10px;">Type</td>
+                        <td style="width: 50%; text-align: left; padding: 3px 10px;">
                           <span style="overflow-wrap: anywhere;">${
                             docDetails?.documentTemplateType?.Title || "-"
                           }</span>
                         </td>
                       </tr>
                       <tr style = "border-bottom: 1px solid #000;">
-                        <td style="width: 50%;border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Created on</td>
-                        <td style="width: 50%; text-align: start; padding: 3px 10px;">
+                        <td style="width: 50%; text-align: right; padding: 3px 10px;">Created on</td>
+                        <td style="width: 50%; text-align: left; padding: 3px 10px;">
                           <span style="overflow-wrap: anywhere;">${
                             docDetails?.createdDate || "-"
                           }</span>
                         </td>
                       </tr>
                       <tr style = "border-bottom: 1px solid #000;">
-                        <td style="width: 50%;border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Last review</td>
-                        <td style="width: 50%; text-align: start; padding: 3px 10px;">
+                        <td style="width: 50%; text-align: right; padding: 3px 10px;">Last review</td>
+                        <td style="width: 50%; text-align: left; padding: 3px 10px;">
                           <span style="overflow-wrap: anywhere;">${
                             docDetails?.lastReviewDate || "-"
                           }</span>
                         </td>
                       </tr>
                       <tr>
-                        <td style="width: 50%;border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Next review</td>
-                        <td style="width: 50%; text-align: start; padding: 3px 10px;">
+                        <td style="width: 50%; text-align: right; padding: 3px 10px;">Next review</td>
+                        <td style="width: 50%; text-align: left; padding: 3px 10px;">
                           <span style="overflow-wrap: anywhere;">${
                             docDetails?.nextReviewDate || "-"
                           }</span>
@@ -278,6 +214,70 @@ export const bindHeaderTable = async (
               </tr>`;
 
   definitionsTable += `</tbody></table>`;
+  // let definitionsTable = "";
+  // definitionsTable = `<table class="pdf_header" style="border-collapse: collapse; width: 100%;">
+  //       <tbody>`;
+
+  // definitionsTable += `<tr>
+  //               <td style="width: 20%;font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">
+
+  //                 <img style="width:100%;min-width: 75px !important;min-width: 150px !important;height:60px !important" src="${
+  //                   sectionDetails?.base64 !== ""
+  //                     ? sectionDetails?.base64
+  //                     : base64Image
+  //                 }" alt="doc header logo" />
+  //               </td>
+  //               <td style="width: 50%;font-size: 13px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">
+  //                 <div style="display: flex;flex-wrap: wrap;">
+  //                   <p style="width: 100%;font-size: 26px;font-family: interMedium, sans-serif;margin: 5px;">${
+  //                     docDetails?.Title || "-"
+  //                   }</p>
+  //                   <span style="width: 100%;font-family: interRegular, sans-serif;font-size: 14px;color: #adadad;">Version : ${
+  //                     docDetails.documentVersion
+  //                   }</span>
+  //                 </div>
+  //               </td>
+  //               <td style="width: 30%;font-size: 13px;line-height: 18px; font-family: interMedium,sans-serif; text-align: center;border: 1px solid #000;">
+  //                 <table style="width: 100%;border-collapse: collapse;">
+  //                   <tbody>
+  //                     <tr style = "border-bottom: 1px solid #000;">
+  //                       <td style="width: 50%; border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Type</td>
+  //                       <td style="width: 50%; text-align: start; padding: 3px 10px;">
+  //                         <span style="overflow-wrap: anywhere;">${
+  //                           docDetails?.documentTemplateType?.Title || "-"
+  //                         }</span>
+  //                       </td>
+  //                     </tr>
+  //                     <tr style = "border-bottom: 1px solid #000;">
+  //                       <td style="width: 50%;border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Created on</td>
+  //                       <td style="width: 50%; text-align: start; padding: 3px 10px;">
+  //                         <span style="overflow-wrap: anywhere;">${
+  //                           docDetails?.createdDate || "-"
+  //                         }</span>
+  //                       </td>
+  //                     </tr>
+  //                     <tr style = "border-bottom: 1px solid #000;">
+  //                       <td style="width: 50%;border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Last review</td>
+  //                       <td style="width: 50%; text-align: start; padding: 3px 10px;">
+  //                         <span style="overflow-wrap: anywhere;">${
+  //                           docDetails?.lastReviewDate || "-"
+  //                         }</span>
+  //                       </td>
+  //                     </tr>
+  //                     <tr>
+  //                       <td style="width: 50%;border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Next review</td>
+  //                       <td style="width: 50%; text-align: start; padding: 3px 10px;">
+  //                         <span style="overflow-wrap: anywhere;">${
+  //                           docDetails?.nextReviewDate || "-"
+  //                         }</span>
+  //                       </td>
+  //                     </tr>
+  //                   </tbody>
+  //                 </table>
+  //               </td>
+  //             </tr>`;
+
+  // definitionsTable += `</tbody></table>`;
   return definitionsTable;
 };
 

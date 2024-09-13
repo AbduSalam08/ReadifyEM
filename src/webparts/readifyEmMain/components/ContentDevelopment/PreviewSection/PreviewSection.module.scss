@@ -8,13 +8,13 @@
         width: 11px !important;
         height: 15px !important;
         margin-right: 8px;
-        // vertical-align: middle !important;
+        vertical-align: middle !important;
     }
     a{
         // vertical-align: middle !important;
         margin-right: 10px;
     }
-    img {
+    .rtUploadImage {
         width: 400px;
         height: 400px;
         margin-right: 8px;
@@ -32,6 +32,7 @@
     }
     li{
         margin-bottom: 10px;
+        line-height: 22px;
     }
 }
 .noDataFound {
