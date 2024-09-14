@@ -509,10 +509,8 @@ const ContentDevelopment = (): JSX.Element => {
   };
 
   const submitPromotedComment = async () => {
-    handleClosePopup(3);
-
     try {
-      dispatch(setCDBackDrop(true));
+      debugger;
       if (promoteComments.promoteComment?.trim() === "") {
         setPromoteComments({
           ...promoteComments,
@@ -522,6 +520,8 @@ const ContentDevelopment = (): JSX.Element => {
         return;
       }
 
+      dispatch(setCDBackDrop(true));
+      handleClosePopup(3);
       setPromoteComments({
         ...promoteComments,
         IsValid: false,
@@ -983,7 +983,7 @@ const ContentDevelopment = (): JSX.Element => {
         onChange={(value: any) => {
           setPromoteComments({
             ...promoteComments,
-            promoteComment: value,
+            promoteComment: value.trimStart(),
             IsValid: false,
           });
         }}
@@ -1106,7 +1106,7 @@ const ContentDevelopment = (): JSX.Element => {
         startIcon: false,
         onClick: async () => {
           handleClosePopup(5);
-          if (promoteComments.promoteComment !== "") {
+          if (promoteComments.promoteComment.trimStart() !== "") {
             dispatch(setCDBackDrop(true));
 
             await addPromotedComment(

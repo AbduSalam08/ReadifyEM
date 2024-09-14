@@ -85,6 +85,7 @@ const SectionContentLatest: React.FC<IProps> = ({
   // const lastAddedPointRef = useRef<HTMLDivElement | null>(null);
   // Inside your renderPoints function
   const contentEditorRefs = useRef<Map<string, any>>(new Map());
+  console.log(currentSectionDetails);
 
   // confirmation popup controllers
   const initialPopupController = [
@@ -491,6 +492,7 @@ const SectionContentLatest: React.FC<IProps> = ({
     ],
     [
       <div key={1}>
+        {/* {currentSectionDetails.} */}
         <span
           style={{
             display: "flex",
@@ -499,9 +501,11 @@ const SectionContentLatest: React.FC<IProps> = ({
             fontFamily: "interMedium, sans-serif",
           }}
         >
-          {currentSectionDetails.sectionOrder +
-            ". " +
-            currentSectionDetails.sectionName}
+          {currentSectionDetails.sectionType === "appendix section"
+            ? currentSectionDetails.sectionName
+            : currentSectionDetails.sectionOrder +
+              ". " +
+              currentSectionDetails.sectionName}
         </span>
         <PreviewSection
           sectionId={currentSectionDetails?.ID}

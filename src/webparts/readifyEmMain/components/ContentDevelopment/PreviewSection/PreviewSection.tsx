@@ -29,7 +29,6 @@ const PreviewSection: React.FC<Iprops> = ({ sectionId, sectionDetails }) => {
     arr: any[],
     parentPath: number[] = []
   ): JSX.Element[] => {
-    debugger;
     return arr?.map((point, index) => {
       // Calculate the current path for this point (parent path + current index)
       const currentPath = [...parentPath, index];

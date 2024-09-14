@@ -279,9 +279,11 @@ const RichText = ({
             fontFamily: "interMedium, sans-serif",
           }}
         >
-          {currentSectionData.sectionOrder +
-            ". " +
-            currentSectionData.sectionName}
+          {currentSectionData.sectionType === "appendix section"
+            ? currentSectionData.sectionName
+            : currentSectionData.sectionOrder +
+              ". " +
+              currentSectionData.sectionName}
         </span>
         <PreviewSection
           sectionId={currentSectionData?.ID}
@@ -468,7 +470,6 @@ const RichText = ({
     sectionDetails: any,
     currentDocumentDetails: any
   ): Promise<any> => {
-    debugger;
     const libraryName = "Shared Documents";
     // Sanitize folder names
     const sanitizedDocumentName = sanitizeFolderName(
@@ -483,7 +484,6 @@ const RichText = ({
         await sanitizedDocumentName
       ).trimEnd()}/${(await sanitizedSectionName).trimEnd()}/${fileName}`;
       const fileExists = await sp.web.getFileByServerRelativeUrl(fileUrl).get();
-      debugger;
       const checkLocally = description.includes(fileName);
       if (checkLocally) {
         alert("File already exists");

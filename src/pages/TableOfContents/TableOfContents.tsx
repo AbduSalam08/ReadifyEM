@@ -33,6 +33,9 @@ import {
   // findItemByUrl,
   // editFolder,
 } from "../../services/EMManual/EMMServices";
+import Checkbox from "@mui/material/Checkbox";
+import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
+import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import DefaultButton from "../../webparts/readifyEmMain/components/common/Buttons/DefaultButton";
 import { togglePopupVisibility } from "../../utils/togglePopup";
 import { filterDataByURL } from "../../utils/NewDocumentUtils";
@@ -89,6 +92,13 @@ const initialPopupController = [
     defaultCloseBtn: false,
     popupData: [],
   },
+  {
+    open: false,
+    popupTitle: "Version Change",
+    popupWidth: "30vw",
+    defaultCloseBtn: false,
+    popupData: [],
+  },
 ];
 
 const popupInitialData = {
@@ -108,6 +118,11 @@ const popupInitialData = {
     errorMsg: "Please specify the location",
   },
   homePageTitle: {
+    value: "",
+    isValid: true,
+    errorMsg: "Please enter the page title",
+  },
+  initiatVersion: {
     value: "",
     isValid: true,
     errorMsg: "Please enter the page title",
@@ -164,6 +179,18 @@ const TableOfContents = (): JSX.Element => {
     pageTitle: pageDetailsState?.pageTitle || "Home",
     editDocumentData: [],
   });
+  const [tempScreens, setTempScreens] = useState<{
+    toc: boolean;
+    NewDocument: boolean;
+    pageTitle: any;
+    editDocumentData: any;
+  }>({
+    toc: true,
+    NewDocument: false,
+    pageTitle: pageDetailsState?.pageTitle || "Home",
+    editDocumentData: [],
+  });
+  console.log(tempScreens);
 
   // const [parsedJSON, setParsedJSON] = useState<any[]>([]);
 
@@ -334,6 +361,87 @@ const TableOfContents = (): JSX.Element => {
           isValid={!popupData.homePageTitle.isValid}
           errorMsg={popupData.homePageTitle.errorMsg}
         />
+      </div>,
+    ],
+    [
+      <div key={1} className={styles.initiateVersionPopup}>
+        <div className={styles.popupTitle}>Which version you want initiate</div>
+        <div className={styles.chechBoxWrapper}>
+          <div>
+            <Checkbox
+              id="sectionDefinitionUniqueId"
+              checkedIcon={<RadioButtonCheckedIcon />}
+              icon={<RadioButtonUncheckedIcon />}
+              key={1}
+              checked={popupData.initiatVersion.value === "minor"}
+              onClick={(ev) => {
+                setPopupData((prev: any) => {
+                  const updatedFormData = {
+                    ...prev,
+                    initiatVersion: {
+                      ...prev["initiatVersion"],
+                      value: "minor",
+                    },
+                  };
+                  return updatedFormData;
+                });
+              }}
+            />
+            <span
+              onClick={(ev) => {
+                setPopupData((prev: any) => {
+                  const updatedFormData = {
+                    ...prev,
+                    initiatVersion: {
+                      ...prev["initiatVersion"],
+                      value: "minor",
+                    },
+                  };
+                  return updatedFormData;
+                });
+              }}
+            >
+              Minor
+            </span>
+          </div>
+          <div>
+            <Checkbox
+              id="sectionDefinitionUniqueId"
+              checkedIcon={<RadioButtonCheckedIcon />}
+              icon={<RadioButtonUncheckedIcon />}
+              key={1}
+              checked={popupData.initiatVersion.value === "major"}
+              onClick={(ev) => {
+                setPopupData((prev: any) => {
+                  const updatedFormData = {
+                    ...prev,
+                    initiatVersion: {
+                      ...prev["initiatVersion"],
+                      value: "major",
+                    },
+                  };
+                  return updatedFormData;
+                });
+              }}
+            />
+            <span
+              onClick={(ev) => {
+                setPopupData((prev: any) => {
+                  const updatedFormData = {
+                    ...prev,
+                    initiatVersion: {
+                      ...prev["initiatVersion"],
+                      value: "major",
+                    },
+                  };
+                  return updatedFormData;
+                });
+              }}
+            >
+              Major
+            </span>
+          </div>
+        </div>
       </div>,
     ],
   ];
@@ -710,6 +818,58 @@ const TableOfContents = (): JSX.Element => {
         startIcon: false,
         onClick: () => {
           handlePageTitle();
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          setPopupData((prev: any) => {
+            const updatedFormData = {
+              ...prev,
+              initiatVersion: {
+                ...prev["initiatVersion"],
+                value: "",
+              },
+            };
+            return updatedFormData;
+          });
+          togglePopupVisibility(setPopupController, 4, "close");
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          // handleSubmit("sub group");
+          if (popupData.initiatVersion.value !== "") {
+            let updateTitle = tempScreens.pageTitle.replace(
+              /\(.*\)/,
+              `(${popupData.initiatVersion.value})`
+            );
+            setScreens((prev) => ({
+              ...prev,
+              ...tempScreens,
+              pageTitle: updateTitle,
+            }));
+            togglePopupVisibility(setPopupController, 4, "close");
+          } else {
+            setToastMessage({
+              isShow: true,
+              severity: "warn",
+              title: "Invalid submission!",
+              message: `Please select initiate version.`,
+              duration: 3000,
+            });
+          }
         },
       },
     ],
@@ -1094,13 +1254,30 @@ const TableOfContents = (): JSX.Element => {
                         text={<img src={newversionBtn} />}
                         key={index}
                         onClick={() => {
-                          setScreens((prev) => ({
-                            ...prev,
-                            NewDocument: true,
-                            toc: false,
-                            pageTitle: pageTitle,
-                            editDocumentData: item,
-                          }));
+                          if (versionType === "minor") {
+                            setTempScreens((prev) => ({
+                              ...prev,
+                              NewDocument: true,
+                              toc: false,
+                              pageTitle: pageTitle,
+                              editDocumentData: item,
+                            }));
+
+                            togglePopupVisibility(
+                              setPopupController,
+                              4,
+                              "open",
+                              `Change version`
+                            );
+                          } else {
+                            setScreens((prev) => ({
+                              ...prev,
+                              NewDocument: true,
+                              toc: false,
+                              pageTitle: pageTitle,
+                              editDocumentData: item,
+                            }));
+                          }
                         }}
                       />
                     )}
