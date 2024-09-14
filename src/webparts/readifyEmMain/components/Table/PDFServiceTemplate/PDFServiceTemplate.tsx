@@ -15,6 +15,7 @@ interface Iprops {
 const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
   const [allSectionContent, setAllSectionContent] = useState<any[]>([]);
   const [loader, setLoader] = useState<boolean>(false);
+  console.log(allSectionContent);
 
   useEffect(() => {
     getDocumentRelatedSections(documentId, setAllSectionContent, setLoader);
@@ -80,7 +81,9 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
                       fontFamily: "interMedium, sans-serif",
                     }}
                   >
-                    {obj.sectionOrder + ". " + obj.text}
+                    {obj.sectionType === "appendix section"
+                      ? obj.text
+                      : obj.sectionOrder + ". " + obj.text}
                   </span>
                 )}
                 {typeof obj.value === "string" ? (

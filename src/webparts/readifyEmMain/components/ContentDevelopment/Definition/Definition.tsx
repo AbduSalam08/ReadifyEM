@@ -308,7 +308,7 @@ const Definition: React.FC<Props> = ({
     } else {
       setDefinitionsData((prev: any) => ({
         ...prev,
-        [key]: value,
+        [key]: value.trimStart(),
         IsDuplicate: false,
       }));
     }
