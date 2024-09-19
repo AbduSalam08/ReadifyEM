@@ -72,7 +72,7 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
                 style={{ padding: "10px 0px" }}
                 key={index}
               >
-                {obj.text !== "Header" && obj.text !== "Change Record" && (
+                {obj.text !== "Header" && (
                   <span
                     style={{
                       display: "flex",
@@ -81,7 +81,8 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
                       fontFamily: "interMedium, sans-serif",
                     }}
                   >
-                    {obj.sectionType === "appendix section"
+                    {obj.sectionType === "appendix section" ||
+                    obj.sectionType === "change record"
                       ? obj.text
                       : obj.sectionOrder + ". " + obj.text}
                   </span>

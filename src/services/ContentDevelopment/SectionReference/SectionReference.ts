@@ -187,6 +187,7 @@ const UpdateReference = async (
   setPopupController: any,
   togglePopupVisibility: any
 ) => {
+  debugger;
   try {
     const referenceSectionNumber = await findReferenceSectionNumber(
       AllSectionsDataMain,
@@ -272,8 +273,10 @@ const submitSectionReferences = async (
           setToastState({
             isShow: true,
             severity: "success",
-            title: "Section save",
-            message: "section has been saved successfully!",
+            title: `Section ${submitCondition ? "submitted" : "saved"}!`,
+            message: `Section has been ${
+              submitCondition ? "submitted" : "saved"
+            } successfully.`,
             duration: 3000,
           });
         }

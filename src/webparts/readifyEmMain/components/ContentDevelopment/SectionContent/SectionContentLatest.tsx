@@ -85,7 +85,7 @@ const SectionContentLatest: React.FC<IProps> = ({
   // const lastAddedPointRef = useRef<HTMLDivElement | null>(null);
   // Inside your renderPoints function
   const contentEditorRefs = useRef<Map<string, any>>(new Map());
-  console.log(currentSectionDetails);
+  console.log(currentSectionDetails, noActionBtns);
 
   // confirmation popup controllers
   const initialPopupController = [
@@ -257,8 +257,12 @@ const SectionContentLatest: React.FC<IProps> = ({
         setToastMessage({
           isShow: true,
           severity: "success",
-          title: "Content updated!",
-          message: "The content has been updated successfully.",
+          title: `Section ${
+            promoterKey === "sectionApproved" ? "approved" : "reviewed"
+          }!`,
+          message: `The section has been ${
+            promoterKey === "sectionApproved" ? "approved" : "reviewed"
+          } successfully.`,
           duration: 3000,
         });
 
@@ -577,6 +581,8 @@ const SectionContentLatest: React.FC<IProps> = ({
     currentUserDetails
   );
 
+  console.log(sectionLoader);
+
   const readTextFileFromTXT = (data: any): void => {
     setSectionLoader(true);
     SpServices.SPReadAttachments({
@@ -589,6 +595,8 @@ const SectionContentLatest: React.FC<IProps> = ({
         if (typeof parsedValue === "object") {
           setMasterPoints([...parsedValue]);
           onChange && onChange([...parsedValue]);
+          setSectionLoader(false);
+        } else {
           setSectionLoader(false);
         }
         // else {
@@ -1198,7 +1206,12 @@ const SectionContentLatest: React.FC<IProps> = ({
               text="Preview"
               btnType="secondaryBlue"
               onClick={() => {
-                togglePopupVisibility(setPopupController, 4, "open", "Preview");
+                togglePopupVisibility(
+                  setPopupController,
+                  4,
+                  "open",
+                  "Preview section"
+                );
               }}
             />
 

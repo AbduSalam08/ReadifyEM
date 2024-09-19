@@ -296,35 +296,44 @@ const submitSupportingDocuments = (
   sectionId: number,
   setToastState: any,
   getSelectedFun: any,
-  sectionOrder: number
+  sectionOrder: number,
+  submitCondition: boolean,
+  togglePopupVisibility: any,
+  setPopupController: any,
+  setLoader: any
 ) => {
-  let renderCondition: boolean = false;
+  setLoader(true);
   const tempArray: any[] = [...selectedDocuments];
   const tempAddArray = tempArray.filter((obj: any) => obj.status);
   const tempDelArray = tempArray.filter((obj: any) => obj.isDeleted);
-  const tempDelUpdateArray = tempArray.filter(
-    (obj: any) => !obj.isDeleted && !obj.status
-  );
+  // const tempDelUpdateArray = tempArray.filter(
+  //   (obj: any) => !obj.isDeleted && !obj.status
+  // );
 
   if (tempAddArray.length > 0) {
-    tempAddArray.forEach((obj: any, index: number) => {
+    tempAddArray.forEach(async (obj: any, index: number) => {
       const jsonObject = {
         Title: obj.documentName,
         documentLink: obj.documentLink,
         sectionDetailId: sectionId,
         documentDetailId: documentId,
       };
-      SpServices.SPAddItem({
+      await SpServices.SPAddItem({
         Listname: "SupportingDocuments",
         RequestJSON: jsonObject,
       })
         .then(async (res: any) => {
-          renderCondition = true;
-          if (
-            tempAddArray.length - 1 === index &&
-            tempDelArray.length === 0 &&
-            tempDelUpdateArray.length === 0
-          ) {
+          if (tempAddArray.length - 1 === index && tempDelArray.length === 0) {
+            togglePopupVisibility(setPopupController, 0, "close", "");
+            setToastState({
+              isShow: true,
+              severity: "success",
+              title: `Section ${submitCondition ? "Submitted" : "Saved"}!`,
+              message: `The section has been ${
+                submitCondition ? "Submitted" : "Saved"
+              }! successfully.`,
+              duration: 3000,
+            });
             const supportingDocumentsData = getAllSupportingDocumentsData(
               sectionId,
               documentId
@@ -334,15 +343,8 @@ const submitSupportingDocuments = (
               sectionOrder
             );
             AddSectionAttachment(sectionId, supportingDoc_file);
-            setToastState({
-              isShow: true,
-              severity: "success",
-              title: "Content updated!",
-              message: "The content has been updated successfully.",
-              duration: 3000,
-            });
             getSelectedFun();
-            return renderCondition;
+            setLoader(false);
           }
         })
         .catch((error) => console.log("Error : ", error));
@@ -350,17 +352,23 @@ const submitSupportingDocuments = (
   }
   if (tempDelArray.length > 0) {
     // toast.error("Please select atleast one document to add");
-    tempDelArray.forEach((obj: any, index: number) => {
-      SpServices.SPDeleteItem({
+    tempDelArray.forEach(async (obj: any, index: number) => {
+      await SpServices.SPDeleteItem({
         Listname: "SupportingDocuments",
         ID: obj.ID,
       })
         .then(async (res: any) => {
-          renderCondition = true;
-          if (
-            tempDelArray.length - 1 === index &&
-            tempDelUpdateArray.length === 0
-          ) {
+          if (tempDelArray.length - 1 === index) {
+            togglePopupVisibility(setPopupController, 0, "close", "");
+            setToastState({
+              isShow: true,
+              severity: "success",
+              title: `Section ${submitCondition ? "Submitted" : "Saved"}!`,
+              message: `The section has been ${
+                submitCondition ? "Submitted" : "Saved"
+              }! successfully.`,
+              duration: 3000,
+            });
             const supportingDocumentsData = getAllSupportingDocumentsData(
               sectionId,
               documentId
@@ -370,15 +378,8 @@ const submitSupportingDocuments = (
               sectionOrder
             );
             AddSectionAttachment(sectionId, supportingDoc_file);
-            setToastState({
-              isShow: true,
-              severity: "success",
-              title: "Content updated!",
-              message: "The content has been updated successfully.",
-              duration: 3000,
-            });
             getSelectedFun();
-            return renderCondition;
+            setLoader(false);
           }
         })
         .catch((err) => {
@@ -386,44 +387,59 @@ const submitSupportingDocuments = (
         });
     });
   }
-  if (tempDelUpdateArray.length > 0) {
-    tempDelUpdateArray.forEach((obj: any, index: number) => {
-      const jsonObject = {
-        isDeleted: false,
-      };
-      SpServices.SPUpdateItem({
-        Listname: "SupportingDocuments",
-        ID: obj.ID,
-        RequestJSON: jsonObject,
-      })
-        .then(async (res: any) => {
-          renderCondition = true;
-          if (tempDelUpdateArray.length - 1 === index) {
-            const supportingDocumentsData = getAllSupportingDocumentsData(
-              sectionId,
-              documentId
-            );
-            const supportingDoc_file: any = await convertSupportingDocToTxtFile(
-              await supportingDocumentsData,
-              sectionOrder
-            );
-            AddSectionAttachment(sectionId, supportingDoc_file);
-            setToastState({
-              isShow: true,
-              severity: "success",
-              title: "Content updated!",
-              message: "The content has been updated successfully.",
-              duration: 3000,
-            });
-            getSelectedFun();
-            return renderCondition;
-          }
-        })
-        .catch((err) => {
-          console.log("Error : ", err);
-        });
+
+  if (tempAddArray.length === 0 && tempDelArray.length === 0) {
+    setToastState({
+      isShow: true,
+      severity: "success",
+      title: `Section ${submitCondition ? "Submitted" : "Saved"}!`,
+      message: `The section has been ${
+        submitCondition ? "Submitted" : "Saved"
+      } successfully.`,
+      duration: 3000,
     });
+    togglePopupVisibility(setPopupController, 0, "close", "");
+    setLoader(false);
   }
+  // if (tempDelUpdateArray.length > 0) {
+  //   tempDelUpdateArray.forEach((obj: any, index: number) => {
+  //     const jsonObject = {
+  //       isDeleted: false,
+  //     };
+  //     SpServices.SPUpdateItem({
+  //       Listname: "SupportingDocuments",
+  //       ID: obj.ID,
+  //       RequestJSON: jsonObject,
+  //     })
+  //       .then(async (res: any) => {
+  //         if (tempDelUpdateArray.length - 1 === index) {
+  //           handleClosePopup(0);
+  //           setToastState({
+  //             isShow: true,
+  //             severity: "success",
+  //             title: `Section ${submitCondition ? "Submitted" : "Saved"}!`,
+  //             message: `The section has been ${
+  //               submitCondition ? "Submitted" : "Saved"
+  //             }! successfully.`,
+  //             duration: 3000,
+  //           });
+  //           const supportingDocumentsData = getAllSupportingDocumentsData(
+  //             sectionId,
+  //             documentId
+  //           );
+  //           const supportingDoc_file: any = await convertSupportingDocToTxtFile(
+  //             await supportingDocumentsData,
+  //             sectionOrder
+  //           );
+  //           AddSectionAttachment(sectionId, supportingDoc_file);
+  //           getSelectedFun();
+  //         }
+  //       })
+  //       .catch((err) => {
+  //         console.log("Error : ", err);
+  //       });
+  //   });
+  // }
   // return renderCondition;
 };
 

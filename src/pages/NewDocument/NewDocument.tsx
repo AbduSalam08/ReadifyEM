@@ -479,7 +479,8 @@ const NewDocument = ({
       // disabled={currentDocDetails?.documentVersion !== "1.0"}
       disabled={
         currentDocDetails
-          ? currentDocDetails?.documentVersion === "1.0"
+          ? currentDocDetails?.documentVersion === "1.0" &&
+            versionChangeType === ""
             ? false
             : true
           : false

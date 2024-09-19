@@ -249,8 +249,12 @@ const SupportingDocuments: React.FC<Props> = ({
         setToastMessage({
           isShow: true,
           severity: "success",
-          title: "Content updated!",
-          message: "The content has been updated successfully.",
+          title: `Section ${
+            promoterKey === "sectionApproved" ? "approved" : "reviewed"
+          }!`,
+          message: `The section has been ${
+            promoterKey === "sectionApproved" ? "approved" : "reviewed"
+          } successfully.`,
           duration: 3000,
         });
 
@@ -406,7 +410,7 @@ const SupportingDocuments: React.FC<Props> = ({
         endIcon: false,
         startIcon: false,
         onClick: async () => {
-          handleClosePopup(2);
+          // handleClosePopup(2);
           await submitSupDocuments(true);
         },
       },
@@ -521,6 +525,7 @@ const SupportingDocuments: React.FC<Props> = ({
     message: "",
     duration: "",
   });
+  console.log(selectedDocuments);
 
   const submitRejectedComment = async (): Promise<any> => {
     if (rejectedComments.rejectedComment?.trim() !== "") {
@@ -824,23 +829,15 @@ const SupportingDocuments: React.FC<Props> = ({
 
   const submitSupDocuments = async (submitCondition: boolean) => {
     setCheckChanges(false);
-    togglePopupVisibility(
-      setPopupController,
-      0,
-      "close",
-      "Are you sure want to submit this section?"
-    );
+    // togglePopupVisibility(
+    //   setPopupController,
+    //   0,
+    //   "close",
+    //   ""
+    // );
     const checkCondition = selectedDocuments.some((obj: any) => obj.isNew);
     if (!checkCondition) {
       if (selectedDocuments.length !== 0) {
-        await submitSupportingDocuments(
-          [...selectedDocuments],
-          documentId,
-          sectionId,
-          setToastMessage,
-          getAllSelectedDocuments,
-          currentSectionDetails?.sectionOrder
-        );
         if (submitCondition) {
           await updateTaskCompletion(
             currentSectionDetails?.sectionName,
@@ -855,6 +852,18 @@ const SupportingDocuments: React.FC<Props> = ({
             currentDocDetailsData
           );
         }
+        await submitSupportingDocuments(
+          [...selectedDocuments],
+          documentId,
+          sectionId,
+          setToastMessage,
+          getAllSelectedDocuments,
+          currentSectionDetails?.sectionOrder,
+          submitCondition,
+          togglePopupVisibility,
+          setPopupController,
+          setLoader
+        );
       } else {
         setToastMessage({
           isShow: true,
@@ -1019,7 +1028,10 @@ const SupportingDocuments: React.FC<Props> = ({
                           className={styles.title}
                           id="sectionSupportingDocumentId"
                         >
-                          <span id="sectionSupportingDocumentId">
+                          <span
+                            id="sectionSupportingDocumentId"
+                            title={obj.documentName}
+                          >
                             {obj.documentName}
                           </span>
                         </div>
@@ -1231,7 +1243,12 @@ const SupportingDocuments: React.FC<Props> = ({
             text="Preview"
             btnType="secondaryBlue"
             onClick={() => {
-              togglePopupVisibility(setPopupController, 4, "open", "Preview");
+              togglePopupVisibility(
+                setPopupController,
+                4,
+                "open",
+                "Preview section"
+              );
             }}
           />
 

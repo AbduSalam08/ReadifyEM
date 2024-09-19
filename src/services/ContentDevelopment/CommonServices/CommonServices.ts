@@ -1001,8 +1001,8 @@ export const addRejectedComment = async (
       setToastState({
         isShow: true,
         severity: "success",
-        title: "Comment added!",
-        message: "your comments has been added successfully.",
+        title: "Rework assigned!",
+        message: "The section has been assigned for rework.",
         duration: 3000,
       });
     })
@@ -1347,26 +1347,24 @@ export const getSectionChangeRecord = async (
 
 const convertToTxtFile = (content: any[]): any => {
   let changeRecordTable = "";
-
-  changeRecordTable = `<div>
-    <span style="display: flex; padding-bottom: 15px; font-size: 22px; font-family: interMedium, sans-serif;">Change Record</span>
+  changeRecordTable = `
   <div>
     <table style="border-collapse: collapse; width: 100%;">
         <thead>
           <tr>
-            <th style="width: 8%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-              Section no
+            <th style="width: 10%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+              S.No
             </th>
-            <th style="width: 12%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+            <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
               Section name
             </th>
                   <th style="width: 30%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
               Current change
             </th>
-                  <th style="width: 12%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                  <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
               Author
             </th>
-                  <th style="width: 10%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                  <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
               Last modify
             </th>
           </tr>
@@ -1375,24 +1373,24 @@ const convertToTxtFile = (content: any[]): any => {
 
   content?.forEach((obj: any, index: number) => {
     changeRecordTable += `<tr key={${index}}>
-                      <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
-                  ${obj.sectionOrder}
+                      <td style="font-size: 13px; padding: 8px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                  ${index + 1}
                 </td>
-                      <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                      <td style="font-size: 13px; padding: 8px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
                   ${obj.sectionName}
                 </td>
-                      <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                      <td style="font-size: 13px; padding: 8px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
                   ${obj.changeRecordDescription}
                 </td>
-                      <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                      <td style="font-size: 13px; padding: 8px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
                   ${obj.changeRecordAuthor.authorName}
                 </td>
-                      <td style="font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                      <td style="font-size: 13px; padding: 8px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
                   ${dayjs(obj.changeRecordModify).format("DD-MMM-YYYY hh:mm A")}
                 </td>
               </tr>`;
   });
-  changeRecordTable += `</tbody></table></div></div>`;
+  changeRecordTable += `</tbody></table></div>`;
 
   const cleanedTable = changeRecordTable
     .replace(/\n/g, "")
@@ -1410,7 +1408,7 @@ export const getAllSectionsChangeRecord = async (
   documentId: number,
   dispatcher: any
 ): Promise<any> => {
-  let sectionsChangeRecord: any[] = [];
+  const sectionsChangeRecord: any[] = [];
   let changeRecId: any = null;
   await SpServices.SPReadItems({
     Listname: LISTNAMES.SectionDetails,
@@ -1426,6 +1424,8 @@ export const getAllSectionsChangeRecord = async (
     ],
   })
     .then(async (res: any[]) => {
+      console.log(res);
+
       res?.forEach((obj: any) => {
         if (obj.sectionType === "change record") {
           changeRecId = obj.ID;
@@ -1433,6 +1433,7 @@ export const getAllSectionsChangeRecord = async (
         if (obj.changeRecordDescription)
           sectionsChangeRecord.push({
             sectionOrder: parseInt(obj.sectionOrder),
+            sectionType: obj.sectionType,
             sectionName: obj.Title,
             changeRecordDescription: obj.changeRecordDescription,
             changeRecordModify: obj.changeRecordModify
@@ -1444,12 +1445,37 @@ export const getAllSectionsChangeRecord = async (
           });
       });
     })
-    .catch((error) => console.log("Error : ", error));
-  sectionsChangeRecord = sectionsChangeRecord.sort(
-    (a, b) => a.sectionOrder - b.sectionOrder
+    .catch((error: any) => console.log("Error : ", error));
+
+  const defaultSectionsArray = sectionsChangeRecord
+    ?.filter(
+      (obj: any) =>
+        obj.sectionType === "default section" ||
+        obj.sectionType === "references section"
+    )
+    .sort((a, b) => {
+      return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
+    });
+
+  const appendixSectionsArray = sectionsChangeRecord
+    ?.filter((obj: any) => obj.sectionType === "appendix section")
+    .sort((a, b) => {
+      return parseInt(a.sectionOrder) - parseInt(b.sectionOrder);
+    });
+
+  // sectionsChangeRecord = sectionsChangeRecord.sort(
+  //   (a, b) => a.sectionOrder - b.sectionOrder
+  // );
+  dispatcher(
+    setAllSectionsChangeRecord([
+      ...defaultSectionsArray,
+      ...appendixSectionsArray,
+    ])
   );
-  dispatcher(setAllSectionsChangeRecord(sectionsChangeRecord));
-  const _file: any = await convertToTxtFile(sectionsChangeRecord);
+  const _file: any = await convertToTxtFile([
+    ...defaultSectionsArray,
+    ...appendixSectionsArray,
+  ]);
   await SpServices.SPDeleteAttachments({
     ListName: LISTNAMES.SectionDetails,
     ListID: changeRecId,
@@ -1512,7 +1538,7 @@ export const addChangeRecord = async (
       setToastState({
         isShow: true,
         severity: "success",
-        title: "Description added!",
+        title: "Change record added!",
         message: "Change record description has been added successfully.",
         duration: 3000,
       });
@@ -1586,7 +1612,7 @@ export const updatePageTitle = (
       isShow: true,
       severity: "success",
       title: "Title changed!",
-      message: "title has been changed successfully.",
+      message: "Title has been changed successfully.",
       duration: 3000,
     });
   });

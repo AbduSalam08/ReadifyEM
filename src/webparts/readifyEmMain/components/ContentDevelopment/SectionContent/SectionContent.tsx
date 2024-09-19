@@ -237,8 +237,12 @@ const SectionContent: React.FC<IProps> = ({
         setToastMessage({
           isShow: true,
           severity: "success",
-          title: "Content updated!",
-          message: "The content has been updated successfully.",
+          title: `Section ${
+            promoterKey === "sectionApproved" ? "approved" : "reviewed"
+          }!`,
+          message: `The section has been ${
+            promoterKey === "sectionApproved" ? "approved" : "reviewed"
+          } successfully.`,
           duration: 3000,
         });
 
@@ -1046,8 +1050,12 @@ const SectionContent: React.FC<IProps> = ({
         setToastMessage({
           isShow: true,
           severity: "success",
-          title: "Content updated!",
-          message: "The content has been updated successfully.",
+          title: `Section ${
+            submissionType === "submit" ? "submitted" : "saved"
+          }!`,
+          message: `The section has been ${
+            submissionType === "submit" ? "submitted" : "saved"
+          } successfully.`,
           duration: 3000,
         });
       })
@@ -1207,7 +1215,12 @@ const SectionContent: React.FC<IProps> = ({
               text="Preview"
               btnType="secondaryBlue"
               onClick={() => {
-                togglePopupVisibility(setPopupController, 4, "open", "Preview");
+                togglePopupVisibility(
+                  setPopupController,
+                  4,
+                  "open",
+                  "Preview section"
+                );
               }}
             />
 

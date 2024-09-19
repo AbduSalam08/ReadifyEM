@@ -6,6 +6,8 @@
 // /* eslint-disable @typescript-eslint/no-var-requires */
 
 import { base64Data, CONFIG, LISTNAMES } from "../../config/config";
+import getLastReviewDate from "../../utils/contentDevelopementUtils";
+import { getPreviousVersionDoc } from "../ContentDevelopment/CommonServices/CommonServices";
 // import { setSectionsAttachments } from "../../redux/features/PDFServicceSlice";
 import SpServices from "../SPServices/SpServices";
 // const sampleDocHeaderImg: any = require("../../assets/images/png/imagePlaceholder.png");
@@ -146,24 +148,98 @@ export const convertBlobToBase64 = (blob: Blob): Promise<string> => {
 
 export const bindHeaderTable = async (
   sectionDetails: any,
-  docDetails: any
+  docDetails: any,
+  lastReviewDate: any
 ): Promise<string> => {
+  console.log(lastReviewDate);
+
   const base64Image = base64Data.headerImage;
 
+  let definitionsTable = "";
+  definitionsTable = `<table class="pdf_header" style="width:100%;border: 1px solid black; margin-bottom:30px;">
+          <tbody>`;
+
+  definitionsTable += `<tr>
+                <td style="width:20%; padding:6px; text-align: center;vertical-align: middle;">
+
+                  <div style="width: 86px;height:86px;" > 
+                    <img width="100%" height= "100%" style="padding:1px;" src="${
+                      sectionDetails?.base64 !== ""
+                        ? sectionDetails?.base64
+                        : base64Image
+                    }" alt="doc header logo" />
+                  </div>
+                </td>
+                <td style="width: 45%;font-size: 11px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border-left: 1px solid #000;border-right: 1px solid #000;">
+                    <p style="font-size: 24px;font-family: interMedium, sans-serif;margin: 5px;">${
+                      docDetails?.Title
+                        ? docDetails?.Title.split("_")[0]
+                        : docDetails?.Title || "-"
+                    }</p>
+                    <span style="font-family: interRegular, sans-serif;font-size: 14px;color: #adadad;">Version : ${
+                      docDetails.documentVersion
+                    }</span>
+                </td>
+                <td style="width: 35%;font-size: 11px;line-height: 18px; font-family: interMedium,sans-serif;">
+                  <table style="width: 100%;border-collapse: collapse;">
+                    <tbody>
+                      <tr>
+                        <td style="width: 50%; text-align: right; padding: 3px;font-size: 11px;">Type</td>
+                        <td>:</td>
+                        <td style="width: 50%; text-align: left; padding: 3px;font-size: 11px;">
+                          <span style="overflow-wrap: anywhere;">${
+                            docDetails?.documentTemplateType?.Title || "-"
+                          }</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="width: 50%; text-align: right; padding: 3px;font-size: 11px;">Created on</td>
+                        <td>:</td>
+                        <td style="width: 50%; text-align: left; padding: 3px;font-size: 11px;">
+                          <span style="overflow-wrap: anywhere;">${
+                            docDetails?.createdDate || "-"
+                          }</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="width: 50%; text-align: right; padding: 3px;font-size: 11px;">Last review</td>
+                        <td>:</td>
+                        <td style="width: 50%; text-align: left; padding: 3px;font-size: 11px;">
+                          <span style="overflow-wrap: anywhere;">${
+                            lastReviewDate || "-"
+                          }</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="width: 50%; text-align: right; padding: 3px;font-size: 11px;">Next review</td>
+                        <td>:</td>
+                        <td style="width: 50%; text-align: left; padding: 3px;font-size: 11px;">
+                          <span style="overflow-wrap: anywhere;">${
+                            docDetails?.nextReviewDate || "-"
+                          }</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>`;
+
+  definitionsTable += `</tbody></table><br/>`;
+
   // let definitionsTable = "";
-  // definitionsTable = `<table class="pdf_header" style="width:100%;border: 1px solid black; margin-bottom:30px;">
+  // definitionsTable = `<table class="pdf_header" style="border-collapse: collapse; width: 100%;">
   //       <tbody>`;
 
   // definitionsTable += `<tr>
-  //               <td style="width:20%; padding:10px;">
+  //               <td style="width: 20%;font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">
 
-  //                 <img width="150" height="80" style="padding:10px;" src="${
+  //                 <img style="width:100%;min-width: 75px !important;min-width: 150px !important;height:60px !important" src="${
   //                   sectionDetails?.base64 !== ""
   //                     ? sectionDetails?.base64
   //                     : base64Image
   //                 }" alt="doc header logo" />
   //               </td>
-  //               <td style="width: 50%;font-size: 11px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center;center; border-left: 1px solid #000;border-right: 1px solid #000;">
+  //               <td style="width: 50%;font-size: 13px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">
   //                 <div style="display: flex;flex-wrap: wrap;">
   //                   <p style="width: 100%;font-size: 26px;font-family: interMedium, sans-serif;margin: 5px;">${
   //                     docDetails?.Title || "-"
@@ -173,36 +249,36 @@ export const bindHeaderTable = async (
   //                   }</span>
   //                 </div>
   //               </td>
-  //               <td style="width: 30%;font-size: 11px;line-height: 18px; font-family: interMedium,sans-serif; text-align: center;">
+  //               <td style="width: 30%;font-size: 13px;line-height: 18px; font-family: interMedium,sans-serif; text-align: center;border: 1px solid #000;">
   //                 <table style="width: 100%;border-collapse: collapse;">
   //                   <tbody>
-  //                     <tr>
-  //                       <td style="width: 50%; text-align: right; padding: 1px 10px;">Type</td>
-  //                       <td style="width: 50%; text-align: left; padding: 1px 10px;">
+  //                     <tr style = "border-bottom: 1px solid #000;">
+  //                       <td style="width: 50%; border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Type</td>
+  //                       <td style="width: 50%; text-align: start; padding: 3px 10px;">
   //                         <span style="overflow-wrap: anywhere;">${
   //                           docDetails?.documentTemplateType?.Title || "-"
   //                         }</span>
   //                       </td>
   //                     </tr>
-  //                     <tr>
-  //                       <td style="width: 50%; text-align: right; padding: 1px 10px;">Created on</td>
-  //                       <td style="width: 50%; text-align: left; padding: 1px 10px;">
+  //                     <tr style = "border-bottom: 1px solid #000;">
+  //                       <td style="width: 50%;border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Created on</td>
+  //                       <td style="width: 50%; text-align: start; padding: 3px 10px;">
   //                         <span style="overflow-wrap: anywhere;">${
   //                           docDetails?.createdDate || "-"
   //                         }</span>
   //                       </td>
   //                     </tr>
-  //                     <tr>
-  //                       <td style="width: 50%; text-align: right; padding: 1px 10px;">Last review</td>
-  //                       <td style="width: 50%; text-align: left; padding: 1px 10px;">
+  //                     <tr style = "border-bottom: 1px solid #000;">
+  //                       <td style="width: 50%;border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Last review</td>
+  //                       <td style="width: 50%; text-align: start; padding: 3px 10px;">
   //                         <span style="overflow-wrap: anywhere;">${
   //                           docDetails?.lastReviewDate || "-"
   //                         }</span>
   //                       </td>
   //                     </tr>
   //                     <tr>
-  //                       <td style="width: 50%; text-align: right; padding: 1px 10px;">Next review</td>
-  //                       <td style="width: 50%; text-align: left; padding: 1px 10px;">
+  //                       <td style="width: 50%;border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Next review</td>
+  //                       <td style="width: 50%; text-align: start; padding: 3px 10px;">
   //                         <span style="overflow-wrap: anywhere;">${
   //                           docDetails?.nextReviewDate || "-"
   //                         }</span>
@@ -215,70 +291,6 @@ export const bindHeaderTable = async (
 
   // definitionsTable += `</tbody></table>`;
 
-  let definitionsTable = "";
-  definitionsTable = `<table class="pdf_header" style="border-collapse: collapse; width: 100%;">
-        <tbody>`;
-
-  definitionsTable += `<tr>
-                <td style="width: 20%;font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">
-
-                  <img style="width:100%;min-width: 75px !important;min-width: 150px !important;height:60px !important" src="${
-                    sectionDetails?.base64 !== ""
-                      ? sectionDetails?.base64
-                      : base64Image
-                  }" alt="doc header logo" />
-                </td>
-                <td style="width: 50%;font-size: 13px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">
-                  <div style="display: flex;flex-wrap: wrap;">
-                    <p style="width: 100%;font-size: 26px;font-family: interMedium, sans-serif;margin: 5px;">${
-                      docDetails?.Title || "-"
-                    }</p>
-                    <span style="width: 100%;font-family: interRegular, sans-serif;font-size: 14px;color: #adadad;">Version : ${
-                      docDetails.documentVersion
-                    }</span>
-                  </div>
-                </td>
-                <td style="width: 30%;font-size: 13px;line-height: 18px; font-family: interMedium,sans-serif; text-align: center;border: 1px solid #000;">
-                  <table style="width: 100%;border-collapse: collapse;">
-                    <tbody>
-                      <tr style = "border-bottom: 1px solid #000;">
-                        <td style="width: 50%; border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Type</td>
-                        <td style="width: 50%; text-align: start; padding: 3px 10px;">
-                          <span style="overflow-wrap: anywhere;">${
-                            docDetails?.documentTemplateType?.Title || "-"
-                          }</span>
-                        </td>
-                      </tr>
-                      <tr style = "border-bottom: 1px solid #000;">
-                        <td style="width: 50%;border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Created on</td>
-                        <td style="width: 50%; text-align: start; padding: 3px 10px;">
-                          <span style="overflow-wrap: anywhere;">${
-                            docDetails?.createdDate || "-"
-                          }</span>
-                        </td>
-                      </tr>
-                      <tr style = "border-bottom: 1px solid #000;">
-                        <td style="width: 50%;border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Last review</td>
-                        <td style="width: 50%; text-align: start; padding: 3px 10px;">
-                          <span style="overflow-wrap: anywhere;">${
-                            docDetails?.lastReviewDate || "-"
-                          }</span>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="width: 50%;border-right: 1px solid #000; text-align: end; padding: 3px 10px;">Next review</td>
-                        <td style="width: 50%; text-align: start; padding: 3px 10px;">
-                          <span style="overflow-wrap: anywhere;">${
-                            docDetails?.nextReviewDate || "-"
-                          }</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>`;
-
-  definitionsTable += `</tbody></table>`;
   return definitionsTable;
 };
 
@@ -289,6 +301,13 @@ export const getDocumentRelatedSections = async (
 ): Promise<any> => {
   try {
     setLoader(true);
+    let lastReviewDate = "";
+    getPreviousVersionDoc(documentID).then((res) => {
+      console.log(res);
+
+      lastReviewDate = getLastReviewDate(res);
+      console.log(lastReviewDate);
+    });
     const DocDetailsResponse: any = await SpServices.SPReadItems({
       Listname: LISTNAMES.DocumentDetails,
       Select:
@@ -372,7 +391,8 @@ export const getDocumentRelatedSections = async (
               if (item[0].sectionName === "Header") {
                 const PDFHeaderTable = await bindHeaderTable(
                   item[0],
-                  DocDetailsResponseData
+                  DocDetailsResponseData,
+                  lastReviewDate === "Invalid Date" ? "-" : lastReviewDate
                 );
                 const sectionDetails = {
                   text: item[0].sectionName,
