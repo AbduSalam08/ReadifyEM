@@ -564,8 +564,12 @@ const Definition: React.FC<Props> = ({
         setToastMessage({
           isShow: true,
           severity: "success",
-          title: "Content updated!",
-          message: "The content has been updated successfully.",
+          title: `Section ${
+            promoterKey === "sectionApproved" ? "approved" : "reviewed"
+          }!`,
+          message: `The section has been ${
+            promoterKey === "sectionApproved" ? "approved" : "reviewed"
+          } successfully.`,
           duration: 3000,
         });
 
@@ -1057,7 +1061,7 @@ const Definition: React.FC<Props> = ({
       {
         text: "Submit",
         btnType: "primary",
-        disabled: false,
+        disabled: initialLoader ? true : false,
         endIcon: false,
         startIcon: false,
         onClick: () => {
@@ -1079,7 +1083,7 @@ const Definition: React.FC<Props> = ({
       {
         text: "Submit",
         btnType: "primary",
-        disabled: false,
+        disabled: initialLoader ? true : false,
         endIcon: false,
         startIcon: false,
         onClick: async () => {
@@ -1137,7 +1141,7 @@ const Definition: React.FC<Props> = ({
       {
         text: "Submit",
         btnType: "primary",
-        disabled: false,
+        disabled: initialLoader ? true : false,
         endIcon: false,
         startIcon: false,
         onClick: async () => {
@@ -1160,7 +1164,7 @@ const Definition: React.FC<Props> = ({
       {
         text: "Yes",
         btnType: "primary",
-        disabled: false,
+        disabled: initialLoader ? true : false,
         endIcon: false,
         startIcon: false,
         onClick: async () => {
@@ -1197,7 +1201,11 @@ const Definition: React.FC<Props> = ({
           {
             text: "Update",
             btnType: "primary",
-            disabled: !definitionsData.isSectionDefinition,
+            disabled:
+              !definitionsData.isSectionDefinition ||
+              currentSectionDetails?.sectionSubmitted
+                ? true
+                : false,
             endIcon: false,
             startIcon: false,
             onClick: () => {
@@ -1377,7 +1385,8 @@ const Definition: React.FC<Props> = ({
         setMasterDefinitions,
         setPopupLoaders,
         setToastMessage,
-        setInitialLoader
+        setInitialLoader,
+        submitCondition
       );
 
       if (submitCondition) {
@@ -1588,7 +1597,10 @@ const Definition: React.FC<Props> = ({
                             // }}
                             id="sectionDefinitionUniqueId"
                           >
-                            <span id="sectionDefinitionUniqueId">
+                            <span
+                              id="sectionDefinitionUniqueId"
+                              title={obj.definitionName}
+                            >
                               {obj.definitionName}
                             </span>
                           </div>
@@ -1597,7 +1609,10 @@ const Definition: React.FC<Props> = ({
                             style={{ width: "60%" }}
                             id="sectionDefinitionUniqueId"
                           >
-                            <span id="sectionDefinitionUniqueId">
+                            <span
+                              id="sectionDefinitionUniqueId"
+                              title={obj.definitionDescription}
+                            >
                               {obj.definitionDescription}
                             </span>
                           </div>
@@ -1731,7 +1746,12 @@ const Definition: React.FC<Props> = ({
               text="Preview"
               btnType="secondaryBlue"
               onClick={() => {
-                togglePopupVisibility(setPopupController, 5, "open", "Preview");
+                togglePopupVisibility(
+                  setPopupController,
+                  5,
+                  "open",
+                  "Preview section"
+                );
               }}
             />
             {currentDocDetailsData?.version !== "1.0" &&

@@ -249,6 +249,7 @@ const ContentTypeConfirmation = ({
               onClick={async () => {
                 await addData();
               }}
+              disabled
             />
             <DefaultButton text="Submit" btnType="primary" disabled />
           </div>

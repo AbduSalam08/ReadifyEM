@@ -23,7 +23,9 @@ import AlertPopup from "../../webparts/readifyEmMain/components/common/Popups/Al
 import { initialPopupLoaders } from "../../config/config";
 import { IPopupLoaders } from "../../interface/MainInterface";
 // import { sp } from "@pnp/sp";
+import InfoIcon from "@mui/icons-material/Info";
 import { ArrowRightAlt, Close } from "@mui/icons-material";
+import { Fade, Tooltip } from "@mui/material";
 // services
 import {
   EditFolderAndChangeItemPath,
@@ -94,8 +96,8 @@ const initialPopupController = [
   },
   {
     open: false,
-    popupTitle: "Version Change",
-    popupWidth: "30vw",
+    popupTitle: "",
+    popupWidth: "35vw",
     defaultCloseBtn: false,
     popupData: [],
   },
@@ -365,9 +367,17 @@ const TableOfContents = (): JSX.Element => {
     ],
     [
       <div key={1} className={styles.initiateVersionPopup}>
-        <div className={styles.popupTitle}>Which version you want initiate</div>
+        <div className={styles.popupTitle}>
+          Please select the type of version update you'd like to initiate:
+        </div>
         <div className={styles.chechBoxWrapper}>
-          <div>
+          <div
+            style={{
+              position: "relative",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
             <Checkbox
               id="sectionDefinitionUniqueId"
               checkedIcon={<RadioButtonCheckedIcon />}
@@ -388,6 +398,7 @@ const TableOfContents = (): JSX.Element => {
               }}
             />
             <span
+              style={{ fontWeight: "500" }}
               onClick={(ev) => {
                 setPopupData((prev: any) => {
                   const updatedFormData = {
@@ -401,10 +412,31 @@ const TableOfContents = (): JSX.Element => {
                 });
               }}
             >
-              Minor
+              Minor Version
             </span>
+            <Tooltip
+              title={"For small updates or revisions (e.g., 1.1, 1.2)."}
+              placement="right"
+              arrow
+              TransitionComponent={Fade}
+            >
+              <InfoIcon
+                sx={{
+                  position: "absolute",
+                  right: "-30px",
+                  top: "10px",
+                  color: "#0360a4",
+                }}
+              />
+            </Tooltip>
           </div>
-          <div>
+          <div
+            style={{
+              position: "relative",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
             <Checkbox
               id="sectionDefinitionUniqueId"
               checkedIcon={<RadioButtonCheckedIcon />}
@@ -425,6 +457,7 @@ const TableOfContents = (): JSX.Element => {
               }}
             />
             <span
+              style={{ fontWeight: "500" }}
               onClick={(ev) => {
                 setPopupData((prev: any) => {
                   const updatedFormData = {
@@ -438,8 +471,23 @@ const TableOfContents = (): JSX.Element => {
                 });
               }}
             >
-              Major
+              Major Version
             </span>
+            <Tooltip
+              title={"For significant updates or changes (e.g., 2.0, 3.0)."}
+              placement="right"
+              arrow
+              TransitionComponent={Fade}
+            >
+              <InfoIcon
+                sx={{
+                  position: "absolute",
+                  right: "-30px",
+                  top: "10px",
+                  color: "#0360a4",
+                }}
+              />
+            </Tooltip>
           </div>
         </div>
       </div>,
@@ -461,7 +509,7 @@ const TableOfContents = (): JSX.Element => {
       setToastMessage({
         isShow: true,
         severity: "warn",
-        title: "Invalid title submit!",
+        title: "Invalid submission!",
         message: `Empty title submission not allowed.`,
         duration: 3000,
       });
@@ -1267,7 +1315,7 @@ const TableOfContents = (): JSX.Element => {
                               setPopupController,
                               4,
                               "open",
-                              `Change version`
+                              `Change Document Version`
                             );
                           } else {
                             setScreens((prev) => ({

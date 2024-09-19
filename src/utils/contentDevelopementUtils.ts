@@ -158,6 +158,7 @@ import {
   convertBlobToBase64,
 } from "../services/PDFServices/PDFServices";
 import { AddSectionAttachmentFile } from "../services/ContentDevelopment/SectionDefinition/SectionDefinitionServices";
+import { getPreviousVersionDoc } from "../services/ContentDevelopment/CommonServices/CommonServices";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const AddAppendixAttachment = async (
@@ -280,10 +281,47 @@ export const UpdateAppendixAttachment = async (
   }
 };
 
+// Function to get the latest review date in 'DD/MM/YYYY' format
+const getLastReviewDate = (prevDocs: any): any => {
+  // Filter documents that do not have 'awaiting approval' as their approvedOn
+  if (prevDocs) {
+    const completedDocs = prevDocs?.filter(
+      (item: any) => item?.approvedOn?.toLowerCase() !== "awaiting approval"
+    );
+
+    // Check if there are any completed documents
+    if (completedDocs?.length !== 0) {
+      // Find the most recent approvedOn
+      const lastReviewDate = completedDocs?.reduce(
+        (latest: any, current: any) => {
+          // Parse dates using dayjs for comparison
+          const latestDate = dayjs(latest?.approvedOn, "DD/MM/YYYY");
+          const currentDate = dayjs(current?.approvedOn, "DD/MM/YYYY");
+
+          // Return the document with the latest date
+          return currentDate.isAfter(latestDate) ? current : latest;
+        }
+      );
+
+      // Format the latest review date to 'DD/MM/YYYY' format
+      return dayjs(lastReviewDate?.approvedOn, "DD/MM/YYYY").format(
+        "DD/MM/YYYY"
+      );
+    }
+  }
+
+  // Return null if no completed documents are found
+  return null;
+};
+
 export const addDefaultPDFheader = async (
   sectionDetails: any,
   documentId: number
 ): Promise<void> => {
+  let lastReviewDate = "";
+  getPreviousVersionDoc(documentId).then((res) => {
+    lastReviewDate = getLastReviewDate(res);
+  });
   const DocDetailsResponse: any = await SpServices.SPReadItems({
     Listname: LISTNAMES.DocumentDetails,
     Select:
@@ -330,7 +368,8 @@ export const addDefaultPDFheader = async (
 
             const PDFHeaderTable = await bindHeaderTable(
               tempSectionDetails,
-              DocDetailsResponseData
+              DocDetailsResponseData,
+              lastReviewDate === "Invalid Date" ? "-" : lastReviewDate
             );
             const cleanedTable = PDFHeaderTable.replace(/\n/g, "")
               .replace(/\s{2,}/g, " ")
@@ -347,7 +386,8 @@ export const addDefaultPDFheader = async (
           } else {
             const PDFHeaderTable = await bindHeaderTable(
               sectionDetails,
-              DocDetailsResponseData
+              DocDetailsResponseData,
+              lastReviewDate === "Invalid Date" ? "-" : lastReviewDate
             );
             const cleanedTable = PDFHeaderTable.replace(/\n/g, "")
               .replace(/\s{2,}/g, " ")
@@ -825,38 +865,5 @@ export async function updateTaskCompletion(
     console.error("Error updating tasks: ", err);
   }
 }
-
-// Function to get the latest review date in 'DD/MM/YYYY' format
-const getLastReviewDate = (prevDocs: any): any => {
-  // Filter documents that do not have 'awaiting approval' as their approvedOn
-  if (prevDocs) {
-    const completedDocs = prevDocs?.filter(
-      (item: any) => item?.approvedOn?.toLowerCase() !== "awaiting approval"
-    );
-
-    // Check if there are any completed documents
-    if (completedDocs?.length !== 0) {
-      // Find the most recent approvedOn
-      const lastReviewDate = completedDocs?.reduce(
-        (latest: any, current: any) => {
-          // Parse dates using dayjs for comparison
-          const latestDate = dayjs(latest?.approvedOn, "DD/MM/YYYY");
-          const currentDate = dayjs(current?.approvedOn, "DD/MM/YYYY");
-
-          // Return the document with the latest date
-          return currentDate.isAfter(latestDate) ? current : latest;
-        }
-      );
-
-      // Format the latest review date to 'DD/MM/YYYY' format
-      return dayjs(lastReviewDate?.approvedOn, "DD/MM/YYYY").format(
-        "DD/MM/YYYY"
-      );
-    }
-  }
-
-  // Return null if no completed documents are found
-  return null;
-};
 
 export default getLastReviewDate;

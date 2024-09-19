@@ -442,7 +442,8 @@ const submitSectionDefinitions = async (
   setMasterDefinitionsState: any,
   setLoaderState: any,
   setToastState: any,
-  setInitialLoader: any
+  setInitialLoader: any,
+  submitCondition: boolean
 ) => {
   setInitialLoader(true);
   const referenceSectionNumber = await findReferenceSectionNumber(
@@ -489,6 +490,15 @@ const submitSectionDefinitions = async (
             //   text: `Changes updated successfully!`,
             //   secondaryText: `Definitions add/remove updated successfully! `,
             // });
+            setToastState({
+              isShow: true,
+              severity: "success",
+              title: `Section ${submitCondition ? "Submitted" : "Saved"}!`,
+              message: `The section has been ${
+                submitCondition ? "Submitted" : "Saved"
+              } successfully.`,
+              duration: 3000,
+            });
             const sectionDefinitions = await getAllSectionDefinitions(
               documentId,
               sectionId
@@ -509,13 +519,6 @@ const submitSectionDefinitions = async (
               await referenceSectionNumber
             );
             AddReferenceAttachment(documentId, reference_file);
-            setToastState({
-              isShow: true,
-              severity: "success",
-              title: "Content updated!",
-              message: "The content has been updated successfully.",
-              duration: 3000,
-            });
             setInitialLoader(false);
           }
         })
@@ -551,6 +554,15 @@ const submitSectionDefinitions = async (
             //   text: `Changes updated successfully!`,
             //   secondaryText: `Definitions add/remove updated successfully! `,
             // });
+            setToastState({
+              isShow: true,
+              severity: "success",
+              title: `Section ${submitCondition ? "Submitted" : "Saved"}!`,
+              message: `The section has been ${
+                submitCondition ? "Submitted" : "Saved"
+              } successfully.`,
+              duration: 3000,
+            });
             const sectionDefinitions = await getAllSectionDefinitions(
               documentId,
               sectionId
@@ -571,13 +583,6 @@ const submitSectionDefinitions = async (
               await referenceSectionNumber
             );
             AddReferenceAttachment(documentId, reference_file);
-            setToastState({
-              isShow: true,
-              severity: "success",
-              title: "Content updated!",
-              message: "The content has been updated successfully.",
-              duration: 3000,
-            });
             setInitialLoader(false);
           }
         })
@@ -585,6 +590,19 @@ const submitSectionDefinitions = async (
           console.log("Error : ", err);
         });
     });
+  }
+
+  if (tempAddArray.length === 0 && tempDelArray.length === 0) {
+    setToastState({
+      isShow: true,
+      severity: "success",
+      title: `Section ${submitCondition ? "Submitted" : "Saved"}!`,
+      message: `The section has been ${
+        submitCondition ? "Submitted" : "Saved"
+      } successfully.`,
+      duration: 3000,
+    });
+    setInitialLoader(false);
   }
   // if (tempDelUpdateArray.length > 0) {
   //   tempDelUpdateArray.forEach(async (obj: any, index: number) => {
@@ -641,7 +659,6 @@ const submitSectionDefinitions = async (
   //       });
   //   });
   // }
-  setInitialLoader(false);
 };
 
 const addNewDefinition = async (
@@ -887,7 +904,13 @@ const updateSectionDefinition = async (
             AddReferenceAttachment(documentId, reference_file);
             togglePopupVisibility(setPopupController, 6, "close");
             // setSelectedDefinitions([...tempSectionDefinitions]);
-
+            setToastState({
+              isShow: true,
+              severity: "success",
+              title: "Definition updated!",
+              message: "Definition has been updated successfully.",
+              duration: 3000,
+            });
             setSelectedDefinitions((prev: any) => {
               const tempArray = prev.map((obj: any) => {
                 if (obj.ID === definitionsData.ID) {
@@ -912,13 +935,7 @@ const updateSectionDefinition = async (
               });
               return [...tempArray];
             });
-            setToastState({
-              isShow: true,
-              severity: "success",
-              title: "Definition updated!",
-              message: "Definition has been updated successfully.",
-              duration: 3000,
-            });
+
             setInitialLoader(false);
           })
           .catch((err: any) => {

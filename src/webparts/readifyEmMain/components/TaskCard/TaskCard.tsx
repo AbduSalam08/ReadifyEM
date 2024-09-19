@@ -67,6 +67,8 @@ const TaskCard: React.FC<CardProps> = ({
   btnText,
   taskData,
 }) => {
+  console.log(taskData);
+
   const roleClass = roleClasses[roles];
   const isAdmin = CurrentUserIsAdmin();
   const navigate = useNavigate();
@@ -85,37 +87,40 @@ const TaskCard: React.FC<CardProps> = ({
               : title}
           </span>
           <div className={styles.pillRHS}>
-            {btnText?.toLowerCase() === "open" && roles === "Primary Author" ? (
-              <button
-                onClick={async () => {
-                  await getUniqueTaskData(taskData?.taskID, dispatch);
-                  // await getUniqueSectionsDetails(taskData?.documentDetailsId);
-                  // if (taskData?.docVersion !== "1.0") {
-                  //   dispatch(
-                  //     setConfigurePageDetails({
-                  //       pageKey: "version update",
-                  //     })
-                  //   );
-                  // } else {
-                  dispatch(
-                    setConfigurePageDetails({
-                      pageKey: "update",
-                    })
-                  );
-                  // }
+            {btnText?.toLowerCase() === "open" && roles === "Primary Author"
+              ? !taskData.completedAll && (
+                  <button
+                    onClick={async () => {
+                      await getUniqueTaskData(taskData?.taskID, dispatch);
+                      // await getUniqueSectionsDetails(taskData?.documentDetailsId);
+                      // if (taskData?.docVersion !== "1.0") {
+                      //   dispatch(
+                      //     setConfigurePageDetails({
+                      //       pageKey: "version update",
+                      //     })
+                      //   );
+                      // } else {
+                      dispatch(
+                        setConfigurePageDetails({
+                          pageKey: "update",
+                        })
+                      );
+                      // }
 
-                  if (isAdmin) {
-                    navigate(`/admin/my_tasks/${title}/configure`);
-                  } else {
-                    navigate(`/user/my_tasks/${title}/configure`);
-                  }
-                }}
-              >
-                <img src={editConfigurationImg} alt="editConfigurationImg" />
-              </button>
-            ) : (
-              ""
-            )}
+                      if (isAdmin) {
+                        navigate(`/admin/my_tasks/${title}/configure`);
+                      } else {
+                        navigate(`/user/my_tasks/${title}/configure`);
+                      }
+                    }}
+                  >
+                    <img
+                      src={editConfigurationImg}
+                      alt="editConfigurationImg"
+                    />
+                  </button>
+                )
+              : ""}
             <StatusPill roles={roles} size={pillSize} />
           </div>
         </div>
@@ -124,12 +129,14 @@ const TaskCard: React.FC<CardProps> = ({
         </div>
       </div>
       <div className={styles.cardBottomSection}>
-        <button
-          className={`${styles.actionBtn} ${roleClass?.button}`}
-          onClick={onClick}
-        >
-          {btnText}
-        </button>
+        {!taskData.completedAll && (
+          <button
+            className={`${styles.actionBtn} ${roleClass?.button}`}
+            onClick={onClick}
+          >
+            {btnText}
+          </button>
+        )}
         <div className={styles.dueDateIndicators}>
           <DueDatePill dueDate={dueDate} roles={roles} />
           <div className={styles.dueDate}>
@@ -154,7 +161,8 @@ const TaskCard: React.FC<CardProps> = ({
           </span>
           <div className={styles.pillRHS}>
             {btnText?.toLowerCase() === "open" &&
-              roles === "Primary Author" && (
+              roles === "Primary Author" &&
+              !taskData.completedAll && (
                 <button
                   disabled={true}
                   onClick={async () => {
@@ -203,12 +211,14 @@ const TaskCard: React.FC<CardProps> = ({
                 gap: "10px",
               }}
             >
-              <button
-                className={`${styles.actionBtn} ${roleClass?.button}`}
-                onClick={onClick}
-              >
-                {btnText}
-              </button>
+              {!taskData.completedAll && (
+                <button
+                  className={`${styles.actionBtn} ${roleClass?.button}`}
+                  onClick={onClick}
+                >
+                  {btnText}
+                </button>
+              )}
               <div
                 style={{
                   display: "flex",

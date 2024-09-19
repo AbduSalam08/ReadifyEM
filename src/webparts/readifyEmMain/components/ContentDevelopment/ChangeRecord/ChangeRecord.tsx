@@ -48,7 +48,7 @@ const ChangeRecord = () => {
                     border: "1px solid #DDD",
                   }}
                 >
-                  Section no
+                  S.No
                 </th>
                 <th
                   style={{
@@ -118,7 +118,7 @@ const ChangeRecord = () => {
                         border: "1px solid #DDD",
                       }}
                     >
-                      {obj.sectionOrder}
+                      {index + 1}
                     </td>
                     <td
                       style={{

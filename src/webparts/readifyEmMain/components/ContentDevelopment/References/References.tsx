@@ -38,9 +38,15 @@ import ToastMessage from "../../common/Toast/ToastMessage";
 import PreviewSection from "../PreviewSection/PreviewSection";
 import { updateSectionDetails } from "../../../../../services/ContentDevelopment/SupportingDocument/SupportingDocumentServices";
 import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
-import { addRejectedComment } from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
+import {
+  addChangeRecord,
+  addRejectedComment,
+} from "../../../../../services/ContentDevelopment/CommonServices/CommonServices";
 import SpServices from "../../../../../services/SPServices/SpServices";
 import { setCDSectionData } from "../../../../../redux/features/ContentDevloperSlice";
+import CustomDateInput from "../../common/CustomInputFields/CustomDateInput";
+import CustomPeoplePicker from "../../common/CustomInputFields/CustomPeoplePicker";
+import dayjs from "dayjs";
 interface Props {
   allSectionsData: any;
   documentId: number;
@@ -103,6 +109,12 @@ const References: React.FC<Props> = ({
   const AllSectionsComments: any = useSelector(
     (state: any) => state.SectionData.SectionComments
   );
+
+  const sectionChangeRecord: any = useSelector(
+    (state: any) => state.SectionData.sectionChangeRecord
+  );
+  console.log(sectionChangeRecord);
+
   const [loader, setLoader] = useState<boolean>(false);
   const [referencesData, setReferencesData] = useState<IReferenceDetails>({
     ID: null,
@@ -137,6 +149,20 @@ const References: React.FC<Props> = ({
     title: "",
     message: "",
     duration: "",
+  });
+
+  // Change record state
+  const [changeRecordDetails, setChangeRecordDetails] = useState<any>({
+    author: sectionChangeRecord.changeRecordAuthor
+      ? sectionChangeRecord.changeRecordAuthor
+      : currentUserDetails,
+    currentDate: dayjs(new Date(sectionChangeRecord.changeRecordModify)).format(
+      "DD-MMM-YYYY hh:mm A"
+    ),
+    lastSubmitDate: "",
+    Description: sectionChangeRecord.changeRecordDescription,
+    IsValid: false,
+    ErrorMsg: "",
   });
 
   // local constants
@@ -186,6 +212,14 @@ const References: React.FC<Props> = ({
       popupTitle: "Are you sure want to mark this section as reviewed?",
       popupWidth: "340px",
       popupType: "confirmation",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "550px",
+      popupType: "custom",
       defaultCloseBtn: false,
       popupData: "",
     },
@@ -385,8 +419,12 @@ const References: React.FC<Props> = ({
         setToastMessage({
           isShow: true,
           severity: "success",
-          title: "Content updated!",
-          message: "The content has been updated successfully.",
+          title: `Section ${
+            promoterKey === "sectionApproved" ? "approved" : "reviewed"
+          }!`,
+          message: `The section has been ${
+            promoterKey === "sectionApproved" ? "approved" : "reviewed"
+          } successfully.`,
           duration: 3000,
         });
 
@@ -419,6 +457,33 @@ const References: React.FC<Props> = ({
           duration: 3000,
         });
       });
+  };
+
+  const submitChangeRecord = async (): Promise<any> => {
+    if (changeRecordDetails.Description?.trimStart() !== "") {
+      await addChangeRecord(
+        changeRecordDetails,
+        currentSectionDetails?.ID,
+        currentDocDetailsData.documentDetailsID,
+        handleClosePopup,
+        6,
+        setToastMessage,
+        setChangeRecordDetails,
+        currentUserDetails,
+        dispatch
+      );
+      setChangeRecordDetails({
+        ...changeRecordDetails,
+        IsValid: false,
+        ErrorMsg: "",
+      });
+    } else {
+      setChangeRecordDetails({
+        ...changeRecordDetails,
+        IsValid: true,
+        ErrorMsg: "Please enter Description",
+      });
+    }
   };
 
   const popupInputs = [
@@ -652,6 +717,62 @@ const References: React.FC<Props> = ({
       />,
     ],
     [],
+    [
+      <div
+        style={{ display: "flex", gap: "9px", flexDirection: "column" }}
+        key={1}
+      >
+        <CustomDateInput
+          size="MD"
+          withLabel
+          label="Last change date"
+          readOnly
+          value={changeRecordDetails.currentDate}
+          key={1}
+        />
+        <CustomPeoplePicker
+          size="MD"
+          minWidth={"265px"}
+          withLabel
+          labelText="Author"
+          // onChange={(value: any) => {
+          //   handleOnChange(value, "referenceAuthor");
+          // }}
+          selectedItem={changeRecordDetails?.author?.email}
+          placeholder="Add people"
+          // isValid={
+          //   definitionsData.referenceAuthor.length === 0 &&
+          //   !definitionsData.IsValid
+          // }
+          errorMsg={"The reference author field is required"}
+          readOnly
+          key={2}
+        />
+        <CustomTextArea
+          size="MD"
+          labelText="Description"
+          withLabel
+          topLabel={true}
+          icon={false}
+          // mandatory={true}
+          rows={7}
+          textAreaWidth={"100%"}
+          // textAreaWidth={"67%"}
+          value={changeRecordDetails.Description}
+          onChange={(value: any) => {
+            setChangeRecordDetails({
+              ...changeRecordDetails,
+              Description: value,
+              IsValid: false,
+            });
+          }}
+          placeholder="Enter Description"
+          isValid={changeRecordDetails.IsValid}
+          errorMsg={changeRecordDetails.ErrorMsg}
+          key={3}
+        />
+      </div>,
+    ],
   ];
 
   // array of obj which contains all popup action buttons
@@ -706,7 +827,8 @@ const References: React.FC<Props> = ({
       {
         text: "Update",
         btnType: "primary",
-        disabled: loader ? true : false,
+        disabled:
+          loader || currentSectionDetails?.sectionSubmitted ? true : false,
         endIcon: false,
         startIcon: false,
         onClick: () => {
@@ -752,7 +874,7 @@ const References: React.FC<Props> = ({
       {
         text: "Submit",
         btnType: "primary",
-        disabled: false,
+        disabled: loader,
         endIcon: false,
         startIcon: false,
         onClick: async () => {
@@ -775,12 +897,46 @@ const References: React.FC<Props> = ({
       {
         text: "Yes",
         btnType: "primary",
-        disabled: false,
+        disabled: loader,
         endIcon: false,
         startIcon: false,
         onClick: async () => {
           handleClosePopup(5);
           await promoteSection();
+        },
+      },
+    ],
+    [
+      {
+        text: "Cancel",
+        btnType: "darkGreyVariant",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(6);
+          setChangeRecordDetails({
+            ...changeRecordDetails,
+            author: sectionChangeRecord.changeRecordAuthor
+              ? sectionChangeRecord.changeRecordAuthor
+              : currentUserDetails,
+            Description: sectionChangeRecord.changeRecordDescription,
+            currentDate: dayjs(
+              new Date(sectionChangeRecord.changeRecordModify)
+            ).format("DD-MMM-YYYY hh:mm A"),
+            IsValid: false,
+          });
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primary",
+        disabled: loader ? true : false,
+        endIcon: false,
+        startIcon: false,
+        onClick: async () => {
+          // handleClosePopup(2);
+          await submitChangeRecord();
         },
       },
     ],
@@ -830,16 +986,6 @@ const References: React.FC<Props> = ({
     if (allReferencesData.length !== 0) {
       setLoader(true);
       setCheckChanges(false);
-      await submitSectionReferences(
-        allReferencesData,
-        setAllReferencesData,
-        AllSectionsDataMain,
-        documentId,
-        setLoader,
-        setToastMessage,
-        condition
-      );
-
       if (condition) {
         handleClosePopup(3);
         await updateTaskCompletion(
@@ -853,14 +999,23 @@ const References: React.FC<Props> = ({
           dispatch,
           currentDocDetailsData
         );
-        setToastMessage({
-          isShow: true,
-          severity: "success",
-          title: "Section submit",
-          message: "section has been submitted successfully!",
-          duration: 3000,
-        });
+        // setToastMessage({
+        //   isShow: true,
+        //   severity: "success",
+        //   title: "Section submit",
+        //   message: "section has been submitted successfully!",
+        //   duration: 3000,
+        // });
       }
+      await submitSectionReferences(
+        allReferencesData,
+        setAllReferencesData,
+        AllSectionsDataMain,
+        documentId,
+        setLoader,
+        setToastMessage,
+        condition
+      );
     } else {
       handleClosePopup(3);
       setToastMessage({
@@ -872,6 +1027,19 @@ const References: React.FC<Props> = ({
       });
     }
   };
+
+  useEffect(() => {
+    setChangeRecordDetails({
+      ...changeRecordDetails,
+      author: sectionChangeRecord.changeRecordAuthor
+        ? sectionChangeRecord.changeRecordAuthor
+        : currentUserDetails,
+      Description: sectionChangeRecord.changeRecordDescription,
+      currentDate: dayjs(
+        new Date(sectionChangeRecord.changeRecordModify)
+      ).format("DD-MMM-YYYY hh:mm A"),
+    });
+  }, [sectionChangeRecord]);
 
   useEffect(() => {
     getReferencesFromDefintions();
@@ -1068,11 +1236,11 @@ const References: React.FC<Props> = ({
                     setPopupController,
                     1,
                     "open",
-                    "Preview"
+                    "Preview section"
                   );
                 }}
               />
-              {/* {currentDocDetailsData?.version !== "1.0" &&
+              {currentDocDetailsData?.version !== "1.0" &&
                 !currentDocRole?.reviewer &&
                 !currentDocRole?.consultant &&
                 !currentDocRole?.approver &&
@@ -1083,13 +1251,13 @@ const References: React.FC<Props> = ({
                     onClick={() => {
                       togglePopupVisibility(
                         setPopupController,
-                        3,
+                        6,
                         "open",
                         "Change record"
                       );
                     }}
                   />
-                )} */}
+                )}
 
               {(currentDocRole?.primaryAuthor ||
                 currentDocRole?.sectionAuthor ||

@@ -53,7 +53,7 @@ interface IRichTextProps {
   checkChanges?: any;
 }
 
-const RichText = ({
+const JoditEditor = ({
   currentSectionData,
   noActionBtns,
   activeIndex,
@@ -1457,4 +1457,4 @@ const RichText = ({
   );
 };
 
-export default RichText;
+export default JoditEditor;
