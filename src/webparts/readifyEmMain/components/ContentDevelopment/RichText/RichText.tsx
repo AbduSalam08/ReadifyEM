@@ -629,7 +629,7 @@ const RichText = ({
         },
       ],
       ["bold", "italic", "underline"],
-      [{ color: [] }, { background: [] }],
+      [{ background: [] }],
       [
         {
           list: "ordered",
@@ -662,7 +662,7 @@ const RichText = ({
     "link",
     "image",
     "video",
-    "color",
+    // "color",
     "background",
   ];
 

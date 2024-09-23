@@ -1376,20 +1376,6 @@ const Definition: React.FC<Props> = ({
     togglePopupVisibility(setPopupController, 2, "close", "");
     const tempFilterData = selectedDefinitions.filter((obj) => !obj.isDeleted);
     if (selectedDefinitions.length !== 0 && tempFilterData.length !== 0) {
-      await submitSectionDefinitions(
-        [...selectedDefinitions],
-        AllSectionsDataMain,
-        documentId,
-        sectionId,
-        currentSectionDetails.sectionOrder,
-        setSelectedDefinitions,
-        setMasterDefinitions,
-        setPopupLoaders,
-        setToastMessage,
-        setInitialLoader,
-        submitCondition
-      );
-
       if (submitCondition) {
         await updateTaskCompletion(
           currentSectionDetails?.sectionName,
@@ -1405,6 +1391,19 @@ const Definition: React.FC<Props> = ({
           currentDocDetailsData
         );
       }
+      await submitSectionDefinitions(
+        [...selectedDefinitions],
+        AllSectionsDataMain,
+        documentId,
+        sectionId,
+        currentSectionDetails.sectionOrder,
+        setSelectedDefinitions,
+        setMasterDefinitions,
+        setPopupLoaders,
+        setToastMessage,
+        setInitialLoader,
+        submitCondition
+      );
     } else {
       setToastMessage({
         isShow: true,
