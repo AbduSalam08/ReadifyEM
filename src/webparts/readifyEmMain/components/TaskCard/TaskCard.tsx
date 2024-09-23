@@ -67,8 +67,6 @@ const TaskCard: React.FC<CardProps> = ({
   btnText,
   taskData,
 }) => {
-  console.log(taskData);
-
   const roleClass = roleClasses[roles];
   const isAdmin = CurrentUserIsAdmin();
   const navigate = useNavigate();
