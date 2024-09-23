@@ -421,7 +421,8 @@ const SectionContentLatest: React.FC<IProps> = ({
         labelText="Comments"
         withLabel
         icon={false}
-        mandatory={true}
+        topLabel
+        // mandatory={true}
         textAreaWidth={"100%"}
         value={rejectedComments.rejectedComment}
         onChange={(value: any) => {
@@ -431,7 +432,7 @@ const SectionContentLatest: React.FC<IProps> = ({
             IsValid: false,
           });
         }}
-        placeholder="Enter Description"
+        placeholder="Enter comments..."
         isValid={rejectedComments.IsValid}
         errorMsg={rejectedComments.ErrorMsg}
         key={2}

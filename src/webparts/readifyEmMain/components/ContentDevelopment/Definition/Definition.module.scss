@@ -29,7 +29,7 @@
 .filterSecWrapper {
   position: absolute;
   z-index: 100;
-  background: #fff;
+  background: #f2f4f7;
   width: 80%;
   // border: 1px solid #adadad60;
   box-shadow: 0 0px 5px rgba(0, 0, 0, 0.08);
@@ -52,10 +52,10 @@
   width: 100%;
   padding: 10px 0px;
   border-radius: 4px;
-  border: 1px solid #eee;
   height: 54px;
   // box-shadow: 0px 4px 13px -4px #00000010;
-  border: 1px solid #eee;
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
   font-family: "interRegular", sans-serif !important;
   .title {
     width: 30%;

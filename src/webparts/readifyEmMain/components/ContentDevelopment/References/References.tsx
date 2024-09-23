@@ -113,7 +113,6 @@ const References: React.FC<Props> = ({
   const sectionChangeRecord: any = useSelector(
     (state: any) => state.SectionData.sectionChangeRecord
   );
-  console.log(sectionChangeRecord);
 
   const [loader, setLoader] = useState<boolean>(false);
   const [referencesData, setReferencesData] = useState<IReferenceDetails>({
@@ -136,6 +135,7 @@ const References: React.FC<Props> = ({
     IsValid: false,
     ErrorMsg: "",
   });
+  console.log(allReferencesData);
 
   // popup loaders and messages
   const [popupLoaders, setPopupLoaders] =
@@ -692,6 +692,7 @@ const References: React.FC<Props> = ({
         labelText="Comments"
         withLabel
         icon={false}
+        topLabel
         // mandatory={true}
         textAreaWidth={"100%"}
         value={rejectedComments.rejectedComment}
@@ -710,7 +711,7 @@ const References: React.FC<Props> = ({
             });
           }
         }}
-        placeholder="Enter Description"
+        placeholder="Enter comments..."
         isValid={rejectedComments.IsValid}
         errorMsg={rejectedComments.ErrorMsg}
         key={2}
@@ -947,25 +948,47 @@ const References: React.FC<Props> = ({
     const sectionReferences = await getSectionRefernces(
       currentSectionDetails?.ID
     );
-    allSectionsData.forEach(async (obj: any) => {
-      if (obj.sectionName.toLowerCase() === "definitions") {
-        const tempSelectedDefinitionArray = await getAllSectionDefinitions(
-          documentId,
-          obj.ID
-        );
-        const tempArray = tempSelectedDefinitionArray.filter(
-          (obj: any) =>
-            !obj.isDeleted &&
-            obj.referenceAuthorName !== "" &&
-            obj.referenceTitle !== ""
-        );
-        console.log(tempArray, sectionReferences);
-        setAllReferencesData([...tempArray, ...sectionReferences]);
-      } else {
-        setAllReferencesData([...sectionReferences]);
-      }
-    });
+
+    const definitionsData = allSectionsData.filter(
+      (obj: any) => obj.sectionName.toLowerCase() === "definitions"
+    );
+
+    const tempSelectedDefinitionArray = await getAllSectionDefinitions(
+      documentId,
+      definitionsData[0].ID
+    );
+    const tempArray = await tempSelectedDefinitionArray.filter(
+      (obj: any) =>
+        !obj.isDeleted &&
+        obj.referenceAuthorName !== "" &&
+        obj.referenceTitle !== ""
+    );
+    console.log(tempArray, sectionReferences);
+    setAllReferencesData([...(await tempArray), ...(await sectionReferences)]);
     setLoader(false);
+
+    // await allSectionsData.forEach(async (obj: any) => {
+    //   if (obj.sectionName.toLowerCase() === "definitions") {
+    //     const tempSelectedDefinitionArray = await getAllSectionDefinitions(
+    //       documentId,
+    //       obj.ID
+    //     );
+    //     const tempArray = await tempSelectedDefinitionArray.filter(
+    //       (obj: any) =>
+    //         !obj.isDeleted &&
+    //         obj.referenceAuthorName !== "" &&
+    //         obj.referenceTitle !== ""
+    //     );
+    //     console.log(tempArray, sectionReferences);
+    //     setAllReferencesData([
+    //       ...(await tempArray),
+    //       ...(await sectionReferences),
+    //     ]);
+    //     setLoader(false);
+    //   } else {
+    //     setAllReferencesData([...sectionReferences]);
+    //   }
+    // });
   };
   const loggerPromoter: any = getCurrentLoggedPromoter(
     currentDocRole,
@@ -1052,7 +1075,9 @@ const References: React.FC<Props> = ({
       ) : (
         <div className={"sectionWrapper"}>
           <div className={styles.textPlayGround}>
-            <div style={{ height: "100%", overflow: "auto" }}>
+            <div
+              style={{ height: "100%", overflow: "auto", paddingRight: "5px" }}
+            >
               <div className={styles.TopFilters}>
                 <div className={styles.definitionHeaderWrapper}>
                   <span>
@@ -1061,23 +1086,28 @@ const References: React.FC<Props> = ({
                       : "Add References"}
                   </span>
                 </div>
-                <DefaultButton
-                  disabled={loader}
-                  btnType="primary"
-                  text={"New"}
-                  size="medium"
-                  onClick={() => {
-                    setReferencesData(initialReferenceData);
-                    togglePopupVisibility(
-                      setPopupController,
-                      0,
-                      "open",
-                      "Add new reference"
-                    );
-                    // setReferencesData(initialreferencesData);
-                  }}
-                />
+                {!currentSectionDetails?.sectionSubmitted &&
+                  (currentDocRole?.primaryAuthor ||
+                    currentDocRole?.sectionAuthor) && (
+                    <DefaultButton
+                      disabled={loader}
+                      btnType="primary"
+                      text={"New"}
+                      size="medium"
+                      onClick={() => {
+                        setReferencesData(initialReferenceData);
+                        togglePopupVisibility(
+                          setPopupController,
+                          0,
+                          "open",
+                          "Add new reference"
+                        );
+                        // setReferencesData(initialreferencesData);
+                      }}
+                    />
+                  )}
               </div>
+
               {allReferencesData?.map((obj: any, index: number) => {
                 return (
                   !obj.isDeleted && (

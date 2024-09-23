@@ -164,6 +164,7 @@ const TableOfContents = (): JSX.Element => {
     loading: false,
     data: [] as LibraryItem[],
   });
+  console.log(tableData);
 
   // A state to manage loader popup's
   const [popupLoaders, setPopupLoaders] =
@@ -198,7 +199,9 @@ const TableOfContents = (): JSX.Element => {
 
   // state to manage all popup data
   const [popupData, setPopupData] = useState<any>(popupInitialData);
+  const [docuementStatus, setDocuementStatus] = useState<boolean>(false);
   const [documentId, setDocumentId] = useState<number>(0);
+  console.log(documentId);
 
   const [toastMessage, setToastMessage] = useState<any>({
     isShow: false,
@@ -208,7 +211,8 @@ const TableOfContents = (): JSX.Element => {
     duration: "",
   });
 
-  // const [documentPdfURL, setDocumentPdfURL] = useState("");
+  const [documentPdfURL, setDocumentPdfURL] = useState("");
+  console.log(documentPdfURL);
 
   // A controller state for popup in TOC
   const [popupController, setPopupController] = useState(
@@ -344,7 +348,24 @@ const TableOfContents = (): JSX.Element => {
     [
       <div key={3} style={{ padding: "5px" }}>
         {/* <span>Document is empty.</span> */}
-        <PDFServiceTemplate documentId={documentId} />
+
+        {docuementStatus ? (
+          <object
+            key={3}
+            data={documentPdfURL}
+            type="application/pdf"
+            width="100%"
+            height="600px"
+          >
+            <p className="textCenter">
+              Your browser does not support PDFs. Please download the PDF to
+              view it:
+              <a href={documentPdfURL}>Download PDF</a>.
+            </p>
+          </object>
+        ) : (
+          <PDFServiceTemplate documentId={documentId} />
+        )}
       </div>,
     ],
     [
@@ -994,18 +1015,18 @@ const TableOfContents = (): JSX.Element => {
 
   // template for future use
   // const PDFView = (
-  //   <object
-  //     key={3}
-  //     data={documentPdfURL}
-  //     type="application/pdf"
-  //     width="100%"
-  //     height="600px"
-  //   >
-  //     <p className="textCenter">
-  //       Your browser does not support PDFs. Please download the PDF to view it:
-  //       <a href={documentPdfURL}>Download PDF</a>.
-  //     </p>
-  //   </object>
+  // <object
+  //   key={3}
+  //   data={documentPdfURL}
+  //   type="application/pdf"
+  //   width="100%"
+  //   height="600px"
+  // >
+  //   <p className="textCenter">
+  //     Your browser does not support PDFs. Please download the PDF to view it:
+  //     <a href={documentPdfURL}>Download PDF</a>.
+  //   </p>
+  // </object>
   // );
 
   // const PDFHtmlView = (
@@ -1278,7 +1299,8 @@ const TableOfContents = (): JSX.Element => {
                     text={<img src={viewDocBtn} />}
                     key={index}
                     onClick={async () => {
-                      // setDocumentPdfURL(item.url);
+                      setDocumentPdfURL(item?.url);
+                      setDocuementStatus(item?.isPdfGenerated);
                       togglePopupVisibility(
                         setPopupController,
                         2,

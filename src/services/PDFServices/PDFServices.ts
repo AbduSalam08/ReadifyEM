@@ -162,7 +162,7 @@ export const bindHeaderTable = async (
   definitionsTable += `<tr>
                 <td style="width:20%; padding:6px; text-align: center;vertical-align: middle;">
 
-                  <div style="width: 86px;height:86px;" > 
+                  <div style="width: 100%;height:86px;" > 
                     <img width="100%" height= "100%" style="padding:1px;" src="${
                       sectionDetails?.base64 !== ""
                         ? sectionDetails?.base64
@@ -170,7 +170,7 @@ export const bindHeaderTable = async (
                     }" alt="doc header logo" />
                   </div>
                 </td>
-                <td style="width: 45%;font-size: 11px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border-left: 1px solid #000;border-right: 1px solid #000;">
+                <td style="width: 50%;font-size: 11px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border-left: 1px solid #000;border-right: 1px solid #000;">
                     <p style="font-size: 24px;font-family: interMedium, sans-serif;margin: 5px;">${
                       docDetails?.Title
                         ? docDetails?.Title.split("_")[0]
@@ -180,40 +180,40 @@ export const bindHeaderTable = async (
                       docDetails.documentVersion
                     }</span>
                 </td>
-                <td style="width: 35%;font-size: 11px;line-height: 18px; font-family: interMedium,sans-serif;">
+                <td style="width: 30%;font-size: 11px;line-height: 18px; font-family: interMedium,sans-serif;">
                   <table style="width: 100%;border-collapse: collapse;">
                     <tbody>
-                      <tr>
-                        <td style="width: 50%; text-align: right; padding: 3px;font-size: 11px;">Type</td>
+                      <tr style = "border-bottom: 1px solid #000;">
+                        <td style="width: 35%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Type</td>
                         <td>:</td>
-                        <td style="width: 50%; text-align: left; padding: 3px;font-size: 11px;">
+                        <td style="width: 65%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
                           <span style="overflow-wrap: anywhere;">${
                             docDetails?.documentTemplateType?.Title || "-"
                           }</span>
                         </td>
                       </tr>
-                      <tr>
-                        <td style="width: 50%; text-align: right; padding: 3px;font-size: 11px;">Created on</td>
+                      <tr style = "border-bottom: 1px solid #000;">
+                        <td style="width: 35%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Created on</td>
                         <td>:</td>
-                        <td style="width: 50%; text-align: left; padding: 3px;font-size: 11px;">
+                        <td style="width: 65%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
                           <span style="overflow-wrap: anywhere;">${
                             docDetails?.createdDate || "-"
                           }</span>
                         </td>
                       </tr>
-                      <tr>
-                        <td style="width: 50%; text-align: right; padding: 3px;font-size: 11px;">Last review</td>
+                      <tr style = "border-bottom: 1px solid #000;">
+                        <td style="width: 35%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Last review</td>
                         <td>:</td>
-                        <td style="width: 50%; text-align: left; padding: 3px;font-size: 11px;">
+                        <td style="width: 65%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
                           <span style="overflow-wrap: anywhere;">${
                             lastReviewDate || "-"
                           }</span>
                         </td>
                       </tr>
-                      <tr>
-                        <td style="width: 50%; text-align: right; padding: 3px;font-size: 11px;">Next review</td>
+                      <tr style = "">
+                        <td style="width: 35%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Next review</td>
                         <td>:</td>
-                        <td style="width: 50%; text-align: left; padding: 3px;font-size: 11px;">
+                        <td style="width: 75%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
                           <span style="overflow-wrap: anywhere;">${
                             docDetails?.nextReviewDate || "-"
                           }</span>

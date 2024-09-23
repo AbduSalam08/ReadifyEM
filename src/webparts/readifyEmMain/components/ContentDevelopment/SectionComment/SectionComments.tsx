@@ -15,7 +15,8 @@ import { initialPopupLoaders } from "../../../../../config/config";
 import { IPopupLoaders } from "../../../../../interface/MainInterface";
 import AlertPopup from "../../common/Popups/AlertPopup/AlertPopup";
 import ToastMessage from "../../common/Toast/ToastMessage";
-import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
+import { InputTextarea } from "primereact/inputtextarea";
+// import CustomTextArea from "../../common/CustomInputFields/CustomTextArea";
 
 interface Props {
   commentsData: any[];
@@ -86,6 +87,14 @@ const SectionComments: React.FC<Props> = ({
     setInputComment(value.trimStart());
   };
 
+  const handleTextareaResize = () => {
+    const textarea = document.querySelector("textarea"); // Adjust selector to target your specific textarea if needed
+    if (textarea) {
+      textarea.style.height = "54px"; // Reset the height first
+      textarea.style.height = `${textarea.scrollHeight}px`; // Adjust height based on content
+    }
+  };
+
   const sendSectionComment = async (): Promise<any> => {
     if (inputComment !== "") {
       const json = {
@@ -95,7 +104,7 @@ const SectionComments: React.FC<Props> = ({
         role: currentDocDetailsData.taskRole,
         DocumentVersion: currentDocDetails.version,
       };
-      const clearInput = await addSectionComment(
+      await addSectionComment(
         json,
         AllSectionsComments,
         dispatch,
@@ -103,11 +112,13 @@ const SectionComments: React.FC<Props> = ({
         setPopupLoaders,
         setToastMessage,
         sectionId,
-        AllSectionsDataMain
+        AllSectionsDataMain,
+        setInputComment
       );
-      if (clearInput) {
-        setInputComment("");
-      }
+      handleTextareaResize();
+      // if (clearInput) {
+      //   setInputComment("");
+      // }
     } else {
       setToastMessage({
         isShow: true,
@@ -203,7 +214,7 @@ const SectionComments: React.FC<Props> = ({
                   }
                 }}
               /> */}
-              <CustomTextArea
+              {/* <CustomTextArea
                 placeholder="Enter your comments"
                 noBorderInput={true}
                 inputWrapperClassName={styles.commentBoxInput}
@@ -216,6 +227,33 @@ const SectionComments: React.FC<Props> = ({
                   if (ev.key === "Enter") {
                     sendSectionComment();
                   }
+                }}
+              /> */}
+
+              <InputTextarea
+                v-model="value1"
+                onKeyDown={(ev: any) => {
+                  if (ev.key === "Enter") {
+                    sendSectionComment();
+                  }
+                }}
+                autoResize
+                value={inputComment || ""}
+                placeholder="Enter your comments"
+                onChange={(e: any) => onChangeFunction(e.target.value)}
+                // className={inputClassName}
+                // rows={rows ? rows : 5}
+                cols={30}
+                style={{
+                  // paddingLeft: icon ? "30px" : "0px",
+                  border: "none",
+                  padding: "10px",
+                  width: "100%",
+                  minHeight: "20px",
+                  maxHeight: "100px",
+                  height: inputComment === "" ? "20px" : "20px",
+                  fontSize: "14px",
+                  fontFamily: `interMedium, sans-serif`,
                 }}
               />
               <button
