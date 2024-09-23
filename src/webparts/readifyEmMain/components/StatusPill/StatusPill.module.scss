@@ -7,7 +7,7 @@
   --inApproval-color: #673ab7;
   --approved-color: #deffe6;
   --current-color: #ece7ff;
-  --hidden-color: #607d8b;
+  --hidden-color: #4c4c4c;
   --contentInProgress-color: #fff7e8;
   --contentSubmitted-color: #e8fff3;
   --reviewInProgress-color: #fff2e2;
@@ -65,7 +65,7 @@
   }
   &.hidden {
     background-color: var(--hidden-color);
-    color: white;
+    color: #f7f7f7;
   }
   &.contentInProgress {
     background-color: var(--contentInProgress-color);

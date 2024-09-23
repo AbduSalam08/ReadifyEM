@@ -5,7 +5,7 @@ const DocStatus = [
   "In Approval",
   "Approved",
   "Current",
-  // "Hidden",
+  "Hidden",
   "In Rework",
 ];
 

@@ -44,7 +44,7 @@ import { sortTasksByDateTime } from "../../utils/MyTasksUtils";
 //     dataResponse?.forEach((item: any) => {
 //       const defaultFields: any = {
 //         taskID: [item?.ID],
-//         documentDetailsId: item.documentDetailsId,
+//         documentDetaixlsId: item.documentDetailsId,
 //         taskAssignedBy: item?.taskAssignedBy,
 //         taskAssignee: [item?.taskAssignee],
 //         docName: item?.Title,

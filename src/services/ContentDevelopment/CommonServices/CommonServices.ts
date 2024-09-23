@@ -146,13 +146,14 @@ export const getSectionsDetails = async (
                     consultant?.EMail === currentUserDetails?.email
                 );
               dueDate =
-                item?.sectionAuthor?.EMail === currentUserDetails?.email ||
-                item?.consultants?.some(
-                  (consultant: any) =>
-                    consultant?.EMail === currentUserDetails?.email
-                )
-                  ? calculateDueDateByRole(SectionCreatedDate, "document")
-                  : "";
+                // item?.sectionAuthor?.EMail === currentUserDetails?.email ||
+                // item?.consultants?.some(
+                //   (consultant: any) =>
+                //     consultant?.EMail === currentUserDetails?.email
+                // )
+                //   ? calculateDueDateByRole(SectionCreatedDate, "document")
+                //   :
+                calculateDueDateByRole(SectionCreatedDate, "document");
               break;
             case "consultant":
               sectionPermission = item?.consultants?.some(
