@@ -85,6 +85,7 @@ const AllSections: React.FC<Props> = ({
   );
 
   const renderSection = (item: any, index: number): any => {
+    console.log("item: ", item);
     return (item?.sectionType === "header section" ||
       item?.sectionType === "change record") &&
       // ||
@@ -272,7 +273,7 @@ const AllSections: React.FC<Props> = ({
                     }}
                   >
                     <span className={styles.visibleDateSec}>
-                      {item.dueDate}
+                      {item.dueDate || "dedo"}
                     </span>
                     <ChevronRight
                       style={{

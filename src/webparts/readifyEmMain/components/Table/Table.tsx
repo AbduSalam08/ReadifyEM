@@ -169,9 +169,20 @@ const Table: React.FC<ITableProps> = ({
     };
 
     const matchesStatus = (item: any): boolean => {
+      if (filterByStatus?.toLowerCase() === "hidden") {
+        return (
+          filterByStatus === null ||
+          (item.type === "file" &&
+            !item?.fields?.isVisible &&
+            (item?.fields?.status?.toLowerCase() === "approved" ||
+              item?.fields?.status?.toLowerCase() === "current"))
+        );
+      }
       return (
         filterByStatus === null ||
-        (item.type === "file" && item.fields?.status === filterByStatus)
+        (item.type === "file" &&
+          item.fields?.isVisible &&
+          item.fields?.status === filterByStatus)
       );
     };
     const matchesDraft = (item: any): boolean => {

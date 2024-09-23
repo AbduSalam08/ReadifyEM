@@ -93,16 +93,32 @@ const TableItem: React.FC<TableItemProps> = ({
           if (lowerCaseKey === "status") {
             return (
               <div className={styles.item} title={fieldValue} key={i}>
-                <StatusPill
-                  status={
-                    // item.fields.status?.toLowerCase() === "approved" ||
-                    // item.fields.status?.toLowerCase() === "current"&&
-                    //    item.fields.isVisible?
-                    item.fields.status
-                    // : "Hidden"
-                  }
-                  size="MD"
-                />
+                {item.fields?.isVisible && toggleStates[item.fileID] ? (
+                  <StatusPill
+                    status={
+                      // item.fields.status?.toLowerCase() === "approved" ||
+                      // item.fields.status?.toLowerCase() === "current"&&
+                      //    item.fields.isVisible?
+                      item.fields.status
+                      // : "Hidden"
+                    }
+                    size="MD"
+                  />
+                ) : item.fields.status?.toLowerCase() === "approved" ||
+                  item.fields.status?.toLowerCase() === "current" ? (
+                  <StatusPill status={"Hidden"} size="MD" />
+                ) : (
+                  <StatusPill
+                    status={
+                      // item.fields.status?.toLowerCase() === "approved" ||
+                      // item.fields.status?.toLowerCase() === "current"&&
+                      //    item.fields.isVisible?
+                      item.fields.status
+                      // : "Hidden"
+                    }
+                    size="MD"
+                  />
+                )}
               </div>
             );
           }
