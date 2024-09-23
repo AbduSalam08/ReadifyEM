@@ -571,18 +571,18 @@ const submitSectionDefinitions = async (
             const tempSectionDefinitions = await sectionDefinitions.filter(
               (obj: any) => !obj.isDeleted
             );
-            setSelectedDefinitionsState([...tempSectionDefinitions]);
-            setMasterDefinitionsState([...tempSectionDefinitions]);
+            setSelectedDefinitionsState([...(await tempSectionDefinitions)]);
+            setMasterDefinitionsState([...(await tempSectionDefinitions)]);
             const _file: any = await convertDefinitionsToTxtFile(
               await tempSectionDefinitions,
               sectionOrder
             );
-            AddSectionAttachmentFile(sectionId, _file);
+            AddSectionAttachmentFile(sectionId, await _file);
             const reference_file: any = await convertReferenceToTxtFile(
-              [...(await tempSectionDefinitions), ...sectionReferences],
+              [...(await tempSectionDefinitions), ...(await sectionReferences)],
               await referenceSectionNumber
             );
-            AddReferenceAttachment(documentId, reference_file);
+            AddReferenceAttachment(documentId, await reference_file);
             setInitialLoader(false);
           }
         })
