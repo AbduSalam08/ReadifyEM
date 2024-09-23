@@ -14,6 +14,7 @@ import {
 } from "../../../redux/features/ContentDevloperSlice";
 import { sp } from "@pnp/sp/presets/all";
 import {
+  addDefaultPDFheader,
   getCurrentPromoter,
   updateDocDataLocal,
   // updateDocDataLocal,
@@ -856,7 +857,8 @@ export const addPromotedComment = async (
   documentDetails: any,
   handleClosePopup: any,
   setToastState: any,
-  currentUserDetails: any
+  currentUserDetails: any,
+  promoteType: boolean
 ): Promise<any> => {
   const jsonObject = {
     comments: promoteComments,
@@ -875,8 +877,8 @@ export const addPromotedComment = async (
       setToastState({
         isShow: true,
         severity: "success",
-        title: "Comment added!",
-        message: "your comments has been added successfully.",
+        title: `Document ${promoteType ? "published" : "promoted"}!`,
+        message: "Your comments has been added successfully.",
         duration: 3000,
       });
     })
@@ -1146,6 +1148,11 @@ export const changeDocStatus = async (
             ),
             approvedOn: dayjs(new Date()).format("DD/MM/YYYY"),
           },
+        }).then((res: any) => {
+          if (statusName?.toLowerCase() === "current") {
+            addDefaultPDFheader({}, docID);
+            console.log("update pdf header attachment");
+          }
         });
 
         await SpServices.SPReadItems({

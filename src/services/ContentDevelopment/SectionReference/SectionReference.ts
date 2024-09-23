@@ -88,6 +88,8 @@ const addNewReference = async (
       RequestJSON: jsonObject,
     })
       .then(async (referenceRes: any) => {
+        console.log(referenceRes);
+
         // setLoaderState({
         //   isLoading: {
         //     inprogress: false,
@@ -107,6 +109,7 @@ const addNewReference = async (
         // );
         togglePopupVisibility(setPopupController, 0, "close");
         allReferencesData.unshift({
+          ID: referenceRes.data.Id,
           referenceTitle: referenceData.referenceTitle,
           referenceAuthorName: referenceData.referenceAuthorName,
           yearOfPublish: referenceData.yearOfPublish,

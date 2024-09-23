@@ -509,6 +509,16 @@ const ContentDevelopment = (): JSX.Element => {
   };
 
   const submitPromotedComment = async () => {
+    const tempCurrentPromoter: any = await getCurrentLoggedPromoter(
+      currentDocRole,
+      currentDocDetailsData,
+      currentUserDetails
+    );
+    const promoteDocumentType: boolean =
+      currentDocRole?.approver &&
+      (await tempCurrentPromoter?.id) ===
+        currentDocDetailsData?.approvers?.length;
+
     try {
       debugger;
       if (promoteComments.promoteComment?.trim() === "") {
@@ -533,7 +543,8 @@ const ContentDevelopment = (): JSX.Element => {
         currentDocDetailsData,
         handleClosePopup,
         setToastMessage,
-        currentUserDetails
+        currentUserDetails,
+        promoteDocumentType
       );
 
       const totalReviewers = currentDocDetailsData?.reviewers?.length || 0;
@@ -1114,7 +1125,8 @@ const ContentDevelopment = (): JSX.Element => {
               currentDocDetailsData,
               handleClosePopup,
               setToastMessage,
-              currentUserDetails
+              currentUserDetails,
+              false
             );
             setPromoteComments({
               ...promoteComments,

@@ -211,11 +211,15 @@ const TableItem: React.FC<TableItemProps> = ({
                       ?.toLowerCase()
                       ?.includes("awaiting approval") &&
                     trimStartEnd(item.fields[key])?.trim() ? (
-                      <DueDatePill
-                        dueDate={item.fields[key]}
-                        roles="Primary Author"
-                        leftText={"D"}
-                      />
+                      item?.isPdfGenerated &&
+                      item?.fields?.status?.toLowerCase() ===
+                        "approved" ? null : (
+                        <DueDatePill
+                          dueDate={item.fields[key]}
+                          roles="Primary Author"
+                          leftText={"D"}
+                        />
+                      )
                     ) : (
                       // <StatusPill
                       //   status="Hidden"

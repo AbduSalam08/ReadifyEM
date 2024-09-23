@@ -122,9 +122,9 @@ const addSectionComment = async (
   setLoaderState: any,
   setToastState: any,
   sectionId: any,
-  AllSectionsDataMain: any
-): Promise<boolean> => {
-  let clearInput: boolean = false;
+  AllSectionsDataMain: any,
+  setInputComment: any
+): Promise<void> => {
   const tempArray: any[] = [...sectionComments];
   try {
     await SpServices.SPAddItem({
@@ -133,7 +133,7 @@ const addSectionComment = async (
     })
       .then((res: any) => {
         if (res?.data.ID) {
-          clearInput = true;
+          setInputComment("");
           tempArray.push({
             ID: res?.data?.ID,
             comment: jsonObject.comments,
@@ -174,8 +174,8 @@ const addSectionComment = async (
           setToastState({
             isShow: true,
             severity: "success",
-            title: "Comment Submittted",
-            message: "Your comment added successfully",
+            title: "Comment added!",
+            message: "Your comment has been added successfully",
             duration: 3000,
           });
         }
@@ -208,8 +208,6 @@ const addSectionComment = async (
         "An unexpected error occurred while send the comment, please try again later.",
     });
   }
-
-  return clearInput;
 };
 
 export { getSectionComments, addSectionComment, getPromotedComments };

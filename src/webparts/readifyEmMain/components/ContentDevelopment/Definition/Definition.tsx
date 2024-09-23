@@ -779,6 +779,7 @@ const Definition: React.FC<Props> = ({
         icon={false}
         // mandatory={true}
         textAreaWidth={"100%"}
+        topLabel
         value={rejectedComments.rejectedComment}
         onChange={(value: any) => {
           setRejectedComments({
@@ -787,7 +788,7 @@ const Definition: React.FC<Props> = ({
             IsValid: false,
           });
         }}
-        placeholder="Enter Description"
+        placeholder="Enter comments..."
         isValid={rejectedComments.IsValid}
         errorMsg={rejectedComments.ErrorMsg}
         key={2}

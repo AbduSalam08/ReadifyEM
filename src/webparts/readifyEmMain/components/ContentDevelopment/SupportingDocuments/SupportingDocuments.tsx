@@ -295,8 +295,9 @@ const SupportingDocuments: React.FC<Props> = ({
         size="MD"
         labelText="Comments"
         withLabel
+        topLabel
         icon={false}
-        mandatory={true}
+        // mandatory={true}
         textAreaWidth={"100%"}
         value={rejectedComments.rejectedComment}
         onChange={(value: any) => {
@@ -306,7 +307,7 @@ const SupportingDocuments: React.FC<Props> = ({
             IsValid: false,
           });
         }}
-        placeholder="Enter Description"
+        placeholder="Enter comments..."
         isValid={rejectedComments.IsValid}
         errorMsg={rejectedComments.ErrorMsg}
         key={2}

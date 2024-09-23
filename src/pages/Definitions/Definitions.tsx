@@ -181,7 +181,7 @@ const Definitions = (): JSX.Element => {
     } else {
       setDefinitionsData((prev: any) => ({
         ...prev,
-        [key]: value,
+        [key]: value.trimStart(),
         IsDuplicate: false,
       }));
     }

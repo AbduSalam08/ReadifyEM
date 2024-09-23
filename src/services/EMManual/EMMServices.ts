@@ -26,6 +26,7 @@ export interface LibraryItem {
   type: any;
   isDraft: boolean;
   sequenceNo: any;
+  isPdfGenerated: boolean;
   items?: LibraryItem[];
   version?: any;
 }
@@ -66,6 +67,7 @@ export const getLibraryItems = async (): Promise<{
           open: false,
           isDraft: subFolderFields.isDraft,
           sequenceNo: subFolderFields?.sequenceNo,
+          isPdfGenerated: false,
           fields: {
             createdDate: subFolderFields.createdDate,
             nextReviewDate: subFolderFields.nextReviewDate,
@@ -86,6 +88,7 @@ export const getLibraryItems = async (): Promise<{
         .listItemAllFields.get();
 
       let fileItemsFromList: any;
+      console.log(fileFields);
 
       if (fileFields) {
         await SpServices.SPReadItemUsingId({
@@ -116,6 +119,9 @@ export const getLibraryItems = async (): Promise<{
           isDraft: fileItemsFromList?.isDraft,
           sequenceNo: fileItemsFromList?.sequenceNo,
           version: fileItemsFromList?.documentVersion,
+          isPdfGenerated: fileFields?.isPdfGenerated
+            ? fileFields?.isPdfGenerated
+            : false,
           fields: {
             createdDate: fileItemsFromList?.createdDate,
             nextReviewDate: fileItemsFromList?.nextReviewDate,
@@ -135,6 +141,9 @@ export const getLibraryItems = async (): Promise<{
           isDraft: fileFields?.isDraft,
           sequenceNo: fileFields?.sequenceNo,
           version: fileFields?.documentVersion,
+          isPdfGenerated: fileFields?.isPdfGenerated
+            ? fileFields?.isPdfGenerated
+            : false,
           fields: {
             createdDate: fileFields?.createdDate,
             nextReviewDate: fileFields?.nextReviewDate,
