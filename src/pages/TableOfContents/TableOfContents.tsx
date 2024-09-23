@@ -64,6 +64,7 @@ import dayjs from "dayjs";
 import { getNextVersions } from "../../utils/EMManualUtils";
 import { removeVersionFromDocName } from "../../utils/formatDocName";
 import ToastMessage from "../../webparts/readifyEmMain/components/common/Toast/ToastMessage";
+import { InputSwitch } from "primereact/inputswitch";
 // constants
 const initialPopupController = [
   {
@@ -230,6 +231,7 @@ const TableOfContents = (): JSX.Element => {
   const [filterOptions, setFilterOptions] = useState({
     searchTerm: "",
     filterByStatus: "",
+    isDraft: false,
     options: DocStatus,
     menuBtnExternalController: null,
     createOptions: [
@@ -920,7 +922,7 @@ const TableOfContents = (): JSX.Element => {
         onClick: () => {
           // handleSubmit("sub group");
           if (popupData.initiatVersion.value !== "") {
-            let updateTitle = tempScreens.pageTitle.replace(
+            const updateTitle = tempScreens.pageTitle.replace(
               /\(.*\)/,
               `(${popupData.initiatVersion.value})`
             );
@@ -1161,6 +1163,27 @@ const TableOfContents = (): JSX.Element => {
               </div>
 
               <div className={styles.rhs}>
+                <span
+                  style={{
+                    color: "#160364",
+                    fontFamily: "interMedium, sans-serif",
+                  }}
+                >
+                  Draft Documents
+                </span>
+                <InputSwitch
+                  checked={filterOptions.isDraft}
+                  className="sectionToggler"
+                  disabled={tableData.data.length === 0 || tableData.loading}
+                  onChange={(e) => {
+                    setFilterOptions((prev) => ({
+                      ...prev,
+                      searchTerm: "",
+                      filterByStatus: "",
+                      isDraft: e.value,
+                    }));
+                  }}
+                />
                 <CustomDropDown
                   onChange={(value: string) => {
                     setFilterOptions((prev) => ({

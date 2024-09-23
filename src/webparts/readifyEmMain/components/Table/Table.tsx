@@ -30,6 +30,7 @@ interface ITableProps {
   filters?: {
     searchTerm: string;
     filterByStatus?: string | null;
+    isDraft?: boolean;
   };
   actions?: boolean;
   renderActions?: any;
@@ -148,8 +149,11 @@ const Table: React.FC<ITableProps> = ({
   const filterData = (
     searchTerm: string,
     data: any[],
-    filterByStatus: string | null
+    filterByStatus: string | null,
+    isDraft: boolean
   ): LibraryItem[] => {
+    console.log(isDraft);
+
     const lowercasedSearchTerm = searchTerm?.toLowerCase();
 
     const matchesSearchTerm = (item: any): boolean => {
@@ -170,26 +174,57 @@ const Table: React.FC<ITableProps> = ({
         (item.type === "file" && item.fields?.status === filterByStatus)
       );
     };
+    const matchesDraft = (item: any): boolean => {
+      return item.type === "file" && item.isDraft;
+    };
 
     const filterRecursive = (items: LibraryItem[]): LibraryItem[] => {
       return items
         .map((item) => {
+          console.log(item);
           const matchesSearch = matchesSearchTerm(item);
           const matchesStatusFilter = matchesStatus(item);
+          const matchesDraftFilter = matchesDraft(item);
+          console.log(matchesDraftFilter);
 
           let openItem = false;
 
-          if (searchTerm && filterByStatus) {
-            if (matchesSearch && matchesStatusFilter) {
-              openItem = true;
+          if (isDraft) {
+            if (matchesDraftFilter) {
+              if (searchTerm && filterByStatus) {
+                if (matchesSearch && matchesStatusFilter) {
+                  openItem = true;
+                }
+              } else if (searchTerm) {
+                if (matchesSearch) {
+                  openItem = true;
+                }
+              } else if (filterByStatus) {
+                if (matchesStatusFilter) {
+                  openItem = true;
+                }
+              } else {
+                openItem = true;
+              }
             }
-          } else if (searchTerm) {
-            if (matchesSearch) {
-              openItem = true;
-            }
-          } else if (filterByStatus) {
-            if (matchesStatusFilter) {
-              openItem = true;
+            // else if (isDraft) {
+            //   if (matchesDraftFilter) {
+            //     openItem = true;
+            //   }
+            // }
+          } else {
+            if (searchTerm && filterByStatus) {
+              if (matchesSearch && matchesStatusFilter) {
+                openItem = true;
+              }
+            } else if (searchTerm) {
+              if (matchesSearch) {
+                openItem = true;
+              }
+            } else if (filterByStatus) {
+              if (matchesStatusFilter) {
+                openItem = true;
+              }
             }
           }
 
@@ -213,7 +248,8 @@ const Table: React.FC<ITableProps> = ({
         .filter((item): item is LibraryItem => item !== null);
     };
 
-    if (!searchTerm && !filterByStatus) {
+    if (!searchTerm && !filterByStatus && !isDraft) {
+      console.log("return");
       return data;
     }
 
@@ -253,7 +289,8 @@ const Table: React.FC<ITableProps> = ({
         : filterData(
             filters?.searchTerm || "",
             data,
-            filters?.filterByStatus || null
+            filters?.filterByStatus || null,
+            filters?.isDraft || false
           )
     );
   }, [data, loading]);
@@ -264,7 +301,8 @@ const Table: React.FC<ITableProps> = ({
         filterData(
           filters?.searchTerm || "",
           data,
-          filters?.filterByStatus || null
+          filters?.filterByStatus || null,
+          filters?.isDraft || false
         )
       );
     }
