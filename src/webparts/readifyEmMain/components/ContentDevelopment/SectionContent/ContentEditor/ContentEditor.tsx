@@ -33,11 +33,19 @@ interface EditorProps {
   readOnly?: boolean;
 }
 import "react-quill/dist/quill.bubble.css";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import ToastMessage from "../../../common/Toast/ToastMessage";
 
 const ContentEditor = forwardRef<HTMLDivElement, EditorProps>(
   ({ placeholder, setEditorHtml, editorHtmlValue, readOnly }, ref) => {
     const quillRef = useRef<any>(null);
+    const [toastMessage, setToastMessage] = useState<any>({
+      isShow: false,
+      severity: "",
+      title: "",
+      message: "",
+      duration: "",
+    });
 
     // Expose the Quill editor instance via the ref
     useImperativeHandle(ref, (): any => ({
@@ -65,13 +73,34 @@ const ContentEditor = forwardRef<HTMLDivElement, EditorProps>(
           const imgSrc = op.insert.image;
           const response = await fetch(imgSrc);
           const blob = await response.blob();
-          if (blob.size > 1 * 1024 * 1024 || blob.size < 500 * 1024) {
+          if (
+            blob.type === "image/gif"
+            // blob.type === "text/plain" ||
+            // blob.type === "application/pdf"
+          ) {
+            quill.deleteText(cumulativeIndex, 1);
+            // alert("GIF images are not allowed and have been removed.");
+            setToastMessage({
+              isShow: true,
+              severity: "warn",
+              title: "Invalid format!",
+              message: "GIF images are not allowed in the section.",
+              duration: 3000,
+            });
+            cumulativeIndex -= 1;
+            continue;
+          }
+          if (blob.size > 500 * 1024) {
             // 1MB limit
             // Remove the large image from the editor's content
             quill.deleteText(cumulativeIndex, 1);
-            alert(
-              "Image size is either too large (over 1MB) or too small (below 500KB) and has been removed."
-            );
+            setToastMessage({
+              isShow: true,
+              severity: "warn",
+              title: "Invalid size!",
+              message: "Image size should be below 500KB in the section.",
+              duration: 3000,
+            });
             cumulativeIndex -= 1;
           } else {
             // Get the image element and set its size to 300px by 300px
@@ -79,8 +108,9 @@ const ContentEditor = forwardRef<HTMLDivElement, EditorProps>(
               `img[src="${imgSrc}"]`
             );
             if (imageElement) {
-              imageElement.style.width = "400px";
-              imageElement.style.height = "400px";
+              imageElement.setAttribute("class", "rtUploadImage");
+              imageElement.setAttribute("width", "400");
+              imageElement.setAttribute("height", "400");
             }
           }
         }
@@ -136,18 +166,28 @@ const ContentEditor = forwardRef<HTMLDivElement, EditorProps>(
     ];
 
     return (
-      <ReactQuill
-        ref={quillRef}
-        readOnly={readOnly}
-        theme="bubble"
-        className="quillWrap"
-        onChange={handleChange}
-        value={editorHtmlValue}
-        modules={modules}
-        formats={formats}
-        bounds={`[data-text-editor="form-editor"]`}
-        placeholder={placeholder}
-      />
+      <>
+        <ReactQuill
+          ref={quillRef}
+          readOnly={readOnly}
+          theme="bubble"
+          className="quillWrap"
+          onChange={handleChange}
+          value={editorHtmlValue}
+          modules={modules}
+          formats={formats}
+          bounds={`[data-text-editor="form-editor"]`}
+          placeholder={placeholder}
+        />
+        <ToastMessage
+          severity={toastMessage.severity}
+          title={toastMessage.title}
+          message={toastMessage.message}
+          duration={toastMessage.duration}
+          isShow={toastMessage.isShow}
+          setToastMessage={setToastMessage}
+        />
+      </>
     );
   }
 );

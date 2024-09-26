@@ -163,7 +163,7 @@ export const bindHeaderTable = async (
                 <td style="width:20%; padding:6px; text-align: center;vertical-align: middle;">
 
                   <div style="width: 100%;height:86px;" > 
-                    <img width="100%" height= "100%" style="padding:1px;" src="${
+                    <img width="150" height= "80" style="padding:1px;" src="${
                       sectionDetails?.base64 !== ""
                         ? sectionDetails?.base64
                         : base64Image
@@ -213,7 +213,7 @@ export const bindHeaderTable = async (
                       <tr style = "">
                         <td style="width: 35%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Next review</td>
                         <td>:</td>
-                        <td style="width: 75%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
+                        <td style="width: 65%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
                           <span style="overflow-wrap: anywhere;">${
                             docDetails?.nextReviewDate || "-"
                           }</span>
@@ -332,6 +332,11 @@ export const getDocumentRelatedSections = async (
           FilterKey: "documentOf",
           Operator: "eq",
           FilterValue: documentID,
+        },
+        {
+          FilterKey: "isActive",
+          Operator: "eq",
+          FilterValue: 1,
         },
       ],
     })

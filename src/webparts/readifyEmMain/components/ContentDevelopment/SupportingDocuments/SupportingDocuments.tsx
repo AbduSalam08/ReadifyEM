@@ -14,7 +14,7 @@ import CustomInput from "../../common/CustomInputFields/CustomInput";
 import DefaultButton from "../../common/Buttons/DefaultButton";
 // import SpServices from "../../../../../services/SPServices/SpServices";
 const closeBtn = require("../../../../../assets/images/png/close.png");
-const checkBtn = require("../../../../../assets/images/png/checkmark.png");
+// const checkBtn = require("../../../../../assets/images/png/checkmark.png");
 
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import CloseIcon from "@mui/icons-material/Close";
@@ -728,8 +728,8 @@ const SupportingDocuments: React.FC<Props> = ({
       setToastMessage({
         isShow: true,
         severity: "warn",
-        title: "Pending add supporting link",
-        message: "Please add new supporting link before submit",
+        title: "Add supporting link",
+        message: "Please add supporting link before submit",
         duration: 3000,
       });
     }
@@ -878,8 +878,8 @@ const SupportingDocuments: React.FC<Props> = ({
       setToastMessage({
         isShow: true,
         severity: "warn",
-        title: "Pending add supporting link",
-        message: "Please add new supporting link before submit",
+        title: "Add supporting link",
+        message: "Please add supporting link before submit",
         duration: 3000,
       });
     }
@@ -965,17 +965,19 @@ const SupportingDocuments: React.FC<Props> = ({
                   </button>
                 )}
               </div>
-              <DefaultButton
-                disabled={loader}
-                btnType="primary"
-                text={"New"}
-                size="medium"
-                onClick={() => {
-                  // togglePopupVisibility(setPopupController, 0, "open");
-                  // setDefinitionsData(initialDefinitionsData);
-                  AddNewDocument();
-                }}
-              />
+              {!selectedDocuments.some((obj: any) => obj.isNew) && (
+                <DefaultButton
+                  disabled={loader}
+                  btnType="primary"
+                  text={"New"}
+                  size="medium"
+                  onClick={() => {
+                    // togglePopupVisibility(setPopupController, 0, "open");
+                    // setDefinitionsData(initialDefinitionsData);
+                    AddNewDocument();
+                  }}
+                />
+              )}
               {typeof filterDocuments !== "string" && (
                 <div
                   className={styles.filterSecWrapper}
@@ -997,8 +999,22 @@ const SupportingDocuments: React.FC<Props> = ({
                             : styles.filterDefinitionSec
                         }
                         onClick={(ev) => {
-                          onSelectDocument(obj.ID);
-                          ev.preventDefault();
+                          const checkCondition = selectedDocuments.some(
+                            (obj: any) => obj.isNew
+                          );
+                          if (!checkCondition) {
+                            onSelectDocument(obj.ID);
+                            ev.preventDefault();
+                          } else {
+                            setToastMessage({
+                              isShow: true,
+                              severity: "warn",
+                              title: "Add supporting link",
+                              message:
+                                "Please provide the supporting link before choosing the document.",
+                              duration: 3000,
+                            });
+                          }
                         }}
                         id="sectionSupportingDocumentId"
                       >
@@ -1150,28 +1166,52 @@ const SupportingDocuments: React.FC<Props> = ({
                         </a>
                       </div>
                     )}
-                    <div style={{ display: "flex", gap: "10px" }}>
-                      {obj.isNew && (
-                        <button className={styles.closeBtn}>
-                          <img
-                            src={checkBtn}
-                            alt={"Add Document"}
-                            onClick={() => checkinNewSupportingDocument(index)}
-                          />
-                        </button>
-                      )}
-                      {!currentSectionDetails?.sectionSubmitted &&
-                        (currentDocRole?.primaryAuthor ||
-                          currentDocRole?.sectionAuthor) && (
-                          <button className={styles.closeBtn}>
-                            <img
-                              src={closeBtn}
-                              alt={"Remove Document"}
-                              onClick={() => removeSupportingDocument(index)}
-                            />
-                          </button>
-                        )}
-                    </div>
+                    {obj.isNew && (
+                      // <button className={styles.closeBtn}>
+                      //   <img
+                      //     src={checkBtn}
+                      //     alt={"Add Document"}
+                      //     onClick={() => checkinNewSupportingDocument(index)}
+                      //   />
+                      // </button>
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          gap: "10px",
+                          justifyContent: "end",
+                        }}
+                      >
+                        <DefaultButton
+                          text={<CloseIcon sx={{ Padding: "0px" }} />}
+                          onlyIcon={true}
+                          title="Cancel"
+                          btnType="darkGreyVariant"
+                          onClick={() => removeSupportingDocument(index)}
+                        />
+                        <DefaultButton
+                          text="Add"
+                          btnType="primary"
+                          onClick={() => checkinNewSupportingDocument(index)}
+                        />
+                      </div>
+                    )}
+                    {!obj.isNew && (
+                      <div style={{ display: "flex", gap: "10px" }}>
+                        {!currentSectionDetails?.sectionSubmitted &&
+                          (currentDocRole?.primaryAuthor ||
+                            currentDocRole?.sectionAuthor) &&
+                          !obj.isNew && (
+                            <button className={styles.closeBtn}>
+                              <img
+                                src={closeBtn}
+                                alt={"Remove Document"}
+                                onClick={() => removeSupportingDocument(index)}
+                              />
+                            </button>
+                          )}
+                      </div>
+                    )}
                   </div>
                 )
               );

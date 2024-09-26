@@ -7,6 +7,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import { memo, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Popup from "../../common/Popups/Popup";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import DefaultButton from "../../common/Buttons/DefaultButton";
@@ -77,6 +78,7 @@ const References: React.FC<Props> = ({
   currentDocRole,
   setCheckChanges,
 }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const initialReferenceData = {
     ID: null,
@@ -340,6 +342,7 @@ const References: React.FC<Props> = ({
 
   const submitRejectedComment = async (): Promise<any> => {
     if (rejectedComments.rejectedComment?.trim() !== "") {
+      handleClosePopup(4);
       await addRejectedComment(
         rejectedComments.rejectedComment,
         currentDocDetailsData,
@@ -357,7 +360,6 @@ const References: React.FC<Props> = ({
         currentSectionDetails?.documentOfId,
         "active"
       );
-      handleClosePopup(4);
       setRejectedComments({
         ...rejectedComments,
         rejectedComment: "",
@@ -1250,7 +1252,7 @@ const References: React.FC<Props> = ({
                 title="Close"
                 onClick={() => {
                   // setCheckChanges(false);
-                  // navigate(-1);
+                  navigate(-1);
                 }}
               />
               {/* <CloseIcon

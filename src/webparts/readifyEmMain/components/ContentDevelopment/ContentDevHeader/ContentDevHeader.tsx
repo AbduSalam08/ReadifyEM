@@ -50,7 +50,7 @@ const Header: React.FC<Props> = ({
     {
       open: false,
       popupTitle: "View Document",
-      popupWidth: "70vw",
+      popupWidth: "820px",
       popupType: "custom",
       defaultCloseBtn: true,
       popupData: [],

@@ -26,8 +26,11 @@ strong {
 em {
   font-style: italic !important;
 }
+.ql-snow .ql-editor img { 
+  max-width: 400px;
+}
 .ql-editor img {
-  width: auto !important;
+  width: auto;
   max-width: 400px;
   height: auto !important;
   max-height: 400px;

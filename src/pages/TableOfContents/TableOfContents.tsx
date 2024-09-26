@@ -84,7 +84,7 @@ const initialPopupController = [
   {
     open: false,
     popupTitle: "View Document",
-    popupWidth: "70vw",
+    popupWidth: "820px",
     defaultCloseBtn: true,
     popupData: [],
   },
@@ -1195,7 +1195,11 @@ const TableOfContents = (): JSX.Element => {
                   value={filterOptions.filterByStatus}
                   placeholder="Filter by Status"
                   size="MD"
-                  disabled={tableData.data.length === 0 || tableData.loading}
+                  disabled={
+                    tableData.data.length === 0 ||
+                    tableData.loading ||
+                    filterOptions.isDraft
+                  }
                 />
                 {filterOptions?.searchTerm || filterOptions?.filterByStatus ? (
                   <button
@@ -1205,6 +1209,7 @@ const TableOfContents = (): JSX.Element => {
                         ...prev,
                         searchTerm: "",
                         filterByStatus: "",
+                        isDraft: false,
                       }));
                     }}
                   >
@@ -1328,7 +1333,9 @@ const TableOfContents = (): JSX.Element => {
                         setPopupController,
                         2,
                         "open",
-                        `Preview Document`
+                        `Preview Document`,
+                        "",
+                        item?.isPdfGenerated ? "70vw" : "820px"
                         // `Preview Document - ${item.name}`
                       );
                       // getDocumentRelatedSections(item.ID, dispatch);
