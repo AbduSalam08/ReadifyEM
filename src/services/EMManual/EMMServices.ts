@@ -88,7 +88,6 @@ export const getLibraryItems = async (): Promise<{
         .listItemAllFields.get();
 
       let fileItemsFromList: any;
-      console.log(fileFields);
 
       if (fileFields) {
         await SpServices.SPReadItemUsingId({

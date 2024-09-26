@@ -715,7 +715,7 @@ const RichText = ({
               continue;
             }
 
-            if (blob.size >= 500 * 1024) {
+            if (blob.size > 500 * 1024) {
               // 1MB limit
               // Remove the large image from the editor's content
               quill.deleteText(cumulativeIndex, 1);
@@ -748,7 +748,7 @@ const RichText = ({
                   // Set style for other images
                   imageElement.setAttribute("class", "rtUploadImage");
                   imageElement.setAttribute("width", "400");
-                  imageElement.setAttribute("height", "400");
+                  // imageElement.setAttribute("height", "400");
                   // imageElement.setAttribute(
                   //   "style",
                   //   "width: 400px;height:400px"

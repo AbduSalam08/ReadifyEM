@@ -237,7 +237,7 @@ const convertSupportingDocToTxtFile = (
     //           </tr>`;
 
     supportingDocTable += `<div style="width:100%;margin-bottom: 10px;">
-      <span style="width:5%;line-height: 20px;font-weight: 500;font-size: 17px;">
+      <span style="width:5%;line-height: 20px;">
       ${sectionOrder}.${index + 1}.</span>
       <span style="width:95%;">
         <a style="word-break: break-all;" href=${

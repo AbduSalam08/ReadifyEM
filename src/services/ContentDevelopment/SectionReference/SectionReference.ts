@@ -272,17 +272,15 @@ const submitSectionReferences = async (
         AddReferenceAttachment(documentId, reference_file);
         setAllReferencesData([...tempArray]);
         setLoader(false);
-        if (!submitCondition) {
-          setToastState({
-            isShow: true,
-            severity: "success",
-            title: `Section ${submitCondition ? "submitted" : "saved"}!`,
-            message: `Section has been ${
-              submitCondition ? "submitted" : "saved"
-            } successfully.`,
-            duration: 3000,
-          });
-        }
+        setToastState({
+          isShow: true,
+          severity: "success",
+          title: `Section ${submitCondition ? "submitted" : "saved"}!`,
+          message: `Section has been ${
+            submitCondition ? "submitted" : "saved"
+          } successfully.`,
+          duration: 3000,
+        });
       }
     });
   } catch (err) {

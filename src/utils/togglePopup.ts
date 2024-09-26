@@ -4,7 +4,8 @@ export const togglePopupVisibility = (
   index: number,
   action: "open" | "close",
   popupTitle?: any,
-  popupData?: any
+  popupData?: any,
+  popupWidth?: any
 ): void => {
   setPopupController((prev: any) =>
     prev.map((popup: any, popupIndex: any) =>
@@ -14,6 +15,7 @@ export const togglePopupVisibility = (
             open: action === "open" ? true : false,
             popupTitle: popupTitle || popup.popupTitle,
             popupData: popupData || "",
+            popupWidth: popupWidth || popup.popupWidth,
           }
         : { ...popup }
     )

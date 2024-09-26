@@ -880,9 +880,9 @@ const ContentDevelopment = (): JSX.Element => {
         withLabel
         icon={false}
         value={currentDocDetailsData?.nextReviewDate}
-        disabled={currentDocDetailsData?.nextReviewDate
-          ?.toLowerCase()
-          ?.includes("awaiting approval")}
+        // disabled={currentDocDetailsData?.nextReviewDate
+        //   ?.toLowerCase()
+        //   ?.includes("awaiting approval")}
         onChange={(value: any) => {
           // handleOnChangeFunction(value, "definitionName");
         }}
