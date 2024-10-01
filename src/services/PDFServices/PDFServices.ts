@@ -155,15 +155,86 @@ export const bindHeaderTable = async (
 
   const base64Image = base64Data.headerImage;
 
-  let definitionsTable = "";
-  definitionsTable = `<table class="pdf_header" style="width:100%;border: 1px solid black; margin-bottom:30px;">
+  // let pdfHeaderTable = "";
+  // pdfHeaderTable = `<table class="pdf_header" style="width:100%;border: 1px solid black; margin-bottom:30px;">
+  //         <tbody>`;
+
+  // pdfHeaderTable += `<tr>
+  //               <td style="width:20%; padding:6px; text-align: center;vertical-align: middle;">
+
+  //                 <div style="width: 100%;height:90px;" >
+  //                   <img width="150" height= "90" style="padding:1px;" src="${
+  //                     sectionDetails?.base64 !== ""
+  //                       ? sectionDetails?.base64
+  //                       : base64Image
+  //                   }" alt="doc header logo" />
+  //                 </div>
+  //               </td>
+  //               <td style="width: 50%;font-size: 11px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border-left: 1px solid #000;border-right: 1px solid #000;">
+  //                   <p style="font-size: 24px;font-family: interMedium, sans-serif;margin: 5px;">${
+  //                     docDetails?.Title
+  //                       ? docDetails?.Title.split("_")[0]
+  //                       : docDetails?.Title || "-"
+  //                   }</p>
+  //                   <span style="font-family: interRegular, sans-serif;font-size: 14px;color: #adadad;">Version : ${
+  //                     docDetails.documentVersion
+  //                   }</span>
+  //               </td>
+  //               <td style="width: 30%;font-size: 11px;line-height: 18px; font-family: interMedium,sans-serif;">
+  //                 <table style="width: 100%;border-collapse: collapse;">
+  //                   <tbody>
+  //                     <tr style = "border-bottom: 1px solid #000;">
+  //                       <td style="width: 35%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Type</td>
+  //                       <td>:</td>
+  //                       <td style="width: 65%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
+  //                         <span style="overflow-wrap: anywhere;">${
+  //                           docDetails?.documentTemplateType?.Title || "-"
+  //                         }</span>
+  //                       </td>
+  //                     </tr>
+  //                     <tr style = "border-bottom: 1px solid #000;">
+  //                       <td style="width: 35%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Created on</td>
+  //                       <td>:</td>
+  //                       <td style="width: 65%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
+  //                         <span style="overflow-wrap: anywhere;">${
+  //                           docDetails?.createdDate || "-"
+  //                         }</span>
+  //                       </td>
+  //                     </tr>
+  //                     <tr style = "border-bottom: 1px solid #000;">
+  //                       <td style="width: 35%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Last review</td>
+  //                       <td>:</td>
+  //                       <td style="width: 65%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
+  //                         <span style="overflow-wrap: anywhere;">${
+  //                           lastReviewDate || "-"
+  //                         }</span>
+  //                       </td>
+  //                     </tr>
+  //                     <tr style = "">
+  //                       <td style="width: 35%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Next review</td>
+  //                       <td>:</td>
+  //                       <td style="width: 65%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
+  //                         <span style="overflow-wrap: anywhere;">${
+  //                           docDetails?.nextReviewDate || "-"
+  //                         }</span>
+  //                       </td>
+  //                     </tr>
+  //                   </tbody>
+  //                 </table>
+  //               </td>
+  //             </tr>`;
+
+  // pdfHeaderTable += `</tbody></table><br/>`;
+
+  let pdfHeaderTable = "";
+  pdfHeaderTable = `<table class="pdf_header" style="width:100%;border: 1px solid black; margin-bottom:30px;">
           <tbody>`;
 
-  definitionsTable += `<tr>
+  pdfHeaderTable += `<tr>
                 <td style="width:20%; padding:6px; text-align: center;vertical-align: middle;">
 
-                  <div style="width: 100%;height:86px;" > 
-                    <img width="150" height= "80" style="padding:1px;" src="${
+                  <div style="width: 100%;height:70px;" >
+                    <img width="100%" height= "100%" style="padding:1px;" src="${
                       sectionDetails?.base64 !== ""
                         ? sectionDetails?.base64
                         : base64Image
@@ -224,13 +295,13 @@ export const bindHeaderTable = async (
                 </td>
               </tr>`;
 
-  definitionsTable += `</tbody></table><br/>`;
+  pdfHeaderTable += `</tbody></table><br/>`;
 
-  // let definitionsTable = "";
-  // definitionsTable = `<table class="pdf_header" style="border-collapse: collapse; width: 100%;">
+  // let pdfHeaderTable = "";
+  // pdfHeaderTable = `<table class="pdf_header" style="border-collapse: collapse; width: 100%;">
   //       <tbody>`;
 
-  // definitionsTable += `<tr>
+  // pdfHeaderTable += `<tr>
   //               <td style="width: 20%;font-size: 13px; padding: 8px 20px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #000;">
 
   //                 <img style="width:100%;min-width: 75px !important;min-width: 150px !important;height:60px !important" src="${
@@ -289,9 +360,9 @@ export const bindHeaderTable = async (
   //               </td>
   //             </tr>`;
 
-  // definitionsTable += `</tbody></table>`;
+  // pdfHeaderTable += `</tbody></table>`;
 
-  return definitionsTable;
+  return pdfHeaderTable;
 };
 
 export const getDocumentRelatedSections = async (
