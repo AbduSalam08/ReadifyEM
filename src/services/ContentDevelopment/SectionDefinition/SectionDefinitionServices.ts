@@ -66,7 +66,7 @@ const convertDefinitionsToTxtFile = (
     }.</span>
       <span style="width: 90%;">
         <span style="">${obj.definitionName}</span>
-        <p style="line-height: 20px;font-size: 13px;margin-left:30px;">${
+        <p style="line-height: 20px;margin-left:30px;">${
           obj.definitionDescription
         }</p>
       </span>

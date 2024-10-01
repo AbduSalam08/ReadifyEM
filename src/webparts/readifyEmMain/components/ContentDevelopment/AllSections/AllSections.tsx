@@ -273,7 +273,7 @@ const AllSections: React.FC<Props> = ({
                     }}
                   >
                     <span className={styles.visibleDateSec}>
-                      {item.dueDate || "dedo"}
+                      {item.dueDate || ""}
                     </span>
                     <ChevronRight
                       style={{

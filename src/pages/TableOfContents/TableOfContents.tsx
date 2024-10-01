@@ -1277,7 +1277,9 @@ const TableOfContents = (): JSX.Element => {
                             item?.fields.status?.toLowerCase() === "not started"
                           }
                           key={index}
-                          onClick={() => {
+                          onClick={(event: any) => {
+                            // event.stopPropagation();
+                            event.preventDefault();
                             if (isAdmin) {
                               navigate(
                                 `/admin/my_tasks/${item?.docName}/content_developer`
@@ -1305,7 +1307,9 @@ const TableOfContents = (): JSX.Element => {
                           btnType={"actionBtn"}
                           text={<img src={editIcon} />}
                           key={index}
-                          onClick={() => {
+                          onClick={(event: any) => {
+                            // event.stopPropagation();
+                            event.preventDefault();
                             setScreens((prev) => ({
                               ...prev,
                               NewDocument: true,
@@ -1326,7 +1330,9 @@ const TableOfContents = (): JSX.Element => {
                     btnType={"actionBtn"}
                     text={<img src={viewDocBtn} />}
                     key={index}
-                    onClick={async () => {
+                    onClick={async (event: any) => {
+                      // event.stopPropagation();
+                      event.preventDefault();
                       setDocumentPdfURL(item?.url);
                       setDocuementStatus(item?.isPdfGenerated);
                       togglePopupVisibility(
@@ -1353,7 +1359,9 @@ const TableOfContents = (): JSX.Element => {
                         btnType={"actionBtn"}
                         text={<img src={newversionBtn} />}
                         key={index}
-                        onClick={() => {
+                        onClick={(event: any) => {
+                          // event.stopPropagation();
+                          event.preventDefault();
                           if (versionType === "minor") {
                             setTempScreens((prev) => ({
                               ...prev,
@@ -1395,7 +1403,9 @@ const TableOfContents = (): JSX.Element => {
                     btnType={"actionBtn"}
                     text={<img src={editIcon} />}
                     key={folderType}
-                    onClick={() => {
+                    onClick={(event: any) => {
+                      // event.stopPropagation();
+                      event.preventDefault();
                       const popupType: number =
                         folderType?.toLowerCase() === "parentfolder" ? 0 : 1;
                       const popupTitle: string =
