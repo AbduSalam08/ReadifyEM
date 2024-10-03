@@ -122,6 +122,7 @@ export const getLibraryItems = async (): Promise<{
             ? fileFields?.isPdfGenerated
             : false,
           fields: {
+            refId: fileItemsFromList?.ID ? String(fileItemsFromList?.ID) : "-",
             createdDate: fileItemsFromList?.createdDate,
             nextReviewDate: fileItemsFromList?.nextReviewDate,
             status: fileItemsFromList?.status,
@@ -144,6 +145,7 @@ export const getLibraryItems = async (): Promise<{
             ? fileFields?.isPdfGenerated
             : false,
           fields: {
+            refId: fileItemsFromList?.ID ? String(fileItemsFromList?.ID) : "-",
             createdDate: fileFields?.createdDate,
             nextReviewDate: fileFields?.nextReviewDate,
             status: fileFields?.status,

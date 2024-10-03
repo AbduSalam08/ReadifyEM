@@ -52,6 +52,8 @@ const TableItem: React.FC<TableItemProps> = ({
   const [data, setData] = useState(tableData);
   const [isOpen, setIsOpen] = useState(data.open);
   const [toggleStates, setToggleStates] = useState<Record<number, boolean>>({});
+  console.log(toggleStates);
+
   const isAdmin: boolean = CurrentUserIsAdmin();
 
   useEffect(() => {
@@ -71,6 +73,8 @@ const TableItem: React.FC<TableItemProps> = ({
   }, [tableData]);
 
   const itemTemplate = (item: any, paddingLeft?: any): JSX.Element => {
+    console.log(item);
+
     return (
       <div
         className={styles.itemContainer}
@@ -88,7 +92,12 @@ const TableItem: React.FC<TableItemProps> = ({
 
         {Object.keys(item.fields).map((key: string, i: number) => {
           const lowerCaseKey = key.toLowerCase();
-          const fieldValue = item.fields[key] || "-";
+          // const fieldValue = item.fields[key] || "-";
+          const fieldValue =
+            (item.fields["status"].toLowerCase() === "archived" &&
+            key === "nextReviewDate"
+              ? "-"
+              : item.fields[key]) || "-";
 
           if (lowerCaseKey === "status") {
             return (
@@ -173,10 +182,7 @@ const TableItem: React.FC<TableItemProps> = ({
                   <InputSwitch
                     checked={toggleStates[item.fileID]}
                     className="sectionToggler"
-                    disabled={
-                      item.fields.status?.toLowerCase() !== "approved" &&
-                      item.fields.status?.toLowerCase() !== "current"
-                    }
+                    disabled={item.fields.status?.toLowerCase() !== "approved"}
                     onChange={async (e) => {
                       const newState = !toggleStates[item.fileID];
                       setToggleStates((prev) => ({
@@ -227,9 +233,10 @@ const TableItem: React.FC<TableItemProps> = ({
                       ?.toLowerCase()
                       ?.includes("awaiting approval") &&
                     trimStartEnd(item.fields[key])?.trim() ? (
-                      item?.isPdfGenerated &&
+                      // item?.isPdfGenerated &&
+                      item?.fields?.status?.toLowerCase() === "approved" ||
                       item?.fields?.status?.toLowerCase() ===
-                        "approved" ? null : (
+                        "archived" ? null : (
                         <DueDatePill
                           dueDate={item.fields[key]}
                           roles="Primary Author"
@@ -246,6 +253,15 @@ const TableItem: React.FC<TableItemProps> = ({
                     )}
                   </div>
                 )}
+              </div>
+            );
+          }
+
+          // if (lowerCaseKey === "refid") {
+          else {
+            return (
+              <div className={styles.item} title={fieldValue} key={i}>
+                {item.fields[key]}
               </div>
             );
           }

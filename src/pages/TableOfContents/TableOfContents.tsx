@@ -160,8 +160,15 @@ const TableOfContents = (): JSX.Element => {
   // main table data state
   const [tableData, setTableData] = useState({
     headers: isAdmin
-      ? ["Document Name", "Created At", "Next Review", "Status", "Visibility"]
-      : ["Document Name", "Created At", "Next Review", "Status"],
+      ? [
+          "Document Name",
+          "Ref ID",
+          "Created At",
+          "Next Review",
+          "Status",
+          "Visibility",
+        ]
+      : ["Document Name", "Ref ID", "Created At", "Next Review", "Status"],
     loading: false,
     data: [] as LibraryItem[],
   });
@@ -232,6 +239,7 @@ const TableOfContents = (): JSX.Element => {
     searchTerm: "",
     filterByStatus: "",
     isDraft: false,
+    isArchived: false,
     options: DocStatus,
     menuBtnExternalController: null,
     createOptions: [
@@ -1169,6 +1177,28 @@ const TableOfContents = (): JSX.Element => {
                     fontFamily: "interMedium, sans-serif",
                   }}
                 >
+                  Archived Documents
+                </span>
+                <InputSwitch
+                  checked={filterOptions.isArchived}
+                  className="sectionToggler"
+                  disabled={tableData.data.length === 0 || tableData.loading}
+                  onChange={(e) => {
+                    setFilterOptions((prev) => ({
+                      ...prev,
+                      searchTerm: "",
+                      filterByStatus: "",
+                      isArchived: e.value,
+                      isDraft: false,
+                    }));
+                  }}
+                />
+                <span
+                  style={{
+                    color: "#160364",
+                    fontFamily: "interMedium, sans-serif",
+                  }}
+                >
                   Draft Documents
                 </span>
                 <InputSwitch
@@ -1181,6 +1211,7 @@ const TableOfContents = (): JSX.Element => {
                       searchTerm: "",
                       filterByStatus: "",
                       isDraft: e.value,
+                      isArchived: false,
                     }));
                   }}
                 />
@@ -1198,10 +1229,14 @@ const TableOfContents = (): JSX.Element => {
                   disabled={
                     tableData.data.length === 0 ||
                     tableData.loading ||
-                    filterOptions.isDraft
+                    filterOptions.isDraft ||
+                    filterOptions.isArchived
                   }
                 />
-                {filterOptions?.searchTerm || filterOptions?.filterByStatus ? (
+                {filterOptions?.searchTerm ||
+                filterOptions?.filterByStatus ||
+                filterOptions?.isArchived ||
+                filterOptions?.isDraft ? (
                   <button
                     className={styles.clearFilterBtn}
                     onClick={() => {
@@ -1210,6 +1245,7 @@ const TableOfContents = (): JSX.Element => {
                         searchTerm: "",
                         filterByStatus: "",
                         isDraft: false,
+                        isArchived: false,
                       }));
                     }}
                   >
@@ -1237,7 +1273,13 @@ const TableOfContents = (): JSX.Element => {
           <Table
             headers={tableData.headers}
             loading={tableData.loading}
-            columns={["createdDate", "nextReviewDate", "status", "isVisible"]}
+            columns={[
+              "refID",
+              "createdDate",
+              "nextReviewDate",
+              "status",
+              "isVisible",
+            ]}
             filters={filterOptions}
             data={tableData.data}
             actions={true}
@@ -1258,7 +1300,7 @@ const TableOfContents = (): JSX.Element => {
                 <>
                   {isAdmin && latestDoc && (
                     <>
-                      {item?.fields?.status?.toLowerCase() !== "current" && (
+                      {item?.fields?.status?.toLowerCase() !== "approved" && (
                         <DefaultButton
                           disableRipple={true}
                           style={{
@@ -1298,7 +1340,7 @@ const TableOfContents = (): JSX.Element => {
                           }}
                         />
                       )}
-                      {item?.fields?.status?.toLowerCase() !== "current" && (
+                      {item?.fields?.status?.toLowerCase() !== "approved" && (
                         <DefaultButton
                           disableRipple={true}
                           style={{
@@ -1349,7 +1391,7 @@ const TableOfContents = (): JSX.Element => {
                     }}
                   />
                   {isAdmin &&
-                    item?.fields?.status?.toLowerCase() === "current" &&
+                    item?.fields?.status?.toLowerCase() === "approved" &&
                     latestDoc && (
                       <DefaultButton
                         disableRipple={true}

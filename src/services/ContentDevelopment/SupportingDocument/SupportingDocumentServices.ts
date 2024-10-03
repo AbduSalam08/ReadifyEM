@@ -69,7 +69,7 @@ const getDocumentDeatils = async (Data: any[]) => {
       {
         FilterKey: "status",
         Operator: "eq",
-        FilterValue: "Current",
+        FilterValue: "Approved",
       },
     ],
   })

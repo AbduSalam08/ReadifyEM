@@ -75,6 +75,7 @@ import {
 import AlertPopup from "../../webparts/readifyEmMain/components/common/Popups/AlertPopup/AlertPopup";
 import { CurrentUserIsAdmin } from "../../constants/DefineUser";
 import { useNavigate } from "react-router-dom";
+// import { sp } from "@pnp/sp";
 
 const Details = {
   sectionName: "Introduction",
@@ -486,7 +487,7 @@ const ContentDevelopment = (): JSX.Element => {
     if (currentPromoter?.currentOrder === totalApprovers) {
       await changeDocStatus(
         currentDocDetailsData?.documentDetailsID,
-        "Current", // Set the document status to Approved
+        "Approved", // Set the document status to Approved
         "approvers",
         updatedApprovers,
         currentDocDetailsData,
