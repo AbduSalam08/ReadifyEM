@@ -152,6 +152,11 @@ const TableOfContents = (): JSX.Element => {
   const DocumentPathOptions: any = useSelector(
     (state: any) => state.EMMTableOfContents.foldersData
   );
+  const TOCData: any = useSelector(
+    (state: any) => state.EMMTableOfContents.tableData
+  );
+  console.log(TOCData);
+
   const AllSectionsAttachments: any = useSelector(
     (state: any) => state.PDFServiceData.sectionsAttachments
   );
@@ -399,7 +404,7 @@ const TableOfContents = (): JSX.Element => {
     [
       <div key={1} className={styles.initiateVersionPopup}>
         <div className={styles.popupTitle}>
-          Please select the type of version update you'd like to initiate:
+          Please select the type of version you'd like to initiate:
         </div>
         <div className={styles.chechBoxWrapper}>
           <div
@@ -956,7 +961,7 @@ const TableOfContents = (): JSX.Element => {
 
   // fn to load all main data
   const setMainData = async (): Promise<any> => {
-    await LoadTableData(dispatch, setTableData, isAdmin);
+    await LoadTableData(dispatch, setTableData, tableData, isAdmin);
   };
 
   // const readTextFileFromTXT = (data: any): void => {
@@ -1008,6 +1013,13 @@ const TableOfContents = (): JSX.Element => {
   // };
 
   // lifecycle hooks
+  useEffect(() => {
+    if (TOCData?.data) {
+      debugger;
+      setTableData(TOCData);
+    }
+  }, [TOCData]);
+
   useEffect(() => {
     setMainData();
   }, [dispatch]);
@@ -1177,7 +1189,7 @@ const TableOfContents = (): JSX.Element => {
                     fontFamily: "interMedium, sans-serif",
                   }}
                 >
-                  Archived Documents
+                  All Versions
                 </span>
                 <InputSwitch
                   checked={filterOptions.isArchived}
@@ -1204,7 +1216,11 @@ const TableOfContents = (): JSX.Element => {
                 <InputSwitch
                   checked={filterOptions.isDraft}
                   className="sectionToggler"
-                  disabled={tableData.data.length === 0 || tableData.loading}
+                  disabled={
+                    tableData.data.length === 0 ||
+                    tableData.loading ||
+                    filterOptions.isArchived
+                  }
                   onChange={(e) => {
                     setFilterOptions((prev) => ({
                       ...prev,
@@ -1282,6 +1298,7 @@ const TableOfContents = (): JSX.Element => {
             ]}
             filters={filterOptions}
             data={tableData.data}
+            tableData={tableData}
             actions={true}
             defaultTable={false}
             loadData={setMainData}

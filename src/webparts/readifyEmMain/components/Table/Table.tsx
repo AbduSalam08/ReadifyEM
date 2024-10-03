@@ -26,6 +26,7 @@ import { UpdateDocument } from "../../../../services/NewDocument/NewDocumentServ
 interface ITableProps {
   headers: string[];
   data: any[];
+  tableData?: any;
   loading: boolean;
   filters?: {
     searchTerm: string;
@@ -54,6 +55,7 @@ interface LibraryItem {
 const Table: React.FC<ITableProps> = ({
   headers,
   data,
+  tableData,
   loading,
   filters,
   actions,
@@ -88,6 +90,7 @@ const Table: React.FC<ITableProps> = ({
       ];
 
   const [DNDData, setDNDData] = useState<any[]>([]);
+  // const [tempData, setTempData] = useState<any[]>([]);
 
   const [popupLoaders, setPopupLoaders] =
     useState<IPopupLoaders>(initialPopupLoaders);
@@ -164,7 +167,10 @@ const Table: React.FC<ITableProps> = ({
         );
       } else {
         // For hierarchical data
-        return item.name?.toLowerCase().includes(lowercasedSearchTerm);
+        return (
+          item.name?.toLowerCase().includes(lowercasedSearchTerm) ||
+          item.ID?.toString().includes(lowercasedSearchTerm)
+        );
       }
     };
 
@@ -313,6 +319,7 @@ const Table: React.FC<ITableProps> = ({
   };
 
   const renderTableItem = (data: any): any => {
+    console.log(data);
     return (
       <TableItem
         tableData={data}
@@ -324,6 +331,8 @@ const Table: React.FC<ITableProps> = ({
         }}
         loading={loading}
         togglePanel={togglePanel}
+        setDNDData={setDNDData}
+        tempTableData={tableData}
         actions={actions}
         defaultTable={defaultTable}
         renderActionsForFiles={renderActions}
@@ -344,6 +353,7 @@ const Table: React.FC<ITableProps> = ({
             filters?.isArchived || false
           )
     );
+    // setTempData(data);
   }, [data, loading]);
 
   useEffect(() => {
@@ -357,6 +367,7 @@ const Table: React.FC<ITableProps> = ({
           filters?.isArchived || false
         )
       );
+      // setTempData(data);
     }
   }, [filters]);
 
@@ -429,6 +440,8 @@ const Table: React.FC<ITableProps> = ({
             columns={columns}
             loading={loading}
             togglePanel={togglePanel}
+            setDNDData={setDNDData}
+            tempTableData={tableData}
             key={i}
             actions={actions}
             defaultTable={defaultTable}

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable dot-notation */
 // exp 3 - latest stable code
 import { memo, useEffect, useState } from "react";
 import { OrderList } from "primereact/orderlist";
@@ -14,6 +15,8 @@ import SpServices from "../../../../services/SPServices/SpServices";
 import { LISTNAMES } from "../../../../config/config";
 import { trimStartEnd } from "../../../../utils/validations";
 import { statusLabel } from "../common/ContentDeveloperStatusLabel/ContentDeveloperStatusLabel";
+import { useDispatch } from "react-redux";
+import { setTableOfContentData } from "../../../../redux/features/EMMTableOfContentSlice";
 
 interface LibraryItem {
   name: string;
@@ -27,6 +30,8 @@ interface LibraryItem {
 interface TableItemProps {
   tableData: LibraryItem;
   togglePanel: any;
+  setDNDData: any;
+  tempTableData: any;
   itemTemplateLoading: any;
   handleData: any;
   loading: boolean;
@@ -40,6 +45,8 @@ interface TableItemProps {
 const TableItem: React.FC<TableItemProps> = ({
   tableData,
   togglePanel,
+  setDNDData,
+  tempTableData,
   itemTemplateLoading,
   handleData,
   loading,
@@ -49,10 +56,11 @@ const TableItem: React.FC<TableItemProps> = ({
   defaultTable,
   columns,
 }) => {
-  const [data, setData] = useState(tableData);
+  const dispatch = useDispatch();
+  const [data, setData] = useState<any>(tableData);
   const [isOpen, setIsOpen] = useState(data.open);
-  const [toggleStates, setToggleStates] = useState<Record<number, boolean>>({});
-  console.log(toggleStates);
+  // const [toggleStates, setToggleStates] = useState<Record<number, boolean>>({});
+  // console.log(toggleStates);
 
   const isAdmin: boolean = CurrentUserIsAdmin();
 
@@ -60,13 +68,13 @@ const TableItem: React.FC<TableItemProps> = ({
     setIsOpen(data.open);
   }, [data?.open]);
 
-  useEffect(() => {
-    const initialStates: Record<number, boolean> = {};
-    data.items?.forEach((item: any) => {
-      initialStates[item?.fileID] = item.fields?.isVisible;
-    });
-    setToggleStates(initialStates);
-  }, []);
+  // useEffect(() => {
+  //   const initialStates: Record<number, boolean> = {};
+  //   data.items?.forEach((item: any) => {
+  //     initialStates[item?.fileID] = item.fields?.isVisible;
+  //   });
+  //   setToggleStates(initialStates);
+  // }, []);
 
   useEffect(() => {
     setData(tableData);
@@ -74,7 +82,9 @@ const TableItem: React.FC<TableItemProps> = ({
 
   const itemTemplate = (item: any, paddingLeft?: any): JSX.Element => {
     console.log(item);
-
+    const lastUnderscoreIndex = item.name?.lastIndexOf("_");
+    const lastDotIndex = item.name?.lastIndexOf(".");
+    const version = item.name?.substring(lastUnderscoreIndex + 1, lastDotIndex);
     return (
       <div
         className={styles.itemContainer}
@@ -84,8 +94,24 @@ const TableItem: React.FC<TableItemProps> = ({
       >
         <div className={`${styles.item}`} title={item.name || "-"}>
           <img src={pdfIcon} alt={pdfIcon} />
-          <span>
+          <span style={{ lineHeight: "30px" }}>
             {formatDocNameWithLastVersion(item.name, item?.version, true)}
+          </span>
+          <span
+            style={{
+              padding: "0 7px",
+              height: "20px",
+              fontFamily: "interSemiBold, sans-serif",
+              borderRadius: "4px",
+              backgroundColor: "#6536F9",
+              color: "#f7f7f7",
+              fontSize: "13px",
+              display: "grid",
+              placeItems: "center",
+              marginLeft: "5px",
+            }}
+          >
+            v{item?.version || version}
           </span>
           {item.isDraft && <div className={styles.draftPill}>Draft</div>}
         </div>
@@ -102,7 +128,7 @@ const TableItem: React.FC<TableItemProps> = ({
           if (lowerCaseKey === "status") {
             return (
               <div className={styles.item} title={fieldValue} key={i}>
-                {item.fields?.isVisible && toggleStates[item.fileID] ? (
+                {item.fields?.isVisible ? (
                   <StatusPill
                     status={
                       // item.fields.status?.toLowerCase() === "approved" ||
@@ -113,8 +139,7 @@ const TableItem: React.FC<TableItemProps> = ({
                     }
                     size="MD"
                   />
-                ) : item.fields.status?.toLowerCase() === "approved" ||
-                  item.fields.status?.toLowerCase() === "current" ? (
+                ) : item.fields.status?.toLowerCase() === "approved" ? (
                   <StatusPill status={"Hidden"} size="MD" />
                 ) : (
                   <StatusPill
@@ -180,21 +205,21 @@ const TableItem: React.FC<TableItemProps> = ({
                   //   key={i}
                   // />
                   <InputSwitch
-                    checked={toggleStates[item.fileID]}
+                    checked={item.fields?.isVisible}
                     className="sectionToggler"
                     disabled={item.fields.status?.toLowerCase() !== "approved"}
                     onChange={async (e) => {
-                      const newState = !toggleStates[item.fileID];
-                      setToggleStates((prev) => ({
-                        ...prev,
-                        [item.fileID]: newState,
-                      }));
+                      // const newState = !toggleStates[item.fileID];
+                      // setToggleStates((prev) => ({
+                      //   ...prev,
+                      //   [item.fileID]: newState,
+                      // }));
 
                       await SpServices.SPUpdateItem({
                         Listname: LISTNAMES.AllDocuments,
                         ID: item.fileID,
                         RequestJSON: {
-                          isVisible: newState,
+                          isVisible: e.value,
                         },
                       });
 
@@ -206,12 +231,67 @@ const TableItem: React.FC<TableItemProps> = ({
                                 ...el,
                                 fields: {
                                   ...el.fields,
-                                  isVisible: newState,
+                                  isVisible: e.value,
                                 },
                               }
                             : el
                         ),
                       }));
+                      setDNDData((prevDNDData: any) =>
+                        prevDNDData.map((prevItem: any) => {
+                          if (prevItem.name === data.name) {
+                            debugger;
+                            return {
+                              ...prevItem,
+                              items: prevItem?.items.map((el: any) =>
+                                el.fileID === item.fileID
+                                  ? {
+                                      ...el,
+                                      fields: {
+                                        ...el.fields,
+                                        isVisible: e.value,
+                                      },
+                                    }
+                                  : el
+                              ),
+                            };
+                          } else {
+                            return prevItem;
+                          }
+                        })
+                      );
+                      const modifiedTableData = tempTableData?.data.map(
+                        (prevItem: any) => {
+                          if (prevItem.name === data.name) {
+                            debugger;
+                            return {
+                              ...prevItem,
+                              open: true,
+                              items: prevItem?.items.map((el: any) =>
+                                el.fileID === item.fileID
+                                  ? {
+                                      ...el,
+                                      fields: {
+                                        ...el.fields,
+                                        isVisible: e.value,
+                                      },
+                                    }
+                                  : el
+                              ),
+                            };
+                          } else {
+                            return prevItem;
+                          }
+                        }
+                      );
+                      console.log(tempTableData, modifiedTableData);
+                      dispatch(
+                        setTableOfContentData({
+                          headers: tempTableData?.headers,
+                          data: modifiedTableData,
+                          loading: tempTableData?.loading,
+                        })
+                      );
                     }}
                     key={i}
                   />
@@ -227,7 +307,7 @@ const TableItem: React.FC<TableItemProps> = ({
                   ?.toLowerCase()
                   ?.includes("awaiting approval") && fieldValue}
                 {lowerCaseKey === "nextreviewdate" && !item.isDraft && (
-                  <div style={{ marginLeft: "10px" }}>
+                  <div>
                     {item.fields[key] &&
                     !item.fields[key]
                       ?.toLowerCase()
@@ -423,7 +503,7 @@ const TableItem: React.FC<TableItemProps> = ({
   };
 
   const handleTogglePanel = (): void => {
-    setIsOpen((prev) => !prev);
+    setIsOpen((prev: any) => !prev);
     togglePanel(data);
   };
 
@@ -469,7 +549,7 @@ const TableItem: React.FC<TableItemProps> = ({
               <div
                 className={styles.actionItem}
                 style={{
-                  width: "15.5%",
+                  width: "12.5%",
                   justifyContent: "center",
                 }}
               >
@@ -483,7 +563,7 @@ const TableItem: React.FC<TableItemProps> = ({
           >
             <OrderList
               dataKey="Files"
-              value={data.items?.filter((item) => item.type === "file")}
+              value={data.items?.filter((item: any) => item.type === "file")}
               itemTemplate={(item: LibraryItem) =>
                 renderItemsRecursively([item], 0)
               }
