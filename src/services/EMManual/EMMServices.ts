@@ -5,6 +5,7 @@
 import { sp } from "@pnp/sp/presets/all";
 import { Dispatch } from "redux";
 import {
+  setTableOfContentData,
   setEMMTOCAdminData,
   setFoldersData,
 } from "../../redux/features/EMMTableOfContentSlice";
@@ -278,6 +279,7 @@ const filterData = (
 export const LoadTableData = async (
   dispatch: Dispatch,
   setTableData: (data: any) => void,
+  tableData: any,
   isAdmin: boolean
 ): Promise<void> => {
   try {
@@ -288,11 +290,17 @@ export const LoadTableData = async (
       filterData(items, ["approved", "current"])
     );
 
-    setTableData((prevData: any) => ({
-      ...prevData,
-      data: isAdmin ? AdminData : UsersData,
-      loading: false,
-    }));
+    // setTableData((prevData: any) => ({
+    //   ...prevData,
+    //   data: isAdmin ? AdminData : UsersData,
+    //   loading: false,
+    // }));
+    dispatch(
+      setTableOfContentData({
+        ...tableData,
+        data: isAdmin ? AdminData : UsersData,
+      })
+    );
     dispatch(setFoldersData(DocumentPathOptions));
     dispatch(setEMMTOCAdminData(sortItemsBySequenceNo(items)));
   } catch (error) {
