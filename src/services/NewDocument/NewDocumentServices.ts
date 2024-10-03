@@ -54,6 +54,47 @@ const AddNewDocumentToLib = async ({
   initiateNewVersion,
   docDetails,
 }: IProps): Promise<any> => {
+  debugger;
+  // first get the file ID from the list item's value
+
+  let prevdocName: any;
+  let currentFileID: any;
+
+  await sp.web.lists
+    .getByTitle(LISTNAMES.DocumentDetails)
+    .items.getById(Number(fileID))
+    .select("*, fileDetails/ID")
+    .expand("fileDetails")
+    .get()
+    .then((res: any) => {
+      console.log("res: ", res);
+      const resp = res[0] || res;
+      currentFileID = resp?.fileDetailsId;
+    })
+    .catch((err: any) => {
+      console.log("err: ", err);
+    });
+
+  if (currentFileID) {
+    await sp.web.lists
+      .getByTitle(LISTNAMES.AllDocuments)
+      .items.getById(currentFileID)
+      .select("FileLeafRef", "File")
+      .expand("File")
+      .get()
+      .then((res: any) => {
+        console.log("res: ", res);
+        prevdocName =
+          res.FileLeafRef?.split(".pdf")[0] || res.File?.Name?.split(".pdf")[0];
+        console.log("prevdocName: ", prevdocName);
+      })
+      .catch((err: any) => {
+        console.log("err: ", err);
+      });
+  }
+
+  console.log("prevdocName: ", prevdocName);
+
   if (initiateNewVersion) {
     let fileAddResult: any;
     try {
@@ -70,7 +111,8 @@ const AddNewDocumentToLib = async ({
       });
 
       // Clone the existing PDF file
-      const sourceFileUrl = `${docDetails?.documentPath}/${docDetails?.Title}.pdf`; // Update with your source PDF path
+      // const sourceFileUrl = `${docDetails?.documentPath}/${docDetails?.Title}.pdf`; // Update with your source PDF path
+      const sourceFileUrl = `${docDetails?.documentPath}/${prevdocName}.pdf`; // Update with your source PDF path
       const destinationFileUrl = `${replaceVersionInFilename(
         fileName,
         docDetails?.documentVersion
@@ -325,6 +367,25 @@ const UpdateDocumentInLib = async ({
   changedDocumentPath,
   reorderDoc,
 }: IUpdateProps): Promise<any> => {
+  debugger;
+
+  // let prevdocName = "";
+  // await sp.web.lists
+  //   .getByTitle(LISTNAMES.AllDocuments)
+  //   .items.getById(fileID)
+  //   .select("FileLeafRef", "File")
+  //   .expand("File")
+  //   .get()
+  //   .then((res: any) => {
+  //     console.log("res: ", res);
+  //     prevdocName = res.FileLeafRef || res.File?.Name;
+  //     console.log("prevdocName: ", prevdocName);
+  //   })
+  //   .catch((err: any) => {
+  //     console.log("err: ", err);
+  //   });
+  // console.log("prevdocName: ", prevdocName);
+
   try {
     setLoaderState({
       isLoading: {
@@ -719,6 +780,7 @@ const UpdateDocument = async (
   initiateNewVersion?: boolean,
   versionChangeType?: string
 ): Promise<any> => {
+  debugger;
   if (initiateNewVersion) {
     try {
       setLoaderState({

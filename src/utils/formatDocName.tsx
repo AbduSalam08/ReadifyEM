@@ -18,37 +18,22 @@ export function formatDocNameWithLastVersion(
   }
 
   // Extract the version and the base name
-  const version = docName.substring(lastUnderscoreIndex + 1, lastDotIndex);
+  // const version = docName.substring(lastUnderscoreIndex + 1, lastDotIndex);
   const baseName =
     docName.substring(0, lastUnderscoreIndex) + docName.substring(lastDotIndex);
 
   if (withPill) {
     return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "10px",
-        }}
-      >
-        {baseName}
-        <span
-          style={{
-            padding: "0 7px",
-            height: "20px",
-            fontFamily: "interSemiBold, sans-serif",
-            borderRadius: "4px",
-            backgroundColor: "#6536F9",
-            color: "#f7f7f7",
-            fontSize: "13px",
-            display: "grid",
-            placeItems: "center",
-          }}
-        >
-          v{docVersion || version}
-        </span>
-      </div>
+      // <div
+      //   style={{
+      //     display: "flex",
+      //     alignItems: "center",
+      //     justifyContent: "center",
+      //     gap: "10px",
+      //   }}
+      // >
+      baseName
+      // </div>
     );
   }
 
