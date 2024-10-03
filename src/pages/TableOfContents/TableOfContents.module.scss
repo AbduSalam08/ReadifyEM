@@ -101,17 +101,19 @@
   justify-content: center;
   margin-left: 10px;
 }
-.initiateVersionPopup{
+.initiateVersionPopup {
   text-align: center;
-  .popupTitle{
+  .popupTitle {
     margin-bottom: 15px;
+    font-family: "interMedium", sans-serif !important;
   }
-  .chechBoxWrapper{
+  .chechBoxWrapper {
     display: flex;
     justify-content: space-around;
     margin-left: -40px;
-    span{
+    span {
       cursor: pointer;
+      font-family: "interMedium", sans-serif !important;
     }
   }
 }

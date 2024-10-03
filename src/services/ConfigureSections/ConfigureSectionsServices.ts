@@ -30,7 +30,7 @@ export const AddSections = async (
     docDetails?.taskStatus?.toLowerCase() === "not started";
 
   const templateTitle = formData?.templateDetails?.templateName;
-
+  debugger;
   if (docDetails?.docVersion !== "1.0") {
     try {
       const payloadJSON: any[] = [];

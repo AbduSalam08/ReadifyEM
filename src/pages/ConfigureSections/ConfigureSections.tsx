@@ -48,6 +48,7 @@ const ConfigureSections = (): JSX.Element => {
   const ConfigurePageDetails: any = useSelector(
     (state: any) => state.SectionConfiguration?.ConfigurePageDetails
   );
+  console.log("ConfigurePageDetails: ", ConfigurePageDetails);
 
   // const AllSectionsDataConfiguration: any = useSelector(
   //   (state: any) => state.SectionConfiguration?.AllSectionsData
@@ -125,6 +126,7 @@ const ConfigureSections = (): JSX.Element => {
     appendixSections: [],
     isLoading: false,
   });
+  console.log("sectionsData: ", sectionsData);
 
   // main that calls all data
   const setMainData = async () => {
