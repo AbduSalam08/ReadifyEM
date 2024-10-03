@@ -1061,7 +1061,7 @@ export const changeDocStatus = async (
         currentDocResponse?.documentVersion !== "1.0" &&
         (statusName?.toLowerCase() === "approved" ||
           statusName?.toLowerCase() === "current")
-          ? "Current"
+          ? "Approved"
           : statusName,
       [`${promoteTo}`]: JSON.stringify(promoteToData),
     },
@@ -1072,8 +1072,38 @@ export const changeDocStatus = async (
         .items.getById(fileID)
         .update({
           status:
-            statusName?.toLowerCase() === "current" ? "Approved" : statusName,
+            statusName?.toLowerCase() === "approved" ? "Approved" : statusName,
           isVisible: promoteTo === "approvers" && lastPromoter,
+        })
+        .then(async (res: any) => {
+          if (
+            currentDocResponse?.documentVersion !== "1.0" &&
+            statusName?.toLowerCase() === "approved"
+          ) {
+            await sp.web.lists
+              .getByTitle(LIBNAMES.AllDocuments)
+              .items.select("*, documentDetails/ID") // Select fields, including lookup ID
+              .expand("documentDetails") // Expand the lookup field
+              .filter(`documentDetails/Id eq ${docID}`) // Use the correct OData filter for lookup fields
+              .get()
+              .then((res: any) => {
+                console.log("All Document Data", res);
+                res?.forEach(async (document: any) => {
+                  if (document.ID !== fileID) {
+                    await sp.web.lists
+                      .getByTitle(LIBNAMES.AllDocuments)
+                      .items.getById(document.ID)
+                      .update({
+                        status: "Archived",
+                        isVisible: false,
+                      });
+                  }
+                });
+              })
+              .catch((err: any) => {
+                console.log(err);
+              });
+          }
         });
 
       if (promoteTo === "reviewers" && !lastPromoter) {
@@ -1150,8 +1180,8 @@ export const changeDocStatus = async (
             approvedOn: dayjs(new Date()).format("DD/MM/YYYY"),
           },
         }).then((res: any) => {
-          if (statusName?.toLowerCase() === "current") {
-            addDefaultPDFheader({}, docID);
+          if (statusName?.toLowerCase() === "approved") {
+            addDefaultPDFheader({ base64: "" }, docID);
             console.log("update pdf header attachment");
           }
         });

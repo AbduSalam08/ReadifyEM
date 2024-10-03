@@ -31,6 +31,7 @@ interface ITableProps {
     searchTerm: string;
     filterByStatus?: string | null;
     isDraft?: boolean;
+    isArchived?: boolean;
   };
   actions?: boolean;
   renderActions?: any;
@@ -150,12 +151,11 @@ const Table: React.FC<ITableProps> = ({
     searchTerm: string,
     data: any[],
     filterByStatus: string | null,
-    isDraft: boolean
+    isDraft: boolean,
+    isArchived: boolean
   ): LibraryItem[] => {
     console.log(isDraft);
-
     const lowercasedSearchTerm = searchTerm?.toLowerCase();
-
     const matchesSearchTerm = (item: any): boolean => {
       if (defaultTable) {
         // For flat data
@@ -169,6 +169,8 @@ const Table: React.FC<ITableProps> = ({
     };
 
     const matchesStatus = (item: any): boolean => {
+      console.log(item, filterByStatus);
+
       if (filterByStatus?.toLowerCase() === "hidden") {
         return (
           filterByStatus === null ||
@@ -181,12 +183,15 @@ const Table: React.FC<ITableProps> = ({
       return (
         filterByStatus === null ||
         (item.type === "file" &&
-          item.fields?.isVisible &&
+          // item.fields?.isVisible &&
           item.fields?.status === filterByStatus)
       );
     };
     const matchesDraft = (item: any): boolean => {
       return item.type === "file" && item.isDraft;
+    };
+    const matchesArchived = (item: any): boolean => {
+      return item?.fields?.status?.toLowerCase() === "archived";
     };
 
     const filterRecursive = (items: LibraryItem[]): LibraryItem[] => {
@@ -196,7 +201,8 @@ const Table: React.FC<ITableProps> = ({
           const matchesSearch = matchesSearchTerm(item);
           const matchesStatusFilter = matchesStatus(item);
           const matchesDraftFilter = matchesDraft(item);
-          console.log(matchesDraftFilter);
+          const matchesArchivedFilter = matchesArchived(item);
+          console.log(matchesArchivedFilter, isArchived);
 
           let openItem = false;
 
@@ -223,7 +229,25 @@ const Table: React.FC<ITableProps> = ({
             //     openItem = true;
             //   }
             // }
-          } else {
+          } else if (isArchived) {
+            if (matchesArchivedFilter) {
+              if (searchTerm && filterByStatus) {
+                if (matchesSearch && matchesStatusFilter) {
+                  openItem = true;
+                }
+              } else if (searchTerm) {
+                if (matchesSearch) {
+                  openItem = true;
+                }
+              } else if (filterByStatus) {
+                if (matchesStatusFilter) {
+                  openItem = true;
+                }
+              } else {
+                openItem = true;
+              }
+            }
+          } else if (!matchesArchivedFilter) {
             if (searchTerm && filterByStatus) {
               if (matchesSearch && matchesStatusFilter) {
                 openItem = true;
@@ -236,22 +260,36 @@ const Table: React.FC<ITableProps> = ({
               if (matchesStatusFilter) {
                 openItem = true;
               }
+            } else {
+              openItem = true;
             }
           }
 
           if (item.items) {
             const filteredChildren = filterRecursive(item.items);
             if (filteredChildren.length > 0) {
-              return {
-                ...item,
-                items: filteredChildren,
-                open: true,
-              };
+              if (!searchTerm && !filterByStatus && !isDraft && !isArchived) {
+                return {
+                  ...item,
+                  items: filteredChildren,
+                  open: false,
+                };
+              } else {
+                return {
+                  ...item,
+                  items: filteredChildren,
+                  open: true,
+                };
+              }
             }
           }
 
           if (openItem) {
-            return { ...item, open: true };
+            if (!searchTerm && !filterByStatus && !isDraft && !isArchived) {
+              return { ...item, open: false };
+            } else {
+              return { ...item, open: true };
+            }
           }
 
           return null;
@@ -259,9 +297,10 @@ const Table: React.FC<ITableProps> = ({
         .filter((item): item is LibraryItem => item !== null);
     };
 
-    if (!searchTerm && !filterByStatus && !isDraft) {
-      console.log("return");
-      return data;
+    if (!searchTerm && !filterByStatus && !isDraft && !isArchived) {
+      console.log("return", data);
+      // return data;
+      return filterRecursive(data);
     }
 
     if (defaultTable) {
@@ -301,7 +340,8 @@ const Table: React.FC<ITableProps> = ({
             filters?.searchTerm || "",
             data,
             filters?.filterByStatus || null,
-            filters?.isDraft || false
+            filters?.isDraft || false,
+            filters?.isArchived || false
           )
     );
   }, [data, loading]);
@@ -313,7 +353,8 @@ const Table: React.FC<ITableProps> = ({
           filters?.searchTerm || "",
           data,
           filters?.filterByStatus || null,
-          filters?.isDraft || false
+          filters?.isDraft || false,
+          filters?.isArchived || false
         )
       );
     }

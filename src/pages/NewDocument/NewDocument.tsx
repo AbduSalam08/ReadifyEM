@@ -424,14 +424,14 @@ const NewDocument = ({
       onChange={(value: any) => {
         handleInputChange(value);
       }}
-      disabled={
-        currentDocDetails
-          ? currentDocDetails?.documentVersion === "1.0" &&
-            versionChangeType === ""
-            ? false
-            : true
-          : false
-      }
+      // disabled={
+      //   currentDocDetails
+      //     ? currentDocDetails?.documentVersion === "1.0" &&
+      //       versionChangeType === ""
+      //       ? false
+      //       : true
+      //     : false
+      // }
       value={removeVersionFromDocName(inputValue)}
       placeholder="Enter here"
       isValid={inputError}
