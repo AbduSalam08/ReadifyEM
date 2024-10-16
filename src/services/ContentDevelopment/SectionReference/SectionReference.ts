@@ -190,7 +190,6 @@ const UpdateReference = async (
   setPopupController: any,
   togglePopupVisibility: any
 ) => {
-  debugger;
   try {
     const referenceSectionNumber = await findReferenceSectionNumber(
       AllSectionsDataMain,

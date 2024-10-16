@@ -42,8 +42,10 @@ const readTextFileFromTXT = (
   length: number,
   index: number,
   setAllSectionContent: any,
+  // setPdfHeaderSection: any,
   setLoader: any
 ): void => {
+  debugger;
   SpServices.SPReadAttachments({
     ListName: "SectionDetails",
     ListID: data.ID,
@@ -57,14 +59,17 @@ const readTextFileFromTXT = (
         sectionType: data.sectionType,
         value: parsedValue,
       };
+      if (data.sectionType === "pdf header") {
+        // setPdfHeaderSection([sectionDetails]);
+      }
       setAllSectionContent((prev: any) => {
         // Add the new sectionDetails to the previous state
 
         const updatedSections = [...prev, sectionDetails];
 
-        const headerSectionArray = updatedSections?.filter(
-          (obj: any) => obj.sectionType === "header section"
-        );
+        // const headerSectionArray = updatedSections?.filter(
+        //   (obj: any) => obj.sectionType === "header section"
+        // );
         const defaultSectionsArray = updatedSections
           ?.filter(
             (obj: any) =>
@@ -117,7 +122,7 @@ const readTextFileFromTXT = (
 
         // Return the sorted array to update the state
         return [
-          ...headerSectionArray,
+          // ...headerSectionArray,
           ...defaultSectionsArray,
           ...normalSectionsArray,
           // ...referenceSectionArray,
@@ -155,6 +160,80 @@ export const bindHeaderTable = async (
 
   const base64Image = base64Data.headerImage;
 
+  let pdfHeaderTable = "";
+  pdfHeaderTable = `<table class="pdf_header" style="width:100%;border: 1px solid black;">
+          <tbody>`;
+
+  pdfHeaderTable += `<tr>
+                <td style="width:20%; padding:6px; text-align: center;vertical-align: middle;">
+                <table style="width: 130px; height: 85px; border-collapse: collapse;">
+                  <tr>
+                    <td style="text-align: center; vertical-align: middle;">
+                    <img width="120" height= "80" style="padding:1px;vertical-align: middle;" src="${
+                      sectionDetails?.base64 !== ""
+                        ? sectionDetails?.base64
+                        : base64Image
+                    }" alt="doc header logo" />
+                    </td>
+                  </tr>
+                </table>
+                </td>
+                <td style="width: 50%;font-size: 11px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border-left: 1px solid #000;border-right: 1px solid #000;">
+                    <p style="font-size: 24px;font-family: interMedium, sans-serif;margin: 5px;">${
+                      docDetails?.Title
+                        ? docDetails?.Title.split("_")[0]
+                        : docDetails?.Title || "-"
+                    }</p>
+                    <span style="font-family: interRegular, sans-serif;font-size: 14px;color: #adadad;">Version : ${
+                      docDetails.documentVersion
+                    }</span>
+                </td>
+                <td style="width: 30%;font-size: 11px;line-height: 18px; font-family: interMedium,sans-serif;padding: 0px;">
+                  <table style="width: 100%;border-collapse: collapse;padding: 0px;">
+                    <tbody>
+                      <tr style = "border-bottom: 1px solid #000;">
+                        <td style="width: 40%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Type</td>
+                        <td>:</td>
+                        <td style="width: 60%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
+                          <span style="overflow-wrap: anywhere;">${
+                            docDetails?.documentTemplateType?.Title || "-"
+                          }</span>
+                        </td>
+                      </tr>
+                      <tr style = "border-bottom: 1px solid #000;">
+                        <td style="width: 40%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Created on</td>
+                        <td>:</td>
+                        <td style="width: 60%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
+                          <span style="overflow-wrap: anywhere;">${
+                            docDetails?.createdDate || "-"
+                          }</span>
+                        </td>
+                      </tr>
+                      <tr style = "border-bottom: 1px solid #000;">
+                        <td style="width: 40%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Last review</td>
+                        <td>:</td>
+                        <td style="width: 60%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
+                          <span style="overflow-wrap: anywhere;">${
+                            lastReviewDate || "-"
+                          }</span>
+                        </td>
+                      </tr>
+                      <tr style = "">
+                        <td style="width: 40%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Next review</td>
+                        <td>:</td>
+                        <td style="width: 60%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
+                          <span style="overflow-wrap: anywhere;">${
+                            docDetails?.nextReviewDate || "-"
+                          }</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>`;
+
+  pdfHeaderTable += `</tbody></table><br/>`;
+
   // let pdfHeaderTable = "";
   // pdfHeaderTable = `<table class="pdf_header" style="width:100%;border: 1px solid black; margin-bottom:30px;">
   //         <tbody>`;
@@ -162,8 +241,8 @@ export const bindHeaderTable = async (
   // pdfHeaderTable += `<tr>
   //               <td style="width:20%; padding:6px; text-align: center;vertical-align: middle;">
 
-  //                 <div style="width: 100%;height:90px;" >
-  //                   <img width="150" height= "90" style="padding:1px;" src="${
+  //                 <div style="width: 100%;height:70px;" >
+  //                   <img width="100%" height= "100%" style="padding:1px;" src="${
   //                     sectionDetails?.base64 !== ""
   //                       ? sectionDetails?.base64
   //                       : base64Image
@@ -225,77 +304,6 @@ export const bindHeaderTable = async (
   //             </tr>`;
 
   // pdfHeaderTable += `</tbody></table><br/>`;
-
-  let pdfHeaderTable = "";
-  pdfHeaderTable = `<table class="pdf_header" style="width:100%;border: 1px solid black; margin-bottom:30px;">
-          <tbody>`;
-
-  pdfHeaderTable += `<tr>
-                <td style="width:20%; padding:6px; text-align: center;vertical-align: middle;">
-
-                  <div style="width: 100%;height:70px;" >
-                    <img width="100%" height= "100%" style="padding:1px;" src="${
-                      sectionDetails?.base64 !== ""
-                        ? sectionDetails?.base64
-                        : base64Image
-                    }" alt="doc header logo" />
-                  </div>
-                </td>
-                <td style="width: 50%;font-size: 11px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border-left: 1px solid #000;border-right: 1px solid #000;">
-                    <p style="font-size: 24px;font-family: interMedium, sans-serif;margin: 5px;">${
-                      docDetails?.Title
-                        ? docDetails?.Title.split("_")[0]
-                        : docDetails?.Title || "-"
-                    }</p>
-                    <span style="font-family: interRegular, sans-serif;font-size: 14px;color: #adadad;">Version : ${
-                      docDetails.documentVersion
-                    }</span>
-                </td>
-                <td style="width: 30%;font-size: 11px;line-height: 18px; font-family: interMedium,sans-serif;">
-                  <table style="width: 100%;border-collapse: collapse;">
-                    <tbody>
-                      <tr style = "border-bottom: 1px solid #000;">
-                        <td style="width: 35%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Type</td>
-                        <td>:</td>
-                        <td style="width: 65%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
-                          <span style="overflow-wrap: anywhere;">${
-                            docDetails?.documentTemplateType?.Title || "-"
-                          }</span>
-                        </td>
-                      </tr>
-                      <tr style = "border-bottom: 1px solid #000;">
-                        <td style="width: 35%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Created on</td>
-                        <td>:</td>
-                        <td style="width: 65%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
-                          <span style="overflow-wrap: anywhere;">${
-                            docDetails?.createdDate || "-"
-                          }</span>
-                        </td>
-                      </tr>
-                      <tr style = "border-bottom: 1px solid #000;">
-                        <td style="width: 35%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Last review</td>
-                        <td>:</td>
-                        <td style="width: 65%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
-                          <span style="overflow-wrap: anywhere;">${
-                            lastReviewDate || "-"
-                          }</span>
-                        </td>
-                      </tr>
-                      <tr style = "">
-                        <td style="width: 35%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">Next review</td>
-                        <td>:</td>
-                        <td style="width: 65%; text-align: left; padding: 3px 3px 3px 5px;font-size: 11px;">
-                          <span style="overflow-wrap: anywhere;">${
-                            docDetails?.nextReviewDate || "-"
-                          }</span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>`;
-
-  pdfHeaderTable += `</tbody></table><br/>`;
 
   // let pdfHeaderTable = "";
   // pdfHeaderTable = `<table class="pdf_header" style="border-collapse: collapse; width: 100%;">
@@ -368,7 +376,8 @@ export const bindHeaderTable = async (
 export const getDocumentRelatedSections = async (
   documentID: number,
   setAllSectionContent: any,
-  setLoader: any
+  setLoader: any,
+  setPdfHeaderSection: any
 ): Promise<any> => {
   try {
     setLoader(true);
@@ -470,6 +479,7 @@ export const getDocumentRelatedSections = async (
                   DocDetailsResponseData,
                   lastReviewDate === "Invalid Date" ? "-" : lastReviewDate
                 );
+                setPdfHeaderSection([PDFHeaderTable]);
                 const sectionDetails = {
                   text: item[0].sectionName,
                   sectionOrder: item[0].sectionOrder,
@@ -482,9 +492,9 @@ export const getDocumentRelatedSections = async (
                   // Add the new sectionDetails to the previous state
                   const updatedSections = [...prev, sectionDetails];
 
-                  const headerSectionArray = updatedSections?.filter(
-                    (obj: any) => obj.sectionType === "header section"
-                  );
+                  // const headerSectionArray = updatedSections?.filter(
+                  //   (obj: any) => obj.sectionType === "header section"
+                  // );
                   const defaultSectionsArray = updatedSections
                     ?.filter(
                       (obj: any) =>
@@ -553,7 +563,7 @@ export const getDocumentRelatedSections = async (
 
                   // Return the sorted array to update the state
                   return [
-                    ...headerSectionArray,
+                    // ...headerSectionArray,
                     ...defaultSectionsArray,
                     ...normalSectionsArray,
                     // ...referenceSectionArray,
@@ -572,6 +582,7 @@ export const getDocumentRelatedSections = async (
                   tempAttachments.length,
                   index,
                   setAllSectionContent,
+                  // setPdfHeaderSection,
                   setLoader
                 );
                 tempSectionList.push(sectionDetails);

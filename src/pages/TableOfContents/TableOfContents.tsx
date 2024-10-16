@@ -20,7 +20,7 @@ import {
 import CustomTreeDropDown from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomTreeDropDown";
 import { useDispatch, useSelector } from "react-redux";
 import AlertPopup from "../../webparts/readifyEmMain/components/common/Popups/AlertPopup/AlertPopup";
-import { initialPopupLoaders } from "../../config/config";
+import { initialPopupLoaders, LISTNAMES } from "../../config/config";
 import { IPopupLoaders } from "../../interface/MainInterface";
 // import { sp } from "@pnp/sp";
 import InfoIcon from "@mui/icons-material/Info";
@@ -55,6 +55,7 @@ import PDFServiceTemplate from "../../webparts/readifyEmMain/components/Table/PD
 // utils
 // images
 const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
+// const docFile: any = require("../../assets/images/codeunit.docx");
 const contentDeveloperEdit: any = require("../../assets/images/svg/editContentDeveloper.svg");
 // const editConfigurationImg: any = require("../../assets/images/svg/taskConfigurationEditIcon.svg");
 const viewDocBtn: any = require("../../assets/images/svg/viewEye.svg");
@@ -65,6 +66,7 @@ import { getNextVersions } from "../../utils/EMManualUtils";
 import { removeVersionFromDocName } from "../../utils/formatDocName";
 import ToastMessage from "../../webparts/readifyEmMain/components/common/Toast/ToastMessage";
 import { InputSwitch } from "primereact/inputswitch";
+import { sp } from "@pnp/sp";
 // constants
 const initialPopupController = [
   {
@@ -140,12 +142,12 @@ const TableOfContents = (): JSX.Element => {
   const pageDetailsState: any = useSelector(
     (state: any) => state?.MainSPContext?.PageDetails
   );
-  console.log(pageDetailsState);
 
   console.log("contextProps: ", contextProps);
   //Dispatcher
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   // checking is that the current user is an admin or not.
   const isAdmin: boolean = CurrentUserIsAdmin();
   // reducer selectors
@@ -155,8 +157,6 @@ const TableOfContents = (): JSX.Element => {
   const TOCData: any = useSelector(
     (state: any) => state.EMMTableOfContents.tableData
   );
-  console.log(TOCData);
-
   const AllSectionsAttachments: any = useSelector(
     (state: any) => state.PDFServiceData.sectionsAttachments
   );
@@ -177,7 +177,6 @@ const TableOfContents = (): JSX.Element => {
     loading: false,
     data: [] as LibraryItem[],
   });
-  console.log(tableData);
 
   // A state to manage loader popup's
   const [popupLoaders, setPopupLoaders] =
@@ -206,7 +205,6 @@ const TableOfContents = (): JSX.Element => {
     pageTitle: pageDetailsState?.pageTitle || "Home",
     editDocumentData: [],
   });
-  console.log(tempScreens);
 
   // const [parsedJSON, setParsedJSON] = useState<any[]>([]);
 
@@ -214,7 +212,6 @@ const TableOfContents = (): JSX.Element => {
   const [popupData, setPopupData] = useState<any>(popupInitialData);
   const [docuementStatus, setDocuementStatus] = useState<boolean>(false);
   const [documentId, setDocumentId] = useState<number>(0);
-  console.log(documentId);
 
   const [toastMessage, setToastMessage] = useState<any>({
     isShow: false,
@@ -231,7 +228,6 @@ const TableOfContents = (): JSX.Element => {
   const [popupController, setPopupController] = useState(
     initialPopupController
   );
-  console.log(tableData.data);
   const handleClosePopup = (index?: any): void => {
     togglePopupVisibility(setPopupController, index, "close");
   };
@@ -365,20 +361,32 @@ const TableOfContents = (): JSX.Element => {
         {/* <span>Document is empty.</span> */}
 
         {docuementStatus ? (
-          <object
-            key={3}
-            data={documentPdfURL}
-            type="application/pdf"
-            width="100%"
-            height="600px"
-          >
-            <p className="textCenter">
-              Your browser does not support PDFs. Please download the PDF to
-              view it:
-              <a href={documentPdfURL}>Download PDF</a>.
-            </p>
-          </object>
+          // <object
+          //   key={3}
+          //   data={documentPdfURL}
+          //   // type="application/pdf"
+          //   type="application/msword"
+          //   width="100%"
+          //   height="600px"
+          // >
+          //   <p className="textCenter">
+          //     Your browser does not support PDFs. Please download the PDF to
+          //     view it:
+          //     <a href={documentPdfURL}>Download PDF</a>.
+          //   </p>
+          // </object>
+          <iframe src={documentPdfURL} width="100%" height="600px">
+            Your browser does not support iframes.
+          </iframe>
         ) : (
+          // <PDFServiceTemplate documentId={documentId} />
+          // <iframe
+          //   src={documentPdfURL}
+          //   // style="width:600px; height:500px;"
+          //   width="100%"
+          //   height="600px"
+          //   // frameborder="0"
+          // ></iframe>
           <PDFServiceTemplate documentId={documentId} />
         )}
       </div>,
@@ -404,7 +412,7 @@ const TableOfContents = (): JSX.Element => {
     [
       <div key={1} className={styles.initiateVersionPopup}>
         <div className={styles.popupTitle}>
-          Please select the type of version you'd like to initiate:
+          Please select the type of version you&apos;d like to initiate:
         </div>
         <div className={styles.chechBoxWrapper}>
           <div
@@ -425,7 +433,7 @@ const TableOfContents = (): JSX.Element => {
                   const updatedFormData = {
                     ...prev,
                     initiatVersion: {
-                      ...prev["initiatVersion"],
+                      ...prev.initiatVersion,
                       value: "minor",
                     },
                   };
@@ -440,7 +448,7 @@ const TableOfContents = (): JSX.Element => {
                   const updatedFormData = {
                     ...prev,
                     initiatVersion: {
-                      ...prev["initiatVersion"],
+                      ...prev.initiatVersion,
                       value: "minor",
                     },
                   };
@@ -484,7 +492,7 @@ const TableOfContents = (): JSX.Element => {
                   const updatedFormData = {
                     ...prev,
                     initiatVersion: {
-                      ...prev["initiatVersion"],
+                      ...prev.initiatVersion,
                       value: "major",
                     },
                   };
@@ -499,7 +507,7 @@ const TableOfContents = (): JSX.Element => {
                   const updatedFormData = {
                     ...prev,
                     initiatVersion: {
-                      ...prev["initiatVersion"],
+                      ...prev.initiatVersion,
                       value: "major",
                     },
                   };
@@ -917,7 +925,7 @@ const TableOfContents = (): JSX.Element => {
             const updatedFormData = {
               ...prev,
               initiatVersion: {
-                ...prev["initiatVersion"],
+                ...prev.initiatVersion,
                 value: "",
               },
             };
@@ -973,7 +981,6 @@ const TableOfContents = (): JSX.Element => {
   //   })
   //     .then((res: any) => {
   //       const parsedValue: any = JSON.parse(res);
-  //       console.log("res: ", res, parsedValue);
   //       const sectionDetails = {
   //         text: data.sectionName,
   //         sectionOrder: data.sectionOrder,
@@ -1015,7 +1022,6 @@ const TableOfContents = (): JSX.Element => {
   // lifecycle hooks
   useEffect(() => {
     if (TOCData?.data) {
-      debugger;
       setTableData(TOCData);
     }
   }, [TOCData]);
@@ -1194,7 +1200,11 @@ const TableOfContents = (): JSX.Element => {
                 <InputSwitch
                   checked={filterOptions.isArchived}
                   className="sectionToggler"
-                  disabled={tableData.data.length === 0 || tableData.loading}
+                  disabled={
+                    tableData.data.length === 0 ||
+                    tableData.loading ||
+                    filterOptions.isDraft
+                  }
                   onChange={(e) => {
                     setFilterOptions((prev) => ({
                       ...prev,
@@ -1303,6 +1313,8 @@ const TableOfContents = (): JSX.Element => {
             defaultTable={false}
             loadData={setMainData}
             renderActions={(item: any, index: number) => {
+              console.log("itemDetails", item);
+
               const nextReviewDate = dayjs(
                 item?.fields?.nextReviewDate,
                 "DD/MM/YYYY"
@@ -1392,7 +1404,30 @@ const TableOfContents = (): JSX.Element => {
                     onClick={async (event: any) => {
                       // event.stopPropagation();
                       event.preventDefault();
-                      setDocumentPdfURL(item?.url);
+                      // window.open(item?.url);
+                      const fileDetails = await sp.web.lists
+                        .getByTitle(LISTNAMES.AllDocuments)
+                        .items.getById(item.fileID)
+                        .select("FileRef", "FileLeafRef")();
+
+                      const baseUrl = `${contextProps?._pageContext._site.absoluteUrl}/_layouts/15/Doc.aspx`;
+                      const encodedFilePath = encodeURIComponent(
+                        fileDetails?.FileRef
+                      );
+                      const encodedFileName = encodeURIComponent(
+                        fileDetails.FileLeafRef
+                      );
+                      console.log(
+                        fileDetails,
+                        baseUrl,
+                        encodedFilePath,
+                        encodedFileName
+                      );
+
+                      setDocumentPdfURL(
+                        `${baseUrl}?sourcedoc=${encodedFilePath}&file=${encodedFileName}&action=default`
+                      );
+
                       setDocuementStatus(item?.isPdfGenerated);
                       togglePopupVisibility(
                         setPopupController,

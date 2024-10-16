@@ -1148,6 +1148,7 @@ const SectionContentLatest: React.FC<IProps> = ({
                 : encodeURI("https://" + pageDetailsState.helpLink)
             }
             target="_blank"
+            rel="noreferrer"
           >
             Help?
           </a>

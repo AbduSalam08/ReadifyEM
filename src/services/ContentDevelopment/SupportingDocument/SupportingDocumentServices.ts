@@ -236,7 +236,7 @@ const convertSupportingDocToTxtFile = (
     //             </td>
     //           </tr>`;
 
-    supportingDocTable += `<div style="width:100%;margin-bottom: 10px;">
+    supportingDocTable += `<p style="width:100%;margin-bottom: 10px;">
       <span style="width:5%;line-height: 20px;">
       ${sectionOrder}.${index + 1}.</span>
       <span style="width:95%;">
@@ -248,7 +248,7 @@ const convertSupportingDocToTxtFile = (
           ${obj.documentName}
         </a>
       </span>
-    </div>`;
+    </p>`;
   });
   // supportingDocTable += `</tbody></table>`;
   supportingDocTable += `</div>`;

@@ -54,7 +54,6 @@ const AddNewDocumentToLib = async ({
   initiateNewVersion,
   docDetails,
 }: IProps): Promise<any> => {
-  debugger;
   // first get the file ID from the list item's value
 
   let prevdocName: any;
@@ -367,8 +366,6 @@ const UpdateDocumentInLib = async ({
   changedDocumentPath,
   reorderDoc,
 }: IUpdateProps): Promise<any> => {
-  debugger;
-
   // let prevdocName = "";
   // await sp.web.lists
   //   .getByTitle(LISTNAMES.AllDocuments)
@@ -780,7 +777,6 @@ const UpdateDocument = async (
   initiateNewVersion?: boolean,
   versionChangeType?: string
 ): Promise<any> => {
-  debugger;
   if (initiateNewVersion) {
     try {
       setLoaderState({

@@ -87,7 +87,7 @@ const SectionComments: React.FC<Props> = ({
     setInputComment(value.trimStart());
   };
 
-  const handleTextareaResize = () => {
+  const handleTextareaResize = async (): Promise<any> => {
     const textarea = document.querySelector("textarea"); // Adjust selector to target your specific textarea if needed
     if (textarea) {
       textarea.style.height = "54px"; // Reset the height first
