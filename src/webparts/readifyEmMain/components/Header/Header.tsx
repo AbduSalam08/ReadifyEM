@@ -191,13 +191,15 @@ const Header = (): JSX.Element => {
               icon="pi pi-times"
               className="p-button-outlined p-button-rounded p-button-danger ml-auto imageDeleteBtn"
               onClick={() => {
-                !props?.onRemove
-                  ? setFile((prev: any) => ({
-                      ...prev,
-                      fileName: "",
-                      fileData: [],
-                    }))
-                  : onTemplateRemove(file, props.onRemove);
+                if (!props?.onRemove) {
+                  setFile((prev: any) => ({
+                    ...prev,
+                    fileName: "",
+                    fileData: [],
+                  }));
+                } else {
+                  onTemplateRemove(file, props.onRemove);
+                }
               }}
             />
           </span>

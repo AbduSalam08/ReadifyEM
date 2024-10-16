@@ -60,7 +60,6 @@ const TableItem: React.FC<TableItemProps> = ({
   const [data, setData] = useState<any>(tableData);
   const [isOpen, setIsOpen] = useState(data.open);
   // const [toggleStates, setToggleStates] = useState<Record<number, boolean>>({});
-  // console.log(toggleStates);
 
   const isAdmin: boolean = CurrentUserIsAdmin();
 
@@ -81,7 +80,6 @@ const TableItem: React.FC<TableItemProps> = ({
   }, [tableData]);
 
   const itemTemplate = (item: any, paddingLeft?: any): JSX.Element => {
-    console.log(item);
     const lastUnderscoreIndex = item.name?.lastIndexOf("_");
     const lastDotIndex = item.name?.lastIndexOf(".");
     const version = item.name?.substring(lastUnderscoreIndex + 1, lastDotIndex);
@@ -117,10 +115,10 @@ const TableItem: React.FC<TableItemProps> = ({
         </div>
 
         {Object.keys(item.fields).map((key: string, i: number) => {
-          const lowerCaseKey = key.toLowerCase();
+          const lowerCaseKey = key?.toLowerCase();
           // const fieldValue = item.fields[key] || "-";
           const fieldValue =
-            (item.fields["status"].toLowerCase() === "archived" &&
+            (item?.fields["status"].toLowerCase() === "archived" &&
             key === "nextReviewDate"
               ? "-"
               : item.fields[key]) || "-";
@@ -240,7 +238,6 @@ const TableItem: React.FC<TableItemProps> = ({
                       setDNDData((prevDNDData: any) =>
                         prevDNDData.map((prevItem: any) => {
                           if (prevItem.name === data.name) {
-                            debugger;
                             return {
                               ...prevItem,
                               items: prevItem?.items.map((el: any) =>
@@ -263,7 +260,6 @@ const TableItem: React.FC<TableItemProps> = ({
                       const modifiedTableData = tempTableData?.data.map(
                         (prevItem: any) => {
                           if (prevItem.name === data.name) {
-                            debugger;
                             return {
                               ...prevItem,
                               open: true,
@@ -284,7 +280,6 @@ const TableItem: React.FC<TableItemProps> = ({
                           }
                         }
                       );
-                      console.log(tempTableData, modifiedTableData);
                       dispatch(
                         setTableOfContentData({
                           headers: tempTableData?.headers,
@@ -340,9 +335,11 @@ const TableItem: React.FC<TableItemProps> = ({
           // if (lowerCaseKey === "refid") {
           else {
             return (
-              <div className={styles.item} title={fieldValue} key={i}>
-                {item.fields[key]}
-              </div>
+              lowerCaseKey !== "isvisible" && (
+                <div className={styles.item} title={fieldValue} key={i}>
+                  {item.fields[key]}
+                </div>
+              )
             );
           }
 

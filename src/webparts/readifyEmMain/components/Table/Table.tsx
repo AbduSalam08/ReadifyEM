@@ -157,7 +157,6 @@ const Table: React.FC<ITableProps> = ({
     isDraft: boolean,
     isArchived: boolean
   ): LibraryItem[] => {
-    console.log(isDraft);
     const lowercasedSearchTerm = searchTerm?.toLowerCase();
     const matchesSearchTerm = (item: any): boolean => {
       if (defaultTable) {
@@ -175,8 +174,6 @@ const Table: React.FC<ITableProps> = ({
     };
 
     const matchesStatus = (item: any): boolean => {
-      console.log(item, filterByStatus);
-
       if (filterByStatus?.toLowerCase() === "hidden") {
         return (
           filterByStatus === null ||
@@ -204,11 +201,11 @@ const Table: React.FC<ITableProps> = ({
       return items
         .map((item) => {
           console.log(item);
+
           const matchesSearch = matchesSearchTerm(item);
           const matchesStatusFilter = matchesStatus(item);
           const matchesDraftFilter = matchesDraft(item);
           const matchesArchivedFilter = matchesArchived(item);
-          console.log(matchesArchivedFilter, isArchived);
 
           let openItem = false;
 
@@ -278,7 +275,7 @@ const Table: React.FC<ITableProps> = ({
                 return {
                   ...item,
                   items: filteredChildren,
-                  open: false,
+                  open: item.open ? true : false,
                 };
               } else {
                 return {
@@ -304,7 +301,6 @@ const Table: React.FC<ITableProps> = ({
     };
 
     if (!searchTerm && !filterByStatus && !isDraft && !isArchived) {
-      console.log("return", data);
       // return data;
       return filterRecursive(data);
     }
@@ -319,7 +315,6 @@ const Table: React.FC<ITableProps> = ({
   };
 
   const renderTableItem = (data: any): any => {
-    console.log(data);
     return (
       <TableItem
         tableData={data}

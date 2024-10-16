@@ -1691,6 +1691,7 @@ const Definition: React.FC<Props> = ({
                 : encodeURI("https://" + pageDetailsState.helpLink)
             }
             target="_blank"
+            rel="noreferrer"
           >
             Help?
           </a>

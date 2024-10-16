@@ -521,7 +521,6 @@ const ContentDevelopment = (): JSX.Element => {
         currentDocDetailsData?.approvers?.length;
 
     try {
-      debugger;
       if (promoteComments.promoteComment?.trim() === "") {
         setPromoteComments({
           ...promoteComments,

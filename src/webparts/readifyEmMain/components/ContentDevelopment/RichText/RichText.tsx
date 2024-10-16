@@ -1202,6 +1202,7 @@ const RichText = ({
                 : encodeURI("https://" + pageDetailsState.helpLink)
             }
             target="_blank"
+            rel="noreferrer"
           >
             Help?
           </a>
