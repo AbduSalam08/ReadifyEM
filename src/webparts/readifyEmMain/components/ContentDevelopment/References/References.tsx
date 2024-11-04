@@ -137,7 +137,6 @@ const References: React.FC<Props> = ({
     IsValid: false,
     ErrorMsg: "",
   });
-  console.log(allReferencesData);
 
   // popup loaders and messages
   const [popupLoaders, setPopupLoaders] =
@@ -443,8 +442,6 @@ const References: React.FC<Props> = ({
             },
           }
         );
-        console.log("updatedSections: ", updatedSections);
-
         dispatch(setCDSectionData([...updatedSections]));
       })
       .catch((err: any) => {
@@ -965,7 +962,6 @@ const References: React.FC<Props> = ({
         obj.referenceAuthorName !== "" &&
         obj.referenceTitle !== ""
     );
-    console.log(tempArray, sectionReferences);
     setAllReferencesData([...(await tempArray), ...(await sectionReferences)]);
     setLoader(false);
 

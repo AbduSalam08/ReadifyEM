@@ -31,6 +31,7 @@ interface CardProps {
   dueDate: string;
   onClick: any;
   btnText: string;
+  docStatus: string;
   taskData?: any;
 }
 
@@ -66,6 +67,7 @@ const TaskCard: React.FC<CardProps> = ({
   onClick,
   btnText,
   taskData,
+  docStatus,
 }) => {
   const roleClass = roleClasses[roles];
   const isAdmin = CurrentUserIsAdmin();
@@ -86,7 +88,9 @@ const TaskCard: React.FC<CardProps> = ({
           </span>
           <div className={styles.pillRHS}>
             {btnText?.toLowerCase() === "open" && roles === "Primary Author"
-              ? !taskData.completedAll && (
+              ? !taskData.completedAll &&
+                (docStatus === "in development" ||
+                  docStatus === "not started") && (
                   <button
                     onClick={async () => {
                       await getUniqueTaskData(taskData?.taskID, dispatch);

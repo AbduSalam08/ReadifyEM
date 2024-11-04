@@ -684,7 +684,6 @@ const RichText = ({
   ): Promise<any> => {
     if (quillRef.current) {
       const quill = quillRef.current.getEditor();
-      console.log(quill.root.innerHTML);
       const currentContents = quill.getContents();
       let cumulativeIndex = 0;
 
@@ -776,13 +775,9 @@ const RichText = ({
       }
       // setDescription(editor.getHTML());
       const htmlContent = editor.getHTML();
-      console.log(htmlContent);
-
       const parser = new DOMParser();
       const doc = parser.parseFromString(htmlContent, "text/html");
-
       const indentElements = doc.querySelectorAll("[class^='ql-indent-']");
-
       // Loop through all indented elements
       indentElements.forEach((element: any) => {
         // Extract the indent level from the class (e.g., ql-indent-1 -> 1)

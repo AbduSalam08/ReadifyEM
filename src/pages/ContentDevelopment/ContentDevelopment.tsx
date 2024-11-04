@@ -47,6 +47,7 @@ import {
   addPromotedComment,
   changeDocStatus,
   changeSectionStatus,
+  changeTaskStatus,
   getAllSectionsChangeRecord,
   getPreviousVersionDoc,
   getSectionChangeRecord,
@@ -202,6 +203,7 @@ const ContentDevelopment = (): JSX.Element => {
   const AllSectionsDataMain: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDSectionsData
   );
+
   const CDBackDrop: any = useSelector(
     (state: any) => state.ContentDeveloperBackDrop.backDrop
   );
@@ -725,7 +727,6 @@ const ContentDevelopment = (): JSX.Element => {
       ],
     })
       .then(async (res: any) => {
-        console.log("res: ", res);
         const SectionPromoteKey: any = currentDocRole.reviewer
           ? "sectionReviewed"
           : "sectionApproved";
@@ -748,8 +749,6 @@ const ContentDevelopment = (): JSX.Element => {
           responseData: updatedSections,
         })
           .then((res: any) => {
-            console.log("res: ", res);
-
             // Initialize the shallow copy outside the loop
             let AllSectionDataLocalShallowCopy = [...AllSectionsData];
 
@@ -1148,6 +1147,7 @@ const ContentDevelopment = (): JSX.Element => {
               }
             }
           );
+          await changeTaskStatus(currentDocDetailsData);
           const payLoad: any = AllSectionsDataMain?.filter(
             (item: any) => item?.sectionType?.toLowerCase() !== "header"
           )?.map((el: any) => {
@@ -1175,6 +1175,7 @@ const ContentDevelopment = (): JSX.Element => {
             false,
             currentDocDetailsData
           );
+
           // await submitPromotedComment();
         },
       },

@@ -474,8 +474,6 @@ const ConfigureSectionCard: React.FC<SectionsProps> = ({
   };
 
   const reOrderSections = (data: any[]): any => {
-    console.log("rendered");
-
     const updateData: any[] = data?.map((item: any, index: number) => {
       return {
         ...item,

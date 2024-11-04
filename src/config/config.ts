@@ -24,6 +24,7 @@ const LISTNAMES = {
 
 const LIBNAMES = {
   AllDocuments: "AllDocuments",
+  FinalDocuments: "FinalDocuments",
 };
 
 const GROUPS = {

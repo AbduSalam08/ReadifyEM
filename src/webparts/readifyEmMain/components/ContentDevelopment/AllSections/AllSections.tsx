@@ -28,6 +28,8 @@ const AllSections: React.FC<Props> = ({
   currentDocDetailsData,
   currentDocRole,
 }) => {
+  console.log(data);
+
   const selectSection = (index: number, type: string): any => {
     if (type === "View comments") {
       onChange(index, false, "Promoted Comments");
@@ -85,7 +87,6 @@ const AllSections: React.FC<Props> = ({
   );
 
   const renderSection = (item: any, index: number): any => {
-    console.log("item: ", item);
     return (item?.sectionType === "header section" ||
       item?.sectionType === "change record") &&
       // ||

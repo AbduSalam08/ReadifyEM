@@ -46,6 +46,7 @@ const Header: React.FC<Props> = ({
   currentDocRole,
 }) => {
   const dispatch = useDispatch();
+
   const initialPopupController = [
     {
       open: false,
@@ -212,7 +213,8 @@ const Header: React.FC<Props> = ({
             endIcon={<img src={locationIcon} alt="track" />}
             onClick={() => selectSection(1, "Document Tracker")}
           />
-          {role === "Primary Author" || isAdmin ? (
+          {(role === "Primary Author" || isAdmin) &&
+          documentStatus?.toLowerCase() === "in development" ? (
             <DefaultButton
               text={
                 <img

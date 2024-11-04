@@ -113,3 +113,8 @@
   min-height: 350px;
   @extend .flexCenter;
 }
+.wordDocumentpreview{
+  .p-dialog-header{
+    background-color: #f0f0f0;
+  }
+}

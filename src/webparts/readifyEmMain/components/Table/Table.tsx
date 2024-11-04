@@ -200,8 +200,6 @@ const Table: React.FC<ITableProps> = ({
     const filterRecursive = (items: LibraryItem[]): LibraryItem[] => {
       return items
         .map((item) => {
-          console.log(item);
-
           const matchesSearch = matchesSearchTerm(item);
           const matchesStatusFilter = matchesStatus(item);
           const matchesDraftFilter = matchesDraft(item);

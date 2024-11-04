@@ -85,7 +85,6 @@ const SectionContentLatest: React.FC<IProps> = ({
   // const lastAddedPointRef = useRef<HTMLDivElement | null>(null);
   // Inside your renderPoints function
   const contentEditorRefs = useRef<Map<string, any>>(new Map());
-  console.log(currentSectionDetails, noActionBtns);
 
   // confirmation popup controllers
   const initialPopupController = [
@@ -581,8 +580,6 @@ const SectionContentLatest: React.FC<IProps> = ({
     currentDocDetailsData,
     currentUserDetails
   );
-
-  console.log(sectionLoader);
 
   const readTextFileFromTXT = (data: any): void => {
     setSectionLoader(true);

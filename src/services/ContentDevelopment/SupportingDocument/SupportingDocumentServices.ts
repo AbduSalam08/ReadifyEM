@@ -535,9 +535,6 @@ const updateSectionDetails = async (
             },
           ],
         });
-
-        console.log("res: ", res);
-
         const checkIfAnySectionHasRework = res?.some(
           (item: any) => item?.status?.toLowerCase() === "rework in progress"
         );

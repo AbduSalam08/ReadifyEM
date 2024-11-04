@@ -638,7 +638,6 @@ export const getSectionData = async (
       // const filteredItem: any = res?.filter((item: any) =>
       //   item?.FileName?.includes("headerImg")
       // );
-      // console.log("filteredItem: ", filteredItem);
       // if (filteredItem.length > 0) {
       const data = {
         fileData: res[0],

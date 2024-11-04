@@ -452,7 +452,7 @@ const softDeleteTemplate = async (
       secondaryText: `The template "${templateName}" has been deleted successfully!`,
     });
   } catch (err) {
-    console.log("Error during deletion:", err);
+    console.log("Error : ", err);
 
     // Set loading state to error
     setLoaderState({
@@ -576,10 +576,11 @@ const LoadSectionsTemplateData = async (
     // Process filtered data
     filteredData?.forEach((e: any) => {
       const sectionData = {
-        id:
-          e?.sequenceNo !== undefined && e?.sequenceNo !== null
-            ? e?.sequenceNo
-            : e?.ID,
+        // id:
+        //   e?.sequenceNo !== undefined && e?.sequenceNo !== null
+        //     ? e?.sequenceNo
+        //     : e?.ID,
+        id: Number(e?.sequenceNo) || null,
         unqID: e?.ID,
         isValid: true,
         value: e?.sectionName,
@@ -636,8 +637,13 @@ const LoadSectionsTemplateData = async (
     //     defaultTemplates.indexOf(a.value) - defaultTemplates.indexOf(b.value)
     // );
 
-    const orderedNormalSection = normalSection.sort((a, b) => a.id - b.id);
+    // const orderedNormalSection = normalSection.sort((a, b) => a.id - b.id);
     const orderedAppendixSection = appendixSection.sort((a, b) => a.id - b.id);
+
+    const mergedNormalSections = [
+      ...orderedDefaultSection?.filter((item: any) => item?.id !== null),
+      ...normalSection,
+    ]?.sort((a, b) => a.id - b.id);
 
     const currentTemplateDetails: any = {
       templateDetails: {
@@ -645,7 +651,10 @@ const LoadSectionsTemplateData = async (
         templateName: filteredData[0]?.mainTemplate?.Title,
       },
       defaultSection: orderedDefaultSection,
-      normalSection: [...orderedDefaultSection, ...orderedNormalSection],
+      normalSection: [
+        ...mergedNormalSections,
+        ...orderedDefaultSection?.filter((item: any) => item?.id === null),
+      ],
       appendixSection: orderedAppendixSection,
     };
 
@@ -659,7 +668,10 @@ const LoadSectionsTemplateData = async (
       ...prev,
       templateName: templateName,
       defaultSection: orderedDefaultSection,
-      normalSection: [...orderedDefaultSection, ...normalSection],
+      normalSection: [
+        ...mergedNormalSections,
+        ...orderedDefaultSection?.filter((item: any) => item?.id === null),
+      ],
       appendixSection: appendixSection,
       isLoading: false,
     }));
