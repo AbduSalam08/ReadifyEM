@@ -1330,14 +1330,17 @@ export const LoadSectionsTemplateData = async (
         templateName: filteredData[0]?.mainTemplate?.Title,
       },
       templateSectionID: "",
-      defaultSections: [...orderedDefaultSection, ...orderedNormalSection]?.map(
-        (item: any, index: number) => {
+      defaultSections: [...orderedDefaultSection, ...orderedNormalSection]
+        ?.sort(
+          (a: any, b: any) =>
+            Number(a?.sectionOrderNo) - Number(b?.sectionOrderNo)
+        )
+        ?.map((item: any, index: number) => {
           return {
             ...item,
             sectionOrderNo: String(index + 1),
           };
-        }
-      ),
+        }),
       appendixSections: [...orderedAppendixSection]?.map(
         (item: any, index: number) => {
           return {
@@ -1493,7 +1496,6 @@ export const getUniqueSectionsDetails = async (
     const orderedAppendixSection = appendixSection.sort(
       (a, b) => parseInt(a.sectionOrderNo) - parseInt(b.sectionOrderNo)
     );
-
     const currentTemplateDetails: any = {
       defaultSections: [...orderedNormalSection]?.map(
         (el: any, index: number) => ({

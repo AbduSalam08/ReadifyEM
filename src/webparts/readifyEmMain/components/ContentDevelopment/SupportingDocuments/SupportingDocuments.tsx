@@ -526,7 +526,6 @@ const SupportingDocuments: React.FC<Props> = ({
     message: "",
     duration: "",
   });
-  console.log(selectedDocuments);
 
   const submitRejectedComment = async (): Promise<any> => {
     if (rejectedComments.rejectedComment?.trim() !== "") {

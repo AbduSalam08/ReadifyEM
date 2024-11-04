@@ -116,7 +116,7 @@ export const convertReferenceToTxtFile = (
   referencesTable += `<div style="margin-left: 25px;">`;
 
   filterData?.forEach((obj: any, index: number) => {
-    referencesTable += `<p style="width:100%;padding:7px 0px;margin:0px;">
+    referencesTable += `<p style="width:100%;margin-bottom: 10px;">
     <span style="line-height: 20px;">${sectionOrder.toString()}.${
       index + 1
     }.</span>

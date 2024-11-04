@@ -394,6 +394,7 @@ const MyTasks = (): JSX.Element => {
                     : "Open"
                 }
                 taskData={item}
+                docStatus={item?.taskStatus?.toLowerCase()}
                 description={item?.pathName}
                 onClick={async () => {
                   // handle the card configuration and card routes here

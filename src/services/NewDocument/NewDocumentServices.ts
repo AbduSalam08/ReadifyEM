@@ -66,7 +66,6 @@ const AddNewDocumentToLib = async ({
     .expand("fileDetails")
     .get()
     .then((res: any) => {
-      console.log("res: ", res);
       const resp = res[0] || res;
       currentFileID = resp?.fileDetailsId;
     })
@@ -82,17 +81,13 @@ const AddNewDocumentToLib = async ({
       .expand("File")
       .get()
       .then((res: any) => {
-        console.log("res: ", res);
         prevdocName =
-          res.FileLeafRef?.split(".pdf")[0] || res.File?.Name?.split(".pdf")[0];
-        console.log("prevdocName: ", prevdocName);
+          res.FileLeafRef?.split(".doc")[0] || res.File?.Name?.split(".doc")[0];
       })
       .catch((err: any) => {
-        console.log("err: ", err);
+        console.log("Error : ", err);
       });
   }
-
-  console.log("prevdocName: ", prevdocName);
 
   if (initiateNewVersion) {
     let fileAddResult: any;
@@ -111,11 +106,11 @@ const AddNewDocumentToLib = async ({
 
       // Clone the existing PDF file
       // const sourceFileUrl = `${docDetails?.documentPath}/${docDetails?.Title}.pdf`; // Update with your source PDF path
-      const sourceFileUrl = `${docDetails?.documentPath}/${prevdocName}.pdf`; // Update with your source PDF path
+      const sourceFileUrl = `${docDetails?.documentPath}/${prevdocName}.doc`; // Update with your source PDF path
       const destinationFileUrl = `${replaceVersionInFilename(
         fileName,
         docDetails?.documentVersion
-      )}.pdf`;
+      )}.doc`;
 
       // Read the source file's content
       const fileBuffer = await sp.web
@@ -253,7 +248,7 @@ const AddNewDocumentToLib = async ({
       if (fileName) {
         fileAddResult = await sp.web
           .getFolderByServerRelativePath(filePath)
-          .files.addUsingPath(`${fileName}.pdf`, pdfBlob, {
+          .files.addUsingPath(`${fileName}.doc`, pdfBlob, {
             Overwrite: true,
           });
         // Update metadata for the uploaded file
@@ -437,7 +432,7 @@ const UpdateDocumentInLib = async ({
                   responseData?.documentVersion
                 )
               : responseData?.Title
-          }.pdf`,
+          }.doc`,
           false,
           false
         )

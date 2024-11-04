@@ -512,7 +512,7 @@ const SDDTemplates = (): JSX.Element => {
         : "Template name required.",
       appendixSection: sectionsData.appendixSection.map((section, index) => {
         if (
-          sectionsData.appendixSection?.length > 1 &&
+          sectionsData.appendixSection?.length > 0 &&
           !emptyCheck(section.value)
         ) {
           isValid = false;

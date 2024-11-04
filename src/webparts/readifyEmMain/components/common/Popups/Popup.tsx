@@ -5,6 +5,7 @@ import DefaultButton from "../Buttons/DefaultButton";
 import styles from "./Popup.module.scss";
 import { CircularProgress } from "@mui/material";
 import { memo } from "react";
+import "./popupsStyle.css";
 
 interface Props {
   popupTitle?: string;
@@ -17,6 +18,7 @@ interface Props {
   visibility: boolean;
   confirmationTitle?: string;
   isLoading?: boolean;
+  preViewDocument?: boolean;
   popupHeight?: boolean;
 }
 
@@ -41,6 +43,7 @@ const Popup = ({
   confirmationTitle,
   isLoading,
   popupHeight,
+  preViewDocument,
   ...btnRest
 }: Props): JSX.Element => {
   const headerElement = (
@@ -96,7 +99,11 @@ const Popup = ({
         {footerContent()}
       </div>
     ) : PopupType === "custom" ? (
-      <div className={styles.contentWrapper}>
+      <div
+        className={styles.contentWrapper}
+        style={{ marginTop: preViewDocument ? "25px" : "0px" }}
+      >
+        {/* {preViewDocument && <div className="hideOptions"></div>} */}
         <div
           className={
             popupHeight
@@ -117,7 +124,9 @@ const Popup = ({
       // closeIcon={defaultCloseBtn}
       closable={defaultCloseBtn}
       draggable={false}
-      className={`popupWrapper ${styles.popupWrapper}`}
+      className={`popupWrapper ${styles.popupWrapper} ${
+        preViewDocument ? "wordDocumentpreview" : ""
+      }`}
       visible={visibility}
       modal
       header={PopupType !== "confirmation" && headerElement}

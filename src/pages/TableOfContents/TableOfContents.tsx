@@ -12,17 +12,12 @@ import MenuButton from "../../webparts/readifyEmMain/components/common/Buttons/M
 import Table from "../../webparts/readifyEmMain/components/Table/Table";
 import NewDocument from "../NewDocument/NewDocument";
 import Popup from "../../webparts/readifyEmMain/components/common/Popups/Popup";
-import {
-  // calculateDueDateByRole,
-  emptyCheck,
-  trimStartEnd,
-} from "../../utils/validations";
+import { emptyCheck, trimStartEnd } from "../../utils/validations";
 import CustomTreeDropDown from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomTreeDropDown";
 import { useDispatch, useSelector } from "react-redux";
 import AlertPopup from "../../webparts/readifyEmMain/components/common/Popups/AlertPopup/AlertPopup";
-import { initialPopupLoaders, LISTNAMES } from "../../config/config";
+import { initialPopupLoaders, LIBNAMES } from "../../config/config";
 import { IPopupLoaders } from "../../interface/MainInterface";
-// import { sp } from "@pnp/sp";
 import InfoIcon from "@mui/icons-material/Info";
 import { ArrowRightAlt, Close } from "@mui/icons-material";
 import { Fade, Tooltip } from "@mui/material";
@@ -32,8 +27,6 @@ import {
   LibraryItem,
   LoadTableData,
   createFolder,
-  // findItemByUrl,
-  // editFolder,
 } from "../../services/EMManual/EMMServices";
 import Checkbox from "@mui/material/Checkbox";
 import RadioButtonCheckedIcon from "@mui/icons-material/RadioButtonChecked";
@@ -48,16 +41,9 @@ import {
   updatePageTitle,
 } from "../../services/ContentDevelopment/CommonServices/CommonServices";
 import { setSectionsAttachments } from "../../redux/features/PDFServicceSlice";
-// import { getDocumentRelatedSections } from "../../services/PDFServices/PDFServices";
-// import SpServices from "../../services/SPServices/SpServices";
 import PDFServiceTemplate from "../../webparts/readifyEmMain/components/Table/PDFServiceTemplate/PDFServiceTemplate";
-// import * as dayjs from "dayjs";
-// utils
-// images
 const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
-// const docFile: any = require("../../assets/images/codeunit.docx");
 const contentDeveloperEdit: any = require("../../assets/images/svg/editContentDeveloper.svg");
-// const editConfigurationImg: any = require("../../assets/images/svg/taskConfigurationEditIcon.svg");
 const viewDocBtn: any = require("../../assets/images/svg/viewEye.svg");
 const newversionBtn: any = require("../../assets/images/svg/newVersion.svg");
 import EditIcon from "@mui/icons-material/Edit";
@@ -67,6 +53,7 @@ import { removeVersionFromDocName } from "../../utils/formatDocName";
 import ToastMessage from "../../webparts/readifyEmMain/components/common/Toast/ToastMessage";
 import { InputSwitch } from "primereact/inputswitch";
 import { sp } from "@pnp/sp";
+import "./iframestyle.css";
 // constants
 const initialPopupController = [
   {
@@ -87,7 +74,7 @@ const initialPopupController = [
     open: false,
     popupTitle: "View Document",
     popupWidth: "820px",
-    defaultCloseBtn: true,
+    defaultCloseBtn: false,
     popupData: [],
   },
   {
@@ -143,7 +130,6 @@ const TableOfContents = (): JSX.Element => {
     (state: any) => state?.MainSPContext?.PageDetails
   );
 
-  console.log("contextProps: ", contextProps);
   //Dispatcher
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -157,10 +143,6 @@ const TableOfContents = (): JSX.Element => {
   const TOCData: any = useSelector(
     (state: any) => state.EMMTableOfContents.tableData
   );
-  const AllSectionsAttachments: any = useSelector(
-    (state: any) => state.PDFServiceData.sectionsAttachments
-  );
-  console.log(AllSectionsAttachments);
 
   // main table data state
   const [tableData, setTableData] = useState({
@@ -222,7 +204,6 @@ const TableOfContents = (): JSX.Element => {
   });
 
   const [documentPdfURL, setDocumentPdfURL] = useState("");
-  console.log(documentPdfURL);
 
   // A controller state for popup in TOC
   const [popupController, setPopupController] = useState(
@@ -305,7 +286,6 @@ const TableOfContents = (): JSX.Element => {
       return updatedFormData;
     });
   };
-
   // popup inputs object
   const popupInputs: any[] = [
     <CustomInput
@@ -375,18 +355,15 @@ const TableOfContents = (): JSX.Element => {
           //     <a href={documentPdfURL}>Download PDF</a>.
           //   </p>
           // </object>
-          <iframe src={documentPdfURL} width="100%" height="600px">
+          <iframe
+            src={documentPdfURL}
+            width="100%"
+            height="600px"
+            frameBorder="0"
+          >
             Your browser does not support iframes.
           </iframe>
         ) : (
-          // <PDFServiceTemplate documentId={documentId} />
-          // <iframe
-          //   src={documentPdfURL}
-          //   // style="width:600px; height:500px;"
-          //   width="100%"
-          //   height="600px"
-          //   // frameborder="0"
-          // ></iframe>
           <PDFServiceTemplate documentId={documentId} />
         )}
       </div>,
@@ -888,6 +865,7 @@ const TableOfContents = (): JSX.Element => {
         onClick: () => {
           togglePopupVisibility(setPopupController, 2, "close");
           dispatch(setSectionsAttachments([]));
+          setDocuementStatus(false);
         },
       },
     ],
@@ -971,53 +949,6 @@ const TableOfContents = (): JSX.Element => {
   const setMainData = async (): Promise<any> => {
     await LoadTableData(dispatch, setTableData, tableData, isAdmin);
   };
-
-  // const readTextFileFromTXT = (data: any): void => {
-  //   // setSectionLoader(true);
-  //   SpServices.SPReadAttachments({
-  //     ListName: "SectionDetails",
-  //     ListID: data.ID,
-  //     AttachmentName: data?.FileName,
-  //   })
-  //     .then((res: any) => {
-  //       const parsedValue: any = JSON.parse(res);
-  //       const sectionDetails = {
-  //         text: data.sectionName,
-  //         sectionOrder: data.sectionOrder,
-  //         value: parsedValue,
-  //       };
-  //       // if (typeof parsedValue === "object") {
-  //       setParsedJSON((prev: any) => {
-  //         return [...prev, sectionDetails];
-  //       });
-  //       //   onChange && onChange([...parsedValue]);
-  //       //   setSectionLoader(false);
-  //       // } else {
-  //       //   setSectionLoader(false);
-  //       // }
-  //     })
-  //     .catch((err: any) => {
-  //       console.log("err: ", err);
-  //       // setSectionLoader(false);
-  //     });
-  // };
-
-  // read attachments functions
-  // const readSectionAttachments = (): any => {
-  //   if (AllSectionsAttachments.length !== 0) {
-  //     AllSectionsAttachments.forEach((item: any, index: number) => {
-  //       const filteredItem: any = item?.filter(
-  //         (item: any) => item?.FileName === "Sample.txt"
-  //       );
-  //       if (filteredItem.length > 0) {
-  //         readTextFileFromTXT(filteredItem[0]);
-  //         // setNewAttachment(false);
-  //       } else {
-  //         // setSectionLoader(false);
-  //       }
-  //     });
-  //   }
-  // };
 
   // lifecycle hooks
   useEffect(() => {
@@ -1195,7 +1126,7 @@ const TableOfContents = (): JSX.Element => {
                     fontFamily: "interMedium, sans-serif",
                   }}
                 >
-                  All Versions
+                  Archived
                 </span>
                 <InputSwitch
                   checked={filterOptions.isArchived}
@@ -1313,8 +1244,6 @@ const TableOfContents = (): JSX.Element => {
             defaultTable={false}
             loadData={setMainData}
             renderActions={(item: any, index: number) => {
-              console.log("itemDetails", item);
-
               const nextReviewDate = dayjs(
                 item?.fields?.nextReviewDate,
                 "DD/MM/YYYY"
@@ -1402,32 +1331,23 @@ const TableOfContents = (): JSX.Element => {
                     text={<img src={viewDocBtn} />}
                     key={index}
                     onClick={async (event: any) => {
-                      // event.stopPropagation();
                       event.preventDefault();
-                      // window.open(item?.url);
                       const fileDetails = await sp.web.lists
-                        .getByTitle(LISTNAMES.AllDocuments)
-                        .items.getById(item.fileID)
-                        .select("FileRef", "FileLeafRef")();
+                        .getByTitle(LIBNAMES.FinalDocuments)
+                        .items.filter(`DocumentIDId eq ${item.fileID}`)
+                        .select("FileLeafRef", "FileRef")
+                        .get();
 
                       const baseUrl = `${contextProps?._pageContext._site.absoluteUrl}/_layouts/15/Doc.aspx`;
                       const encodedFilePath = encodeURIComponent(
-                        fileDetails?.FileRef
+                        fileDetails[0]?.FileRef
                       );
                       const encodedFileName = encodeURIComponent(
-                        fileDetails.FileLeafRef
+                        fileDetails[0]?.FileLeafRef
                       );
-                      console.log(
-                        fileDetails,
-                        baseUrl,
-                        encodedFilePath,
-                        encodedFileName
-                      );
-
                       setDocumentPdfURL(
                         `${baseUrl}?sourcedoc=${encodedFilePath}&file=${encodedFileName}&action=default`
                       );
-
                       setDocuementStatus(item?.isPdfGenerated);
                       togglePopupVisibility(
                         setPopupController,
@@ -1436,9 +1356,7 @@ const TableOfContents = (): JSX.Element => {
                         `Preview Document`,
                         "",
                         item?.isPdfGenerated ? "70vw" : "820px"
-                        // `Preview Document - ${item.name}`
                       );
-                      // getDocumentRelatedSections(item.ID, dispatch);
                       setDocumentId(item?.ID);
                     }}
                   />
@@ -1535,15 +1453,17 @@ const TableOfContents = (): JSX.Element => {
         <Popup
           key={index}
           PopupType="custom"
-          onHide={() =>
-            togglePopupVisibility(setPopupController, index, "close")
-          }
+          onHide={() => {
+            togglePopupVisibility(setPopupController, index, "close");
+            setDocuementStatus(false);
+          }}
           popupTitle={popupData.popupTitle}
           popupActions={popupActions[index]}
           visibility={popupData.open}
           content={popupInputs[index]}
           popupWidth={popupData.popupWidth}
           defaultCloseBtn={popupData.defaultCloseBtn}
+          preViewDocument={docuementStatus ? true : false}
         />
       ))}
 

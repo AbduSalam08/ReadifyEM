@@ -20,7 +20,6 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
   const [allSectionContent, setAllSectionContent] = useState<any[]>([]);
   const [pdfHeaderSection, setPdfHeaderSection] = useState<any>("");
   const [loader, setLoader] = useState<boolean>(false);
-  console.log(allSectionContent, pdfHeaderSection);
 
   useEffect(() => {
     getDocumentRelatedSections(

@@ -71,8 +71,6 @@ const Header = (): JSX.Element => {
         }
   );
 
-  console.log(file);
-
   const handleClosePopup = (index?: any): void => {
     togglePopupVisibility(setPopupController, index, "close");
   };

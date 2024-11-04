@@ -45,7 +45,6 @@ const readTextFileFromTXT = (
   // setPdfHeaderSection: any,
   setLoader: any
 ): void => {
-  debugger;
   SpServices.SPReadAttachments({
     ListName: "SectionDetails",
     ListID: data.ID,
@@ -156,8 +155,6 @@ export const bindHeaderTable = async (
   docDetails: any,
   lastReviewDate: any
 ): Promise<string> => {
-  console.log(lastReviewDate);
-
   const base64Image = base64Data.headerImage;
 
   let pdfHeaderTable = "";
@@ -166,17 +163,17 @@ export const bindHeaderTable = async (
 
   pdfHeaderTable += `<tr>
                 <td style="width:20%; padding:6px; text-align: center;vertical-align: middle;">
-                <table style="width: 130px; height: 85px; border-collapse: collapse;">
-                  <tr>
-                    <td style="text-align: center; vertical-align: middle;">
-                    <img width="120" height= "80" style="padding:1px;vertical-align: middle;" src="${
-                      sectionDetails?.base64 !== ""
-                        ? sectionDetails?.base64
-                        : base64Image
-                    }" alt="doc header logo" />
-                    </td>
-                  </tr>
-                </table>
+                  <table style="width: 100%; height: 95px; border-collapse: collapse;">
+                    <tr>
+                      <td style="text-align: center; vertical-align: middle;">
+                        <img width="90" height= "90" style="padding:1px;vertical-align: middle;" src="${
+                          sectionDetails?.base64 !== ""
+                            ? sectionDetails?.base64
+                            : base64Image
+                        }" alt="doc header logo" />
+                      </td>
+                    </tr>
+                  </table>
                 </td>
                 <td style="width: 50%;font-size: 11px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border-left: 1px solid #000;border-right: 1px solid #000;">
                     <p style="font-size: 24px;font-family: interMedium, sans-serif;margin: 5px;">${
@@ -383,10 +380,7 @@ export const getDocumentRelatedSections = async (
     setLoader(true);
     let lastReviewDate = "";
     getPreviousVersionDoc(documentID).then((res) => {
-      console.log(res);
-
       lastReviewDate = getLastReviewDate(res);
-      console.log(lastReviewDate);
     });
     const DocDetailsResponse: any = await SpServices.SPReadItems({
       Listname: LISTNAMES.DocumentDetails,

@@ -299,10 +299,10 @@ const SDDSections = ({
               readOnly={viewOnly || false}
               size="SM"
               icon={false}
-              onChange={(value: any) => handleChange(index, value)}
+              onChange={(value: any) => handleChange(index, value.trimStart())}
               onKeyDown={(event: any) => {
                 handleKeyDown(event, section?.value, (newValue: string) =>
-                  handleChange(index, newValue)
+                  handleChange(index, newValue.trimStart())
                 );
               }}
               value={section?.value}
@@ -319,10 +319,10 @@ const SDDSections = ({
             readOnly={viewOnly || false}
             size="SM"
             icon={false}
-            onChange={(value: any) => handleChange(index, value)}
+            onChange={(value: any) => handleChange(index, value.trimStart())}
             onKeyDown={(event: any) => {
               handleKeyDown(event, section?.value, (newValue: string) =>
-                handleChange(index, newValue)
+                handleChange(index, newValue.trimStart())
               );
             }}
             value={section?.value}

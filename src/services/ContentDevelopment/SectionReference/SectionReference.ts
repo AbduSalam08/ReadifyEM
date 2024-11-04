@@ -88,8 +88,6 @@ const addNewReference = async (
       RequestJSON: jsonObject,
     })
       .then(async (referenceRes: any) => {
-        console.log(referenceRes);
-
         // setLoaderState({
         //   isLoading: {
         //     inprogress: false,

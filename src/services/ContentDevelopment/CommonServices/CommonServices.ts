@@ -193,7 +193,7 @@ export const getSectionsDetails = async (
             dueDate,
           };
         } catch (error) {
-          console.log("Error fetching section comments: ", error);
+          console.log("Error : ", error);
           return null;
         }
       })
@@ -296,7 +296,7 @@ export const getSectionsDetails = async (
 
     return sectionData.filter(Boolean); // Remove any null values from the array
   } catch (error) {
-    console.log("Error fetching section details: ", error);
+    console.log("Error : ", error);
     return null;
   }
 };
@@ -359,7 +359,6 @@ export const AddAttachment = async (
         })
           .then((res: any) => {
             console.log("res: ", res);
-            // _getData();
           })
           .catch((err: any) => {
             console.log("Error : ", err);
@@ -377,7 +376,6 @@ export const AddAttachment = async (
     })
       .then((res: any) => {
         console.log("res: ", res);
-        // _getData();
       })
       .catch((err: any) => {
         console.log("Error : ", err);
@@ -391,7 +389,6 @@ export const AddAttachment = async (
     })
       .then((res: any) => {
         console.log("res: ", res);
-        // _getData();
       })
       .catch((err: any) => {
         console.log("Error : ", err);
@@ -936,6 +933,8 @@ export const addRejectedComment = async (
       sectionReviewed: false,
       sectionApproved: false,
     },
+  }).catch((err: any) => {
+    console.log("Error : ", err);
   });
 
   await SpServices.SPUpdateItem({
@@ -944,14 +943,21 @@ export const addRejectedComment = async (
     RequestJSON: {
       status: "In Rework",
     },
-  }).then(async (res: any) => {
-    await sp.web.lists
-      .getByTitle(LIBNAMES.AllDocuments)
-      .items.getById(fileID)
-      .update({
-        status: "In Rework",
-      });
-  });
+  })
+    .then(async (res: any) => {
+      await sp.web.lists
+        .getByTitle(LIBNAMES.AllDocuments)
+        .items.getById(fileID)
+        .update({
+          status: "In Rework",
+        })
+        .catch((err: any) => {
+          console.log("Error : ", err);
+        });
+    })
+    .catch((err: any) => {
+      console.log("Error : ", err);
+    });
 
   await SpServices.SPAddItem({
     Listname: LISTNAMES.SectionComments,
@@ -1087,7 +1093,6 @@ export const changeDocStatus = async (
               .filter(`documentDetails/Id eq ${docID}`) // Use the correct OData filter for lookup fields
               .get()
               .then((res: any) => {
-                console.log("All Document Data", res);
                 res?.forEach(async (document: any) => {
                   if (document.ID !== fileID) {
                     await sp.web.lists
@@ -1101,7 +1106,7 @@ export const changeDocStatus = async (
                 });
               })
               .catch((err: any) => {
-                console.log(err);
+                console.log("Error : ", err);
               });
           }
         });
@@ -1182,7 +1187,6 @@ export const changeDocStatus = async (
         }).then((res: any) => {
           if (statusName?.toLowerCase() === "approved") {
             addDefaultPDFheader({ base64: "" }, docID);
-            console.log("update pdf header attachment");
           }
         });
 
@@ -1346,6 +1350,43 @@ export const changeSectionStatus = async (
   dispatch(setCDDocDetails(updatedDOCDetails));
 };
 
+export const changeTaskStatus = async (documentDetails?: any): Promise<any> => {
+  await SpServices.SPReadItems({
+    Listname: LISTNAMES.MyTasks,
+    Select: "*, documentDetails/ID",
+    Expand: "documentDetails",
+    Filter: [
+      {
+        FilterKey: "documentDetails",
+        Operator: "eq",
+        FilterValue: documentDetails.documentDetailsID,
+      },
+      {
+        FilterKey: "role",
+        Operator: "eq",
+        FilterValue: "Primary Author",
+      },
+    ],
+  })
+    .then((res: any) => {
+      console.log(res);
+      if (res?.length > 0) {
+        res?.forEach((obj: any) => {
+          if (obj.Title === documentDetails.documentName) {
+            SpServices.SPUpdateItem({
+              Listname: LISTNAMES.MyTasks,
+              ID: obj.ID,
+              RequestJSON: { taskStatus: "promoted by primary author" },
+            });
+          }
+        });
+      }
+    })
+    .catch((err: any) => {
+      console.log(err);
+    });
+};
+
 // function to handle change record
 export const getSectionChangeRecord = async (
   sectionId: number,
@@ -1462,8 +1503,6 @@ export const getAllSectionsChangeRecord = async (
     ],
   })
     .then(async (res: any[]) => {
-      console.log(res);
-
       res?.forEach((obj: any) => {
         if (obj.sectionType === "change record") {
           changeRecId = obj.ID;
@@ -1612,7 +1651,6 @@ export const getPageTitle = (dispatch: any): any => {
     Select: "*,Title,Attachments,AttachmentFiles",
     Expand: "AttachmentFiles",
   }).then((res: any) => {
-    console.log("res", res);
     dispatch(
       setPageDetails({
         pageTitle: res[0]?.Title,
@@ -1638,7 +1676,6 @@ export const updatePageTitle = (
     ID: 1,
     RequestJSON: { Title: value },
   }).then((res: any) => {
-    console.log("res", res);
     dispatch(
       setPageDetails({
         ...pageDetailsState,
@@ -1668,7 +1705,6 @@ export const updatePageLog = async (
     AttachmentName: pageDetailsState?.imageData?.fileName,
   })
     .then((res: any) => {
-      console.log("file_Deleted", res);
       SpServices.SPAddAttachment({
         ListName: LISTNAMES.PageConfiguration,
         ListID: 1,
@@ -1676,7 +1712,6 @@ export const updatePageLog = async (
         Attachments: file?.fileData,
       })
         .then((res: any) => {
-          console.log(res);
           dispatch(
             setPageDetails({
               ...pageDetailsState,
@@ -1709,7 +1744,6 @@ export const updatePageLog = async (
         Attachments: file?.fileData,
       })
         .then((res: any) => {
-          console.log(res);
           setPageDetails({
             ...pageDetailsState,
             imageData: {

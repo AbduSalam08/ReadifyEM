@@ -98,6 +98,7 @@ const SetupHeader: React.FC<Props> = ({
 
   const [details, setDetails] = useState({
     footerTitle: footerTitle,
+    footerValidation: false,
   });
 
   const navigate = useNavigate();
@@ -503,11 +504,21 @@ const SetupHeader: React.FC<Props> = ({
               topLabel
               secWidth="307px"
               onChange={(value: any) => {
-                setDetails((prev: any) => ({
-                  ...prev,
-                  footerTitle: value,
-                }));
+                if (value.trimStart().length < 51) {
+                  setDetails((prev: any) => ({
+                    ...prev,
+                    footerTitle: value,
+                    footerValidation: false,
+                  }));
+                } else {
+                  setDetails((prev: any) => ({
+                    ...prev,
+                    footerValidation: true,
+                  }));
+                }
               }}
+              isValid={details.footerValidation}
+              errorMsg="Footer title should not exceed 50 characters"
               // readOnly={true}
             />
             {!noActionBtns && currentDocRole?.primaryAuthor && (

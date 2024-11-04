@@ -18,7 +18,6 @@ interface Iprops {
 
 const PreviewSection: React.FC<Iprops> = ({ sectionId, sectionDetails }) => {
   const [sectionAttachment, setSectionAttachment] = useState<any>(0);
-  console.log(sectionAttachment);
 
   useEffect(() => {
     getSectionAttachment(sectionId, sectionDetails, setSectionAttachment);

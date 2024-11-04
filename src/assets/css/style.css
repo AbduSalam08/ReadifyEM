@@ -836,3 +836,12 @@ body {
   gap: 10px;
   font-family: "interRegular" !important;
 }
+
+/* iframe Style */
+
+.AppHeaderPanel{
+  display: none!important;
+}
+.fui-Button{
+  display: none!important;
+}
