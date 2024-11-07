@@ -118,7 +118,7 @@ const TableItem: React.FC<TableItemProps> = ({
           const lowerCaseKey = key?.toLowerCase();
           // const fieldValue = item.fields[key] || "-";
           const fieldValue =
-            (item?.fields["status"].toLowerCase() === "archived" &&
+            (item?.fields["status"]?.toLowerCase() === "archived" &&
             key === "nextReviewDate"
               ? "-"
               : item.fields[key]) || "-";

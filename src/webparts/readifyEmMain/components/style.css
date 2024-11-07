@@ -1,0 +1,24 @@
+.ql-clean{
+    display: none !important;
+}
+.ql-video{
+    display: none !important;
+}
+.ql-link{
+    display: none !important;
+}
+.ql-blockquote{
+    display: none !important;
+}
+.ql-strike{
+    display: none !important;
+}
+.ql-tooltip{
+    left:-44px !important;
+}
+.ql-editor img{
+    display: block;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
