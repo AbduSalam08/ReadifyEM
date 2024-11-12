@@ -5,7 +5,8 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 // /* eslint-disable @typescript-eslint/no-var-requires */
 
-import { base64Data, CONFIG, LISTNAMES } from "../../config/config";
+import { base64Data, LISTNAMES } from "../../config/config";
+import { store } from "../../redux/store/store";
 import getLastReviewDate from "../../utils/contentDevelopementUtils";
 import { getPreviousVersionDoc } from "../ContentDevelopment/CommonServices/CommonServices";
 // import { setSectionsAttachments } from "../../redux/features/PDFServicceSlice";
@@ -415,6 +416,7 @@ export const getDocumentRelatedSections = async (
       ],
     })
       .then(async (res: any) => {
+        const tenantUrl = store.getState().MainSPContext.tenantUrl;
         if (res.length > 0) {
           const sortedArray = res.sort(
             (a: any, b: any) =>
@@ -444,7 +446,7 @@ export const getDocumentRelatedSections = async (
                 sectionOrder: item.sectionOrder,
                 sectionType: item.sectionType,
                 fileData: attachments[0],
-                imgURL: `${CONFIG.tenantURL}${attachments[0]?.ServerRelativeUrl}`,
+                imgURL: `${tenantUrl}${attachments[0]?.ServerRelativeUrl}`,
                 attachmentFileName: attachments[0]?.FileName,
                 base64: base64Data,
               };

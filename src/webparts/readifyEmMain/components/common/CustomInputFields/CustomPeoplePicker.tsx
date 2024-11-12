@@ -446,7 +446,6 @@ import {
 } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import styles from "./Inputs.module.scss";
 import { useSelector } from "react-redux";
-import { CONFIG } from "../../../../../config/config";
 import Popup from "../Popups/Popup";
 import { togglePopupVisibility } from "../../../../../utils/togglePopup";
 // const editConfigurationImg: any = require("../../../../assets/images/svg/taskConfigurationEditIcon.svg");
@@ -507,6 +506,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
   popupControl = false,
   hasSubmitBtn = false,
 }) => {
+  const webUrl: any = useSelector((state: any) => state?.MainSPContext?.webUrl);
   const peoplePickerRef = useRef<any>();
   const initialPopupController = [
     {
@@ -723,7 +723,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
       <div key={1} ref={peoplePickerRef}>
         <PeoplePicker
           context={mainContext}
-          webAbsoluteUrl={CONFIG.webURL}
+          webAbsoluteUrl={webUrl}
           //   titleText="Select People"
           personSelectionLimit={personSelectionLimit}
           showtooltip={false}
@@ -824,7 +824,7 @@ const CustomPeoplePicker: React.FC<Props> = ({
         )}
         <PeoplePicker
           context={mainContext}
-          webAbsoluteUrl={CONFIG.webURL}
+          webAbsoluteUrl={webUrl}
           //   titleText="Select People"
           personSelectionLimit={personSelectionLimit}
           showtooltip={false}

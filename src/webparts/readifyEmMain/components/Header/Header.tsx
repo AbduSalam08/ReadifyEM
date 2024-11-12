@@ -16,7 +16,6 @@ import { togglePopupVisibility } from "../../../../utils/togglePopup";
 // const logo = require("../../../../assets/images/png/logo/Readify-EM.png");
 const sampleDocHeaderImg: any = require("../../../../assets/images/png/imagePlaceholder.png");
 import Popup from "../../../../webparts/readifyEmMain/components/common/Popups/Popup";
-import { CONFIG } from "../../../../config/config";
 import ToastMessage from "../common/Toast/ToastMessage";
 import { updatePageLog } from "../../../../services/ContentDevelopment/CommonServices/CommonServices";
 
@@ -41,6 +40,10 @@ const Header = (): JSX.Element => {
   const currentUserDetails: any = useSelector(
     (state: any) => state.MainSPContext.currentUserDetails
   );
+  const tenantUrl: any = useSelector(
+    (state: any) => state?.MainSPContext?.tenantUrl
+  );
+  console.log(tenantUrl);
 
   const [toastMessage, setToastMessage] = useState<any>({
     isShow: false,
@@ -171,7 +174,7 @@ const Header = (): JSX.Element => {
                 ? file.fileData?.ServerRelativeUrl
                 : fileData?.objectURL
                 ? fileData?.objectURL
-                : `${CONFIG.tenantURL}/${file.fileData?.ServerRelativeUrl}`
+                : `${tenantUrl}/${file.fileData?.ServerRelativeUrl}`
             }
             width={"100%"}
             style={{

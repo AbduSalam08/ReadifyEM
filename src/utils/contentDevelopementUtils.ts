@@ -260,11 +260,7 @@ export const UpdateAppendixAttachment = async (
         ListName: LISTNAMES.AppendixHeader,
         ListID: itemID,
         AttachmentName: attachment.FileName,
-      })
-        .then((res) => {
-          console.log("res");
-        })
-        .catch((err) => console.log("Error deleting attachment: ", err));
+      });
     }
 
     if (!deleteAttachment) {

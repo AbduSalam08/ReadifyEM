@@ -977,7 +977,6 @@ const References: React.FC<Props> = ({
     //         obj.referenceAuthorName !== "" &&
     //         obj.referenceTitle !== ""
     //     );
-    //     console.log(tempArray, sectionReferences);
     //     setAllReferencesData([
     //       ...(await tempArray),
     //       ...(await sectionReferences),

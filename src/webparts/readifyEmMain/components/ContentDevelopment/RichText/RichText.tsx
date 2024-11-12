@@ -63,6 +63,9 @@ const RichText = ({
   currentDocRole,
   checkChanges,
 }: IRichTextProps): JSX.Element => {
+  const siteUrl: any = useSelector(
+    (state: any) => state?.MainSPContext?.siteUrl
+  );
   const quillRef = useRef<any>(null);
   const dispatch = useDispatch();
 
@@ -452,9 +455,7 @@ const RichText = ({
   ): Promise<any> => {
     try {
       const folder = await sp.web
-        .getFolderByServerRelativeUrl(
-          `/sites/ReadifyEM/${libraryName}/${folderPath}`
-        )
+        .getFolderByServerRelativeUrl(`${siteUrl}/${libraryName}/${folderPath}`)
         .get();
       return folder ? true : false;
     } catch (error) {
@@ -481,7 +482,7 @@ const RichText = ({
       // Check if the file already exists
       // const folderPath = "/sites/ReadifyEM/Shared Documents"; // Replace with your actual folder path
       const fileName = file.name;
-      const fileUrl = `/sites/ReadifyEM/${libraryName}/${(
+      const fileUrl = `${siteUrl}/${libraryName}/${(
         await sanitizedDocumentName
       ).trimEnd()}/${(await sanitizedSectionName).trimEnd()}/${fileName}`;
       const fileExists = await sp.web.getFileByServerRelativeUrl(fileUrl).get();
@@ -499,7 +500,7 @@ const RichText = ({
         // Upload the file to SharePoint
         const fileAddResult = await sp.web
           .getFolderByServerRelativeUrl(
-            `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}`
+            `${siteUrl}/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}`
           )
           .files.add(file.name, file, true);
 
@@ -522,7 +523,7 @@ const RichText = ({
           if (!documentFolderExists) {
             //Create 'document_name' folder in the library
             await sp.web.folders.add(
-              `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}`
+              `${siteUrl}/${libraryName}/${sanitizedDocumentName}`
             );
           }
 
@@ -534,14 +535,14 @@ const RichText = ({
           if (!sectionFolderExists) {
             // Create 'section_name' folder inside 'document_name' folder
             await sp.web.folders.add(
-              `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}`
+              `${siteUrl}/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}`
             );
           }
 
           // Upload the file to SharePoint
           const fileAddResult = await sp.web
             .getFolderByServerRelativeUrl(
-              `/sites/ReadifyEM/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}`
+              `${siteUrl}/${libraryName}/${sanitizedDocumentName}/${sanitizedSectionName}`
             )
             .files.add(file.name, file, true);
 

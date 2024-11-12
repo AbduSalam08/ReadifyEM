@@ -62,7 +62,7 @@ const ContentEditor = forwardRef<HTMLDivElement, EditorProps>(
       source: any,
       editor: any
     ) => {
-      const quill = quillRef.current.getEditor();
+      const quill = quillRef?.current?.getEditor();
 
       const currentContents = quill.getContents();
       let cumulativeIndex = 0;
