@@ -12,6 +12,12 @@ import { calculateDueDateByRole } from "../../utils/validations";
 import SpServices from "../SPServices/SpServices";
 import { sortTasksByDateTime } from "../../utils/MyTasksUtils";
 
+// Import the store
+import { store } from "../../redux/store/store";
+
+// Access the specific value
+// const siteUrl = store.getState().MainSPContext.siteUrl;
+
 // fn to get all the tasks items
 // export const getAllTasksList = async (
 //   currentUserDetails: any,
@@ -334,6 +340,7 @@ export const AddPrimaryAuthorTask = async (
   fileID: any,
   newVersion?: any
 ): Promise<any> => {
+  const siteUrl = store.getState().MainSPContext.siteUrl;
   if (newVersion) {
     try {
       const AllDocResponse: any = await SpServices.SPReadItems({
@@ -367,9 +374,7 @@ export const AddPrimaryAuthorTask = async (
           fileDetailsId: item?.fileDetailsId,
           docName: item.Title,
           documentTemplateTypeId: item.documentTemplateType?.ID,
-          pathName: item?.documentPath?.split(
-            "sites/ReadifyEM/AllDocuments/"
-          )[1],
+          pathName: item?.documentPath?.split(`${siteUrl}/AllDocuments/`)[1],
           taskDueDate: calculateDueDateByRole(item?.createdDate, "document"),
           completed: false,
           docVersion: item?.documentVersion,
@@ -450,9 +455,7 @@ export const AddPrimaryAuthorTask = async (
           fileDetailsId: item?.fileDetailsId,
           docName: item.Title,
           documentTemplateTypeId: item.documentTemplateType?.ID,
-          pathName: item?.documentPath?.split(
-            "sites/ReadifyEM/AllDocuments/"
-          )[1],
+          pathName: item?.documentPath?.split(`${siteUrl}/AllDocuments/`)[1],
           taskDueDate: calculateDueDateByRole(item?.createdDate, "document"),
           completed: false,
           docVersion: item?.documentVersion,
@@ -504,6 +507,7 @@ export const AddPrimaryAuthorTask = async (
 
 // functions to update task's primary author item
 export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
+  const siteUrl = store.getState().MainSPContext.siteUrl;
   try {
     // Fetch the document details
     const AllDocResponse: any = await SpServices.SPReadItems({
@@ -533,7 +537,7 @@ export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
         docCreatedDate: item?.createdDate,
         fileDetailsId: item?.fileDetailsId,
         docName: item.Title,
-        pathName: item?.documentPath?.split("sites/ReadifyEM/AllDocuments/")[1],
+        pathName: item?.documentPath?.split(`${siteUrl}/AllDocuments/`)[1],
         documentTemplateTypeId: item.documentTemplateType?.ID,
         docVersion: item?.documentVersion,
         // taskDueDate: calculateDueDateByRole(item?.createdDate, "document"),
@@ -609,12 +613,12 @@ export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
 };
 
 // start - UTILS for get the data ready
-const getDefaultFields = (item: any): any => ({
+const getDefaultFields = (item: any, siteUrl: string): any => ({
   documentDetailsId: item?.ID,
   docCreatedDate: item?.createdDate,
   fileDetailsId: item?.fileDetailsId,
   docName: item.Title,
-  pathName: item?.documentPath?.split("sites/ReadifyEM/AllDocuments/")[1],
+  pathName: item?.documentPath?.split(`${siteUrl}/AllDocuments/`)[1],
   docVersion: item?.documentVersion,
 });
 
@@ -643,6 +647,8 @@ export const AddTask = async (
   updateDueDate?: any,
   sectionID?: any
 ): Promise<any> => {
+  const siteUrl = store.getState().MainSPContext.siteUrl;
+
   try {
     const AllDocResponse: any = await SpServices.SPReadItems({
       Listname: LISTNAMES.DocumentDetails,
@@ -656,7 +662,7 @@ export const AddTask = async (
     });
 
     const taskData: any[] = AllDocResponse?.map((item: any) => ({
-      ...getDefaultFields(item),
+      ...getDefaultFields(item, siteUrl),
       role: formData?.role,
       sectionName: formData?.sectionName,
       taskAssignedBy: item?.primaryAuthor?.ID,
@@ -713,6 +719,7 @@ export const AddTask = async (
 
 // Function to update a task
 export const UpdateTask = async (fileID: any, formData?: any): Promise<any> => {
+  const siteUrl = store.getState().MainSPContext.siteUrl;
   try {
     // Fetch the document details
     const AllDocResponse: any = await SpServices.SPReadItems({
@@ -741,7 +748,7 @@ export const UpdateTask = async (fileID: any, formData?: any): Promise<any> => {
       fileDetailsId: item?.fileDetailsId,
       docName: item.Title,
       documentTemplateTypeId: item.documentTemplateType?.ID,
-      pathName: item?.documentPath?.split("sites/ReadifyEM/AllDocuments/")[1],
+      pathName: item?.documentPath?.split(`${siteUrl}/AllDocuments/`)[1],
       docVersion: item?.documentVersion,
       // role: "Primary Author",
       // taskAssignedBy: item?.Author?.ID,

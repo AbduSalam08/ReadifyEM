@@ -3,11 +3,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
-import { CONFIG, LISTNAMES } from "../../../config/config";
+import { LISTNAMES } from "../../../config/config";
 import {
   setCDDocDetails,
   setCDSectionData,
 } from "../../../redux/features/ContentDevloperSlice";
+import { store } from "../../../redux/store/store";
 import {
   getCurrentPromoter,
   updateSectionDataLocal,
@@ -126,11 +127,12 @@ const getApprovedDocuments = async (Data: any) => {
     ],
   })
     .then((res: any) => {
+      const tenantUrl = store.getState().MainSPContext.tenantUrl;
       const tempArray = res?.map((obj: any) => {
         if (obj?.File?.Name) {
           return {
             ID: obj.ID,
-            FileRef: CONFIG.tenantURL + obj.FileRef,
+            FileRef: tenantUrl + obj.FileRef,
             documentName: obj.FileLeafRef.replace(".pdf", ""),
           };
         }

@@ -4,7 +4,12 @@
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setMainSPContext } from "../redux/features/MainSPContextSlice";
+import {
+  setMainSPContext,
+  setSiteUrl,
+  setTenantUrl,
+  setWebUrl,
+} from "../redux/features/MainSPContextSlice";
 import Header from "../webparts/readifyEmMain/components/Header/Header";
 
 // lazy loaded components
@@ -33,6 +38,15 @@ const App = (props: any): JSX.Element => {
   // dispatching the main context into redux store
 
   useEffect(() => {
+    dispatch(setWebUrl(props?.context?._pageContext?._site?.absoluteUrl));
+    dispatch(
+      setTenantUrl(
+        props?.context?._pageContext?._site?.absoluteUrl.split("/sites")[0]
+      )
+    );
+    dispatch(
+      setSiteUrl(props?.context?._pageContext?._site?.serverRelativeUrl)
+    );
     getPageTitle(dispatch);
     dispatch(setMainSPContext(props.context));
   }, []);

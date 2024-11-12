@@ -6,7 +6,6 @@ import {
 } from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import styles from "./Inputs.module.scss";
 import { useSelector } from "react-redux";
-import { CONFIG } from "../../../../../config/config";
 
 interface Props {
   selectedItem?: any;
@@ -100,6 +99,7 @@ const CustomMultiplePeoplePicker: React.FC<Props> = ({
   const mainContext: any = useSelector(
     (state: any) => state.MainSPContext.value
   );
+  const webUrl: any = useSelector((state: any) => state?.MainSPContext?.webUrl);
 
   const handleChange = (e: any): void => {
     onChange(e);
@@ -133,7 +133,7 @@ const CustomMultiplePeoplePicker: React.FC<Props> = ({
 
         <PeoplePicker
           context={mainContext}
-          webAbsoluteUrl={CONFIG.webURL}
+          webAbsoluteUrl={webUrl}
           //   titleText="Select People"
           personSelectionLimit={personSelectionLimit}
           showtooltip={false}

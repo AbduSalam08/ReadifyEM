@@ -14,7 +14,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "primereact/button";
 import "./SetupHeader.css";
 import { useNavigate } from "react-router-dom";
-import { CONFIG, LISTNAMES } from "../../../../../config/config";
+import { LISTNAMES } from "../../../../../config/config";
 import {
   // addAppendixHeaderAttachmentData,
   addHeaderAttachmentData,
@@ -84,6 +84,9 @@ const SetupHeader: React.FC<Props> = ({
   );
   const AllSectionsDataMain: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDSectionsData
+  );
+  const tenantUrl: any = useSelector(
+    (state: any) => state?.MainSPContext?.tenantUrl
   );
   const [totalSize, setTotalSize] = useState(0);
   const [sectionLoader, setSectionLoader] = useState(true);
@@ -206,7 +209,7 @@ const SetupHeader: React.FC<Props> = ({
                 ? fileData?.objectURL
                 : CDHeaderDetails?.imgURL
                 ? CDHeaderDetails?.imgURL
-                : `${CONFIG.tenantURL}/${file.fileData?.ServerRelativeUrl}`
+                : `${tenantUrl}/${file.fileData?.ServerRelativeUrl}`
             }
             width={"100%"}
             style={{

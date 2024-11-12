@@ -52,7 +52,10 @@ export const getLibraryItems = async (): Promise<{
 
     for (const subFolder of folders) {
       // removing FORMS default folder using its unique ID which is dont needed in out application
-      if (subFolder?.UniqueId !== "b6160d32-57c4-47a4-922d-2a6c28fdc986") {
+      if (
+        subFolder?.UniqueId !== "b6160d32-57c4-47a4-922d-2a6c28fdc986" &&
+        subFolder?.UniqueId !== "ad630f27-01a3-4f07-8e10-5e47178dfbd8"
+      ) {
         const subFolderFields = await sp.web
           .getFolderByServerRelativePath(subFolder.ServerRelativeUrl)
           .listItemAllFields.get();
@@ -312,11 +315,12 @@ export const LoadTableData = async (
 // fn used to create a group / sub group / folder
 export const createFolder = async (
   folderPath: string,
-  sequenceNo?: any
+  sequenceNo?: any,
+  siteUrl?: string
 ): Promise<any> => {
   // Create the folder
   const folderCreation = await sp.web
-    .getFolderByServerRelativePath("/sites/ReadifyEM/AllDocuments")
+    .getFolderByServerRelativePath(`${siteUrl}/AllDocuments`)
     .folders.addUsingPath(folderPath);
 
   // Update the folder's properties

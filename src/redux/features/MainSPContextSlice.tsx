@@ -2,6 +2,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const mainData = {
+  webUrl: "",
+  tenantUrl: "",
+  siteUrl: "",
   PageDetails: {},
   value: [],
   currentUserDetails: {
@@ -16,6 +19,15 @@ const MainSPContext = createSlice({
   name: "MainSPContext",
   initialState: mainData,
   reducers: {
+    setWebUrl: (state, action) => {
+      state.webUrl = action.payload;
+    },
+    setTenantUrl: (state, action) => {
+      state.tenantUrl = action.payload;
+    },
+    setSiteUrl: (state, action) => {
+      state.siteUrl = action.payload;
+    },
     setPageDetails: (state, action) => {
       state.PageDetails = action.payload;
     },
@@ -28,6 +40,12 @@ const MainSPContext = createSlice({
   },
 });
 
-export const { setMainSPContext, setCurrentUserDetails, setPageDetails } =
-  MainSPContext.actions;
+export const {
+  setMainSPContext,
+  setCurrentUserDetails,
+  setPageDetails,
+  setWebUrl,
+  setTenantUrl,
+  setSiteUrl,
+} = MainSPContext.actions;
 export default MainSPContext.reducer;

@@ -59,6 +59,10 @@ const NewDocument = ({
   screens,
 }: Props): JSX.Element => {
   const dispatch = useDispatch();
+  // const siteUrl: any = useSelector(
+  //   (state: any) => state?.MainSPContext?.siteUrl
+  // );
+
   const DocumentPathOptions = useSelector(
     (state: any) => state.EMMTableOfContents.foldersData
   );

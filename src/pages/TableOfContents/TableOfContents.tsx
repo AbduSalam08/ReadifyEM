@@ -129,6 +129,9 @@ const TableOfContents = (): JSX.Element => {
   const pageDetailsState: any = useSelector(
     (state: any) => state?.MainSPContext?.PageDetails
   );
+  const siteUrl: any = useSelector(
+    (state: any) => state?.MainSPContext?.siteUrl
+  );
 
   //Dispatcher
   const dispatch = useDispatch();
@@ -550,9 +553,12 @@ const TableOfContents = (): JSX.Element => {
 
     if (key === "group") {
       isValid = emptyCheck(popupData.addNewGroupName.value);
-      folderPath = `/sites/ReadifyEM/AllDocuments/${trimStartEnd(
+      folderPath = `${siteUrl}/AllDocuments/${trimStartEnd(
         popupData.addNewGroupName.value
       )}`;
+      // folderPath = `/sites/ReadifyEM/AllDocuments/${trimStartEnd(
+      //   popupData.addNewGroupName.value
+      // )}`;
     } else if (key === "sub group") {
       isValid =
         emptyCheck(popupData.addNewSubGroupName.value) &&
@@ -778,7 +784,8 @@ const TableOfContents = (): JSX.Element => {
             folderPath,
             key === "group"
               ? DocumentPathOptions?.length + 1
-              : currentPathItemsCount
+              : currentPathItemsCount,
+            siteUrl
           );
           popupLoadersAction();
         }

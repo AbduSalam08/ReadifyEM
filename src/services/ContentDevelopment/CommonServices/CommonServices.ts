@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import dayjs from "dayjs";
 import SpServices from "../../SPServices/SpServices";
-import { CONFIG, LIBNAMES, LISTNAMES } from "../../../config/config";
+import { LIBNAMES, LISTNAMES } from "../../../config/config";
 import { calculateDueDateByRole } from "../../../utils/validations";
 import { getParsedDocData } from "../../../utils/EMManualUtils";
 import {
@@ -32,6 +32,7 @@ import {
 } from "../../../redux/features/ContentDeveloperBackDropSlice";
 import { removeVersionFromDocName } from "../../../utils/formatDocName";
 import { setPageDetails } from "../../../redux/features/MainSPContextSlice";
+import { store } from "../../../redux/store/store";
 
 export const getSectionsDetails = async (
   taskDetails: any,
@@ -783,10 +784,11 @@ export const getHeaderSectionDetails = async (
     ID: HeaderID,
   })
     .then((res: any) => {
+      const tenantUrl = store.getState().MainSPContext.tenantUrl;
       if (res[0]?.ServerRelativeUrl) {
         // setImgURL(`${CONFIG.tenantURL}${res[0]?.ServerRelativeUrl}`);
         const data: any = {
-          imgURL: `${CONFIG.tenantURL}${res[0]?.ServerRelativeUrl}`,
+          imgURL: `${tenantUrl}${res[0]?.ServerRelativeUrl}`,
           fileName: res[0]?.FileName,
           headerDescription: headerDescription || null,
         };
@@ -831,9 +833,10 @@ export const getAppendixHeaderSectionDetails = async (
       Listname: LISTNAMES.AppendixHeader,
     })
       .then((res: any) => {
+        const tenantUrl = store.getState().MainSPContext.tenantUrl;
         if (res[0]?.ServerRelativeUrl) {
           const data: any = {
-            imgURL: `${CONFIG.tenantURL}${res[0]?.ServerRelativeUrl}`,
+            imgURL: `${tenantUrl}${res[0]?.ServerRelativeUrl}`,
             fileName: res[0]?.FileName,
             headerDescription: headerDescription || null,
           };
