@@ -47,15 +47,16 @@ export const getLibraryItems = async (): Promise<{
       folder.folders(),
       folder.files(),
     ]);
+    console.log("folders", folders);
 
     const folderItems: LibraryItem[] = [];
 
     for (const subFolder of folders) {
+      console.log("subFolder", subFolder);
+
       // removing FORMS default folder using its unique ID which is dont needed in out application
-      if (
-        subFolder?.UniqueId !== "b6160d32-57c4-47a4-922d-2a6c28fdc986" &&
-        subFolder?.UniqueId !== "ad630f27-01a3-4f07-8e10-5e47178dfbd8"
-      ) {
+      // subFolder?.UniqueId !== "b6160d32-57c4-47a4-922d-2a6c28fdc986" UniqueId not eligible for restrict default "Forms" folder
+      if (subFolder?.Name !== "Forms") {
         const subFolderFields = await sp.web
           .getFolderByServerRelativePath(subFolder.ServerRelativeUrl)
           .listItemAllFields.get();

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<List xmlns:ows="Microsoft SharePoint" Title="SupportingDocuments" Direction="LTR" Url="Lists/SupportingDocuments" BaseType="0" Type="100">
+
+  <!-- Metadata for the list, including fields, views, and forms -->
+  <MetaData>
+
+    <!-- Fields definition (columns) -->
+    <Fields>
+      <!-- Title (default SharePoint field) -->
+      <Field Name="Title" DisplayName="$Resources:core,Title;" Type="Text" Required="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Title" MaxLength="255" ID="{28f4b559-c429-462f-946d-6fc57892e863}"/>
+
+      <!-- DocumentLink (Multi line of text) -->
+      <Field ID="{d13b2241-d6e7-44e9-b0e4-2478e1e5ed8a}" Name="documentLink" DisplayName="Document Link" Type="Note" StaticName="documentLink" />
+
+      <!-- DocDetails (Lookup from DocumentDetails list) -->
+      <Field ID="{abe7bcf5-6fcc-47a2-b7ed-8993d0bdd2ed}" Name="documentDetail" DisplayName="Document Details" Type="Lookup" List="Lists/DocumentDetails" ShowField="Title" Required="FALSE" StaticName="documentDetail" />
+
+      <!-- SectionDetails (Lookup from SectionDetails list) -->
+      <Field ID="{72b146cc-a5b6-4167-99ea-1257ebb93e4d}" Name="sectionDetail" DisplayName="Section Details" Type="Lookup" List="Lists/SectionDetails" ShowField="Title" Required="FALSE" StaticName="sectionDetail" />
+
+      <!-- IsDeleted (Yes/No) -->
+      <Field ID="{8215df3f-09f8-46d8-b993-6f5c8adb44c0}" Name="isDeleted" DisplayName="Is Deleted" Type="Boolean" StaticName="isDeleted">
+        <Default>0</Default>
+      </Field>
+    </Fields>
+
+    <!-- Views definition -->
+    <Views>
+      <View BaseViewID="1" Type="HTML" DisplayName="All Items" DefaultView="TRUE" SetupPath="pages\viewpage.aspx" WebPartZoneID="Main" Url="AllItems.aspx">
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <JSLink>clienttemplates.js</JSLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <Toolbar Type="Standard" />
+        <ViewFields>
+          <FieldRef Name="Title" />
+          <FieldRef Name="documentLink" />
+          <FieldRef Name="documentDetail" />
+          <FieldRef Name="sectionDetail" />
+          <FieldRef Name="isDeleted" />
+        </ViewFields>
+        <Query>
+          <OrderBy>
+            <FieldRef Name="ID" />
+          </OrderBy>
+        </Query>
+      </View>
+    </Views>
+
+    <!-- Forms definition (Display, Edit, New) -->
+    <Forms>
+      <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="NewForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+
+  </MetaData>
+</List>

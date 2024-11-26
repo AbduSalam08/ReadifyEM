@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<List xmlns:ows="Microsoft SharePoint" Title="PromotedComments" Direction="LTR" Url="Lists/PromotedComments" BaseType="0" Type="100">
+
+  <!-- Metadata for the list, including fields, views, and forms -->
+  <MetaData>
+
+    <!-- Fields definition (columns) -->
+    <Fields>
+      <!-- Title -->
+      <Field Name="Title" DisplayName="$Resources:core,Title;" Type="Text" Required="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Title" MaxLength="255" ID="{e7d08603-37d1-49d0-8bc5-ab572e6fc8c9}"/>
+
+      <!-- Comments (Multi line of text) -->
+      <Field ID="{b4f2929e-b7c2-4ef4-b448-bc32e33ee0a7}" Name="comments" DisplayName="Comments" Type="Note" StaticName="comments" />
+
+      <!-- Role (Single line of text) -->
+      <Field ID="{2f5ed5d8-f6c5-4e37-8b80-1c1738a3c50a}" Name="role" DisplayName="Role" Type="Text" StaticName="role" />
+
+      <!-- DocumentDetails (Lookup from DocumentDetails list) -->
+      <Field ID="{eb450645-2438-46e2-baf7-df2320d8dc2f}" Name="documentDetails" DisplayName="Document Details" Type="Lookup" List="Lists/DocumentDetails" ShowField="Title" Required="FALSE" StaticName="documentDetails" />
+
+      <!-- DocumentVersion (Single line of text) -->
+      <Field ID="{f3d94c81-c5a4-4a7d-9a4e-61d6ed0f56a4}" Name="DocumentVersion" DisplayName="Document Version" Type="Text" StaticName="DocumentVersion" />
+    </Fields>
+
+    <!-- Views definition -->
+    <Views>
+      <View BaseViewID="1" Type="HTML" DisplayName="All Items" DefaultView="TRUE" SetupPath="pages\viewpage.aspx" WebPartZoneID="Main" Url="AllItems.aspx">
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <JSLink>clienttemplates.js</JSLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <Toolbar Type="Standard" />
+        <ViewFields>
+          <FieldRef Name="Title" />
+          <FieldRef Name="comments" />
+          <FieldRef Name="role" />
+          <FieldRef Name="documentDetails" />
+          <FieldRef Name="DocumentVersion" />
+        </ViewFields>
+        <Query>
+          <OrderBy>
+            <FieldRef Name="ID" />
+          </OrderBy>
+        </Query>
+      </View>
+    </Views>
+
+    <!-- Forms definition (Display, Edit, New) -->
+    <Forms>
+      <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="NewForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+
+  </MetaData>
+</List>

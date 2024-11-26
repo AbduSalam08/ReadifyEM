@@ -1,0 +1,63 @@
+<List xmlns:ows="Microsoft SharePoint" Title="Definition" EnableContentTypes="TRUE" FolderCreation="FALSE" Direction="$Resources:Direction;" Url="Lists/Definition" BaseType="0"
+  xmlns="http://schemas.microsoft.com/sharepoint/">
+  <MetaData>
+    <ContentTypes>
+      <!-- <ContentTypeRef ID="0x01009051401c111d4dc98777af5a8e32d345" /> -->
+    </ContentTypes>
+    <!-- Fields Definition (columns) -->
+
+    <Fields>
+      <Field Name="Title" DisplayName="$Resources:core,Title;" Type="Text" Required="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Title" MaxLength="255" ID="{0927a2d6-8b7d-4bfe-836d-33e9b03a524f}"/>
+      <Field Name="description" DisplayName="description" Type="Note" UnlimitedLengthInDocumentLibrary="TRUE" ShowInEditForm="TRUE" Required="FALSE" ID="{b2a31967-af21-4868-9fe2-4cc55d632686}" />
+      <Field Name="referenceTitle" DisplayName="referenceTitle" Type="Text" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{c3f78343-dc6b-46fc-9594-0d55da4cb310}" />
+      <Field Name="referenceAuthorName" DisplayName="referenceAuthorName" Type="Text" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{7e30c95f-95d0-4384-b743-86ba88aa05a3}" />
+      <Field Name="yearOfPublish" DisplayName="yearOfPublish" Type="Text" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{818b41fd-a20b-4204-bb0b-5416c900f0e4}" />
+      <Field Name="referenceLink" DisplayName="referenceLink" Type="Note" UnlimitedLengthInDocumentLibrary="TRUE" ShowInEditForm="TRUE" Required="FALSE" ID="{0cea0f4e-753b-40f0-a24f-6e6d06f04006}" />
+      <Field Name="isSectionDefinition" DisplayName="isSectionDefinition" Type="Boolean" ShowInEditForm="TRUE" Required="FALSE" ID="{ff2e4d85-34c6-4169-aa12-958be62fa139}">
+        <Default>0</Default>
+      </Field>
+      <Field Name="isApproved" DisplayName="isApproved" Type="Boolean" ShowInEditForm="TRUE" Required="FALSE" ID="{f020bdc8-3cd2-4bb9-8f79-9e66cfb17d06}">
+        <Default>0</Default>
+      </Field>
+      <Field Name="isDeleted" DisplayName="isDeleted" Type="Boolean" ShowInEditForm="TRUE" Required="FALSE" ID="{1d9d2b4c-8c77-453d-9cfb-7fc0a1b57626}">
+        <Default>0</Default>
+      </Field>
+    </Fields>
+
+
+    <!-- Views Definition -->
+    <Views>
+      <View BaseViewID="1" Type="HTML" WebPartZoneID="Main" DisplayName="$Resources:core,objectiv_schema_mwsidcamlidC24;" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" SetupPath="pages\viewpage.aspx" ImageUrl="/_layouts/images/generic.png" Url="AllItems.aspx">
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <JSLink>clienttemplates.js</JSLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <Toolbar Type="Standard" />
+
+        <ViewFields>
+          <FieldRef Name="Title"/>
+          <FieldRef Name="description" />
+          <FieldRef Name="referenceTitle" />
+          <FieldRef Name="referenceAuthorName" />
+          <FieldRef Name="yearOfPublish" />
+          <FieldRef Name="referenceLink" />
+          <FieldRef Name="isSectionDefinition" />
+          <FieldRef Name="isApproved" />
+          <FieldRef Name="isDeleted" />
+        </ViewFields>
+        <Query>
+          <OrderBy>
+            <FieldRef Name="ID" />
+          </OrderBy>
+        </Query>
+      </View>
+    </Views>
+
+    <!-- Forms Definition (Display, Edit, New) -->
+    <Forms>
+      <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="NewForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+
+  </MetaData>
+</List>

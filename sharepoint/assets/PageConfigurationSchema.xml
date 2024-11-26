@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<List xmlns:ows="Microsoft SharePoint" Title="PageConfiguration" Direction="LTR" Url="Lists/PageConfiguration" BaseType="0" Type="100">
+
+  <!-- Metadata for the list, including fields, views, and forms -->
+  <MetaData>
+
+    <!-- Fields definition (columns) -->
+    <Fields>
+      <!-- Title (default SharePoint field) -->
+      <Field Name="Title" DisplayName="$Resources:core,Title;" Type="Text" Required="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Title" MaxLength="255" ID="{35d7b6d2-5440-4fe1-99e1-506c8fa2c5a0}"/>
+
+      <!-- HelpLink (Multi line of text) -->
+      <Field ID="{a4e2d9a7-3285-45f9-9f7c-d3127a58bb3e}" Name="HelpLink" DisplayName="Help Link" Type="Note" NumLines="6" RichText="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="HelpLink" />
+    </Fields>
+
+    <!-- Views definition -->
+    <Views>
+      <View BaseViewID="1" Type="HTML" DisplayName="All Items" DefaultView="TRUE" SetupPath="pages\viewpage.aspx" WebPartZoneID="Main" Url="AllItems.aspx">
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <JSLink>clienttemplates.js</JSLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <Toolbar Type="Standard" />
+        <ViewFields>
+          <FieldRef Name="Title"/>
+          <FieldRef Name="HelpLink" />
+        </ViewFields>
+        <Query>
+          <OrderBy>
+            <FieldRef Name="ID" Ascending="TRUE" />
+          </OrderBy>
+        </Query>
+      </View>
+    </Views>
+
+    <!-- Forms definition (Display, Edit, New) -->
+    <Forms>
+      <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="NewForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+
+  </MetaData>
+</List>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<List xmlns:ows="Microsoft SharePoint" Title="SectionComments" Direction="LTR" Url="Lists/SectionComments" BaseType="0" Type="100">
+
+  <!-- Metadata for the list, including fields, views, and forms -->
+  <MetaData>
+
+    <!-- Fields definition (columns) -->
+    <Fields>
+      <!-- Title -->
+      <Field Name="Title" DisplayName="$Resources:core,Title;" Type="Text" Required="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Title" MaxLength="255" ID="{f506e081-e819-4c0d-8893-dc97b424c984}"/>
+
+
+      <!-- Comments (Multi line of text) -->
+      <Field ID="{50a5d3e2-95ad-4b3c-a4dd-d275b56efdc5}" Name="comments" DisplayName="Comments" Type="Note" StaticName="comments" />
+
+      <!-- Role (Single line of text) -->
+      <Field ID="{1b39a4e0-c999-4cc0-b004-1c5342a5b31c}" Name="role" DisplayName="Role" Type="Text" StaticName="role" />
+
+      <!-- SectionDetails (Lookup from SectionDetails list) -->
+      <Field ID="{9fcde946-3c3b-4838-b5f5-4d5f15c67c37}" Name="sectionDetails" DisplayName="Section Details" Type="Lookup" List="Lists/SectionDetails" ShowField="Title" Required="FALSE" StaticName="sectionDetails" />
+
+      <!-- DocumentVersion (Single line of text) -->
+      <Field ID="{3c7ff3eb-890b-4d99-a9ed-3c93d5055ca6}" Name="DocumentVersion" DisplayName="Document Version" Type="Text" StaticName="DocumentVersion" />
+
+      <!-- IsRejectedComment (Yes/No) -->
+      <Field ID="{ac2f563e-eabc-46e6-becb-64f7edc7b83e}" Name="isRejectedComment" DisplayName="Is Rejected Comment" Type="Boolean" StaticName="isRejectedComment">
+        <Default>0</Default>
+      </Field>
+    </Fields>
+
+    <!-- Views definition -->
+    <Views>
+      <View BaseViewID="1" Type="HTML" DisplayName="All Items" DefaultView="TRUE" SetupPath="pages\viewpage.aspx" WebPartZoneID="Main" Url="AllItems.aspx">
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <JSLink>clienttemplates.js</JSLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <Toolbar Type="Standard" />
+
+        <ViewFields>
+          <FieldRef Name="Title" />
+          <FieldRef Name="comments" />
+          <FieldRef Name="role" />
+          <FieldRef Name="sectionDetails" />
+          <FieldRef Name="DocumentVersion" />
+          <FieldRef Name="isRejectedComment" />
+        </ViewFields>
+        <Query>
+          <OrderBy>
+            <FieldRef Name="ID" />
+          </OrderBy>
+        </Query>
+      </View>
+    </Views>
+
+    <!-- Forms definition (Display, Edit, New) -->
+    <Forms>
+      <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="NewForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+
+  </MetaData>
+</List>

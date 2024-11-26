@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+    <!-- Definition List complete -->
+    <!-- <Field Name="description" StaticName="description" DisplayName="description" Description="description" Type="Note" UnlimitedLengthInDocumentLibrary="TRUE" ShowInEditForm="TRUE" Required="FALSE" Group="_Redify" ID="{b2a31967-af21-4868-9fe2-4cc55d632686}" />
+    <Field Name="referenceTitle" StaticName="referenceTitle" DisplayName="referenceTitle" Type="Text" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" Group="_Redify" ID="{c3f78343-dc6b-46fc-9594-0d55da4cb310}" />
+    <Field Name="referenceAuthorName" StaticName="referenceAuthorName" DisplayName="referenceAuthorName" Type="Text" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" Group="_Redify" ID="{7e30c95f-95d0-4384-b743-86ba88aa05a3}" />
+    <Field Name="yearOfPublish" StaticName="yearOfPublish" DisplayName="yearOfPublish" Type="Text" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" Group="_Redify" ID="{818b41fd-a20b-4204-bb0b-5416c900f0e4}" />
+    <Field Name="referenceLink" StaticName="referenceLink" DisplayName="referenceLink" Description="referenceLink" Type="Note" UnlimitedLengthInDocumentLibrary="TRUE" ShowInEditForm="TRUE" Required="FALSE" Group="_Redify" ID="{0cea0f4e-753b-40f0-a24f-6e6d06f04006}" />
+    <Field Name="isSectionDefinition" StaticName="isSectionDefinition" DisplayName="isSectionDefinition" Description="isSectionDefinition" Type="Boolean" ShowInEditForm="TRUE" Required="FALSE" Group="_Redify" ID="{ff2e4d85-34c6-4169-aa12-958be62fa139}">
+        <Default>0</Default>
+    </Field>
+    <Field Name="isApproved" StaticName="isApproved" DisplayName="isApproved" Description="isApproved" Type="Boolean" ShowInEditForm="TRUE" Required="FALSE" Group="_Redify" ID="{f020bdc8-3cd2-4bb9-8f79-9e66cfb17d06}">
+        <Default>0</Default>
+    </Field>
+    <Field Name="isDeleted" StaticName="isDeleted" DisplayName="isDeleted" Description="isDeleted" Type="Boolean" ShowInEditForm="TRUE" Required="FALSE" Group="_Redify" ID="{1d9d2b4c-8c77-453d-9cfb-7fc0a1b57626}">
+        <Default>0</Default>
+    </Field> -->
+    <!-- <ContentType ID="0x01009051401c111d4dc98777af5a8e32d345" Name="Definition" Group="_Redify" Description="Redify content types from web part solution">
+        <FieldRefs>
+            <FieldRef Name="description" DisplayName="description" ID="{b2a31967-af21-4868-9fe2-4cc55d632686}" />
+            <FieldRef Name="referenceTitle" DisplayName="referenceTitle" ID="{c3f78343-dc6b-46fc-9594-0d55da4cb310}" />
+            <FieldRef Name="referenceAuthorName" DisplayName="referenceAuthorName" ID="{7e30c95f-95d0-4384-b743-86ba88aa05a3}" />
+            <FieldRef Name="yearOfPublish" DisplayName="yearOfPublish" ID="{818b41fd-a20b-4204-bb0b-5416c900f0e4}" />
+            <FieldRef Name="referenceLink" DisplayName="referenceLink" ID="{0cea0f4e-753b-40f0-a24f-6e6d06f04006}" />
+            <FieldRef Name="isSectionDefinition" DisplayName="isSectionDefinition" ID="{ff2e4d85-34c6-4169-aa12-958be62fa139}" />
+            <FieldRef Name="isApproved" DisplayName="isApproved" ID="{f020bdc8-3cd2-4bb9-8f79-9e66cfb17d06}" />
+            <FieldRef Name="isDeleted" DisplayName="isDeleted" ID="{1d9d2b4c-8c77-453d-9cfb-7fc0a1b57626}" />
+        </FieldRefs>
+    </ContentType> -->
+    <!-- <ListInstance CustomSchema="DefinitionsSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="Definition" Description="Definition" TemplateType="100" Url="Lists/Definition" /> -->
+
+
+
+    <!-- SDD template main list -->
+    <!-- <Field Name="createdDate" StaticName="createdDate" DisplayName="createdDate" Type="Text" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" Group="_Redify" ID="{dd504f72-c6f8-4efe-912f-182a60300280}" />
+    <Field Name="isDeleted" StaticName="isDeleted" DisplayName="isDeleted" Description="isDeleted" Type="Boolean" ShowInEditForm="TRUE" Required="FALSE" Group="_Redify" ID="{22caafb8-b0a7-454b-bdfb-66e339ca8a1b}">
+        <Default>0</Default>
+    </Field> -->
+    <!-- <ContentType ID="0x010078118592f3c6414dbecb049d4a265988" Name="SDDTemplatesMain" Group="_Redify" Description="Redify content types from web part solution">
+        <FieldRefs>
+            <FieldRef Name="createdDate" DisplayName="createdDate" ID="{dd504f72-c6f8-4efe-912f-182a60300280}" />
+            <FieldRef Name="isDeleted" DisplayName="isDeleted" ID="{1d9d2b4c-8c77-453d-9cfb-7fc0a1b57626}" />
+        </FieldRefs>
+    </ContentType> -->
+    <!-- <ListInstance CustomSchema="SDDTemplatesmainSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="SDDTemplatesMain" Description="SDDTemplatesMain" TemplateType="100" Url="Lists/SDDTemplatesMain" /> -->
+
+
+    <!-- SDDTemplates list creation -->
+
+    <!-- <Field Name="sequenceNo" StaticName="sequenceNo" DisplayName="sequenceNo" Type="Text" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" Group="_Redify" ID="{3a58850b-dee8-45ab-9037-9d5e75f03f7c}" />
+    <Field Name="sectionName" StaticName="sectionName" DisplayName="sectionName" Type="Text" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" Group="_Redify" ID="{81cc9105-eb7d-4ffc-b3ed-bc3f10f10620}" />
+    <Field Name="sectionType" StaticName="sectionType" DisplayName="sectionType" Type="Text" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" Group="_Redify" ID="{09e56720-e358-4388-ad9f-61f1e007efcf}" />
+    <Field Name="mainTemplate" StaticName="mainTemplate" DisplayName="mainTemplate" Type="Lookup" List="Lists/SDDTemplatesMain" ShowField="Title" Required="TRUE" Group="_Redify" ID="{5aff5819-1b8b-4ee5-9f12-fa4f4f804211}" />
+    <Field Name="isDeleted" StaticName="isDeleted" DisplayName="isDeleted" Description="isDeleted" Type="Boolean" ShowInEditForm="TRUE" Required="FALSE" Group="_Redify" ID="{a80666f2-1100-42a4-be76-292cfc86d425}">
+        <Default>0</Default>
+    </Field> -->
+    <!-- <ContentType ID="0x01009ae4bc44f41847bcb99620c1327fd8b7" Name="SDDTemplates" Group="_Redify" Description="Redify content types from web part solution">
+        <FieldRefs>
+            <FieldRef Name="sequenceNo" DisplayName="sequenceNo" ID="{3a58850b-dee8-45ab-9037-9d5e75f03f7c}" />
+            <FieldRef Name="sectionName" DisplayName="sectionName" ID="{81cc9105-eb7d-4ffc-b3ed-bc3f10f10620}" />
+            <FieldRef Name="sectionType" DisplayName="sectionType" ID="{09e56720-e358-4388-ad9f-61f1e007efcf}" />
+            <FieldRef Name="mainTemplate" DisplayName="mainTemplate" ID="{5aff5819-1b8b-4ee5-9f12-fa4f4f804211}" />
+            <FieldRef Name="isDeleted" DisplayName="isDeleted" ID="{1d9d2b4c-8c77-453d-9cfb-7fc0a1b57626}" />
+        </FieldRefs>
+    </ContentType> -->
+
+    <!-- library creations -->
+
+    <ListInstance CustomSchema="AllDocumentsLibrarySchema.xml" FeatureId="00bfea71-e717-4e80-aa17-d0c71b360101" Title="AllDocuments" Description="" TemplateType="101" Url="AllDocuments" Hidden="FALSE" />
+    <ListInstance CustomSchema="FinalDocumentsLibrarySchema.xml" FeatureId="00bfea71-e717-4e80-aa17-d0c71b360101" Title="FinalDocuments" Description="" TemplateType="101" Url="FinalDocuments" Hidden="FALSE" />
+
+    <!-- list creations -->
+
+    <ListInstance CustomSchema="DefinitionsSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="Definition" Description="Definition" TemplateType="100" Url="Lists/Definition" />
+    <ListInstance CustomSchema="SDDTemplatesmainSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="SDDTemplatesMain" Description="SDDTemplatesMain" TemplateType="100" Url="Lists/SDDTemplatesMain" />
+    <ListInstance CustomSchema="SDDTemplatesSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="SDDTemplates" Description="SDDTemplates" TemplateType="100" Url="Lists/SDDTemplates" />
+    <ListInstance CustomSchema="DocumentDetailsSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="DocumentDetails" Description="DocumentDetails" TemplateType="100" Url="Lists/DocumentDetails" />
+    <ListInstance CustomSchema="PageConfigurationSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="PageConfiguration" Description="PageConfiguration" TemplateType="100" Url="Lists/PageConfiguration" />
+    <ListInstance CustomSchema="SectionDetailsSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="SectionDetails" Description="SectionDetails" TemplateType="100" Url="Lists/SectionDetails" />
+    <ListInstance CustomSchema="PromotedCommentsSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="PromotedComments" Description="PromotedComments" TemplateType="100" Url="Lists/PromotedComments" />
+    <ListInstance CustomSchema="SectionCommentsSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="SectionComments" Description="SectionComments" TemplateType="100" Url="Lists/SectionComments" />
+    <ListInstance CustomSchema="SectionDefinitionsSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="SectionDefinition" Description="SectionDefinition" TemplateType="100" Url="Lists/SectionDefinition" />
+    <ListInstance CustomSchema="SectionReferencesSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="SectionReferences" Description="SectionReferences" TemplateType="100" Url="Lists/SectionReferences" />
+    <ListInstance CustomSchema="SupportingDocumentsSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="SupportingDocuments" Description="SupportingDocuments" TemplateType="100" Url="Lists/SupportingDocuments" />
+    <ListInstance CustomSchema="MyTaskSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="MyTasks" Description="MyTasks" TemplateType="100" Url="Lists/MyTasks" />
+    <ListInstance CustomSchema="DocumentDetailsFilelookupSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="DocumentDetails" Description="DocumentDetails" TemplateType="100" Url="Lists/DocumentDetails" />
+
+    <!-- <ListInstance CustomSchema="AllDocumentsLibrarySchema.xml" FeatureId="00bfea71-e717-4e80-aa17-d0c71b360101" Title="AllDocuments" Description="AllDocuments" TemplateType="101" Url="Lists/AllDocuments" /> -->
+    <!-- <ListInstance CustomSchema="FinalDocumentsLibrarySchema.xml" FeatureId="00bfea71-e717-4e80-aa17-d0c71b360101" Title="FinalDocuments" Description="FinalDocuments" TemplateType="101" Url="FinalDocuments" /> -->
+
+
+</Elements>
