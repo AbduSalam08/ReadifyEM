@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<List xmlns:ows="Microsoft SharePoint" Title="SectionReferences" Direction="LTR" Url="Lists/SectionReferences" BaseType="0" Type="100">
+
+  <!-- Metadata for the list, including fields, views, and forms -->
+  <MetaData>
+
+    <!-- Fields definition (columns) -->
+    <Fields>
+      <!-- Title -->
+      <Field Name="Title" DisplayName="$Resources:core,Title;" Type="Text" Required="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Title" MaxLength="255" ID="{d607c751-769d-4b5c-a083-fb4996b82bbb}"/>
+
+
+      <!-- ReferenceTitle (Single line of text) -->
+      <Field ID="{1bba1254-676b-4f2e-93c8-221fdc1d762f}" Name="referenceTitle" DisplayName="Reference Title" Type="Text" StaticName="referenceTitle" />
+
+      <!-- ReferenceAuthorName (Single line of text) -->
+      <Field ID="{5a0bfe2c-92e7-4979-a121-e98b2465cc3f}" Name="referenceAuthorName" DisplayName="Reference Author Name" Type="Text" StaticName="referenceAuthorName" />
+
+      <!-- YearOfPublish (Single line of text) -->
+      <Field ID="{de5f6a1e-e1a4-4d5c-8e6c-713fce3f98f8}" Name="yearOfPublish" DisplayName="Year of Publish" Type="Text" StaticName="yearOfPublish" />
+
+      <!-- ReferenceLink (Multi line of text) -->
+      <Field ID="{bc3ba49e-41d7-45c1-bf97-558feaf64e97}" Name="referenceLink" DisplayName="Reference Link" Type="Note" StaticName="referenceLink" />
+
+      <!-- DocDetails (Lookup from DocumentDetails list) -->
+      <Field ID="{a00dca33-2eb0-41af-8a4c-623e8e5fce85}" Name="docDetails" DisplayName="Document Details" Type="Lookup" List="Lists/DocumentDetails" ShowField="Title" Required="FALSE" StaticName="docDetails" />
+
+      <!-- SectionDetails (Lookup from SectionDetails list) -->
+      <Field ID="{c47fe8a7-d9f2-4f1f-a2df-bcc8f0530855}" Name="sectionDetails" DisplayName="Section Details" Type="Lookup" List="Lists/SectionDetails" ShowField="Title" Required="FALSE" StaticName="sectionDetails" />
+    </Fields>
+
+    <!-- Views definition -->
+    <Views>
+      <View BaseViewID="1" Type="HTML" DisplayName="All Items" DefaultView="TRUE" SetupPath="pages\viewpage.aspx" WebPartZoneID="Main" Url="AllItems.aspx">
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <JSLink>clienttemplates.js</JSLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <Toolbar Type="Standard" />
+
+        <ViewFields>
+          <FieldRef Name="Title" />
+          <FieldRef Name="referenceTitle" />
+          <FieldRef Name="referenceAuthorName" />
+          <FieldRef Name="yearOfPublish" />
+          <FieldRef Name="referenceLink" />
+          <FieldRef Name="docDetails" />
+          <FieldRef Name="sectionDetails" />
+        </ViewFields>
+        <Query>
+          <OrderBy>
+            <FieldRef Name="ID" />
+          </OrderBy>
+        </Query>
+      </View>
+    </Views>
+
+    <!-- Forms definition (Display, Edit, New) -->
+    <Forms>
+      <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="NewForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+
+  </MetaData>
+</List>

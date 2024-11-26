@@ -1,0 +1,39 @@
+<List xmlns:ows="Microsoft SharePoint" Title="FinalDocuments" Name="FinalDocuments" Direction="$Resources:Direction;" Url="FinalDocuments" BaseType="1" EnableContentTypes="TRUE" VersioningEnabled="TRUE" MajorVersionLimit="100" EnableMinorVersions="FALSE" MajorWithMinorVersionsLimit="0" DisableAttachments="FALSE" FolderCreation="TRUE" RootWebOnly="FALSE">
+
+  <MetaData>
+    <Fields>
+      <!-- Document ID (Lookup from AllDocuments list) -->
+      <Field ID="{080df4ab-50f4-4a87-9f40-14c0ec1e0e9a}" Name="DocumentID" DisplayName="Document ID" Type="Lookup" List="AllDocuments" ShowField="Title" />
+
+    </Fields>
+
+    <!-- Views -->
+    <Views>
+      <View BaseViewID="1" Type="HTML" WebPartZoneID="Main" DisplayName="$Resources:core,objectiv_schema_mwsidcamlidC24;" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" SetupPath="pages\viewpage.aspx" ImageUrl="/_layouts/images/generic.png" Url="Forms/AllItems.aspx" ContentTypeID="0x">
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <JSLink>clienttemplates.js</JSLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <Toolbar Type="Standard" />
+        <Aggregations Value="Off" />
+        <ViewFields>
+          <FieldRef Name="DocIcon" />
+          <FieldRef Name="LinkFilename"></FieldRef>
+          <FieldRef Name="DocumentID" />
+        </ViewFields>
+        <Query>
+          <OrderBy>
+            <FieldRef Name="FileLeafRef" />
+          </OrderBy>
+        </Query>
+      </View>
+    </Views>
+
+    <!-- Forms -->
+    <Forms>
+      <Form Type="DisplayForm" Url="Forms/DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="Forms/EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="Forms/Upload.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+
+  </MetaData>
+</List>

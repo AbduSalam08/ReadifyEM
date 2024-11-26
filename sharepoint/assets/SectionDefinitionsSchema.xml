@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<List xmlns:ows="Microsoft SharePoint" Title="SectionDefinition" Direction="LTR" Url="Lists/SectionDefinition" BaseType="0" Type="100">
+
+  <!-- Metadata for the list, including fields, views, and forms -->
+  <MetaData>
+
+    <!-- Fields definition (columns) -->
+    <Fields>
+      <!-- Title (default SharePoint field) -->
+      <Field Name="Title" DisplayName="$Resources:core,Title;" Type="Text" Required="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Title" MaxLength="255" ID="{f91d73cb-743e-4c88-8a81-6aa76b95b653}"/>
+
+      <!-- Description (Multi line of text) -->
+      <Field ID="{e020403d-1a00-4a3e-8a60-bc18dcdfe8c7}" Name="description" DisplayName="Description" Type="Note" StaticName="description" />
+
+      <!-- ReferenceTitle (Single line of text) -->
+      <Field ID="{d64df76d-b61b-4fc3-a8cb-22c313b1fd4e}" Name="referenceTitle" DisplayName="Reference Title" Type="Text" StaticName="referenceTitle" />
+
+      <!-- ReferenceAuthorName (Single line of text) -->
+      <Field ID="{87c3e29d-c412-4b68-8f0f-4a276b5eb621}" Name="referenceAuthorName" DisplayName="Reference Author Name" Type="Text" StaticName="referenceAuthorName" />
+
+      <!-- YearOfPublish (Single line of text) -->
+      <Field ID="{9374d75f-f176-493b-99c1-9b45e6b564d1}" Name="yearOfPublish" DisplayName="Year of Publish" Type="Text" StaticName="yearOfPublish" />
+
+      <!-- ReferenceLink (Multi line of text) -->
+      <Field ID="{4e1234f2-62de-4cb6-90a5-5e52f2e4f276}" Name="referenceLink" DisplayName="Reference Link" Type="Note" StaticName="referenceLink" />
+
+      <!-- DefinitionDetails (Lookup from Definition list) -->
+      <Field ID="{327a24d9-e6f3-4e6b-9a0b-10bfe421d83e}" Name="definitionDetails" DisplayName="Definition Details" Type="Lookup" List="Lists/Definition" ShowField="Title" Required="FALSE" StaticName="definitionDetails" />
+
+      <!-- DocDetails (Lookup from DocumentDetails list) -->
+      <Field ID="{e4b6cb98-7c13-4905-bd97-c15f7c09866b}" Name="docDetails" DisplayName="Document Details" Type="Lookup" List="Lists/DocumentDetails" ShowField="Title" Required="FALSE" StaticName="docDetails" />
+
+      <!-- SectionDetails (Lookup from SectionDetails list) -->
+      <Field ID="{f1b53b96-e7e8-4af3-8d6f-9c98c643fd83}" Name="sectionDetails" DisplayName="Section Details" Type="Lookup" List="Lists/SectionDetails" ShowField="Title" Required="FALSE" StaticName="sectionDetails" />
+
+      <!-- IsDeleted (Yes/No) -->
+      <Field ID="{0a9022ef-11b1-4c6b-b29b-59a1749f8c40}" Name="isDeleted" DisplayName="Is Deleted" Type="Boolean" StaticName="isDeleted">
+        <Default>0</Default>
+      </Field>
+      <!-- IsSectionDefinition (Yes/No) -->
+      <Field ID="{bd3fcb96-1d2c-485b-85f1-66b97b3faad1}" Name="isSectionDefinition" DisplayName="Is Section Definition" Type="Boolean" StaticName="isSectionDefinition">
+        <Default>0</Default>
+      </Field>
+    </Fields>
+
+    <!-- Views definition -->
+    <Views>
+      <View BaseViewID="1" Type="HTML" DisplayName="All Items" DefaultView="TRUE" SetupPath="pages\viewpage.aspx" WebPartZoneID="Main" Url="AllItems.aspx">
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <JSLink>clienttemplates.js</JSLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <Toolbar Type="Standard" />
+        <ViewFields>
+          <FieldRef Name="Title" />
+          <FieldRef Name="description" />
+          <FieldRef Name="referenceTitle" />
+          <FieldRef Name="referenceAuthorName" />
+          <FieldRef Name="yearOfPublish" />
+          <FieldRef Name="referenceLink" />
+          <FieldRef Name="definitionDetails" />
+          <FieldRef Name="docDetails" />
+          <FieldRef Name="sectionDetails" />
+          <FieldRef Name="isDeleted" />
+          <FieldRef Name="isSectionDefinition" />
+        </ViewFields>
+        <Query>
+          <OrderBy>
+            <FieldRef Name="ID" />
+          </OrderBy>
+        </Query>
+      </View>
+    </Views>
+
+    <!-- Forms definition (Display, Edit, New) -->
+    <Forms>
+      <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="NewForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+
+  </MetaData>
+</List>

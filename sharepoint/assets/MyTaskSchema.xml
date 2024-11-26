@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<List xmlns:ows="Microsoft SharePoint" Title="MyTasks" Direction="LTR" Url="Lists/MyTasks" BaseType="0" Type="100">
+
+  <!-- Metadata for the list, including fields, views, and forms -->
+  <MetaData>
+
+    <!-- Fields definition (columns) -->
+    <Fields>
+      <!-- Title (default SharePoint field) -->
+      <Field Name="Title" DisplayName="$Resources:core,Title;" Type="Text" Required="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Title" MaxLength="255" ID="{f00a7d7f-18dc-41ee-8d1c-f57cb2d41c29}"/>
+
+      <!-- SectionName (Single line of text) -->
+      <Field ID="{5b688754-e19d-4674-8ed5-d9ae3b33f24a}" Name="sectionName" DisplayName="Section Name" Type="Text" StaticName="sectionName" />
+
+      <!-- TaskAssignee (Person or Group) -->
+      <Field ID="{51b22562-3210-4140-a59f-76f6683e7652}" Name="taskAssignee" DisplayName="Task Assignee" Type="User" UserSelectionMode="PeopleOnly" StaticName="taskAssignee" />
+
+      <!-- TaskAssignedBy (Person or Group) -->
+      <Field ID="{e523e3ac-d4e9-4948-9097-e3991f711629}" Name="taskAssignedBy" DisplayName="Task Assigned By" Type="User" UserSelectionMode="PeopleOnly" StaticName="taskAssignedBy" />
+
+      <!-- Role (Single line of text) -->
+      <Field ID="{70612378-d04d-4a70-8f34-16be87075a03}" Name="role" DisplayName="Role" Type="Text" StaticName="role" />
+
+      <!-- TaskStatus (Single line of text) -->
+      <Field ID="{5e91ce8c-a42e-4b97-97fb-2ef36a2fe3e0}" Name="taskStatus" DisplayName="Task Status" Type="Text" StaticName="taskStatus" />
+
+      <!-- TaskDueDate (Single line of text) -->
+      <Field ID="{7e7f3482-29d6-4c10-895a-0848de49e221}" Name="taskDueDate" DisplayName="Task Due Date" Type="Text" StaticName="taskDueDate" />
+
+      <!-- PathName (Single line of text) -->
+      <Field ID="{c90783a4-3193-4a48-a441-54e9ea7c92b7}" Name="pathName" DisplayName="Path Name" Type="Text" StaticName="pathName" />
+
+      <!-- DocVersion (Single line of text) -->
+      <Field ID="{d798f47a-5bc3-45ab-92c1-55e2a86bde9b}" Name="docVersion" DisplayName="Document Version" Type="Text" StaticName="docVersion" />
+
+      <!-- DocCreatedDate (Single line of text) -->
+      <Field ID="{fc7044e5-8642-4570-9057-0b496c98ddc4}" Name="docCreatedDate" DisplayName="Document Created Date" Type="Text" StaticName="docCreatedDate" />
+
+      <!-- DocStatus (Single line of text) -->
+      <Field ID="{6a982f0b-efc5-4f26-9239-318bb5a48c43}" Name="docStatus" DisplayName="Document Status" Type="Text" StaticName="docStatus" />
+
+      <!-- DocumentDetails (Lookup ID from DocumentDetails list) -->
+      <Field ID="{3b991af6-f6fd-4dca-b7e9-b977f44eb50e}" Name="documentDetails" DisplayName="Document Details" Type="Lookup" List="Lists/DocumentDetails" ShowField="Title" Required="FALSE" StaticName="documentDetails" />
+
+      <!-- SectionDetails (Lookup ID from SectionDetails list) -->
+      <Field ID="{e9af3fd1-afe2-4211-b2d3-ff65e5c6ec34}" Name="sectionDetails" DisplayName="Section Details" Type="Lookup" List="Lists/SectionDetails" ShowField="Title" Required="FALSE" StaticName="sectionDetails" />
+
+      <!-- DocumentTemplateType (Lookup ID from SDDTemplatesMain list) -->
+      <Field ID="{2ab9b52d-8527-4b69-9728-b045038b719c}" Name="documentTemplateType" DisplayName="Document Template Type" Type="Lookup" List="Lists/SDDTemplatesMain" ShowField="Title" Required="FALSE" StaticName="documentTemplateType" />
+
+      <!-- Completed (Yes/No) -->
+      <Field ID="{fe7dea0b-1a88-4429-b2ed-583ebe4c1a99}" Name="completed" DisplayName="Completed" Type="Boolean" StaticName="completed">
+        <Default>0</Default>
+      </Field>
+
+      <!-- CompletedOn (Single line of text) -->
+      <Field ID="{af987ced-3a7a-48ab-b9bb-5f6b272f57b8}" Name="completedOn" DisplayName="Completed On" Type="Text" StaticName="completedOn" />
+    </Fields>
+
+    <!-- Views definition -->
+    <Views>
+      <View BaseViewID="1" Type="HTML" DisplayName="All Tasks" DefaultView="TRUE" SetupPath="pages\viewpage.aspx" WebPartZoneID="Main" Url="AllItems.aspx">
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <JSLink>clienttemplates.js</JSLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <Toolbar Type="Standard" />
+        <ViewFields>
+          <FieldRef Name="Title" />
+          <FieldRef Name="sectionName" />
+          <FieldRef Name="taskAssignee" />
+          <FieldRef Name="taskAssignedBy" />
+          <FieldRef Name="role" />
+          <FieldRef Name="taskStatus" />
+          <FieldRef Name="taskDueDate" />
+          <FieldRef Name="pathName" />
+          <FieldRef Name="docVersion" />
+          <FieldRef Name="docCreatedDate" />
+          <FieldRef Name="docStatus" />
+          <FieldRef Name="documentDetails" />
+          <FieldRef Name="sectionDetails" />
+          <FieldRef Name="documentTemplateType" />
+          <FieldRef Name="completed" />
+          <FieldRef Name="completedOn" />
+        </ViewFields>
+        <Query>
+          <OrderBy>
+            <FieldRef Name="ID" />
+          </OrderBy>
+        </Query>
+      </View>
+    </Views>
+
+    <!-- Forms definition (Display, Edit, New) -->
+    <Forms>
+      <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="NewForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+
+  </MetaData>
+</List>

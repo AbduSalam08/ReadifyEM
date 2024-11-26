@@ -1,0 +1,85 @@
+<List xmlns:ows="Microsoft SharePoint" Title="AllDocuments" Name="AllDocuments" Direction="$Resources:Direction;" Url="AllDocuments" BaseType="1" EnableContentTypes="TRUE" VersioningEnabled="TRUE" MajorVersionLimit="100" EnableMinorVersions="FALSE" MajorWithMinorVersionsLimit="0" DisableAttachments="FALSE" FolderCreation="TRUE" RootWebOnly="FALSE">
+
+  <MetaData>
+    <Fields>
+      <!-- Document Details (Lookup from DocumentDetails list) -->
+      <Field ID="{fc5a7429-6a62-47f5-9a9e-3d2a9e4d0ba1}" Name="documentDetails" DisplayName="Document Details" Type="Lookup" List="Lists/DocumentDetails" ShowField="Title" />
+
+      <!-- Created Date (Single line of text) -->
+      <Field ID="{a81a5b4d-c62a-496e-8576-f3227b1bc871}" Name="createdDate" DisplayName="Created Date" Type="Text" StaticName="createdDate" />
+
+      <!-- Next Review Date (Single line of text) -->
+      <Field ID="{a31b5b2c-c62a-496e-8476-f3217b1bc879}" Name="nextReviewDate" DisplayName="Next Review Date" Type="Text" StaticName="nextReviewDate" />
+
+      <!-- Sequence No (Single line of text) -->
+      <Field ID="{123b5c2d-c52b-496e-8477-d3217b1bc889}" Name="sequenceNo" DisplayName="Sequence No" Type="Text" StaticName="sequenceNo" />
+
+      <!-- Next Review (Single line of text) -->
+      <Field ID="{e36b5e2a-f92a-496e-8498-d3217b1fc881}" Name="nextReview" DisplayName="Next Review" Type="Text" StaticName="nextReview" />
+
+      <!-- Status (Single line of text) -->
+      <Field ID="{d41a5b7d-c42a-456e-8376-d3247b1bc971}" Name="status" DisplayName="Status" Type="Text" StaticName="status" />
+
+      <!-- Document Version (Single line of text) -->
+      <Field ID="{cf5a942c-9632-497e-9675-e4317e3b2987}" Name="documentVersion" DisplayName="Document Version" Type="Text" StaticName="documentVersion" />
+
+      <!-- Approved On (Single line of text) -->
+      <Field ID="{b95a1b7c-d3a2-497e-9675-e4517e3b2982}" Name="approvedOn" DisplayName="Approved On" Type="Text" StaticName="approvedOn" />
+
+      <!-- Is Draft (Yes/No) -->
+      <Field ID="{c71a2b2c-9632-487e-9375-f4317e3b2997}" Name="isDraft" DisplayName="Is Draft" Type="Boolean" StaticName="isDraft">
+        <Default>0</Default>
+      </Field>
+
+      <!-- Is Visible (Yes/No) -->
+      <Field ID="{f32b1b7d-a32a-487e-9375-f4317b1cc899}" Name="isVisible" DisplayName="Is Visible" Type="Boolean" StaticName="isVisible">
+        <Default>0</Default>
+      </Field>
+
+      <!-- Is PDF Generated (Yes/No) -->
+      <Field ID="{b36a1b3d-c3a2-497e-9975-d4317e3b2993}" Name="isPdfGenerated" DisplayName="Is PDF Generated" Type="Boolean" StaticName="isPdfGenerated">
+        <Default>0</Default>
+      </Field>
+
+    </Fields>
+
+    <!-- Views -->
+    <Views>
+      <View BaseViewID="1" Type="HTML" WebPartZoneID="Main" DisplayName="$Resources:core,objectiv_schema_mwsidcamlidC24;" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" SetupPath="pages\viewpage.aspx" ImageUrl="/_layouts/images/generic.png" Url="Forms/AllItems.aspx" ContentTypeID="0x">
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <JSLink>clienttemplates.js</JSLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <Toolbar Type="Standard" />
+        <Aggregations Value="Off" />
+        <ViewFields>
+          <FieldRef Name="DocIcon" />
+          <FieldRef Name="LinkFilename"></FieldRef>
+          <FieldRef Name="documentDetails" />
+          <FieldRef Name="createdDate" />
+          <FieldRef Name="nextReviewDate" />
+          <FieldRef Name="sequenceNo" />
+          <FieldRef Name="nextReview" />
+          <FieldRef Name="status" />
+          <FieldRef Name="documentVersion" />
+          <FieldRef Name="approvedOn" />
+          <FieldRef Name="isDraft" />
+          <FieldRef Name="isVisible" />
+          <FieldRef Name="isPdfGenerated" />
+        </ViewFields>
+        <Query>
+          <OrderBy>
+            <FieldRef Name="FileLeafRef" />
+          </OrderBy>
+        </Query>
+      </View>
+    </Views>
+
+    <!-- Forms -->
+    <Forms>
+      <Form Type="DisplayForm" Url="Forms/DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="Forms/EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="Forms/Upload.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+
+  </MetaData>
+</List>

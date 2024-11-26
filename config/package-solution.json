@@ -8,11 +8,11 @@
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
     "developer": {
-      "name": "",
-      "websiteUrl": "",
-      "privacyUrl": "",
-      "termsOfUseUrl": "",
-      "mpnId": "Undefined-1.18.2"
+      "name": "Meded Management Services, LLC",
+      "websiteUrl": "https://readify365.com/readifyrm/",
+      "privacyUrl": "https://readify365.com/privacy-policy/",
+      "termsOfUseUrl": "https://readify365.com/terms-of-service/",
+      "mpnId": "6771693"
     },
     "metadata": {
       "shortDescription": {
@@ -30,7 +30,29 @@
         "title": "readify-em Feature",
         "description": "The feature that activates elements of the readify-em solution.",
         "id": "d7b65ed9-bfaa-4e25-a3ef-96ca644a5d42",
-        "version": "1.0.0.0"
+        "version": "1.0.0.0",
+        "assets": {
+          "elementManifests": [
+            "element.xml"
+          ],
+          "elementFiles": [
+            "DefinitionsSchema.xml",
+            "SDDTemplatesmainSchema.xml",
+            "SDDTemplatesSchema.xml",
+            "DocumentDetailsSchema.xml",
+            "PageConfigurationSchema.xml",
+            "SectionDetailsSchema.xml",
+            "PromotedCommentsSchema.xml",
+            "SectionCommentsSchema.xml",
+            "SectionDefinitionsSchema.xml",
+            "SectionReferencesSchema.xml",
+            "SupportingDocumentsSchema.xml",
+            "MyTaskSchema.xml",
+            "AllDocumentsLibrarySchema.xml",
+            "FinalDocumentsLibrarySchema.xml",
+            "DocumentDetailsFilelookupSchema.xml"
+          ]
+        }
       }
     ]
   },

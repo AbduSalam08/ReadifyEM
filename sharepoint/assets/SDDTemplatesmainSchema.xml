@@ -1,0 +1,42 @@
+<List xmlns:ows="Microsoft SharePoint" Title="SDDTemplatesMain" EnableContentTypes="TRUE" FolderCreation="FALSE" Direction="$Resources:Direction;" Url="Lists/SDDTemplatesMain" BaseType="0"
+  xmlns="http://schemas.microsoft.com/sharepoint/">
+  <!-- Metadata for the list, including fields, views, and forms -->
+  <MetaData>
+    <ContentTypes>
+      <!-- <ContentTypeRef ID="0x010078118592f3c6414dbecb049d4a265988" /> -->
+    </ContentTypes>
+    <!-- Fields SDDTemplatesMain (columns) -->
+    <Fields>
+      <Field Name="Title" DisplayName="$Resources:core,Title;" Type="Text" Required="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Title" MaxLength="255" ID="{9869d2e1-71ce-4b51-a170-57bb39e919b8}"/>
+      <Field Name="createdDate" DisplayName="createdDate" Type="Text" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" MaxLength="255" ID="{dd504f72-c6f8-4efe-912f-182a60300280}" />
+      <Field Name="isDeleted" DisplayName="isDeleted" Type="Boolean" ShowInEditForm="TRUE" Required="FALSE" ID="{22caafb8-b0a7-454b-bdfb-66e339ca8a1b}">
+        <Default>0</Default>
+      </Field>
+    </Fields>
+    <!-- Views SDDTemplatesMain -->
+    <Views>
+      <View BaseViewID="1" Type="HTML" WebPartZoneID="Main" DisplayName="$Resources:core,objectiv_schema_mwsidcamlidC24;" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" SetupPath="pages\viewpage.aspx" ImageUrl="/_layouts/images/generic.png" Url="AllItems.aspx">
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <JSLink>clienttemplates.js</JSLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <Toolbar Type="Standard" />
+        <ViewFields>
+          <FieldRef Name="Title"/>
+          <FieldRef Name="createdDate" />
+          <FieldRef Name="isDeleted" />
+        </ViewFields>
+        <Query>
+          <OrderBy>
+            <FieldRef Name="ID" />
+          </OrderBy>
+        </Query>
+      </View>
+    </Views>
+    <!-- Forms SDDTemplatesMain (Display, Edit, New) -->
+    <Forms>
+      <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="NewForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+  </MetaData>
+</List>

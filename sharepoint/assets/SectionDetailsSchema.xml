@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<List xmlns:ows="Microsoft SharePoint" Title="SectionDetails" Direction="LTR" Url="Lists/SectionDetails" BaseType="0" Type="100">
+
+  <!-- Metadata for the list, including fields, views, and forms -->
+  <MetaData>
+
+    <!-- Fields definition (columns) -->
+    <Fields>
+      <!-- Title (default SharePoint field) -->
+      <Field Name="Title" DisplayName="$Resources:core,Title;" Type="Text" Required="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Title" MaxLength="255" ID="{157c0893-6526-4796-8128-7bdbb09aed26}"/>
+
+      <!-- SectionOrder (Single line of text) -->
+      <Field ID="{16f4decc-4ca4-4670-8e29-0c9dc54ee6c3}" Name="sectionOrder" DisplayName="Section Order" Type="Text" StaticName="sectionOrder" />
+
+      <!-- TemplateTitle (Single line of text) -->
+      <Field ID="{d0b94f65-3f56-4f9b-a7e2-77df439c83f9}" Name="templateTitle" DisplayName="Template Title" Type="Text" StaticName="templateTitle" />
+
+      <!-- TypeOfContent (Choice: paragraph, list) -->
+      <Field ID="{ba926e3b-b8f7-41b7-a1c6-ec24879e25a2}" Name="typeOfContent" DisplayName="Type Of Content" Type="Choice">
+        <CHOICES>
+          <CHOICE>paragraph</CHOICE>
+          <CHOICE>list</CHOICE>
+        </CHOICES>
+      </Field>
+
+      <!-- SectionType (Choice: default section, header section, pdf header, references section, appendix section, change record) -->
+      <Field ID="{ba917c23-b8f8-41b7-b5d6-ec24879d25a3}" Name="sectionType" DisplayName="Section Type" Type="Choice">
+        <CHOICES>
+          <CHOICE>default section</CHOICE>
+          <CHOICE>header section</CHOICE>
+          <CHOICE>pdf header</CHOICE>
+          <CHOICE>references section</CHOICE>
+          <CHOICE>appendix section</CHOICE>
+          <CHOICE>change record</CHOICE>
+        </CHOICES>
+      </Field>
+
+      <!-- Status (Single line of text) -->
+      <Field ID="{12833653-f2c4-45f5-aaaa-b006897d6ec9}" Name="status" DisplayName="Status" Type="Text" StaticName="status" />
+
+      <!-- DocumentOf (Lookup ID from DocumentDetails list) -->
+      <Field ID="{c3a94f47-1c61-4dd0-bd60-787e2fa24c99}" Name="documentOf" DisplayName="Document Of" Type="Lookup" List="Lists/DocumentDetails" ShowField="Title" Required="FALSE" StaticName="documentOf" />
+
+      <!-- SectionAuthor (Person or Group) -->
+      <Field ID="{a50c6274-5838-4759-8048-882dcecb47b7}" Name="sectionAuthor" DisplayName="Section Author" Type="User" UserSelectionMode="PeopleOnly" StaticName="sectionAuthor" />
+
+      <!-- Consultants (Person or Group) -->
+      <Field ID="{fde94e65-91a2-40d1-96f1-df39e2f68c39}" Name="consultants" DisplayName="Consultants" Type="User" UserSelectionMode="PeopleOnly" StaticName="consultants" />
+
+      <!-- LastApprovedBy (Multi line of text) -->
+      <Field ID="{3898fba0-ef6c-4610-a1c1-c814161995f2}" Name="lastApprovedBy" DisplayName="Last Approved By" Type="Note" StaticName="lastApprovedBy" />
+
+      <!-- LastReviewedBy (Multi line of text) -->
+      <Field ID="{9a23c2ae-d9b7-47a7-9c6f-deb9b2b53c76}" Name="lastReviewedBy" DisplayName="Last Reviewed By" Type="Note" StaticName="lastReviewedBy" />
+
+      <!-- SectionReviewers (Multi line of text) -->
+      <Field ID="{6078747b-3f56-4327-bbbc-7f22e37fb50c}" Name="sectionReviewers" DisplayName="Section Reviewers" Type="Note" StaticName="sectionReviewers" />
+
+      <!-- SectionApprovers (Multi line of text) -->
+      <Field ID="{f71a074e-67a1-4d7f-85e8-246def125f36}" Name="sectionApprovers" DisplayName="Section Approvers" Type="Note" StaticName="sectionApprovers" />
+
+      <!-- SectionRework (Yes/No) -->
+      <Field ID="{d2815ce9-d412-4b91-8833-4fb0841aebec}" Name="sectionRework" DisplayName="Section Rework" Type="Boolean" StaticName="sectionRework">
+        <Default>0</Default>
+      </Field>
+
+      <!-- SectionSubmitted (Yes/No) -->
+      <Field ID="{fc984755-c937-4921-81e8-34656fd92d44}" Name="sectionSubmitted" DisplayName="Section Submitted" Type="Boolean" StaticName="sectionSubmitted">
+        <Default>0</Default>
+      </Field>
+
+      <!-- SectionReviewed (Yes/No) -->
+      <Field ID="{fd937655-c963-4892-9b10-dcc02a7d2e0e}" Name="sectionReviewed" DisplayName="Section Reviewed" Type="Boolean" StaticName="sectionReviewed">
+        <Default>0</Default>
+      </Field>
+
+      <!-- SectionApproved (Yes/No) -->
+      <Field ID="{fc193755-c957-4819-92b2-dcc93a7d2e3e}" Name="sectionApproved" DisplayName="Section Approved" Type="Boolean" StaticName="sectionApproved">
+        <Default>0</Default>
+      </Field>
+
+      <!-- IsActive (Yes/No) -->
+      <Field ID="{fc784755-c937-4972-91e8-34767fd92e64}" Name="isActive" DisplayName="Is Active" Type="Boolean" StaticName="isActive">
+        <Default>1</Default>
+      </Field>
+
+      <!-- IsDeleted (Yes/No) -->
+      <Field ID="{b97c94fe-ef98-4d7a-a27f-5f9b272f57b8}" Name="isDeleted" DisplayName="Is Deleted" Type="Boolean" StaticName="isDeleted">
+        <Default>0</Default>
+      </Field>
+
+      <!-- IsNotified (Yes/No) -->
+      <Field ID="{ef984755-c957-4891-91e9-35678fd93d55}" Name="isNotified" DisplayName="Is Notified" Type="Boolean" StaticName="isNotified">
+        <Default>0</Default>
+      </Field>
+
+      <!-- ChangeRecordAuthor (Person or Group) -->
+      <Field ID="{7f954c39-fcf8-4001-97f6-06fdcc755b3e}" Name="changeRecordAuthor" DisplayName="Change Record Author" Type="User" UserSelectionMode="PeopleOnly" StaticName="changeRecordAuthor" />
+
+      <!-- ChangeRecordDescription (Multi line of text) -->
+      <Field ID="{fae937ef-6f59-4672-94f4-fd36af5f963b}" Name="changeRecordDescription" DisplayName="Change Record Description" Type="Note" StaticName="changeRecordDescription" />
+
+      <!-- ChangeRecordModify (Date) -->
+      <Field ID="{ade94c34-123d-4678-bbb3-12343b3f60cc}" Name="changeRecordModify" DisplayName="Change Record Modify Date" Type="DateTime" Format="DateTime" StaticName="changeRecordModify" />
+    </Fields>
+
+    <!-- Views definition -->
+    <Views>
+      <View BaseViewID="1" Type="HTML" DisplayName="All Sections" DefaultView="TRUE" SetupPath="pages\viewpage.aspx" WebPartZoneID="Main" Url="AllItems.aspx">
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <JSLink>clienttemplates.js</JSLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <Toolbar Type="Standard" />
+        <ViewFields>
+          <FieldRef Name="Title" />
+          <FieldRef Name="sectionOrder" />
+          <FieldRef Name="templateTitle" />
+          <FieldRef Name="typeOfContent" />
+          <FieldRef Name="sectionType" />
+          <FieldRef Name="status" />
+          <FieldRef Name="documentOf" />
+          <FieldRef Name="sectionAuthor" />
+          <FieldRef Name="consultants" />
+          <FieldRef Name="lastApprovedBy" />
+          <FieldRef Name="lastReviewedBy" />
+          <FieldRef Name="sectionReviewers" />
+          <FieldRef Name="sectionApprovers" />
+          <FieldRef Name="sectionRework" />
+          <FieldRef Name="sectionSubmitted" />
+          <FieldRef Name="sectionReviewed" />
+          <FieldRef Name="sectionApproved" />
+          <FieldRef Name="isActive" />
+          <FieldRef Name="isDeleted" />
+          <FieldRef Name="isNotified" />
+          <FieldRef Name="changeRecordAuthor" />
+          <FieldRef Name="changeRecordDescription" />
+          <FieldRef Name="changeRecordModify" />
+        </ViewFields>
+        <Query>
+          <OrderBy>
+            <FieldRef Name="ID" />
+          </OrderBy>
+        </Query>
+      </View>
+    </Views>
+
+    <!-- Forms definition (Display, Edit, New) -->
+    <Forms>
+      <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="NewForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+
+  </MetaData>
+</List>
