@@ -6,6 +6,8 @@ const mainData = {
   tenantUrl: "",
   siteUrl: "",
   PageDetails: {},
+  licenseDetails: {},
+  rolesDetails: {},
   value: [],
   currentUserDetails: {
     userName: "",
@@ -31,6 +33,12 @@ const MainSPContext = createSlice({
     setPageDetails: (state, action) => {
       state.PageDetails = action.payload;
     },
+    setLicenseDetails: (state, action) => {
+      state.licenseDetails = action.payload;
+    },
+    setRolesDetails: (state, action) => {
+      state.rolesDetails = action.payload;
+    },
     setMainSPContext: (state, action) => {
       state.value = action.payload;
     },
@@ -44,6 +52,8 @@ export const {
   setMainSPContext,
   setCurrentUserDetails,
   setPageDetails,
+  setLicenseDetails,
+  setRolesDetails,
   setWebUrl,
   setTenantUrl,
   setSiteUrl,

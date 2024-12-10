@@ -1,0 +1,32 @@
+.flexcenter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.userConfigureWrapper{
+    display: flex;
+    gap:20px;
+    .adminTableSection{
+        width: 50%;
+    }
+    .memberTableSection{
+        width: 50%;
+    }
+}
+.pageTitleHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.filters {
+    @extend .flexcenter;
+    justify-content: space-between;
+    margin: 20px 0;
+    gap: 20px;
+}
+.rhs {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

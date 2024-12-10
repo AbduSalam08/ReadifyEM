@@ -64,10 +64,7 @@
         </FieldRefs>
     </ContentType> -->
 
-    <!-- library creations -->
 
-    <ListInstance CustomSchema="AllDocumentsLibrarySchema.xml" FeatureId="00bfea71-e717-4e80-aa17-d0c71b360101" Title="AllDocuments" Description="" TemplateType="101" Url="AllDocuments" Hidden="FALSE" />
-    <ListInstance CustomSchema="FinalDocumentsLibrarySchema.xml" FeatureId="00bfea71-e717-4e80-aa17-d0c71b360101" Title="FinalDocuments" Description="" TemplateType="101" Url="FinalDocuments" Hidden="FALSE" />
 
     <!-- list creations -->
 
@@ -83,8 +80,12 @@
     <ListInstance CustomSchema="SectionReferencesSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="SectionReferences" Description="SectionReferences" TemplateType="100" Url="Lists/SectionReferences" />
     <ListInstance CustomSchema="SupportingDocumentsSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="SupportingDocuments" Description="SupportingDocuments" TemplateType="100" Url="Lists/SupportingDocuments" />
     <ListInstance CustomSchema="MyTaskSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="MyTasks" Description="MyTasks" TemplateType="100" Url="Lists/MyTasks" />
-    <ListInstance CustomSchema="DocumentDetailsFilelookupSchema.xml" FeatureId="00bfea71-de22-43b2-a848-c05709900100" Title="DocumentDetails" Description="DocumentDetails" TemplateType="100" Url="Lists/DocumentDetails" />
 
+
+    <!-- library creations -->
+
+    <ListInstance CustomSchema="AllDocumentsLibrarySchema.xml" FeatureId="00bfea71-e717-4e80-aa17-d0c71b360101" Title="AllDocuments" Description="" TemplateType="101" Url="AllDocuments" Hidden="FALSE" />
+    <ListInstance CustomSchema="FinalDocumentsLibrarySchema.xml" FeatureId="00bfea71-e717-4e80-aa17-d0c71b360101" Title="FinalDocuments" Description="" TemplateType="101" Url="FinalDocuments" Hidden="FALSE" />
     <!-- <ListInstance CustomSchema="AllDocumentsLibrarySchema.xml" FeatureId="00bfea71-e717-4e80-aa17-d0c71b360101" Title="AllDocuments" Description="AllDocuments" TemplateType="101" Url="Lists/AllDocuments" /> -->
     <!-- <ListInstance CustomSchema="FinalDocumentsLibrarySchema.xml" FeatureId="00bfea71-e717-4e80-aa17-d0c71b360101" Title="FinalDocuments" Description="FinalDocuments" TemplateType="101" Url="FinalDocuments" /> -->
 

@@ -907,11 +907,14 @@ export const addRejectedComment = async (
   await SpServices.SPReadItemUsingId({
     Listname: LISTNAMES.DocumentDetails,
     SelectedId: documentDetails?.documentDetailsID,
-    Select: "*, fileDetails/ID",
-    Expand: "fileDetails",
+    Select: "*",
+    Expand: "",
+    // Select: "*, fileDetails/ID",
+    // Expand: "fileDetails",
   })
     .then((res: any) => {
-      fileID = res?.fileDetailsId;
+      // fileID = res?.fileDetailsId;
+      fileID = Number(res?.fileDetailsId);
     })
     .catch((err: any) => {
       console.log("Error : ", err);
@@ -1051,11 +1054,14 @@ export const changeDocStatus = async (
   await SpServices.SPReadItemUsingId({
     Listname: LISTNAMES.DocumentDetails,
     SelectedId: docID,
-    Select: "*, fileDetails/ID",
-    Expand: "fileDetails",
+    Select: "*",
+    Expand: "",
+    // Select: "*, fileDetails/ID",
+    // Expand: "fileDetails",
   })
     .then((res: any) => {
-      fileID = res?.fileDetailsId;
+      // fileID = res?.fileDetailsId;
+      fileID = Number(res?.fileDetailsId);
       currentDocResponse = res;
     })
     .catch((err: any) => {
@@ -1186,6 +1192,7 @@ export const changeDocStatus = async (
               currentDocResponse?.reviewRange
             ),
             approvedOn: dayjs(new Date()).format("DD/MM/YYYY"),
+            // isPdfGenerated: true,
           },
         }).then((res: any) => {
           if (statusName?.toLowerCase() === "approved") {
@@ -1232,8 +1239,10 @@ export const changeDocStatus = async (
   await SpServices.SPReadItemUsingId({
     Listname: LISTNAMES.DocumentDetails,
     SelectedId: docID,
-    Select: "*, fileDetails/ID",
-    Expand: "fileDetails",
+    Select: "*",
+    Expand: "",
+    // Select: "*, fileDetails/ID",
+    // Expand: "fileDetails",
   })
     .then((res: any) => {
       updatedDOCData = res;
@@ -1434,19 +1443,19 @@ const convertToTxtFile = (content: any[]): any => {
     <table style="border-collapse: collapse; width: 100%;">
         <thead>
           <tr>
-            <th style="width: 10%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+            <th style="width: 10%; font-size: 15px; color: #555; padding: 15px; text-align: center; border: 1px solid #DDD;">
               S.No
             </th>
-            <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+            <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; text-align: center; border: 1px solid #DDD;">
               Section name
             </th>
-                  <th style="width: 30%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                  <th style="width: 30%; font-size: 15px; color: #555; padding: 15px; text-align: center; border: 1px solid #DDD;">
               Current change
             </th>
-                  <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                  <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; text-align: center; border: 1px solid #DDD;">
               Author
             </th>
-                  <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                  <th style="width: 20%; font-size: 15px; color: #555; padding: 15px; text-align: center; border: 1px solid #DDD;">
               Last modify
             </th>
           </tr>
@@ -1455,19 +1464,19 @@ const convertToTxtFile = (content: any[]): any => {
 
   content?.forEach((obj: any, index: number) => {
     changeRecordTable += `<tr key={${index}}>
-                      <td style="font-size: 13px; padding: 8px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                      <td style="font-size: 13px; padding: 8px; text-align: center; border: 1px solid #DDD;">
                   ${index + 1}
                 </td>
-                      <td style="font-size: 13px; padding: 8px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                      <td style="font-size: 13px; padding: 8px; text-align: center; border: 1px solid #DDD;">
                   ${obj.sectionName}
                 </td>
-                      <td style="font-size: 13px; padding: 8px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                      <td style="font-size: 13px; padding: 8px; text-align: center; border: 1px solid #DDD;">
                   ${obj.changeRecordDescription}
                 </td>
-                      <td style="font-size: 13px; padding: 8px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                      <td style="font-size: 13px; padding: 8px; text-align: center; border: 1px solid #DDD;">
                   ${obj.changeRecordAuthor.authorName}
                 </td>
-                      <td style="font-size: 13px; padding: 8px; line-height: 18px; font-family: interMedium,sans-serif; text-align: center; border: 1px solid #DDD;">
+                      <td style="font-size: 13px; padding: 8px; text-align: center; border: 1px solid #DDD;">
                   ${dayjs(obj.changeRecordModify).format("DD-MMM-YYYY hh:mm A")}
                 </td>
               </tr>`;
@@ -1768,4 +1777,80 @@ export const updatePageLog = async (
           console.log("Error : ", err);
         });
     });
+};
+type ValidationRule = {
+  required?: boolean;
+  type?: "string" | "date" | "file" | "array" | "number" | "boolean";
+  customErrorMessage?: string;
+};
+
+export const validateField = (
+  field: string,
+  value: any,
+  rules: ValidationRule
+): { isValid: boolean; errorMsg: string } => {
+  debugger;
+  const { required = false, type, customErrorMessage } = rules;
+  // Check for required fields
+  // if (
+  //   required &&
+  //   (type === "date" || type === "array" ? !value : !emptyCheck(value))
+  // ) {
+  //   return {
+  //     isValid: false,
+  //     errorMsg: customErrorMessage || `${field} is required`,
+  //   };
+  // }
+
+  // Additional validations based on type
+  // if (required && type === "string" && typeof value !== "string") {
+  //   return { isValid: false, errorMsg: "Invalid string format" };
+  // }
+  if (!required) {
+    return { isValid: true, errorMsg: "" };
+  }
+
+  if (required && type === "string" && !value) {
+    return {
+      isValid: false,
+      errorMsg: customErrorMessage || `${field} is required`,
+    };
+  }
+
+  if (required && type === "number" && !value) {
+    return {
+      isValid: false,
+      errorMsg: customErrorMessage || `${field} is required`,
+    };
+  }
+
+  if (required && type === "boolean" && !value) {
+    return {
+      isValid: false,
+      errorMsg: customErrorMessage || `${field} is required`,
+    };
+  }
+
+  if (required && type === "date" && !value) {
+    return {
+      isValid: false,
+      errorMsg: customErrorMessage || `${field} is required`,
+    };
+  }
+
+  if (required && type === "file" && !value) {
+    return {
+      isValid: false,
+      errorMsg: customErrorMessage || `${field} is required`,
+    };
+  }
+
+  if (required && type === "array" && !value.length) {
+    return {
+      isValid: false,
+      errorMsg: customErrorMessage || `${field} is required`,
+    };
+  }
+
+  return { isValid: true, errorMsg: "" };
 };

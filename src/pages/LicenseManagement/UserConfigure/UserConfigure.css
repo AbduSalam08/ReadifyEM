@@ -1,0 +1,28 @@
+.admin .p-datatable-sm{
+    height: 500px;
+    background: #fff;
+    overflow: auto;
+}
+.admin .p-datatable-sm .p-datatable-wrapper table thead tr th{
+    padding: 15px!important;
+    background: #79a781;
+    font-size: 15px;
+    font-weight: 600;
+}
+.admin .p-datatable-sm .p-datatable-wrapper table tbody tr td{
+    padding: 14px!important;
+}
+.member .p-datatable-sm {
+    height: 500px;
+    background: #fff;
+    overflow: auto;
+}
+.member .p-datatable-sm .p-datatable-wrapper table thead tr th{
+    padding: 15px!important;
+    background: #c1d0b1;
+    font-size: 15px;
+    font-weight: 600;
+}
+.member .p-datatable-sm .p-datatable-wrapper table tbody tr td{
+    padding: 14px!important;
+}

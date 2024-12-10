@@ -49,10 +49,15 @@
             "SupportingDocumentsSchema.xml",
             "MyTaskSchema.xml",
             "AllDocumentsLibrarySchema.xml",
-            "FinalDocumentsLibrarySchema.xml",
-            "DocumentDetailsFilelookupSchema.xml"
+            "FinalDocumentsLibrarySchema.xml"
           ]
         }
+      }
+    ],
+    "webApiPermissionRequests": [
+      {
+        "resource": "Microsoft Graph",
+        "scope": "Notifications.ReadWrite.CreatedByApp"
       }
     ]
   },

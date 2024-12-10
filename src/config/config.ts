@@ -13,6 +13,7 @@ const LISTNAMES = {
   PromotedComments: "PromotedComments",
   sectionReferences: "SectionReferences",
   PageConfiguration: "PageConfiguration",
+  LicenseConfiguration: "LicenseConfiguration",
 };
 
 const LIBNAMES = {

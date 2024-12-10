@@ -3,6 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const mainData = {
   sectionsAttachments: [],
+  pdfServiceDetails: {
+    allSectionData: [],
+    headerDetails: {},
+  },
 };
 
 const PDFServiceData = createSlice({
@@ -12,11 +16,15 @@ const PDFServiceData = createSlice({
     setSectionsAttachments: (state, action) => {
       state.sectionsAttachments = action.payload;
     },
+    setPdfServiceDetails: (state, action) => {
+      state.pdfServiceDetails = action.payload;
+    },
     // setCurrentUserDetails: (state, payload) => {
     //   state.currentUserDetails = payload.payload;
     // },
   },
 });
 
-export const { setSectionsAttachments } = PDFServiceData.actions;
+export const { setSectionsAttachments, setPdfServiceDetails } =
+  PDFServiceData.actions;
 export default PDFServiceData.reducer;

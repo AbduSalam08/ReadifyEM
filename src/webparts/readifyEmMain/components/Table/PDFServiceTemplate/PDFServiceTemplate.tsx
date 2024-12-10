@@ -2,33 +2,59 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import { memo, useEffect, useState } from "react";
 import styles from "./PDFServiceTemplate.module.scss";
 import "./PDFServiceTemplate.css";
 import CircularSpinner from "../../common/AppLoader/CircularSpinner";
 import { getDocumentRelatedSections } from "../../../../../services/PDFServices/PDFServices";
-import React, { useRef } from "react";
-// import { jsPDF } from "jspdf";
-// import html2canvas from "html2canvas";
+import React from "react";
+import { useSelector } from "react-redux";
+// import { sp } from "@pnp/sp";
+import SpServices from "../../../../../services/SPServices/SpServices";
+import { LISTNAMES } from "../../../../../config/config";
+const htmlToPdfmake = require("html-to-pdfmake") as any;
+const pdfMake = require("pdfmake/build/pdfmake");
+const pdfFonts = require("pdfmake/build/vfs_fonts");
+// import htmlToPdfmake from "html-to-pdfmake";
+// import * as pdfMake from "pdfmake/build/pdfmake";
+// import * as pdfFonts from "pdfmake/build/vfs_fonts";
+pdfMake.vfs = pdfFonts?.pdfMake?.vfs;
+// import { graph } from "@pnp/graph/presets/all";
+import "@pnp/graph/users";
+import { sp } from "@pnp/sp/presets/all";
 
 interface Iprops {
   documentId: number;
+  documentDetails: any;
 }
 
-const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
-  const [allSectionContent, setAllSectionContent] = useState<any[]>([]);
-  const [pdfHeaderSection, setPdfHeaderSection] = useState<any>("");
-  const [loader, setLoader] = useState<boolean>(false);
+const PDFServiceTemplate: React.FC<Iprops> = ({
+  documentId,
+  documentDetails,
+}) => {
+  const siteUrl: any = useSelector(
+    (state: any) => state?.MainSPContext?.siteUrl
+  );
+  console.log("siteUrl", siteUrl);
 
-  useEffect(() => {
-    getDocumentRelatedSections(
-      documentId,
-      setAllSectionContent,
-      setLoader,
-      setPdfHeaderSection
-    );
-  }, []);
+  const [allSectionContent, setAllSectionContent] = useState<any[]>([]);
+  const [headerAndFooterDetails, setHeaderAndFooterDetails] = useState<any>({
+    imageBase64: "",
+    documentName: "",
+    documentVersion: "",
+    templateType: "",
+    lastReviewDate: "",
+    nextReviewDate: "",
+    createdDate: "",
+    footerTitle: "",
+  });
+  const [isPDFGenerate, setIsPDFGenerate] = useState<boolean>(false);
+  const [loader, setLoader] = useState<boolean>(false);
+  const [pdfLoader, setPdfLoader] = useState<boolean>(false);
+  console.log("headerDetails", headerAndFooterDetails);
+  console.log("allSectionContent", allSectionContent);
 
   // Function to render points recursively
   const renderPoints = (
@@ -42,20 +68,33 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
       // Determine the indent level based on the length of the parent path
       const indentLevel = parentPath.length;
       const marginLeft = indentLevel * 31; // Adjust this value for appropriate spacing
-      const nestedStyle: React.CSSProperties = {
-        marginLeft: `${marginLeft}px`,
-        display: "flex",
-        alignItems: "center",
-        paddingBottom: "13px",
-      };
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(point.value, "text/html");
+      const pElement: any = doc.querySelector("p");
+
+      // Create the span element from inputValue
+      const spanElement = parser
+        .parseFromString(`<span>${point.text}. </span>`, "text/html")
+        .querySelector("span");
+
+      // Insert the span at the beginning of the paragraph
+      if (pElement && spanElement) {
+        pElement.insertBefore(spanElement, pElement.firstChild);
+      }
+
+      // Serialize the updated content back to HTML
+      const updatedValue = pElement.outerHTML;
 
       return (
         <div key={point.text}>
-          <div className={styles.listItem} style={nestedStyle} key={index}>
-            <span style={{ marginRight: "10px" }}>{point.text}</span>
+          <div
+            id={`margin${marginLeft}`}
+            style={{ display: "flex", alignItems: "center" }}
+            key={index}
+          >
             <span
               dangerouslySetInnerHTML={{
-                __html: point.value,
+                __html: updatedValue,
               }}
             />
           </div>
@@ -65,254 +104,492 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
       );
     });
   };
-  const contentRef = useRef<any>();
-  // const generatePDFFunction = () => {
-  //   const header: any = document.querySelector(".pdf_header");
-  //   const pdf: any = document.querySelector("#divToPrint");
 
-  //   // Change the font size for all <p> tags
-  //   const paragraphs = pdf.querySelectorAll("p");
-  //   paragraphs.forEach((p: HTMLElement) => {
-  //     p.style.fontSize = "13px"; // Set your desired font size here
-  //   });
+  const processToPDF = async (): Promise<any> => {
+    // try {
+    //   debugger;
+    //   // Ensure the user is authenticated
+    //   const me = await graph.me();
+    //   console.log(me);
 
-  //   const images = pdf.querySelectorAll(".rtUploadImage");
-  //   images.forEach((img: HTMLElement) => {
-  //     // const wrapper = document.createElement("div");
-  //     // wrapper.style.pageBreakInside = "avoid";
-  //     // wrapper.style.display = "block";
-  //     // img.parentNode?.insertBefore(wrapper, img);
-  //     // wrapper.appendChild(img);
-  //     img.style.pageBreakInside = "avoid";
-  //     img.style.breakInside = "avoid";
-  //     img.style.display = "block";
-  //   });
+    //   // Email details
+    //   const email: any = {
+    //     message: {
+    //       subject: "Hello from SPFx and Graph API",
+    //       body: {
+    //         contentType: "HTML",
+    //         content:
+    //           "<p>This is a test email sent using Microsoft Graph API.</p>",
+    //       },
+    //       toRecipients: [
+    //         {
+    //           emailAddress: {
+    //             address: "maasi@mydomain28.onmicrosoft.com",
+    //           },
+    //         },
+    //       ],
+    //       ccRecipients: [
+    //         // {
+    //         //   emailAddress: {
+    //         //     address: "venkat@mydomain28.onmicrosoft.com",
+    //         //   },
+    //         // },
+    //       ],
+    //     },
+    //     saveToSentItems: "true", // Save a copy to the sender's Sent Items
+    //   };
 
-  //   //   const style = document.createElement("style");
-  //   //   style.innerHTML = `
-  //   //   .rtUploadImage {
-  //   //     page-break-inside: avoid;
-  //   //     break-inside: avoid;
-  //   //   }
-  //   //   .pdf_section {
-  //   //     page-break-inside: avoid;
-  //   //     break-inside: avoid;
-  //   //   }
-  //   // `;
-  //   //   document.head.appendChild(style);
+    //   // Send the email using Graph API
+    //   await graph.me.sendMail(email);
+    //   console.log("Email sent successfully!");
+    // } catch (error) {
+    //   console.error("Error sending email:", error);
+    // }
 
-  //   //   const styleTag = document.createElement("style");
-  //   //   styleTag.innerHTML = `
-  //   //   .rtUploadImage {
-  //   //     page-break-inside: avoid !important;
-  //   //     break-inside: avoid !important;
-  //   //   }
-  //   //   .pdf_section {
-  //   //     page-break-inside: avoid !important;
-  //   //     break-inside: avoid !important;
-  //   //   }
-  //   // `;
-  //   //   pdf.prepend(styleTag);
+    const sectionElements = document.querySelector("#divToPrint");
+    if (sectionElements) {
+      const htmlContent = sectionElements.innerHTML;
+      // Parse and clean the HTML
+      const container = document.createElement("div");
+      container.innerHTML = htmlContent;
+      const cleanHtml = (node: any) => {
+        const children = [...node.childNodes];
+        children.forEach((child) => {
+          if (child.nodeType === Node.TEXT_NODE && !child.nodeValue.trim()) {
+            node.removeChild(child);
+          } else if (child.nodeType === Node.ELEMENT_NODE) {
+            cleanHtml(child);
+          }
+        });
+      };
+      await cleanHtml(container);
 
-  //   html2canvas(header).then((headerCanvas) => {
-  //     const doc = new jsPDF({
-  //       orientation: "portrait",
-  //       format: "a4",
-  //       unit: "pt",
-  //     });
+      const cleanedHtml = container.innerHTML;
 
-  //     const pageWidth = doc.internal.pageSize.getWidth();
-  //     // const pageHeight = doc.internal.pageSize.getHeight();
+      const pdfContent = await htmlToPdfmake(cleanedHtml);
 
-  //     // Set the content width to fit the PDF page
-  //     const scaleFactor = pageWidth / pdf.offsetWidth;
-  //     console.log(scaleFactor, pageWidth);
+      pdfContent?.forEach((obj: any, index: number) => {
+        if (
+          obj?.id?.includes("pageBreakBefore") &&
+          obj?.stack[0].text === "Change Record"
+        ) {
+          pdfContent[index].stack[1].stack[0].stack[0].table.widths = [
+            "10%",
+            "20%",
+            "30%",
+            "20%",
+            "20%",
+          ];
+        }
+      });
 
-  //     pdf.style.width = `${pageWidth + 50}px`;
+      // Function to add page break to elements with the "pageBreakBefore" class
+      const applyPageBreak = (content: any): any => {
+        content.forEach((item: any) => {
+          if (item.id && item.id.includes("pageBreakBefore")) {
+            item.pageBreak = "before";
+          }
+          if (item.id && item.id.includes("sectionStart")) {
+            item.margin = [20, 0, 0, 10];
+          }
+          if (item.id && item.id.startsWith("definitionValue")) {
+            item.margin = [22, 10, 0, 10];
+          }
+          if (item.id && item.id.startsWith("margin")) {
+            const marginLeft = parseInt(item.id.replace("margin", ""), 10) || 0;
+            item.margin = item.margin || [0, 0, 0, 0];
+            item.margin[0] = marginLeft;
+          }
+          if (item.stack) {
+            applyPageBreak(item.stack); // Recursively process child elements
+          }
+        });
+      };
 
-  //     if (pdf) {
-  //       // doc.addHTML()
-  //       doc.html(pdf, {
-  //         x: 10,
-  //         y: 10,
-  //         html2canvas: {
-  //           scale: scaleFactor, // Scale content down to fit the page
-  //         },
-  //         margin: [100, 20, 50, 20],
-  //         autoPaging: "text",
-  //         // pageBreak: {
-  //         //   mode: ["css", "avoid-all"], // Avoid breaking elements based on CSS and avoid page breaks where possible
-  //         // },
-  //         callback: async function (doc) {
-  //           const pageCount = (doc as any).internal.getNumberOfPages();
-  //           const pdfName = new Date();
+      // Apply page break logic
+      await applyPageBreak(pdfContent);
 
-  //           for (let i = 1; i <= pageCount; i++) {
-  //             doc.setPage(i);
-  //             const pageSize = doc.internal.pageSize;
-  //             const currentPageHeight = pageSize.height
-  //               ? pageSize.height
-  //               : pageSize.getHeight();
+      // Convert Data URL to Blob
+      const dataUrlToBlob = (dataUrl: any) => {
+        const byteString = atob(dataUrl.split(",")[1]);
+        const mimeString = dataUrl.split(",")[0].split(":")[1].split(";")[0];
+        const buffer = new ArrayBuffer(byteString.length);
+        const view = new Uint8Array(buffer);
 
-  //             // Add page number to the bottom right corner
-  //             doc.text(
-  //               "Page " + String(i) + " / " + String(pageCount),
-  //               doc.internal.pageSize.getWidth() - 60,
-  //               currentPageHeight - 8
-  //             );
+        for (let i = 0; i < byteString.length; i++) {
+          view[i] = byteString.charCodeAt(i);
+        }
 
-  //             // Add the header on top of each page, scale it properly
-  //             const headerHeight = 80; // Change this value to make the header larger
-  //             const pagewidth = doc.internal.pageSize.getWidth();
-  //             doc.addImage(
-  //               headerCanvas,
-  //               "PNG",
-  //               10,
-  //               10,
-  //               pagewidth - 20,
-  //               headerHeight
-  //             );
-  //           }
+        return new Blob([buffer], { type: mimeString });
+      };
 
-  //           doc.save(`${pdfName}.pdf`);
-  //         },
-  //       });
+      const documentDefinition = {
+        header: (currentPage: any, pageCount: any) => {
+          return {
+            table: {
+              widths: ["23%", "46%", "31%"], // Adjust the widths as needed
+              body: [
+                [
+                  {
+                    image: headerAndFooterDetails?.imageBase64,
+                    fit: [90, 50], // Adjust the size of the image
+                    alignment: "center",
+                    border: [true, true, true, true], // Apply borders to all sides
+                    margin: [0, 5, 0, 0],
+                  },
+                  {
+                    stack: [
+                      {
+                        text: headerAndFooterDetails?.documentName,
+                        style: "documentTitleStyle",
+                        alignment: "center",
+                      },
+                      {
+                        text: `Version : ${headerAndFooterDetails?.documentVersion}`,
+                        style: "versionStyle",
+                        alignment: "center",
+                      },
+                    ],
+                    border: [true, true, true, true],
+                    margin: [0, 5, 0, 0],
+                    alignment: "center", // Vertically align content
+                    // height: 70, // Set a fixed height for vertical alignment
+                  },
+                  {
+                    table: {
+                      widths: ["37%", "63%"],
+                      body: [
+                        [
+                          {
+                            text: "Type",
+                            bold: true,
+                            fontSize: 9,
+                            alignment: "start",
+                          },
+                          {
+                            text: headerAndFooterDetails?.templateType,
+                            bold: false,
+                            fontSize: 9,
+                            alignment: "start",
+                          },
+                        ],
+                        [
+                          {
+                            text: "Created on",
+                            bold: true,
+                            fontSize: 9,
+                            alignment: "start",
+                          },
+                          {
+                            text: headerAndFooterDetails?.createdDate,
+                            fontSize: 9,
+                            alignment: "start",
+                          },
+                        ],
+                        [
+                          {
+                            text: "Last review",
+                            bold: true,
+                            fontSize: 9,
+                            alignment: "start",
+                          },
+                          {
+                            text: headerAndFooterDetails?.lastReviewDate,
+                            fontSize: 9,
+                            alignment: "start",
+                          },
+                        ],
+                        [
+                          {
+                            text: "Next review",
+                            bold: true,
+                            fontSize: 9,
+                            alignment: "start",
+                          },
+                          {
+                            text: headerAndFooterDetails?.nextReviewDate,
+                            fontSize: 9,
+                            alignment: "start",
+                          },
+                        ],
+                      ],
+                    },
+                    alignment: "",
+                    layout: {
+                      hLineWidth: (i: any) => 0,
+                      vLineWidth: (i: any) => 0,
+                      hLineColor: () => "black",
+                      vLineColor: () => "black",
+                    },
+                    margin: [0, 0, 0, 0],
+                    border: [true, true, true, true], // Apply borders to the outer table
+                    // margin: [5, 5, 5, 5],
+                  },
+                ],
+              ],
+            },
+            layout: {
+              defaultBorder: true, // Ensures all cells have borders
+            },
+            margin: [30, 20, 30, 5],
+          };
+        },
+        footer: (currentPage: any, pageCount: any) => {
+          return [
+            {
+              columns: [
+                {
+                  text: headerAndFooterDetails?.footerTitle,
+                  style: "headerStyle",
+                  width: "50%",
+                  alignment: "left",
+                  margin: [30, 5, 0, 0],
+                },
+                {
+                  text: `Page ${currentPage} of ${pageCount}`,
+                  style: "headerStyle",
+                  width: "50%",
+                  alignment: "right",
+                  margin: [0, 5, 30, 0],
+                },
+              ],
+            },
+          ];
+        },
+        pageMargins: [30, 100, 30, 50],
+        content: await pdfContent,
+        styles: {
+          header: {
+            fontSize: 18,
+            bold: true,
+            margin: [0, 0, 0, 10],
+          },
+          paragraph: {
+            fontSize: 12,
+            lineHeight: 1.2,
+            margin: [0, 5, 0, 5],
+          },
+          documentTitleStyle: {
+            fontSize: 17,
+            bold: true,
+          },
+          versionStyle: {
+            fontSize: 10,
+          },
+          changeRecordTable: {
+            margin: [0, 10, 0, 10],
+          },
+        },
+      };
+      const pdfDocGenerator = await pdfMake.createPdf(documentDefinition);
+
+      await pdfDocGenerator.getDataUrl(async (dataUrl: string) => {
+        if (!dataUrl) {
+          console.log("Failed to generate data URL for the PDF.");
+          return;
+        }
+        const pdfBlob = dataUrlToBlob(dataUrl);
+        if (documentDetails?.url) {
+          const filePath = `${documentDetails?.url?.split(`${siteUrl}/`)[1]}`;
+          // const filePath =
+          //   "AllDocuments/Header Issue/Header Image Issue_2.0.pdf";
+
+          // Replace (or upload) the file in the SharePoint library
+          const result = await sp.web
+            .getFolderByServerRelativeUrl(LISTNAMES.AllDocuments)
+            .files.add(filePath, pdfBlob, true);
+
+          console.log("result", result);
+        } else {
+          console.log("Not Uploaded");
+        }
+        const iframeContainer = document.querySelector("#iframeContainer");
+
+        if (!iframeContainer) {
+          console.error("Iframe container not found.");
+          return;
+        }
+
+        const iframe = document.createElement("iframe");
+        iframe.src = dataUrl;
+        iframe.name = `${headerAndFooterDetails?.documentName}_${headerAndFooterDetails?.documentVersion}`;
+        iframe.style.width = "100%";
+        iframe.style.height = "500px";
+        iframeContainer.appendChild(iframe);
+        setPdfLoader(false);
+      });
+
+      if (
+        documentDetails?.fields?.status.toLowerCase() === "approved" &&
+        !documentDetails?.isPdfGenerated
+      ) {
+        await SpServices.SPUpdateItem({
+          Listname: LISTNAMES.AllDocuments,
+          ID: documentDetails?.fileID,
+          RequestJSON: {
+            isPdfGenerated: true,
+          },
+        });
+        // await pdfDocGenerator.getDataUrl(async (dataUrl: string) => {
+        //   if (!dataUrl) {
+        //     console.log("Failed to generate data URL for the PDF.");
+        //     return;
+        //   }
+        //   const pdfBlob = dataUrlToBlob(dataUrl);
+
+        //   const filePath = `${documentDetails?.url?.split(`${siteUrl}/`)[1]}`;
+
+        //   // Replace (or upload) the file in the SharePoint library
+        //   const result = await sp.web
+        //     .getFolderByServerRelativeUrl(LISTNAMES.AllDocuments)
+        //     .files.add(filePath, pdfBlob, true);
+
+        //   console.log("result", result);
+
+        //   await SpServices.SPUpdateItem({
+        //     Listname: LISTNAMES.AllDocuments,
+        //     ID: documentDetails?.fileID,
+        //     RequestJSON: {
+        //       isPdfGenerated: true,
+        //     },
+        //   });
+        // });
+      }
+    } else {
+      console.error("HTML element not found.");
+    }
+  };
+
+  // const renderPointsHtml = (arr: any[], parentPath: number[] = []): any => {
+  //   return arr.map((point, index) => {
+  //     // Calculate the current path for this point (parent path + current index)
+  //     const currentPath = [...parentPath, index];
+
+  //     // Determine the indent level based on the length of the parent path
+  //     const indentLevel = parentPath.length;
+  //     const marginLeft = indentLevel * 31; // Adjust this value for appropriate spacing
+  //     const parser = new DOMParser();
+  //     const doc = parser.parseFromString(point.value, "text/html");
+  //     const pElement: any = doc.querySelector("p");
+
+  //     // Create the span element from inputValue
+  //     const spanElement = parser
+  //       .parseFromString(`<span>${point.text}. </span>`, "text/html")
+  //       .querySelector("span");
+
+  //     // Insert the span at the beginning of the paragraph
+  //     if (pElement && spanElement) {
+  //       pElement.insertBefore(spanElement, pElement.firstChild);
   //     }
-  //   });
-  // };
 
-  // const generatePDFFunction = () => {
-  //   const header: any = document.querySelector(".pdf_header");
-  //   const pdf: any = document.querySelector("#divToPrint");
+  //     // Serialize the updated content back to HTML
+  //     const updatedValue = pElement.outerHTML;
 
-  //   // Change the font size for all <p> tags
-  //   const paragraphs = pdf.querySelectorAll("p");
-  //   paragraphs.forEach((p: HTMLElement) => {
-  //     p.style.fontSize = "13px"; // Set your desired font size here
-  //   });
-  //   html2canvas(header).then((headerCanvas) => {
-  //     const doc = new jsPDF({
-  //       orientation: "portrait",
-  //       format: "a4",
-  //       unit: "pt",
-  //     });
-
-  //     const pageWidth = doc.internal.pageSize.getWidth();
-  //     const scaleFactor = pageWidth / pdf.offsetWidth;
-
-  //     pdf.style.width = `${pageWidth + 80}px`;
-
-  //     const sections = pdf.children; // Get all child elements of the PDF container
-  //     let currentY = 10; // Starting Y position for the first element
-
-  //     const renderSection = (section: HTMLElement) => {
-  //       return new Promise<void>((resolve) => {
-  //         // Use the jsPDF html method to render the section
-  //         doc.html(section, {
-  //           x: 10,
-  //           y: currentY,
-  //           html2canvas: {
-  //             scale: scaleFactor,
-  //           },
-  //           margin: [100, 0, 20, 20],
-  //           // autoPaging: "text",
-  //           callback: function () {
-  //             currentY += section.offsetHeight + 10; // Update the current Y position for the next section
-  //             resolve();
-  //           },
-  //         });
-  //       });
-  //     };
-
-  //     (async () => {
-  //       for (const section of sections) {
-  //         const isAppendix = section.classList.contains("appendix");
-  //         const sectionHeight = section.offsetHeight;
-
-  //         // Check if we need to add a new page
-  //         if (
-  //           (doc as any).internal.getCurrentPageInfo().pageHeight <
-  //             10 + sectionHeight ||
-  //           isAppendix
-  //         ) {
-  //           doc.addPage();
-  //           currentY = 10; // Reset Y position for new page
+  //     return `<div key={point.text}>
+  //         <div
+  //           id="margin${marginLeft}"
+  //           style={{ display: "flex", alignItems: "center" }}
+  //           key={index}
+  //         >
+  //           <span>${updatedValue}</span>
+  //         </div>
+  //         ${
+  //           point.children.length > 0 &&
+  //           renderPointsHtml(point.children, currentPath)
   //         }
-
-  //         await renderSection(section); // Render the section
-
-  //         // After rendering each section, check if it's an appendix
-  //         // if (isAppendix) {
-  //         //   console.log("section", section);
-
-  //         //   // If it's an appendix, check if we need to add a new page
-  //         //   doc.addPage();
-  //         //   currentY = 10; // Reset Y position for new page
-  //         // }
-  //       }
-
-  //       // After rendering all sections, add header and page numbers
-  //       const pageCount = (doc as any).internal.getNumberOfPages();
-
-  //       for (let i = 1; i <= pageCount; i++) {
-  //         doc.setPage(i);
-  //         const pageSize = doc.internal.pageSize;
-  //         const currentPageHeight = pageSize.height
-  //           ? pageSize.height
-  //           : pageSize.getHeight();
-  //         // Add page number to the bottom right corner
-  //         doc.text(
-  //           "Page " + String(i) + " / " + String(pageCount),
-  //           doc.internal.pageSize.getWidth() - 60,
-  //           currentPageHeight - 8
-  //         );
-  //         // Add the header on top of each page
-  //         const headerHeight = 80;
-  //         const pagewidth = doc.internal.pageSize.getWidth();
-  //         doc.addImage(
-  //           headerCanvas,
-  //           "PNG",
-  //           10,
-  //           10,
-  //           pagewidth - 20,
-  //           headerHeight
-  //         );
-  //       }
-  //       // Save the PDF
-  //       doc.save(`Document.pdf`);
-  //     })();
+  //       </div>`;
   //   });
   // };
+
+  // const bindHTML = () => {
+  //   let htmlContent = "";
+  //   htmlContent += "<div>";
+  //   allSectionContent?.forEach((obj: any, index: number) => {
+  //     htmlContent += `<div id=${
+  //       obj.sectionType === "appendix section" ||
+  //       obj.sectionType === "change record"
+  //         ? "pageBreakBefore"
+  //         : ""
+  //     }>`;
+  //     {
+  //       obj.text !== "Header" &&
+  //         (htmlContent += `<span>
+  //              ${
+  //                obj.sectionType === "appendix section" ||
+  //                obj.sectionType === "change record"
+  //                  ? obj.text
+  //                  : obj.sectionOrder + ". " + obj.text
+  //              }
+  //            </span>`);
+  //     }
+  //     {
+  //       typeof obj.value === "string"
+  //         ? (htmlContent += `<div
+  //            id="sectionStart"
+  //            className={${
+  //              obj.sectionType === "change record" ? "changeRecordTable" : ""
+  //            }}
+  //        >${obj.value}</div>`)
+  //         : (htmlContent += `<div id="sectionStart">${renderPointsHtml(
+  //             obj.value
+  //           )}</div>`);
+  //     }
+  //     htmlContent += "</div>";
+  //   });
+  //   htmlContent += "</div>";
+  // };
+
+  useEffect(() => {
+    setPdfLoader(true);
+    setTimeout(() => {
+      processToPDF();
+      // bindHTML();
+    }, 2000);
+    // bindPDFContents();
+  }, [isPDFGenerate]);
+
+  useEffect(() => {
+    getDocumentRelatedSections(
+      documentId,
+      setAllSectionContent,
+      setHeaderAndFooterDetails,
+      setIsPDFGenerate,
+      setLoader
+      // setPdfHeaderSection
+    );
+  }, []);
 
   return (
-    <>
-      {/* <button
-        type="button"
-        onClick={() => {
-          generatePDFFunction();
-        }}
-      >
-        PDF
-      </button> */}
+    <div
+    // style={{
+    //   display: `${documentDetails?.documentDetailsID ? "None" : ""}`,
+    // }}
+    >
       {loader ? (
         <div>
           <CircularSpinner />
         </div>
       ) : allSectionContent.length > 0 ? (
         <div>
-          {pdfHeaderSection !== "" && (
+          {pdfLoader ? (
             <div>
-              <div
-                style={{ marginLeft: "20px" }}
-                dangerouslySetInnerHTML={{ __html: pdfHeaderSection }}
-              />
+              <CircularSpinner />
             </div>
+          ) : (
+            <div />
           )}
-          <div id="divToPrint" ref={contentRef}>
+          <div id="iframeContainer" />
+          <div id="divToPrint">
             {allSectionContent?.map((obj: any, index: number) => {
               return (
                 <div
                   className={styles.paraSection}
+                  id={
+                    obj.sectionType === "appendix section" ||
+                    obj.sectionType === "change record"
+                      ? "pageBreakBefore"
+                      : ""
+                  }
                   style={{ padding: "10px 0px" }}
                   key={index}
                 >
@@ -320,9 +597,8 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
                     <span
                       style={{
                         display: "flex",
-                        paddingBottom: "15px",
+                        margin: "0px 0px 15px 0px",
                         fontSize: "22px",
-                        fontFamily: "interMedium, sans-serif",
                       }}
                     >
                       {obj.sectionType === "appendix section" ||
@@ -333,41 +609,18 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
                   )}
                   {typeof obj.value === "string" ? (
                     <div
-                      style={{ marginLeft: "20px" }}
+                      id="sectionStart"
+                      className={`${
+                        obj.sectionType === "change record"
+                          ? "changeRecordTable"
+                          : ""
+                      }`}
                       dangerouslySetInnerHTML={{ __html: obj.value }}
                     />
                   ) : (
-                    // obj.value.map((list: any, index: number) => {
-                    //   const indent = list.text.split(".").length - 1;
-                    //   const marginLeft = (indent + 1 - 1) * 26;
-                    //   const nestedStyle: React.CSSProperties = {
-                    //     marginLeft: `${marginLeft}px`,
-                    //     display: "flex",
-                    //     alignItems: "center",
-                    //     paddingBottom: "13px",
-                    //   };
-                    //   return (
-                    //     list.value !== "" && (
-                    //       <div
-                    //         className={styles.listItem}
-                    //         style={nestedStyle}
-                    //         key={index}
-                    //       >
-                    //         <span style={{ marginRight: "10px" }}>
-                    //           {list.text}
-                    //         </span>
-                    //         <span
-                    //           dangerouslySetInnerHTML={{
-                    //             __html: list.value,
-                    //           }}
-                    //         />
-                    //       </div>
-                    //     )
-                    //   );
-                    // })
-                    <div>{renderPoints(obj.value)}</div>
+                    <div id="sectionStart">{renderPoints(obj.value)}</div>
                   )}
-                  {allSectionContent.length === 1 && (
+                  {allSectionContent.length === 0 && (
                     <div className={styles.noDataFound}>
                       <span>No content has been developed at this time.</span>
                     </div>
@@ -382,7 +635,7 @@ const PDFServiceTemplate: React.FC<Iprops> = ({ documentId }) => {
           <span>No content has been developed at this time.</span>
         </div>
       )}
-    </>
+    </div>
   );
 };
 export default memo(PDFServiceTemplate);

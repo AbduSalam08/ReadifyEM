@@ -44,7 +44,7 @@
       <Field ID="{bcd9378f-717f-40c4-96c6-c2c5fce9f1d3}" Name="footerTitle" DisplayName="Footer Title" Type="Text" StaticName="footerTitle" />
 
       <!-- FileDetails (Lookup ID from AllDocuments library) -->
-      <Field ID="{3e0e78c9-6166-4055-9a3d-626c51617a22}" Name="fileDetails" DisplayName="File Details" Type="Lookup" List="AllDocuments" ShowField="Title" Required="FALSE" StaticName="fileDetails" />
+      <Field ID="{3e0e78c9-6166-4055-9a3d-626c51617a22}" Name="fileDetailsId" DisplayName="File Details Id" Type="Text" StaticName="fileDetailsId" />
 
       <!-- DocumentTemplateType (Lookup ID from SDDTemplatesMain list) -->
       <Field ID="{7596b4de-7296-4f63-a5d4-e7b65f16dfe1}" Name="documentTemplateType" DisplayName="Document Template Type" Type="Lookup" List="Lists/SDDTemplatesMain" ShowField="Title" Required="FALSE" StaticName="documentTemplateType" />
@@ -75,7 +75,7 @@
           <FieldRef Name="createdDate" />
           <FieldRef Name="sequenceNo" />
           <FieldRef Name="footerTitle" />
-          <FieldRef Name="fileDetails" />
+          <FieldRef Name="fileDetailsId" />
           <FieldRef Name="documentTemplateType" />
           <FieldRef Name="isDraft" />
         </ViewFields>

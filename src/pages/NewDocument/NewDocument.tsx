@@ -279,7 +279,7 @@ const NewDocument = ({
   const editPageDocument: any = screens?.editDocumentData?.name;
 
   const editPageDocumentTitle: any = screens?.editDocumentData?.name
-    ?.split(".doc")[0]
+    ?.split(".pdf")[0]
     ?.toLowerCase();
 
   // the folder URL which comes form the screens props
@@ -368,17 +368,17 @@ const NewDocument = ({
           ? !masterList.files
               .filter(
                 (el: any) =>
-                  trimStartEnd(el.label?.split(".doc")[0])?.toLowerCase() !==
+                  trimStartEnd(el.label?.split(".pdf")[0])?.toLowerCase() !==
                   trimStartEnd(editPageDocumentTitle)?.toLowerCase()
               )
               .some(
                 (el: any) =>
-                  trimStartEnd(el.label?.split(".doc")[0])?.toLowerCase() ===
+                  trimStartEnd(el.label?.split(".pdf")[0])?.toLowerCase() ===
                   normalizedValue
               )
           : !masterList.files.some(
               (el: any) =>
-                trimStartEnd(el.label?.split(".doc")[0])?.toLowerCase() ===
+                trimStartEnd(el.label?.split(".pdf")[0])?.toLowerCase() ===
                 normalizedValue
             );
       } else {
@@ -700,19 +700,19 @@ const NewDocument = ({
         const isDuplicate = !isEditDocument
           ? masterList.files.some((el: any) => {
               return (
-                trimStartEnd(el.label?.split(".doc")[0])?.toLowerCase() ===
+                trimStartEnd(el.label?.split(".pdf")[0])?.toLowerCase() ===
                 trimStartEnd(value)?.toLowerCase()
               );
             })
           : masterList.files
               .filter(
                 (el: any) =>
-                  trimStartEnd(el.label?.split(".doc")[0]?.toLowerCase()) !==
+                  trimStartEnd(el.label?.split(".pdf")[0]?.toLowerCase()) !==
                   trimStartEnd(editPageDocumentTitle)
               )
               .some((el: any) => {
                 return (
-                  trimStartEnd(el.label?.split(".doc")[0])?.toLowerCase() ===
+                  trimStartEnd(el.label?.split(".pdf")[0])?.toLowerCase() ===
                   trimStartEnd(value)?.toLowerCase()
                 );
               });

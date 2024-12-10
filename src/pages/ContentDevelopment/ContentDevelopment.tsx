@@ -76,6 +76,7 @@ import {
 import AlertPopup from "../../webparts/readifyEmMain/components/common/Popups/AlertPopup/AlertPopup";
 import { CurrentUserIsAdmin } from "../../constants/DefineUser";
 import { useNavigate } from "react-router-dom";
+// import PDFServiceTemplate from "../../webparts/readifyEmMain/components/Table/PDFServiceTemplate/PDFServiceTemplate";
 // import { sp } from "@pnp/sp";
 
 const Details = {
@@ -150,7 +151,7 @@ const ContentDevelopment = (): JSX.Element => {
     {
       open: false,
       popupTitle: "",
-      popupWidth: "513px",
+      popupWidth: "600px",
       popupType: "custom",
       defaultCloseBtn: true,
       popupData: "",
@@ -218,6 +219,7 @@ const ContentDevelopment = (): JSX.Element => {
   const currentDocDetailsData: any = useSelector(
     (state: any) => state.ContentDeveloperData.CDDocDetails
   );
+  console.log("currentDocDetailsData", currentDocDetailsData);
 
   // initial States
   // AllSections State
@@ -265,6 +267,7 @@ const ContentDevelopment = (): JSX.Element => {
   );
 
   const isAdmin: boolean = CurrentUserIsAdmin();
+  console.log("isAdmin", isAdmin);
 
   // toast message state
 
@@ -795,6 +798,12 @@ const ContentDevelopment = (): JSX.Element => {
     currentDocDetailsData?.taskRole?.toLowerCase() !== "approver" &&
     currentDocDetailsData?.taskRole?.toLowerCase() !== "admin";
 
+  const currentPromoter: any = getCurrentLoggedPromoter(
+    currentDocRole,
+    currentDocDetailsData,
+    currentUserDetails
+  );
+
   const popupInputs: any[] = [
     [
       <SectionComments
@@ -983,26 +992,34 @@ const ContentDevelopment = (): JSX.Element => {
       />,
     ],
     [
-      <CustomTextArea
-        size="MD"
-        labelText="Comments"
-        withLabel
-        icon={false}
-        mandatory={true}
-        value={promoteComments.promoteComment}
-        onChange={(value: any) => {
-          setPromoteComments({
-            ...promoteComments,
-            promoteComment: value.trimStart(),
-            IsValid: false,
-          });
-        }}
-        placeholder="Enter Description"
-        isValid={promoteComments.IsValid}
-        errorMsg={promoteComments.ErrorMsg}
-        topLabel={true}
-        key={2}
-      />,
+      <div key={2}>
+        <CustomTextArea
+          size="MD"
+          labelText="Comments"
+          withLabel
+          icon={false}
+          mandatory={true}
+          value={promoteComments.promoteComment}
+          onChange={(value: any) => {
+            setPromoteComments({
+              ...promoteComments,
+              promoteComment: value.trimStart(),
+              IsValid: false,
+            });
+          }}
+          placeholder="Enter Description"
+          isValid={promoteComments.IsValid}
+          errorMsg={promoteComments.ErrorMsg}
+          topLabel={true}
+        />
+        {/* {currentDocRole?.approver &&
+          currentPromoter?.id === currentDocDetailsData?.approvers?.length && (
+            <PDFServiceTemplate
+              documentId={currentDocDetailsData?.documentDetailsID}
+              documentDetails={currentDocDetailsData}
+            />
+          )} */}
+      </div>,
     ],
     [],
     [
@@ -1269,12 +1286,6 @@ const ContentDevelopment = (): JSX.Element => {
       },
     ],
   ];
-
-  const currentPromoter: any = getCurrentLoggedPromoter(
-    currentDocRole,
-    currentDocDetailsData,
-    currentUserDetails
-  );
 
   const popuphandleOnChanges = (
     value: number,
@@ -1886,11 +1897,19 @@ const ContentDevelopment = (): JSX.Element => {
         secondaryText={CDTaskSuccess?.secondaryText}
         isLoading={CDTaskSuccess?.isLoading}
         onClick={() => {
+          debugger;
           dispatch(setCDTaskSuccess(initialPopupLoaders));
-          if (isAdmin) {
+          if (
+            currentDocRole?.approver &&
+            currentPromoter?.id === currentDocDetailsData?.approvers?.length
+          ) {
+            window?.location?.reload();
+          } else {
             navigate("/admin/my_tasks");
           }
-          navigate("/user/my_tasks");
+          //   if (isAdmin) {
+          //   }
+          // navigate("/user/my_tasks");
         }}
         onHide={() => {
           dispatch(setCDTaskSuccess(initialPopupLoaders));

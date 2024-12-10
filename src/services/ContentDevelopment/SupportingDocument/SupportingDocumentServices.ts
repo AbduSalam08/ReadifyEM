@@ -64,8 +64,10 @@ const getDocumentDeatils = async (Data: any[]) => {
   const tempArray: any = [];
   await SpServices.SPReadItems({
     Listname: LISTNAMES.DocumentDetails,
-    Select: "*,fileDetails/ID",
-    Expand: "fileDetails",
+    Select: "*",
+    Expand: "",
+    // Select: "*, fileDetails/ID",
+    // Expand: "fileDetails",
     Filter: [
       {
         FilterKey: "status",
@@ -83,14 +85,14 @@ const getDocumentDeatils = async (Data: any[]) => {
           if (Data[index].isDeleted) {
             tempArray.push({
               ID: item.ID,
-              documentId: item.fileDetailsId,
+              documentId: Number(item.fileDetailsId),
               documentName: item.Title,
               isSelected: false,
             });
           } else {
             tempArray.push({
               ID: item.ID,
-              documentId: item.fileDetailsId,
+              documentId: Number(item.fileDetailsId),
               documentName: item.Title,
               isSelected: true,
             });
@@ -98,7 +100,7 @@ const getDocumentDeatils = async (Data: any[]) => {
         } else {
           tempArray.push({
             ID: item.ID,
-            documentId: item.fileDetailsId,
+            documentId: Number(item.fileDetailsId),
             documentName: item.Title,
             isSelected: false,
           });
@@ -239,7 +241,7 @@ const convertSupportingDocToTxtFile = (
     //           </tr>`;
 
     supportingDocTable += `<p style="width:100%;margin-bottom: 10px;">
-      <span style="width:5%;line-height: 20px;">
+      <span style="width:5%;">
       ${sectionOrder}.${index + 1}.</span>
       <span style="width:95%;">
         <a style="word-break: break-all;" href=${

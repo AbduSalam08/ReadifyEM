@@ -62,8 +62,8 @@ const AddNewDocumentToLib = async ({
   await sp.web.lists
     .getByTitle(LISTNAMES.DocumentDetails)
     .items.getById(Number(fileID))
-    .select("*, fileDetails/ID")
-    .expand("fileDetails")
+    .select("*")
+    .expand("")
     .get()
     .then((res: any) => {
       const resp = res[0] || res;
@@ -82,7 +82,7 @@ const AddNewDocumentToLib = async ({
       .get()
       .then((res: any) => {
         prevdocName =
-          res.FileLeafRef?.split(".doc")[0] || res.File?.Name?.split(".doc")[0];
+          res.FileLeafRef?.split(".pdf")[0] || res.File?.Name?.split(".pdf")[0];
       })
       .catch((err: any) => {
         console.log("Error : ", err);
@@ -106,11 +106,11 @@ const AddNewDocumentToLib = async ({
 
       // Clone the existing PDF file
       // const sourceFileUrl = `${docDetails?.documentPath}/${docDetails?.Title}.pdf`; // Update with your source PDF path
-      const sourceFileUrl = `${docDetails?.documentPath}/${prevdocName}.doc`; // Update with your source PDF path
+      const sourceFileUrl = `${docDetails?.documentPath}/${prevdocName}.pdf`; // Update with your source PDF path
       const destinationFileUrl = `${replaceVersionInFilename(
         fileName,
         docDetails?.documentVersion
-      )}.doc`;
+      )}.pdf`;
 
       // Read the source file's content
       const fileBuffer = await sp.web
@@ -130,7 +130,7 @@ const AddNewDocumentToLib = async ({
         ID: fileID,
         Listname: LISTNAMES.DocumentDetails,
         RequestJSON: {
-          fileDetailsId: fileItem.ID,
+          fileDetailsId: fileItem?.ID ? fileItem?.ID.toString() : "",
           Title: trimStartEnd(
             replaceVersionInFilename(fileName, docDetails?.documentVersion)
           ),
@@ -248,7 +248,7 @@ const AddNewDocumentToLib = async ({
       if (fileName) {
         fileAddResult = await sp.web
           .getFolderByServerRelativePath(filePath)
-          .files.addUsingPath(`${fileName}.doc`, pdfBlob, {
+          .files.addUsingPath(`${fileName}.pdf`, pdfBlob, {
             Overwrite: true,
           });
         // Update metadata for the uploaded file
@@ -258,7 +258,7 @@ const AddNewDocumentToLib = async ({
           ID: fileID,
           Listname: LISTNAMES.DocumentDetails,
           RequestJSON: {
-            fileDetailsId: fileItem.ID,
+            fileDetailsId: fileItem?.ID ? fileItem?.ID.toString() : "",
           },
         })
           .then(async (res: any) => {
@@ -432,7 +432,7 @@ const UpdateDocumentInLib = async ({
                   responseData?.documentVersion
                 )
               : responseData?.Title
-          }.doc`,
+          }.pdf`,
           false,
           false
         )
@@ -921,8 +921,10 @@ const UpdateDocument = async (
       await SpServices.SPReadItemUsingId({
         Listname: LISTNAMES.DocumentDetails,
         SelectedId: DocumentID,
-        Select: "*, fileDetails/ID",
-        Expand: "fileDetails",
+        Select: "*",
+        Expand: "",
+        // Select: "*, fileDetails/ID",
+        // Expand: "fileDetails",
       })
         .then(async (res: any) => {
           const responseData = res?.[0] || res;

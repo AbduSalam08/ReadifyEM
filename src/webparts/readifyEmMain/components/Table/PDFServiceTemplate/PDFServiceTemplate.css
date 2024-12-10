@@ -2,3 +2,6 @@
     width: 100%!important;
     height: 80px;
 }
+#divToPrint{
+    display: none;
+}

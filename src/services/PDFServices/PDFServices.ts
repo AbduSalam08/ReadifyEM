@@ -44,6 +44,7 @@ const readTextFileFromTXT = (
   index: number,
   setAllSectionContent: any,
   // setPdfHeaderSection: any,
+  setIsPDFGenerate: any,
   setLoader: any
 ): void => {
   SpServices.SPReadAttachments({
@@ -132,6 +133,7 @@ const readTextFileFromTXT = (
       });
       if (index + 1 === length) {
         setLoader(false);
+        setIsPDFGenerate(true);
       }
       return sectionDetails;
     })
@@ -374,8 +376,10 @@ export const bindHeaderTable = async (
 export const getDocumentRelatedSections = async (
   documentID: number,
   setAllSectionContent: any,
-  setLoader: any,
-  setPdfHeaderSection: any
+  setHeaderAndFooterDetails: any,
+  setIsPDFGenerate: any,
+  setLoader: any
+  // setPdfHeaderSection: any
 ): Promise<any> => {
   try {
     setLoader(true);
@@ -397,6 +401,7 @@ export const getDocumentRelatedSections = async (
       ],
     });
     const DocDetailsResponseData: any = DocDetailsResponse[0];
+    console.log("DocDetailsResponseData", DocDetailsResponseData);
 
     SpServices.SPReadItems({
       Listname: LISTNAMES.SectionDetails,
@@ -416,6 +421,7 @@ export const getDocumentRelatedSections = async (
       ],
     })
       .then(async (res: any) => {
+        debugger;
         const tenantUrl = store.getState().MainSPContext.tenantUrl;
         if (res.length > 0) {
           const sortedArray = res.sort(
@@ -425,7 +431,7 @@ export const getDocumentRelatedSections = async (
           let sectionObject: any = {};
           const tempAttachments: any[] = [];
           const tempSectionList: any[] = [];
-          let base64Data: any = "";
+          let listHeaderBase64Data: any = "";
 
           for (const item of sortedArray) {
             const attachments = await SpServices.SPGetAttachments({
@@ -437,7 +443,7 @@ export const getDocumentRelatedSections = async (
               if (item.Title === "Header") {
                 const response = await fetch(attachments[0].ServerRelativeUrl);
                 const blob = await response.blob();
-                base64Data = await convertBlobToBase64(blob);
+                listHeaderBase64Data = await convertBlobToBase64(blob);
               }
               sectionObject = {
                 ...attachments[0],
@@ -448,7 +454,7 @@ export const getDocumentRelatedSections = async (
                 fileData: attachments[0],
                 imgURL: `${tenantUrl}${attachments[0]?.ServerRelativeUrl}`,
                 attachmentFileName: attachments[0]?.FileName,
-                base64: base64Data,
+                base64: listHeaderBase64Data,
               };
               attachments[0] = sectionObject;
               tempAttachments.push(attachments);
@@ -470,12 +476,31 @@ export const getDocumentRelatedSections = async (
           if (tempAttachments.length !== 0) {
             tempAttachments.forEach(async (item: any, index: number) => {
               if (item[0].sectionName === "Header") {
+                setHeaderAndFooterDetails((prevData: any) => ({
+                  ...prevData,
+                  imageBase64: item[0]?.base64
+                    ? item[0]?.base64
+                    : base64Data.headerImage,
+                  documentName: DocDetailsResponseData?.Title
+                    ? DocDetailsResponseData?.Title.split("_")[0]
+                    : DocDetailsResponseData?.Title || "-",
+                  documentVersion: DocDetailsResponseData?.documentVersion,
+                  templateType:
+                    DocDetailsResponseData?.documentTemplateType?.Title || "-",
+                  createdDate: DocDetailsResponseData?.createdDate || "-",
+                  lastReviewDate:
+                    lastReviewDate === "Invalid Date" ? "-" : lastReviewDate,
+                  nextReviewDate: DocDetailsResponseData?.nextReviewDate || "-",
+                  footerTitle:
+                    DocDetailsResponseData?.footerTitle ||
+                    DocDetailsResponseData?.primaryAuthor?.Title,
+                }));
                 const PDFHeaderTable = await bindHeaderTable(
                   item[0],
                   DocDetailsResponseData,
                   lastReviewDate === "Invalid Date" ? "-" : lastReviewDate
                 );
-                setPdfHeaderSection([PDFHeaderTable]);
+                // setPdfHeaderSection([PDFHeaderTable]);
                 const sectionDetails = {
                   text: item[0].sectionName,
                   sectionOrder: item[0].sectionOrder,
@@ -567,7 +592,7 @@ export const getDocumentRelatedSections = async (
                     ...changeRecordSectionArray,
                   ];
                 });
-                setLoader(false);
+                // setLoader(false);
               }
               const filteredItem: any = item?.filter(
                 (item: any) => item?.FileName === "Sample.txt"
@@ -579,6 +604,7 @@ export const getDocumentRelatedSections = async (
                   index,
                   setAllSectionContent,
                   // setPdfHeaderSection,
+                  setIsPDFGenerate,
                   setLoader
                 );
                 tempSectionList.push(sectionDetails);

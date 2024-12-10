@@ -365,6 +365,10 @@ const Header = (): JSX.Element => {
           label: "Templates",
           path: `${rootPath}/templates`,
         },
+        {
+          label: "User Configure",
+          path: `${rootPath}/User Configure`,
+        },
       ]
     : [
         {
