@@ -54,5 +54,12 @@ export const RoleAuth = async (
     })
     .catch((err: any) => {
       console.log("Error : ", err);
+      currentUserDetails = {
+        userName: currentUser?.userName,
+        email: currentUser?.Email,
+        role: "User",
+        id: currentUserID,
+      };
+      dispatch && dispatch(setCurrentUserDetails(currentUserDetails));
     });
 };

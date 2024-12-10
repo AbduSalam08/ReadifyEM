@@ -68,6 +68,7 @@ const Header: React.FC<Props> = ({
         {/* <span>Document is empty.</span> */}
         <PDFServiceTemplate
           documentId={currentDocDetailsData?.documentDetailsID}
+          documentDetails={{}}
         />
       </div>,
     ],

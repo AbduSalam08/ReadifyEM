@@ -82,7 +82,11 @@ const TableItem: React.FC<TableItemProps> = ({
   const itemTemplate = (item: any, paddingLeft?: any): JSX.Element => {
     const lastUnderscoreIndex = item.name?.lastIndexOf("_");
     const lastDotIndex = item.name?.lastIndexOf(".");
-    const version = item.name?.substring(lastUnderscoreIndex + 1, lastDotIndex);
+    const version =
+      lastUnderscoreIndex !== -1
+        ? item.name?.substring(lastUnderscoreIndex + 1, lastDotIndex)
+        : "1.0";
+
     return (
       <div
         className={styles.itemContainer}

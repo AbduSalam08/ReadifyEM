@@ -45,7 +45,8 @@ interface Props {
   appendixSection?: boolean;
   footerTitle?: boolean;
   currentDocRole?: any;
-  onChange?: any;
+  onChange?: (value: any) => void;
+  // onChange?: any;
   currentDocDetailsData?: any;
 }
 
@@ -98,6 +99,7 @@ const SetupHeader: React.FC<Props> = ({
     fileData: [],
     fileName: "",
   });
+  console.log("file", file);
 
   const [details, setDetails] = useState({
     footerTitle: footerTitle,
@@ -128,11 +130,13 @@ const SetupHeader: React.FC<Props> = ({
         // fileName: `headerImg.${files[0]?.name?.split(".").slice(-1)[0]}`,
         fileName: `${files[0]?.name}`,
       });
-      onChange({
-        fileData: files[0],
-        // fileName: `headerImg.${files[0]?.name?.split(".").slice(-1)[0]}`,
-        fileName: `${files[0]?.name}`,
-      });
+      if (onChange) {
+        onChange({
+          fileData: files[0],
+          // fileName: `headerImg.${files[0]?.name?.split(".").slice(-1)[0]}`,
+          fileName: `${files[0]?.name}`,
+        });
+      }
     } else {
       setToastMessage({
         isShow: true,
@@ -156,10 +160,12 @@ const SetupHeader: React.FC<Props> = ({
     if (fileUploadRef.current) {
       fileUploadRef.current.clear(); // This clears the uploaded file from the UI
     }
-    onChange({
-      fileData: [],
-      fileName: "",
-    });
+    if (onChange) {
+      onChange({
+        fileData: [],
+        fileName: "",
+      });
+    }
   };
 
   const onTemplateRemove = (file: any, callback: any): void => {
@@ -546,6 +552,7 @@ const SetupHeader: React.FC<Props> = ({
                   text="Submit"
                   btnType="primary"
                   onClick={async () => {
+                    debugger;
                     // if (appendixSection) {
                     //   await updatea(
                     //     "submit",
@@ -553,6 +560,17 @@ const SetupHeader: React.FC<Props> = ({
                     //     file
                     //   );
                     // } else {
+                    if (file?.fileName === "") {
+                      setToastMessage({
+                        isShow: true,
+                        severity: "warn",
+                        title: "Image empty submission!",
+                        message:
+                          "A unexpected submission! please upload header image.",
+                        duration: 3000,
+                      });
+                      return null;
+                    }
 
                     setSectionLoader(true);
 

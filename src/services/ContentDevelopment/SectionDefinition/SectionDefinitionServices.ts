@@ -61,14 +61,9 @@ const convertDefinitionsToTxtFile = (
     //             </td>
     //           </tr>`;
     definitionsTable += `<div style="width:100%;margin-bottom: 10px;">
-      <span style="width:5%;line-height: 20px;">${sectionOrder}.${
-      index + 1
-    }.</span>
-      <span style="width: 90%;">
-        <span style="">${obj.definitionName}</span>
-        <p style="line-height: 20px;margin-left:30px;">${
-          obj.definitionDescription
-        }</p>
+      <span>${sectionOrder}.${index + 1}.${" "}${obj.definitionName}</span>
+      <span>
+        <p id="definitionValue${index}">${obj.definitionDescription}</p>
       </span>
     </div>`;
   });
@@ -117,9 +112,7 @@ export const convertReferenceToTxtFile = (
 
   filterData?.forEach((obj: any, index: number) => {
     referencesTable += `<p style="width:100%;margin-bottom: 10px;">
-    <span style="line-height: 20px;">${sectionOrder.toString()}.${
-      index + 1
-    }.</span>
+    <span>${sectionOrder.toString()}.${index + 1}.</span>
     <span style="margin-left: 5px;">${obj.referenceAuthorName}${". "}${
       obj.yearOfPublish ? "(" + obj.yearOfPublish + "). " : ""
     }</span>${

@@ -47,3 +47,7 @@ export const compareArraysOfObjects = async (
 
   return true; // Return true if all key-value pairs match
 };
+
+export const stringWithinLetters = (str: string, length: number): any => {
+  return str.length <= length;
+};

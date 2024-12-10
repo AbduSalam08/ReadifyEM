@@ -85,11 +85,14 @@ export const getLibraryItems = async (): Promise<{
     }
 
     // looping the files from the items
+
+    // **********  .select("*,documentDetails/ID, documentDetails/Title,fileDetails/ID") chenge to
+
     for (const file of files) {
       const fileFields = await sp.web
         .getFileByServerRelativePath(file.ServerRelativeUrl)
-        .select("*,documentDetails/ID, documentDetails/Title,fileDetails/ID")
-        .expand("documentDetails,fileDetails")
+        .select("*,documentDetails/ID, documentDetails/Title")
+        .expand("documentDetails")
         .listItemAllFields.get();
 
       let fileItemsFromList: any;
@@ -111,10 +114,10 @@ export const getLibraryItems = async (): Promise<{
       }
 
       // if its admin role render all files with all status else render only restricted items by its approved status
-      if (fileFields?.ID === fileItemsFromList?.fileDetailsId) {
+      if (fileFields?.ID === Number(fileItemsFromList?.fileDetailsId)) {
         folderItems.push({
           ID: fileItemsFromList?.ID,
-          fileIDFromList: fileItemsFromList?.fileDetailsId,
+          fileIDFromList: Number(fileItemsFromList?.fileDetailsId),
           fileID: fileFields?.ID,
           name: file.Name,
           type: "file",
@@ -137,7 +140,7 @@ export const getLibraryItems = async (): Promise<{
       } else {
         folderItems.push({
           ID: fileItemsFromList?.ID,
-          fileIDFromList: fileItemsFromList?.fileDetailsId,
+          fileIDFromList: Number(fileItemsFromList?.fileDetailsId),
           fileID: fileFields?.ID,
           name: file.Name,
           type: "file",

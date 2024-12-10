@@ -595,10 +595,14 @@ const RichText = ({
             // If the range is null, get the length of the content and insert a newline at the end
             rangeIndex = quill.getLength(); // Returns the last index
           }
-
-          const iconHtml = `<span><img src="${
-            base64Data.file
-          }" width="11" height="15" />
+          // <img
+          //   src="${
+          //   base64Data.file
+          // }"
+          //   width="11"
+          //   height="15"
+          // />;
+          const iconHtml = `<span>
           <a style="margin-right:10px;" href=${encodeURI(
             fileUrl
           )} rel="noopener noreferrer" target="_blank">${file.name}</a>

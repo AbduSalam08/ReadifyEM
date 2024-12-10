@@ -1,6 +1,8 @@
 {
   "extends": "./node_modules/@microsoft/rush-stack-compiler-4.7/includes/tsconfig-web.json",
   "compilerOptions": {
+     "allowJs": true, // Allow JavaScript files
+    "checkJs": false, // Skip type checking for JavaScript files
     "target": "es6",
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports":true,
@@ -14,7 +16,7 @@
     "outDir": "lib",
     "inlineSources": false,
     "noImplicitAny": true,
-    "typeRoots": ["./node_modules/@types", "./node_modules/@microsoft"],
+    "typeRoots": ["./node_modules/@types", "./node_modules/@microsoft","./src/typings"],
     "types": ["webpack-env"],
     "lib": [
       "es5",

@@ -54,6 +54,14 @@ const NavBar = ({ isAdmin }: { isAdmin: boolean }): JSX.Element => {
       tabIcon: SDDTemplatesInActive,
       routePath: "/templates",
     },
+    {
+      tabName: "User Configure",
+      role: "admin",
+      isActive: false,
+      tabIconActive: SDDTemplates,
+      tabIcon: SDDTemplatesInActive,
+      routePath: "/User Configure",
+    },
   ]);
 
   const toggleActive = (index: number): void => {

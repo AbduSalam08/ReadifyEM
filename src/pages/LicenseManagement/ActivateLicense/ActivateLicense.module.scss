@@ -1,0 +1,29 @@
+.activateLicenseWrapper{
+    padding: 10px 25px;
+    // .activateLicenseHeader{
+    //     p{
+
+    //     }
+    // }
+    .activateLicenseInputSection{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+        padding: 35px 10px;
+        background-color: hsla(0, 0%, 100%, .6);
+        border-radius: 15px;
+        box-shadow: 0 4px 13px -12px rgba(0, 0, 0, .05);
+        height: 450px;
+        .activateLicenseInput{
+            width: 30%;
+            padding-top: 130px;
+        }
+    }
+    .activateLicenseFooter{
+        width: 100%;
+        display: flex;
+        justify-content: end;
+        margin-top: 20px;
+    }
+}

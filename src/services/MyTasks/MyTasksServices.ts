@@ -302,12 +302,14 @@ export const getUniqueTaskData = async (
   await SpServices.SPReadItemUsingId({
     Listname: LISTNAMES.DocumentDetails,
     SelectedId: responseData?.documentDetailsId,
-    Select: "*, fileDetails/ID",
-    Expand: "fileDetails",
+    Select: "*",
+    Expand: "",
+    // Select: "*, fileDetails/ID",
+    // Expand: "fileDetails",
   })
     .then((res: any) => {
       const resp = res[0] || res;
-      fileDetailsID = resp?.fileDetailsId;
+      fileDetailsID = Number(resp?.fileDetailsId);
     })
     .catch((err: any) => {
       console.log("Error : ", err);
@@ -345,9 +347,10 @@ export const AddPrimaryAuthorTask = async (
     try {
       const AllDocResponse: any = await SpServices.SPReadItems({
         Listname: LISTNAMES.DocumentDetails,
+        // fileDetails lookup change to signle line
         Select:
-          "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail, documentTemplateType/Title, documentTemplateType/ID,fileDetails/ID",
-        Expand: "primaryAuthor, Author, documentTemplateType,fileDetails",
+          "*, primaryAuthor/ID, primaryAuthor/Title, primaryAuthor/EMail, Author/ID, Author/Title, Author/EMail, documentTemplateType/Title, documentTemplateType/ID",
+        Expand: "primaryAuthor, Author, documentTemplateType",
         Filter: [
           {
             FilterKey: "isDraft",
@@ -355,7 +358,7 @@ export const AddPrimaryAuthorTask = async (
             FilterValue: "0",
           },
           {
-            FilterKey: "fileDetails",
+            FilterKey: "fileDetailsId",
             Operator: "eq",
             FilterValue: fileID,
           },
@@ -371,7 +374,7 @@ export const AddPrimaryAuthorTask = async (
         const defaultFields: any = {
           documentDetailsId: item?.ID,
           docCreatedDate: item?.createdDate,
-          fileDetailsId: item?.fileDetailsId,
+          fileDetailsId: Number(item?.fileDetailsId),
           docName: item.Title,
           documentTemplateTypeId: item.documentTemplateType?.ID,
           pathName: item?.documentPath?.split(`${siteUrl}/AllDocuments/`)[1],
@@ -452,7 +455,7 @@ export const AddPrimaryAuthorTask = async (
         const defaultFields: any = {
           documentDetailsId: item?.ID,
           docCreatedDate: item?.createdDate,
-          fileDetailsId: item?.fileDetailsId,
+          fileDetailsId: Number(item?.fileDetailsId),
           docName: item.Title,
           documentTemplateTypeId: item.documentTemplateType?.ID,
           pathName: item?.documentPath?.split(`${siteUrl}/AllDocuments/`)[1],
@@ -535,7 +538,7 @@ export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
       const defaultFields: any = {
         documentDetailsId: item?.ID,
         docCreatedDate: item?.createdDate,
-        fileDetailsId: item?.fileDetailsId,
+        fileDetailsId: Number(item?.fileDetailsId),
         docName: item.Title,
         pathName: item?.documentPath?.split(`${siteUrl}/AllDocuments/`)[1],
         documentTemplateTypeId: item.documentTemplateType?.ID,
@@ -616,7 +619,7 @@ export const UpdatePrimaryAuthorTask = async (fileID: any): Promise<any> => {
 const getDefaultFields = (item: any, siteUrl: string): any => ({
   documentDetailsId: item?.ID,
   docCreatedDate: item?.createdDate,
-  fileDetailsId: item?.fileDetailsId,
+  fileDetailsId: Number(item?.fileDetailsId),
   docName: item.Title,
   pathName: item?.documentPath?.split(`${siteUrl}/AllDocuments/`)[1],
   docVersion: item?.documentVersion,
@@ -745,7 +748,7 @@ export const UpdateTask = async (fileID: any, formData?: any): Promise<any> => {
     const updatedTasks: any[] = AllDocResponse?.map((item: any) => ({
       documentDetailsId: item?.ID,
       docCreatedDate: item?.createdDate,
-      fileDetailsId: item?.fileDetailsId,
+      fileDetailsId: Number(item?.fileDetailsId),
       docName: item.Title,
       documentTemplateTypeId: item.documentTemplateType?.ID,
       pathName: item?.documentPath?.split(`${siteUrl}/AllDocuments/`)[1],

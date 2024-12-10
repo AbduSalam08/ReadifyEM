@@ -16,7 +16,7 @@ import { emptyCheck, trimStartEnd } from "../../utils/validations";
 import CustomTreeDropDown from "../../webparts/readifyEmMain/components/common/CustomInputFields/CustomTreeDropDown";
 import { useDispatch, useSelector } from "react-redux";
 import AlertPopup from "../../webparts/readifyEmMain/components/common/Popups/AlertPopup/AlertPopup";
-import { initialPopupLoaders, LIBNAMES } from "../../config/config";
+import { initialPopupLoaders } from "../../config/config";
 import { IPopupLoaders } from "../../interface/MainInterface";
 import InfoIcon from "@mui/icons-material/Info";
 import { ArrowRightAlt, Close } from "@mui/icons-material";
@@ -52,7 +52,6 @@ import { getNextVersions } from "../../utils/EMManualUtils";
 import { removeVersionFromDocName } from "../../utils/formatDocName";
 import ToastMessage from "../../webparts/readifyEmMain/components/common/Toast/ToastMessage";
 import { InputSwitch } from "primereact/inputswitch";
-import { sp } from "@pnp/sp";
 import "./iframestyle.css";
 // constants
 const initialPopupController = [
@@ -123,9 +122,6 @@ const popupInitialData = {
 
 // TSX component with JSX features
 const TableOfContents = (): JSX.Element => {
-  const contextProps: any = useSelector(
-    (state: any) => state?.MainSPContext?.value
-  );
   const pageDetailsState: any = useSelector(
     (state: any) => state?.MainSPContext?.PageDetails
   );
@@ -195,7 +191,8 @@ const TableOfContents = (): JSX.Element => {
 
   // state to manage all popup data
   const [popupData, setPopupData] = useState<any>(popupInitialData);
-  const [docuementStatus, setDocuementStatus] = useState<boolean>(false);
+  const [documentStatus, setDocumentStatus] = useState<boolean>(false);
+  const [currentDocumentDetails, setCurrentDocumentDetails] = useState<any>({});
   const [documentId, setDocumentId] = useState<number>(0);
 
   const [toastMessage, setToastMessage] = useState<any>({
@@ -343,31 +340,42 @@ const TableOfContents = (): JSX.Element => {
       <div key={3} style={{ padding: "5px" }}>
         {/* <span>Document is empty.</span> */}
 
-        {docuementStatus ? (
+        {documentStatus ? (
           // <object
-          //   key={3}
-          //   data={documentPdfURL}
-          //   // type="application/pdf"
-          //   type="application/msword"
+          //   data="/sites/ReadifyEM/AllDocuments/PDFMake/Third%20Document.pdf?toolbar=1"
+          //   type="application/pdf"
           //   width="100%"
           //   height="600px"
           // >
-          //   <p className="textCenter">
+          //   <p>
           //     Your browser does not support PDFs. Please download the PDF to
           //     view it:
-          //     <a href={documentPdfURL}>Download PDF</a>.
+          //     <a
+          //       href="/sites/ReadifyEM/AllDocuments/PDFMake/Third%20Document.pdf"
+          //       target="_blank"
+          //     >
+          //       Download PDF
+          //     </a>
+          //     .
           //   </p>
           // </object>
           <iframe
             src={documentPdfURL}
+            name="PDF View"
             width="100%"
             height="600px"
-            frameBorder="0"
           >
-            Your browser does not support iframes.
+            <p>
+              Your browser does not support PDFs. Please download the PDF to
+              view it:
+              <a href={documentPdfURL}>Download PDF</a>.
+            </p>
           </iframe>
         ) : (
-          <PDFServiceTemplate documentId={documentId} />
+          <PDFServiceTemplate
+            documentId={documentId}
+            documentDetails={currentDocumentDetails}
+          />
         )}
       </div>,
     ],
@@ -872,7 +880,7 @@ const TableOfContents = (): JSX.Element => {
         onClick: () => {
           togglePopupVisibility(setPopupController, 2, "close");
           dispatch(setSectionsAttachments([]));
-          setDocuementStatus(false);
+          setDocumentStatus(false);
         },
       },
     ],
@@ -1260,7 +1268,6 @@ const TableOfContents = (): JSX.Element => {
               const pageTitle = `${item.name} - Initiate version (${versionType})`;
 
               const latestDoc = item?.fileIDFromList === item?.fileID;
-
               return (
                 <>
                   {isAdmin && latestDoc && (
@@ -1338,37 +1345,47 @@ const TableOfContents = (): JSX.Element => {
                     text={<img src={viewDocBtn} />}
                     key={index}
                     onClick={async (event: any) => {
-                      event.preventDefault();
-                      const fileDetails = await sp.web.lists
-                        .getByTitle(LIBNAMES.FinalDocuments)
-                        .items.filter(`DocumentIDId eq ${item.fileID}`)
-                        .select("FileLeafRef", "FileRef")
-                        .get();
-
-                      const baseUrl = `${contextProps?._pageContext._site.absoluteUrl}/_layouts/15/Doc.aspx`;
-                      const encodedFilePath = encodeURIComponent(
-                        fileDetails[0]?.FileRef
-                      );
-                      const encodedFileName = encodeURIComponent(
-                        fileDetails[0]?.FileLeafRef
-                      );
-                      setDocumentPdfURL(
-                        `${baseUrl}?sourcedoc=${encodedFilePath}&file=${encodedFileName}&action=default`
-                      );
-                      setDocuementStatus(item?.isPdfGenerated);
+                      setCurrentDocumentDetails(item);
+                      setDocumentPdfURL(item?.url);
+                      setDocumentStatus(item?.isPdfGenerated);
                       togglePopupVisibility(
                         setPopupController,
                         2,
                         "open",
                         `Preview Document`,
                         "",
-                        item?.isPdfGenerated ? "70vw" : "820px"
+                        "820px"
                       );
                       setDocumentId(item?.ID);
                     }}
                   />
+                  {item?.fields?.status?.toLowerCase() === "approved" &&
+                    !item?.isPdfGenerated && (
+                      <div
+                        className={styles.versionPillsWrapper}
+                        onClick={() => {
+                          setCurrentDocumentDetails(item);
+                          setDocumentPdfURL(item?.url);
+                          setDocumentStatus(item?.isPdfGenerated);
+                          togglePopupVisibility(
+                            setPopupController,
+                            2,
+                            "open",
+                            `Preview Document`,
+                            "",
+                            "820px"
+                          );
+                          setDocumentId(item?.ID);
+                        }}
+                      >
+                        <div className={styles.versionPill}>
+                          Latest Published
+                        </div>
+                      </div>
+                    )}
                   {isAdmin &&
                     item?.fields?.status?.toLowerCase() === "approved" &&
+                    item?.isPdfGenerated &&
                     latestDoc && (
                       <DefaultButton
                         disableRipple={true}
@@ -1462,7 +1479,7 @@ const TableOfContents = (): JSX.Element => {
           PopupType="custom"
           onHide={() => {
             togglePopupVisibility(setPopupController, index, "close");
-            setDocuementStatus(false);
+            setDocumentStatus(false);
           }}
           popupTitle={popupData.popupTitle}
           popupActions={popupActions[index]}
@@ -1470,7 +1487,7 @@ const TableOfContents = (): JSX.Element => {
           content={popupInputs[index]}
           popupWidth={popupData.popupWidth}
           defaultCloseBtn={popupData.defaultCloseBtn}
-          preViewDocument={docuementStatus ? true : false}
+          preViewDocument={false}
         />
       ))}
 

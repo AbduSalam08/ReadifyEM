@@ -30,6 +30,7 @@ import {
   checkDuplicates,
   filterTemplateByName,
 } from "../../utils/SDDTemplatesUtils";
+import { stringWithinLetters } from "../../utils/CommonUtils";
 // assets
 const editIcon: any = require("../../assets/images/svg/normalEdit.svg");
 const deleteIcon: any = require("../../assets/images/svg/deleteIcon.svg");
@@ -190,6 +191,8 @@ const SDDTemplates = (): JSX.Element => {
   ): void => {
     const updateTemplate = templateType?.toLowerCase() === "update";
 
+    const checkLetters = stringWithinLetters(value, 20);
+
     // A validation for checking duplicates while creating the template name
     const isDuplicate: boolean = AllSDDTemplateData?.map((data: any) => {
       return (
@@ -219,8 +222,10 @@ const SDDTemplates = (): JSX.Element => {
       setSectionsData((prev: any) => ({
         ...prev,
         templateName: value,
-        templateNameIsValid: emptyCheck(value) && isDuplicate,
-        templateErrorMsg: !isDuplicate
+        templateNameIsValid: emptyCheck(value) && isDuplicate && checkLetters,
+        templateErrorMsg: !checkLetters
+          ? "Maximum 20 characters allowed."
+          : !isDuplicate
           ? "Template name already exists."
           : "Template name required.",
       }));
@@ -228,8 +233,11 @@ const SDDTemplates = (): JSX.Element => {
       setSectionsData((prev: any) => ({
         ...prev,
         templateName: value,
-        templateNameIsValid: emptyCheck(value) && isDuplicateForUpdate,
-        templateErrorMsg: !isDuplicateForUpdate
+        templateNameIsValid:
+          emptyCheck(value) && isDuplicateForUpdate && checkLetters,
+        templateErrorMsg: !checkLetters
+          ? "Maximum 20 characters allowed."
+          : !isDuplicateForUpdate
           ? "Template name already exists."
           : "Template name required.",
       }));
